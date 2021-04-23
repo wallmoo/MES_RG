@@ -1,0 +1,35 @@
+@import url("//netdna.bootstrapcdn.com/font-awesome/4.0.3/css/font-awesome.css");
+.login-block{
+/* background:url(/res/images/mhe/mhe_background_up.png) no-repeat; background-size:cover; */
+
+float:left;
+max-width:100%;
+max-height:100%;
+padding : 0px;
+text-align:center; 
+vertical-align:middle;
+display:table-cell;
+
+bottom: 0;
+left: 0;
+margin: auto;
+overflow: auto;
+position: fixed;
+right: 0;
+top: 0;
+}
+.login_png_text {
+    height:280px;
+    background: linear-gradient(-45deg, rgba(36, 120, 204, 0.3), rgba(221, 232, 243, 0.05));
+}
+.container {background:#1C3659; opacity: 0.9; position:absolute; left:0; top:0; bottom:0; height:93%;}
+.carousel-inner{border-radius:0 10px 10px 0;}
+.carousel-caption{text-align:left; left:5%;}
+.login-sec{background:#394b73; padding: 50px 30px; position:relative; top:25%; width:400; height:410; text-align:left;}
+.login-sec .copy-text{position:absolute; width:80%; bottom:20px; font-size:13px; text-align:center;}
+.login-sec .copy-text i{color:#06406E;}
+.login-sec .copy-text a{color:#065cab;}
+.login-sec h2{margin-bottom:30px; font-weight:800; font-size:30px; color: #fff;}
+.login-sec h2:after{content:" "; width:100px; height:5px; background:#065cab; display:block; margin-top:20px; border-radius:3px; margin-left:auto;margin-right:auto}
+.btn-login{background: #065cab; color:#fff; font-weight:600;}
+.bottom-bar{background:#1C3659; opacity:0.9; position:absolute; right:0; bottom:0; height:7%;}

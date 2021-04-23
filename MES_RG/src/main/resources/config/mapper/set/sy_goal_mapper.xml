@@ -1,0 +1,571 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.passcombine.set.dao.SYGoalDAO">
+
+
+	<select id="selectItem" parameterType="SYGoalVo" resultType="SYGoalVo">
+		SELECT code, name
+		FROM kpi_goal_master
+	
+		ORDER BY code
+	</select>
+	
+	<select id="selectGoal" parameterType="SYGoalVo" resultType="SYGoalVo">
+		with m AS (
+			SELECT 1 as mm , #{year} as yy, #{code} as cd from dual union 
+			SELECT 2 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 3 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 4 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 5 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 6 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 7 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 8 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 9 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 10 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 11 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 12 as mm , #{year} as yy, #{code} as cd from dual 
+		)
+		SELECT m.cd AS code, m.yy AS year ,m.mm AS month , ifnull(goal,0) AS goal
+		FROM m
+		LEFT JOIN
+		(
+			SELECT code, year, concat(month,'') AS mm , goal
+			FROM kpi_goal_info_tbl 
+			
+			WHERE 1 = 1
+			<if test="code != null and !''.equals( code )">
+				AND code = #{code}
+			</if>
+			<if test="year != null and !''.equals( year )">
+				AND year LIKE CONCAT('%', #{year}, '%')
+			</if>
+		
+		) AS gt
+		ON gt.mm = m.mm 
+		
+		
+		ORDER BY m.mm
+		
+		
+	</select>
+	
+	<!-- 목표량 설정-->
+	<insert id="saveGoal" parameterType="SYGoalVo">
+ 		INSERT INTO kpi_goal_info_tbl (
+			code, year, month, goal,
+		 	creator, updater, date_created, date_updated)
+		SELECT *
+		  FROM (
+		  		SELECT  
+		  		#{code} as code, #{year} as year, #{month} as month, #{goal} as goal,
+				#{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated
+		  ) s
+		  ON DUPLICATE KEY
+		UPDATE
+			code = s.code,
+			year = s.year,
+			month = s.month,
+			<if test="goal != null and !''.equals( goal )">
+				goal = s.goal,
+			</if>
+			
+			updater = s.updater,
+			date_updated = s.date_updated
+	</insert>
+	
+	
+	<select id="selectGoalMachineAll" parameterType="SYGoalVo" resultType="SYGoalVo">
+
+			select year,month, ifnull(ROUND(sum(goal)/(SELECT count(machine_code)
+					FROM
+					machine_master
+					where 1=1
+					AND machine_class_code =  #{master_code}),2),0) as goal from kpi_machine_goal_info_tbl where 1=1 and month =1  
+					and master_code = #{master_code} 
+					and year=#{year}
+			UNION ALL
+			select year,month, ifnull(ROUND(sum(goal)/(SELECT count(machine_code)
+					FROM
+					machine_master
+					where 1=1
+					AND machine_class_code =  #{master_code}),2),0) as goal from kpi_machine_goal_info_tbl where 1=1 and month =2
+					and master_code = #{master_code} 
+					and year=#{year}
+			UNION ALL
+			select year,month, ifnull(ROUND(sum(goal)/(SELECT count(machine_code)
+					FROM
+					machine_master
+					where 1=1
+					AND machine_class_code =  #{master_code}),2),0) as goal from kpi_machine_goal_info_tbl where 1=1 and month =3
+					and master_code = #{master_code} 
+					and year=#{year}
+			UNION ALL
+			select year,month, ifnull(ROUND(sum(goal)/(SELECT count(machine_code)
+					FROM
+					machine_master
+					where 1=1
+					AND machine_class_code =  #{master_code}),2),0) as goal from kpi_machine_goal_info_tbl where 1=1 and month =4
+					and master_code = #{master_code} 
+					and year=#{year}
+			UNION ALL
+			select year,month, ifnull(ROUND(sum(goal)/(SELECT count(machine_code)
+					FROM
+					machine_master
+					where 1=1
+					AND machine_class_code =  #{master_code}),2),0) as goal from kpi_machine_goal_info_tbl where 1=1 and month =5
+					and master_code = #{master_code} 
+					and year=#{year}
+			UNION ALL
+			select year,month, ifnull(ROUND(sum(goal)/(SELECT count(machine_code)
+					FROM
+					machine_master
+					where 1=1
+					AND machine_class_code =  #{master_code}),2),0) as goal from kpi_machine_goal_info_tbl where 1=1 and month =6
+					and master_code = #{master_code} 
+					and year=#{year}
+			UNION ALL
+			select year,month, ifnull(ROUND(sum(goal)/(SELECT count(machine_code)
+					FROM
+					machine_master
+					where 1=1
+					AND machine_class_code =  #{master_code}),2),0) as goal from kpi_machine_goal_info_tbl where 1=1 and month =7
+					and master_code = #{master_code} 
+					and year=#{year}
+			UNION ALL
+			select year,month, ifnull(ROUND(sum(goal)/(SELECT count(machine_code)
+					FROM
+					machine_master
+					where 1=1
+					AND machine_class_code =  #{master_code}),2),0) as goal from kpi_machine_goal_info_tbl where 1=1 and month =8
+					and master_code = #{master_code} 
+					and year=#{year}
+			UNION ALL
+			select year,month, ifnull(ROUND(sum(goal)/(SELECT count(machine_code)
+					FROM
+					machine_master
+					where 1=1
+					AND machine_class_code =  #{master_code}),2),0) as goal from kpi_machine_goal_info_tbl where 1=1 and month =9
+					and master_code = #{master_code} 
+					and year=#{year}
+			UNION ALL
+			select year,month, ifnull(ROUND(sum(goal)/(SELECT count(machine_code)
+					FROM
+					machine_master
+					where 1=1
+					AND machine_class_code =  #{master_code}),2),0) as goal from kpi_machine_goal_info_tbl where 1=1 and month =10
+					and master_code = #{master_code} 
+					and year=#{year}
+
+			UNION ALL
+			select year,month, ifnull(ROUND(sum(goal)/(SELECT count(machine_code)
+					FROM
+					machine_master
+					where 1=1
+					AND machine_class_code =  #{master_code}),2),0) as goal from kpi_machine_goal_info_tbl where 1=1 and month =11
+					and master_code = #{master_code} 
+					and year=#{year}
+
+			UNION ALL
+			select year,month,ifnull(ROUND(sum(goal)/(SELECT count(machine_code)
+					FROM
+					machine_master
+					where 1=1
+					AND machine_class_code = #{master_code}),2),0) as goal from kpi_machine_goal_info_tbl where 1=1 and month =12
+					and master_code = #{master_code} 
+					and year=#{year}
+	</select>
+	
+	<!-- 1210 목표관리 설비 -->
+	<select id="selectGoalMachine" parameterType="SYGoalVo" resultType="SYGoalVo">
+		with m AS (
+			SELECT 1 as mm , #{year} as yy, #{code} as cd from dual union 
+			SELECT 2 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 3 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 4 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 5 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 6 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 7 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 8 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 9 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 10 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 11 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 12 as mm , #{year} as yy, #{code} as cd from dual 
+		)
+		SELECT m.cd AS code, m.yy AS year ,m.mm AS month , ifnull(goal,0) AS goal, (select member_nm from sy_member_master where member_id= gt.updater) as updater ,ifnull(date_updated,'-') as date_updated
+		FROM m
+		LEFT JOIN
+		(
+			SELECT code, year, concat(month,'') AS mm , goal,updater, date_updated
+			FROM kpi_machine_goal_info_tbl 
+			
+			WHERE 1 = 1
+			<if test="code != null and !''.equals( code )">
+				AND code = #{code}
+			</if>
+			<if test="year != null and !''.equals( year )">
+				AND year LIKE CONCAT('%', #{year}, '%')
+			</if>
+		
+		) AS gt
+		ON gt.mm = m.mm 
+		
+		
+		ORDER BY m.mm
+		
+		
+	</select>
+	
+	<!-- 설비목표량 설정-->
+	<insert id="saveGoalMachine" parameterType="SYGoalVo">
+ 		INSERT INTO kpi_machine_goal_info_tbl (
+			code, year, month, goal,
+		 	creator, updater, date_created, date_updated, master_code)
+		SELECT *
+		  FROM (
+		  		SELECT  
+		  		#{code} as code, #{year} as year, #{month} as month, #{goal} as goal,
+				#{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated,#{master_code} as master_code
+		  ) s
+		  ON DUPLICATE KEY
+		UPDATE
+			code = s.code,
+			year = s.year,
+			month = s.month,
+			<if test="goal != null and !''.equals( goal )">
+				goal = s.goal,
+			</if>
+			
+			updater = s.updater,
+			date_updated = s.date_updated,
+			master_code = s.master_code
+	</insert>
+	
+	<!-- 1210 목표관리 매출 -->
+	<select id="selectGoalCustomer" parameterType="SYGoalVo" resultType="SYGoalVo">
+		with m AS (
+			SELECT 1 as mm , #{year} as yy, #{code} as cd from dual union 
+			SELECT 2 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 3 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 4 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 5 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 6 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 7 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 8 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 9 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 10 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 11 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 12 as mm , #{year} as yy, #{code} as cd from dual 
+		)
+		SELECT m.cd AS code, m.yy AS year ,m.mm AS month , ifnull(goal,0) AS goal, (select member_nm from sy_member_master where member_id= gt.updater) as updater ,ifnull(date_updated,'-') as date_updated
+		FROM m
+		LEFT JOIN
+		(
+			SELECT code, year, concat(month,'') AS mm , goal,updater, date_updated
+			FROM kpi_customer_goal_info_tbl 
+			
+			WHERE 1 = 1
+			<if test="code != null and !''.equals( code )">
+				AND code = #{code}
+			</if>
+			<if test="year != null and !''.equals( year )">
+				AND year LIKE CONCAT('%', #{year}, '%')
+			</if>
+		
+		) AS gt
+		ON gt.mm = m.mm 
+		
+		
+		ORDER BY m.mm
+		
+		
+	</select>
+	
+	<!-- 매출 목표량 설정-->
+	<insert id="saveGoalCustomer" parameterType="SYGoalVo">
+ 		INSERT INTO kpi_customer_goal_info_tbl (
+			code, year, month, goal,
+		 	creator, updater, date_created, date_updated)
+		SELECT *
+		  FROM (
+		  		SELECT  
+		  		#{code} as code, #{year} as year, #{month} as month, #{goal} as goal,
+				#{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated
+		  ) s
+		  ON DUPLICATE KEY
+		UPDATE
+			code = s.code,
+			year = s.year,
+			month = s.month,
+			<if test="goal != null and !''.equals( goal )">
+				goal = s.goal,
+			</if>
+			
+			updater = s.updater,
+			date_updated = s.date_updated
+	</insert>
+	
+	<insert id="saveGoalAccount" parameterType="SYGoalVo">
+       INSERT INTO kpi_account_goal_info_tbl (
+         code, year, month, goal,
+          creator, updater, date_created, date_updated)
+      SELECT *
+        FROM (
+              SELECT  
+              #{code} as code, #{year} as year, #{month} as month, #{goal} as goal,
+            #{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated
+        ) s
+        ON DUPLICATE KEY
+      UPDATE
+
+         code = s.code,
+
+         year = s.year,
+         month = s.month,
+         <if test="goal != null and !''.equals( goal )">
+            goal = s.goal,
+         </if>
+         
+         updater = s.updater,
+         date_updated = s.date_updated
+   </insert>
+
+   <select id="selectGoalAccount" parameterType="SYGoalVo" resultType="SYGoalVo">
+      with m AS (
+         SELECT 1 as mm , #{year} as yy, #{code} as cd from dual union 
+         SELECT 2 as mm , #{year} as yy, #{code} as cd from dual union
+         SELECT 3 as mm , #{year} as yy, #{code} as cd from dual union
+         SELECT 4 as mm , #{year} as yy, #{code} as cd from dual union
+         SELECT 5 as mm , #{year} as yy, #{code} as cd from dual union
+         SELECT 6 as mm , #{year} as yy, #{code} as cd from dual union
+         SELECT 7 as mm , #{year} as yy, #{code} as cd from dual union
+         SELECT 8 as mm , #{year} as yy, #{code} as cd from dual union
+         SELECT 9 as mm , #{year} as yy, #{code} as cd from dual union
+         SELECT 10 as mm , #{year} as yy, #{code} as cd from dual union
+         SELECT 11 as mm , #{year} as yy, #{code} as cd from dual union
+         SELECT 12 as mm , #{year} as yy, #{code} as cd from dual 
+      )
+      SELECT m.cd AS code, m.yy AS year ,m.mm AS month , ifnull(goal,0) AS goal, (select member_nm from sy_member_master where member_id= gt.updater) as updater ,ifnull(date_updated,'-') as date_updated
+      FROM m
+      LEFT JOIN
+      (
+         SELECT code, year, concat(month,'') AS mm , goal,updater, date_updated
+         FROM kpi_account_goal_info_tbl 
+         
+         WHERE 1 = 1
+         <if test="code != null and !''.equals( code )">
+            AND code = #{code}
+         </if>
+         <if test="year != null and !''.equals( year )">
+            AND year LIKE CONCAT('%', #{year}, '%')
+         </if>
+      
+      ) AS gt
+      ON gt.mm = m.mm 
+      
+      
+      ORDER BY m.mm
+      
+      
+   </select>
+   
+   
+   <!-- 1215 목표관리 생산 -->
+	<select id="selectGoalPrdct" parameterType="SYGoalVo" resultType="SYGoalVo">
+	
+		with m AS (
+			SELECT 1 as mm , #{year} as yy, #{code} as cd from dual union 
+			SELECT 2 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 3 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 4 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 5 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 6 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 7 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 8 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 9 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 10 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 11 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 12 as mm , #{year} as yy, #{code} as cd from dual 
+		)
+		SELECT m.cd AS code, m.yy AS year ,m.mm AS month , ifnull(goal,0) AS goal, (select member_nm from sy_member_master where member_id= gt.updater) as updater ,ifnull(date_updated,'-') as date_updated
+		FROM m
+		LEFT JOIN
+		(
+			SELECT code, year, concat(month,'') AS mm , goal,updater, date_updated
+			FROM kpi_prdct_goal_info_tbl 
+			
+			WHERE 1 = 1
+			<if test="code != null and !''.equals( code )">
+				AND code = #{code}
+			</if>
+			<if test="year != null and !''.equals( year )">
+				AND year LIKE CONCAT('%', #{year}, '%')
+			</if>
+		
+		) AS gt
+		ON gt.mm = m.mm 
+		
+		
+		ORDER BY m.mm
+		
+		
+	</select>
+	
+	<!-- 생산목표량 설정-->
+	<insert id="saveGoalPrdct" parameterType="SYGoalVo">
+ 		INSERT INTO kpi_prdct_goal_info_tbl (
+			code, year, month, goal,
+		 	creator, updater, date_created, date_updated)
+		SELECT *
+		  FROM (
+		  		SELECT  
+		  		#{code} as code, #{year} as year, #{month} as month, #{goal} as goal,
+				#{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated
+		  ) s
+		  ON DUPLICATE KEY
+		UPDATE
+			code = s.code,
+			year = s.year,
+			month = s.month,
+			<if test="goal != null and !''.equals( goal )">
+				goal = s.goal,
+			</if>
+			
+			updater = s.updater,
+			date_updated = s.date_updated
+	</insert>
+	
+	
+	<!-- 1215 목표관리 수리 -->
+	<select id="selectGoalRpr" parameterType="SYGoalVo" resultType="SYGoalVo">
+		with m AS (
+			SELECT 1 as mm , #{year} as yy, #{code} as cd from dual union 
+			SELECT 2 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 3 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 4 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 5 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 6 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 7 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 8 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 9 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 10 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 11 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 12 as mm , #{year} as yy, #{code} as cd from dual 
+		)
+		SELECT m.cd AS code, m.yy AS year ,m.mm AS month , ifnull(goal,0) AS goal, (select member_nm from sy_member_master where member_id= gt.updater) as updater ,ifnull(date_updated,'-') as date_updated
+		FROM m
+		LEFT JOIN
+		(
+			SELECT code, year, concat(month,'') AS mm , goal,updater, date_updated
+			FROM kpi_rpr_goal_info_tbl 
+			
+			WHERE 1 = 1
+			<if test="code != null and !''.equals( code )">
+				AND code = #{code}
+			</if>
+			<if test="year != null and !''.equals( year )">
+				AND year LIKE CONCAT('%', #{year}, '%')
+			</if>
+		
+		) AS gt
+		ON gt.mm = m.mm 
+		
+		
+		ORDER BY m.mm
+		
+		
+	</select>
+	
+	<!-- 수리 목표량 설정-->
+	<insert id="saveGoalRpr" parameterType="SYGoalVo">
+ 		INSERT INTO kpi_rpr_goal_info_tbl (
+			code, year, month, goal,
+		 	creator, updater, date_created, date_updated)
+		SELECT *
+		  FROM (
+		  		SELECT  
+		  		#{code} as code, #{year} as year, #{month} as month, #{goal} as goal,
+				#{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated
+		  ) s
+		  ON DUPLICATE KEY
+		UPDATE
+			code = s.code,
+			year = s.year,
+			month = s.month,
+			<if test="goal != null and !''.equals( goal )">
+				goal = s.goal,
+			</if>
+			
+			updater = s.updater,
+			date_updated = s.date_updated
+	</insert>
+	
+	
+	
+	<!-- 1217 목표관리 품질 -->
+	<select id="selectGoalDfct" parameterType="SYGoalVo" resultType="SYGoalVo">
+		with m AS (
+			SELECT 1 as mm , #{year} as yy, #{code} as cd from dual union 
+			SELECT 2 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 3 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 4 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 5 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 6 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 7 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 8 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 9 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 10 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 11 as mm , #{year} as yy, #{code} as cd from dual union
+			SELECT 12 as mm , #{year} as yy, #{code} as cd from dual 
+		)
+		SELECT m.cd AS code, m.yy AS year ,m.mm AS month , ifnull(goal,0) AS goal, (select member_nm from sy_member_master where member_id= gt.updater) as updater ,ifnull(date_updated,'-') as date_updated
+		FROM m
+		LEFT JOIN
+		(
+			SELECT code, year, concat(month,'') AS mm , goal,updater, date_updated
+			FROM kpi_dfct_goal_info_tbl 
+			
+			WHERE 1 = 1
+			<if test="code != null and !''.equals( code )">
+				AND code = #{code}
+			</if>
+			<if test="year != null and !''.equals( year )">
+				AND year LIKE CONCAT('%', #{year}, '%')
+			</if>
+		
+		) AS gt
+		ON gt.mm = m.mm 
+		
+		
+		ORDER BY m.mm
+		
+		
+	</select>
+	
+	<!-- 수리 목표량 설정-->
+	<insert id="saveGoalDfct" parameterType="SYGoalVo">
+ 		INSERT INTO kpi_dfct_goal_info_tbl (
+			code, year, month, goal,
+		 	creator, updater, date_created, date_updated)
+		SELECT *
+		  FROM (
+		  		SELECT  
+		  		#{code} as code, #{year} as year, #{month} as month, #{goal} as goal,
+				#{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated
+		  ) s
+		  ON DUPLICATE KEY
+		UPDATE
+			code = s.code,
+			year = s.year,
+			month = s.month,
+			<if test="goal != null and !''.equals( goal )">
+				goal = s.goal,
+			</if>
+			
+			updater = s.updater,
+			date_updated = s.date_updated
+	</insert>
+	
+
+</mapper>

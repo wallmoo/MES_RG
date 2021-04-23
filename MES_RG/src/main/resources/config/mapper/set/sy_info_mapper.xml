@@ -1,0 +1,3041 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.passcombine.set.dao.SYInfoDAO">
+
+
+	<select id="selectCdD" parameterType="SYCustomerVo" resultType="SYCustomerVo">
+		SELECT
+		master_code, detail_code, code_nm, filter1_val, filter2_val
+		FROM sy_code_detail
+		WHERE master_code = #{master_code}
+		<if test="detail_code !=null and !''.equals( detail_code ) ">
+			AND detail_code = #{detail_code}
+		</if>
+	</select>
+
+	<select id="selectRouting_com_master" parameterType="SYRoutingMasterVo"
+		resultType="SYRoutingMasterVo">
+		<!-- SELECT -->
+		<!-- item_code, routing_code, routing_seq, routing_nm, routing_gubun, warehouse_gubun, -->
+		<!-- outsourcing_gubun, machine_gubun, -->
+		<!-- use_yn, creator, updater, date_created, date_updated -->
+		<!-- FROM routing_master -->
+		<!-- WHERE use_yn = 'Y' -->
+
+		<!-- <if test="routing_code!=null and !''.equals(routing_code) "> -->
+		<!-- AND routing_code = #{routing_code} -->
+		<!-- </if> -->
+
+		<!-- group by routing_code -->
+
+		<!-- ORDER BY routing_code ASC -->
+		select * from sy_code_detail where master_code ='MC1015'
+		AND
+		code_use_yn = 'Y'
+	</select>
+
+	<select id="selectRouting_com_master_2" parameterType="SYRoutingMasterVo"
+		resultType="SYRoutingMasterVo">
+		SELECT
+		*
+		FROM routing_com_master
+		WHERE del_yn = 'N'
+
+		<if test="detail_code!=null and !''.equals(detail_code)">
+			AND detail_code = #{detail_code}
+		</if>
+
+		ORDER BY detail_code ASC
+	</select>
+
+	<update id="deleteRoutingCom" parameterType="SYRoutingMasterVo">
+		UPDATE
+		routing_com_master SET del_yn='Y'
+		WHERE update_routing = #{update_routing}
+	</update>
+
+	<delete id="deleteRoutingCode" parameterType="java.lang.String">
+		DELETE FROM
+		routing_com_master
+		WHERE
+		detail_code = #{detail_code}
+	</delete>
+	<select id="selectUpdate_routing" parameterType="SYRoutingMasterVo"
+		resultType="SYRoutingMasterVo">
+
+		select * from routing_com_master
+		where 1 = 1
+
+		<if test="detail_code!=null and !''.equals(detail_code) ">
+			and detail_code=#{detail_code}
+		</if>
+
+	</select>
+
+	<!-- 210108 라우팅 공정코드 확인 -->
+	<select id="selectUpdate_routing_code" parameterType="SYRoutingMasterVo"
+		resultType="SYRoutingMasterVo">
+
+		select IFNULL(MAX(update_routing_code), '-') AS update_routing_code
+		from routing_com_master
+		WHERE 1 = 1
+		AND del_yn = 'N'
+
+		<if
+			test="update_routing_code !=null and !''.equals( update_routing_code ) ">
+			and update_routing_code = #{update_routing_code}
+		</if>
+
+	</select>
+
+	<insert id="saveRouting" parameterType="java.util.List">
+		INSERT INTO routing_com_master
+		( detail_code,code_nm, update_routing,
+		update_routing_code,
+		update_date, updater)
+		VALUES
+
+		<foreach collection="list" item="item" separator=" , ">
+			(
+			#{item.detail_code},#{item.code_nm} ,#{item.update_routing},#{item.update_routing_code},
+			#{item.update_date},
+			#{item.updater}
+			)
+
+		</foreach>
+
+
+		ON DUPLICATE KEY UPDATE update_routing = values(update_routing),
+		update_date = CURDATE()
+
+	</insert>
+
+
+	<select id="selectCdD_csmb" parameterType="SYCustomerVo"
+		resultType="SYCustomerVo">
+		SELECT
+		master_code, detail_code, code_nm, filter1_val
+		FROM sy_code_detail
+		WHERE 1 = 1
+		AND master_code = 'MC1012'
+		AND detail_code = 'MD1243' OR detail_code =
+		'MD1282'
+	</select>
+	<!-- customer_tbl -->
+	<select id="checkCustomer" parameterType="SYCustomerVo"
+		resultType="int">
+		SELECT COUNT(*) AS cnt
+		FROM customer_tbl
+		WHERE customer_code = #{customer_code}
+	</select>
+
+	<select id="checkWarehouse" parameterType="SYWarehouseVo"
+		resultType="int">
+		SELECT COUNT(*) AS cnt
+		FROM warehouse_master_header
+		WHERE warehouse_code = #{warehouse_code}
+	</select>
+
+	<select id="select_wh_mng" parameterType="SYWarehouseVo"
+		resultType="SYWarehouseVo">
+		select
+		business_code
+		,business_nm
+		,warehouse_code
+		,warehouse_nm
+		,(select member_nm from
+		sy_member_master where member_id=wm.creator) as creator
+		,(select
+		member_nm from sy_member_master where member_id=wm.updater) as updater
+		,date_created,date_updated
+		from warehouse_master_header as wm
+		where 1=1
+		<if test="business_code!=null and !''.equals(business_code)">
+			AND business_code = #{business_code}
+		</if>
+
+		<if test="warehouse_code!=null and !''.equals(warehouse_code)">
+			AND warehouse_code = #{warehouse_code}
+		</if>
+
+		<if test="warehouse_nm!=null and !''.equals(warehouse_nm)">
+			AND warehouse_nm = #{warehouse_nm}
+		</if>
+		AND del_yn = 'N'
+	</select>
+
+	<update id="deleteWarehouse" parameterType="SYWarehouseVo">
+		UPDATE
+		warehouse_master_header SET del_yn='Y'
+		WHERE warehouse_code = #{warehouse_code}
+	</update>
+
+	<update id="updateWarehouse" parameterType="SYWarehouseVo">
+		UPDATE warehouse_master_header SET
+
+		<if test="warehouse_nm!=null and !''.equals(warehouse_nm) ">
+			warehouse_nm = #{warehouse_nm},
+		</if>
+
+		updater = #{updater},
+		date_updated = current_timestamp()
+		WHERE warehouse_code = #{warehouse_code}
+	</update>
+
+	<insert id="insertWarehouse" parameterType="SYWarehouseVo">
+		INSERT INTO warehouse_master_header
+		( business_code, business_nm,
+
+		<if test="warehouse_code!=null and !''.equals(warehouse_code) ">
+			warehouse_code,
+		</if>
+		<if test="warehouse_nm!=null and !''.equals(warehouse_nm) ">
+			warehouse_nm,
+		</if>
+		del_yn,
+		creator, updater, date_created, date_updated )
+		VALUES
+		(
+		'MD1243', 'Consumable Parts',
+		<if test="warehouse_code!=null and !''.equals(warehouse_code) ">
+			#{warehouse_code},
+		</if>
+
+		<if test="warehouse_nm!=null and !''.equals(warehouse_nm) ">
+			#{warehouse_nm},
+		</if>
+
+		'N',
+		#{creator}, #{updater}, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+		)
+	</insert>
+
+	<select id="selectCustomer" parameterType="SYCustomerVo"
+		resultType="SYCustomerVo">
+		select customer_code, customer_nm, customer_integration_code,
+		customer_integration_nm, business_code, business_nm, land,
+		address, telf, telfx, email_address, business_reg_num, del_yn,
+		creator, updater, date_created, date_updated,
+
+		CASE
+		WHEN (
+		(
+		select code from kpi_customer_goal_info_tbl
+		where year = #{year}
+		and code = customer_code
+		GROUP BY code
+		) IS NOT NULL )
+		THEN 'Y'
+		ELSE 'N'
+		END as flag
+
+		from customer_tbl
+		where del_yn = 'N'
+
+		<if test="customer_code!=null and !''.equals(customer_code) ">
+			AND customer_code = #{customer_code}
+		</if>
+		<if test="land!=null and !''.equals(land) ">
+			AND land LIKE CONCAT('%', #{land}, '%')
+		</if>
+		<if test="customer_nm!=null and !''.equals(customer_nm) ">
+			AND customer_nm LIKE CONCAT('%', #{customer_nm}, '%')
+		</if>
+		<if test=" business_codeT == ''.toString() ">
+			AND business_code = #{business_code}
+		</if>
+		<if test="business_codeT!=null and !''.equals(business_codeT) ">
+			<!-- AND business_code = #{business_code} OR business_code = #{business_codeT} -->
+			AND business_code IN ( #{business_code} , #{business_codeT} )
+		</if>
+		<if
+			test="customer_integration_code!=null and !''.equals(customer_integration_code) ">
+			AND customer_integration_code = #{customer_integration_code}
+		</if>
+		GROUP BY customer_code
+		ORDER BY customer_nm
+	</select>
+
+	<insert id="insertCustomer" parameterType="SYCustomerVo">
+		INSERT INTO customer_tbl
+		( customer_code, customer_nm, business_code,
+		business_nm,
+		customer_integration_code, customer_integration_nm,
+
+		<if test="land!=null and !''.equals(land) ">
+			land,
+		</if>
+		<if test="address!=null and !''.equals(address) ">
+			address,
+		</if>
+		<if test="telf!=null and !''.equals(telf) ">
+			telf,
+		</if>
+		<if test="telfx!=null and !''.equals(telfx) ">
+			telfx,
+		</if>
+		<if test="email_address!=null and !''.equals(email_address) ">
+			email_address,
+		</if>
+		<if test="business_reg_num!=null and !''.equals(business_reg_num) ">
+			business_reg_num,
+		</if>
+		del_yn,
+		creator, updater, date_created, date_updated )
+		VALUES
+		(
+		#{customer_code}, #{customer_nm}, #{business_code}, #{business_nm},
+		#{customer_integration_code}, #{customer_integration_nm},
+
+		<if test="land!=null and !''.equals(land) ">
+			#{land},
+		</if>
+		<if test="address!=null and !''.equals(address) ">
+			#{address},
+		</if>
+		<if test="telf!=null and !''.equals(telf) ">
+			#{telf},
+		</if>
+		<if test="telfx!=null and !''.equals(telfx) ">
+			#{telfx},
+		</if>
+		<if test="email_address!=null and !''.equals(email_address) ">
+			#{email_address},
+		</if>
+		<if test="business_reg_num!=null and !''.equals(business_reg_num) ">
+			#{business_reg_num},
+		</if>
+
+		'N',
+		#{creator}, #{updater}, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+		)
+	</insert>
+
+	<update id="updateCustomer" parameterType="SYCustomerVo">
+		UPDATE customer_tbl SET
+		<if
+			test="customer_integration_code!=null and !''.equals(customer_integration_code) ">
+			customer_integration_code = #{customer_integration_code},
+		</if>
+		<if
+			test="customer_integration_nm!=null and !''.equals(customer_integration_nm) ">
+			customer_integration_nm = #{customer_integration_nm},
+		</if>
+		<if test="customer_nm!=null and !''.equals(customer_nm) ">
+			customer_nm = #{customer_nm},
+		</if>
+		<if test="business_code!=null and !''.equals(business_code) ">
+			business_code = #{business_code},
+		</if>
+		<if test="business_nm!=null and !''.equals(business_nm) ">
+			business_nm = #{business_nm},
+		</if>
+
+		land = #{land},
+		address = #{address},
+		telf = #{telf},
+		telfx = #{telfx},
+		email_address = #{email_address},
+		business_reg_num = #{business_reg_num},
+
+		<!-- <if test="land!=null and !''.equals(land) "> land = #{land}, </if> 
+			<if test="address!=null and !''.equals(address) "> address = #{address}, 
+			</if> <if test="telf!=null and !''.equals(telf) "> telf = #{telf}, </if> 
+			<if test="telfx!=null and !''.equals(telfx) "> telfx = #{telfx}, </if> <if 
+			test="email_address!=null and !''.equals(email_address) "> email_address 
+			= #{email_address}, </if> <if test="business_reg_num!=null and !''.equals(business_reg_num) 
+			"> business_reg_num = #{business_reg_num}, </if> -->
+		updater = #{updater},
+		date_updated = current_timestamp()
+		WHERE customer_code = #{customer_code}
+	</update>
+
+	<update id="deleteCustomer" parameterType="SYCustomerVo">
+		UPDATE customer_tbl
+		SET del_yn='Y'
+		WHERE customer_code = #{customer_code}
+	</update>
+
+
+	<!-- account_tbl -->
+	<select id="checkAccount" parameterType="SYAccountVo"
+		resultType="int">
+		SELECT COUNT(*) AS cnt
+		FROM account_tbl
+		WHERE account_code = #{account_code}
+	</select>
+
+	<select id="selectAccount" parameterType="SYAccountVo"
+		resultType="SYAccountVo">
+		SELECT
+		account_code, account_nm, business_code, business_nm,
+		address, telf, telfx, email_address, business_reg_num, del_yn,
+		creator, updater, date_created, date_updated,
+
+		CASE
+		WHEN (
+		(
+		select code from kpi_account_goal_info_tbl
+		where year = #{year}
+		and code = account_code
+		GROUP BY code
+		) IS NOT NULL )
+		THEN 'Y'
+		ELSE 'N'
+		END as flag
+
+		from account_tbl
+		where del_yn = 'N'
+
+		<if test="account_code!=null and !''.equals(account_code) ">
+			AND account_code = #{account_code}
+		</if>
+		<if test="account_nm!=null and !''.equals(account_nm) ">
+			AND account_nm LIKE CONCAT('%', #{account_nm}, '%')
+		</if>
+		<if test=" business_codeT == ''.toString() ">
+			AND business_code = #{business_code}
+		</if>
+		<if test="business_codeT!=null and !''.equals(business_codeT) ">
+			AND business_code IN ( #{business_code} ,
+			#{business_codeT} )
+		</if>
+
+		GROUP BY account_code
+		ORDER BY account_nm
+
+	</select>
+
+	<insert id="insertAccount" parameterType="SYAccountVo">
+		INSERT INTO account_tbl
+		( account_code, account_nm, business_code,
+		business_nm,
+
+		<if test="address!=null and !''.equals(address) ">
+			address,
+		</if>
+
+		<if test="telf!=null and !''.equals(telf) ">
+			telf,
+		</if>
+
+		<if test="telfx!=null and !''.equals(telfx) ">
+			telfx,
+		</if>
+
+		<if test="email_address!=null and !''.equals(email_address) ">
+			email_address,
+		</if>
+
+		<if test="business_reg_num!=null and !''.equals(business_reg_num) ">
+			business_reg_num,
+		</if>
+
+		del_yn,
+		creator, updater, date_created, date_updated )
+		VALUES
+		(
+		#{account_code}, #{account_nm}, #{business_code}, #{business_nm},
+
+		<if test="address!=null and !''.equals(address) ">
+			#{address},
+		</if>
+
+		<if test="telf!=null and !''.equals(telf) ">
+			#{telf},
+		</if>
+
+		<if test="telfx!=null and !''.equals(telfx) ">
+			#{telfx},
+		</if>
+
+		<if test="email_address!=null and !''.equals(email_address) ">
+			#{email_address},
+		</if>
+
+		<if test="business_reg_num!=null and !''.equals(business_reg_num) ">
+			#{business_reg_num},
+		</if>
+		'N',
+		#{creator}, #{updater}, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+		)
+
+		<!-- CONCAT('CT', LPAD(fn_common_seq('account'),4,'0')) -->
+	</insert>
+
+	<update id="updateAccount" parameterType="SYAccountVo">
+		UPDATE account_tbl SET
+		<if test="account_nm!=null and !''.equals(account_nm) ">
+			account_nm = #{account_nm},
+		</if>
+		<if test="business_code!=null and !''.equals(business_code) ">
+			business_code = #{business_code},
+		</if>
+		<if test="business_nm!=null and !''.equals(business_nm) ">
+			business_nm = #{business_nm},
+		</if>
+
+		address = #{address},
+		telf = #{telf},
+		telfx = #{telfx},
+		email_address = #{email_address},
+		business_reg_num = #{business_reg_num},
+
+		updater = #{updater},
+		date_updated = current_timestamp()
+		WHERE account_code = #{account_code}
+	</update>
+
+	<update id="deleteAccount" parameterType="SYAccountVo">
+		UPDATE account_tbl SET
+		del_yn='Y'
+		WHERE account_code = #{account_code}
+	</update>
+	<!-- ////// -->
+	<!-- CW -->
+	<!-- <select id="selectPartition2" parameterType="SYPartitionVO" resultType="SYPartitionVO"> 
+		SELECT raw_item_code, raw_item_nm, partition_code, partition_rate FROM partition_master 
+		WHERE partition_code = ( SELECT partition_code FROM partition_detail WHERE 
+		raw_item_code = #{raw_item_code} AND del_yn = 'N' ) AND del_yn = 'N' </select> -->
+	<select id="selectPartition2" parameterType="SYPartitionVO"
+		resultType="SYPartitionVO">
+		SELECT pm.raw_item_code, pm.raw_item_nm, pm.partition_code,
+		pm.partition_rate
+		FROM partition_master AS pm
+		LEFT JOIN partition_detail AS pd
+		ON pm.partition_code = pd.partition_code
+
+
+		WHERE 1 =1
+		AND pm.del_yn = 'N'
+		<if test="raw_item_code != null and !''.equals( raw_item_code ) ">
+			AND pd.raw_item_code = #{raw_item_code}
+		</if>
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND pd.item_code = #{item_code}
+		</if>
+
+		GROUP BY pm.partition_rate
+	</select>
+
+
+	<!-- ////// -->
+	<!-- jyp -->
+	<select id="selectPartition" parameterType="SYPartitionVO"
+		resultType="SYPartitionVO">
+		SELECT
+		raw_item_code,
+		raw_item_nm,
+		partition_code,
+		partition_rate
+		FROM
+		partition_master
+		WHERE
+		raw_item_code = #{raw_item_code}
+		AND del_yn = 'N'
+	</select>
+
+	<insert id="insPartition" parameterType="SYPartitionVO">
+		INSERT partition_master
+		(raw_item_code, partition_code, raw_item_nm,
+		<if test="raw_item_spec != null and '' != raw_item_spec">
+			raw_item_spec,
+		</if>
+		partition_rate, creator, date_created, updater, date_updated)
+		VALUES
+		(
+		#{raw_item_code},
+		fn_partition_code(),
+		#{raw_item_nm},
+		<if test="raw_item_spec != null and '' != raw_item_spec">
+			#{raw_item_spec},
+		</if>
+		#{partition_rate}, #{creator}, NOW(), #{updater}, NOW()
+		)
+	</insert>
+
+	<update id="updPartition" parameterType="SYPartitionVO">
+		UPDATE partition_master
+		SET
+		<if test="raw_item_nm != null and '' != raw_item_nm">
+			raw_item_nm = #{raw_item_nm},
+		</if>
+		<if test="raw_item_spec != null and '' != raw_item_spec">
+			raw_item_spec = #{raw_item_spec},
+		</if>
+		<if test="partition_rate != null and '' != partition_rate">
+			partition_rate = #{partition_rate},
+		</if>
+		<if test='del_yn != null and "" != del_yn'>
+			del_yn = #{del_yn},
+		</if>
+		updater = #{updater}, date_updated = NOW()
+		WHERE
+		partition_code = #{partition_code}
+	</update>
+
+	<select id="selectPartitionList" parameterType="SYPartitionVO"
+		resultType="SYPartitionVO">
+		SELECT
+		item_code, item_nm, item_spec
+
+		from material_tbl
+		where business_code ='MD1243'
+		and item_type_code in ('MD1248','MD1249')
+
+		and NOT(
+		item_code in (
+		select item_code
+		from partition_detail
+		WHERE 1 = 1
+		AND del_yn = 'N'
+		AND raw_item_code = #{raw_item_code}
+		)
+		)
+
+
+		<if test="item_code != null and '' != item_code">
+			AND item_code LIKE CONCAT('%', #{item_code}, '%')
+		</if>
+		<if test="item_nm != null and '' != item_nm">
+			AND item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+
+
+	</select>
+
+	<select id="selectPartitionDetail" parameterType="SYPartitionVO"
+		resultType="SYPartitionVO">
+		SELECT
+		raw_item_code,
+		partition_code,
+		item_code,
+		item_nm,
+		item_spec
+		FROM
+		partition_detail
+		WHERE
+		raw_item_code = #{raw_item_code}
+		AND partition_code = #{partition_code}
+		<if test="del_yn != null and '' != del_yn">
+			AND del_yn = #{del_yn}
+		</if>
+
+	</select>
+
+	<insert id="insPartitionDetail" parameterType="Map">
+		INSERT INTO partition_detail
+		(raw_item_code, partition_code, item_code,
+		item_nm, item_spec, creator, updater, date_created, date_updated)
+		VALUES
+		<foreach collection="listParam" item="param" separator=" , ">
+			(
+			#{param.raw_item_code},
+			#{param.partition_code},
+			#{param.item_code},
+			#{param.item_nm},
+			<if test="param.item_spec != null and '' != param.item_spec">
+				#{param.item_spec},
+			</if>
+			<if test="param.item_spec == null or ''.equals(param.item_spec)">
+				'',
+			</if>
+			#{creator}, #{updater}, NOW(), NOW()
+			)
+		</foreach>
+
+		ON DUPLICATE KEY UPDATE del_yn = 'N', updater = #{creator},
+		date_updated = NOW()
+	</insert>
+
+	<update id="updPartitionDetail" parameterType="SYPartitionVO">
+		UPDATE partition_detail
+		SET
+		<if test="del_yn != null and '' != del_yn">
+			del_yn = #{del_yn}
+		</if>
+		, updater = #{updater}, date_updated = NOW()
+		WHERE 1 = 1
+		<if test="raw_item_code != null and '' != raw_item_code">
+			AND raw_item_code = #{raw_item_code}
+		</if>
+		<if test="partition_code != null and '' != partition_code">
+			AND partition_code = #{partition_code}
+		</if>
+		<if test="item_code != null and '' != item_code">
+			AND item_code = #{item_code}
+		</if>
+	</update>
+
+	<select id="checkMachine" parameterType="SYMachineVO"
+		resultType="int">
+		SELECT COUNT(*) AS cnt
+		FROM machine_master
+		WHERE machine_code = #{machine_code}
+	</select>
+
+	<select id="selectMachine" parameterType="SYMachineVO"
+		resultType="SYMachineVO">
+		SELECT
+		machine_code,
+		machine_nm,
+		machine_class_nm,
+		machine_class_code,
+		machine_management_num,
+		matching_routing_code,
+		(
+		SELECT code_nm FROM sy_code_detail
+		WHERE detail_code = matching_routing_code
+		) as matching_routing_nm,
+		sub_matching_routing_code,
+		(
+		SELECT code_nm FROM sy_code_detail
+		WHERE detail_code = sub_matching_routing_code
+		) as sub_matching_routing_nm,
+		sub_matching_routing_code,
+		machine_maker,
+		machine_standard,
+		machine_model,
+		machine_dscr,
+		machine_making_date,
+		machine_purchase_date,
+		machine_acq_price,
+		machine_sale_date,
+		display_monitoring,
+		display_rate,
+		display_history
+		FROM
+		machine_master
+		<where>
+			<if test="machine_nm != null and '' != machine_nm">
+				AND machine_nm LIKE CONCAT( '%', #{machine_nm} '%')
+			</if>
+			<if test="machine_class_code != null and '' != machine_class_code">
+				AND machine_class_code = #{machine_class_code}
+			</if>
+		</where>
+	</select>
+
+	<select id="selectMachine_waiting" parameterType="SYMachineVO"
+		resultType="SYMachineVO">
+		SELECT
+		machine_code,
+		machine_nm,
+		machine_class_nm,
+		machine_class_code,
+		machine_management_num,
+		matching_routing_code,
+		(
+		SELECT code_nm FROM sy_code_detail
+		WHERE detail_code = matching_routing_code
+		) as matching_routing_nm,
+		sub_matching_routing_code,
+		(
+		SELECT code_nm FROM sy_code_detail
+		WHERE detail_code = sub_matching_routing_code
+		) as sub_matching_routing_nm,
+		sub_matching_routing_code,
+		machine_maker,
+		machine_standard,
+		machine_model,
+		machine_dscr,
+		machine_making_date,
+		machine_purchase_date
+		FROM
+		machine_master as mm
+
+		WHERE 1 = 1
+		AND hold_yn = 'N'
+		AND
+		IFNULL(
+		(SELECT
+		COUNT(*) AS cnt
+
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+
+		AND machine_code IS NOT NULL
+		AND LENGTH(machine_code) > 0
+		AND STATUS in ('i','ue')
+		AND machine_code = mm.machine_code
+		),0) = 0
+
+		AND (matching_routing_code = #{matching_routing_code} OR
+		sub_matching_routing_code = #{sub_matching_routing_code})
+		<if test="machine_nm != null and '' != machine_nm">
+			AND machine_nm LIKE CONCAT( '%', #{machine_nm} '%')
+		</if>
+
+		<if test="machine_code != null and '' != machine_code">
+			AND machine_code LIKE #{machine_code}
+		</if>
+
+		<if test="machine_class_code != null and '' != machine_class_code">
+			AND machine_class_code = #{machine_class_code}
+		</if>
+
+	</select>
+
+
+	<select id="selectMachine_waiting_check" parameterType="SYMachineVO"
+		resultType="String">
+		SELECT
+		COUNT(*) AS cnt
+
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+
+		AND machine_code IS NOT NULL
+		AND LENGTH(machine_code) > 0
+		AND STATUS in ('i','ue')
+		<if test="machine_code != null and '' != machine_code">
+			AND machine_code = #{machine_code}
+		</if>
+
+
+	</select>
+
+	<select id="selectMachine_class" parameterType="SYMachineVO"
+		resultType="SYMachineVO">
+		SELECT
+		machine_class_nm,
+		machine_class_code
+
+		FROM
+		machine_master
+
+		WHERE 1 = 1
+		GROUP BY machine_class_code
+		
+		ORDER BY FIELD(machine_class_nm, 'MCT') desc,
+		machine_class_nm asc
+
+	</select>
+
+	<insert id="insMachine" parameterType="SYMachineVO">
+		INSERT INTO machine_master
+		(machine_code, machine_nm,
+		machine_class_code, machine_class_nm ,
+		matching_routing_code, sub_matching_routing_code, machine_maker,
+		machine_standard, machine_model, machine_dscr , machine_purchase_date,
+		machine_making_date,
+		machine_acq_price, machine_sale_date,
+		display_monitoring, display_rate, display_history,
+		creator, updater, date_created, date_updated)
+		VALUES
+		(
+		<!-- fn_machine_code(), -->
+		#{machine_code},
+		#{machine_nm},
+		#{machine_class_code},
+		(SELECT code_nm FROM sy_code_detail
+		WHERE detail_code = #{machine_class_code}
+		),
+		#{matching_routing_code},
+		#{sub_matching_routing_code},
+		#{machine_maker},
+		#{machine_standard},
+		#{machine_model},
+		#{machine_dscr},
+		#{machine_purchase_date},
+		#{machine_making_date},
+		#{machine_acq_price},
+		#{machine_sale_date},
+		#{display_monitoring},
+		#{display_rate},
+		#{display_history},
+		#{creator},
+		#{updater},
+		NOW(), NOW()
+		)
+	</insert>
+
+	<update id="updMachine" parameterType="SYMachineVO">
+		UPDATE machine_master
+		SET
+		<if test="machine_nm != null and '' != machine_nm">
+			machine_nm = #{machine_nm},
+		</if>
+		<if test="machine_class_nm != null and '' != machine_class_nm">
+			machine_class_nm = #{machine_class_nm},
+		</if>
+		<if test="machine_class_code != null and '' != machine_class_code">
+			machine_class_code = #{machine_class_code},
+			machine_class_nm =
+			(SELECT code_nm FROM sy_code_detail
+			WHERE detail_code = #{machine_class_code}
+			),
+		</if>
+		<if test="matching_routing_code != null and '' != matching_routing_code">
+			matching_routing_code = #{matching_routing_code},
+		</if>
+		sub_matching_routing_code = #{sub_matching_routing_code},
+
+		<if test="machine_maker != null and '' != machine_maker">
+			machine_maker = #{machine_maker},
+		</if>
+		<if test="machine_standard != null and '' != machine_standard">
+			machine_standard = #{machine_standard},
+		</if>
+		<if test="machine_model != null and '' != machine_model">
+			machine_model = #{machine_model},
+		</if>
+		<if test="machine_dscr != null and '' != machine_dscr">
+			machine_dscr = #{machine_dscr},
+		</if>
+		<if test="machine_making_date != null and '' != machine_making_date">
+			machine_making_date = #{machine_making_date},
+		</if>
+		<if test="machine_purchase_date != null and '' != machine_purchase_date">
+			machine_purchase_date = #{machine_purchase_date},
+		</if>
+		<if test="machine_acq_price != null and '' != machine_acq_price">
+			machine_acq_price = #{machine_acq_price},
+		</if>
+		<if test="machine_sale_date != null and '' != machine_sale_date">
+			machine_sale_date = #{machine_sale_date},
+		</if>
+
+		<if test="display_monitoring != null and '' != display_monitoring">
+			display_monitoring = #{display_monitoring},
+		</if>
+		<if test="display_rate != null and '' != display_rate">
+			display_rate = #{display_rate},
+		</if>
+		<if test="display_history != null and '' != display_history">
+			display_history = #{display_history},
+		</if>
+
+		updater = #{updater}, date_updated = NOW()
+		WHERE
+		machine_code = #{machine_code}
+
+	</update>
+
+	<delete id="delMachine" parameterType="Map">
+		DELETE FROM machine_master
+		WHERE
+		<foreach collection="param" item="machine_info" open="machine_code IN ("
+			close=")" separator=" , ">
+			#{machine_info.machine_code}
+		</foreach>
+	</delete>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<!-- jyp -->
+
+	<!-- yb -->
+
+	<select id="selectBomlist" parameterType="SYBomVo" resultType="SYBomVo">
+		select product_item_code, business_code, stufe, product_item_nm,
+		m_item_code, m_item_nm, c_item_code, c_item_nm,
+		item_type_code, item_type_nm, spec, meins, creator, updater, date_created,
+		date_updated from bom_master
+		<where>
+			<if test="product_item_code != null and '' != product_item_code">
+				AND product_item_code LIKE CONCAT('%', #{product_item_code}, '%')
+			</if>
+			<if test="m_item_code != null and '' != m_item_code">
+				AND m_item_code LIKE CONCAT('%', #{m_item_code}, '%')
+			</if>
+			<if test="c_item_code != null and '' != c_item_code">
+				AND c_item_code LIKE CONCAT('%', #{c_item_code}, '%')
+			</if>
+			<if test="c_item_nm != null and '' != c_item_nm">
+				AND c_item_nm LIKE CONCAT('%', #{c_item_nm}, '%')
+			</if>
+			<if test="stufe != null and '' != stufe">
+				AND stufe = #{stufe}
+			</if>
+			<if test="item_type_code != null and '' != item_type_code">
+				AND item_type_code = #{item_type_code}
+			</if>
+		</where>
+		order by stufe asc , m_item_nm asc
+	</select>
+
+	<insert id="insertBomlist" parameterType="SYBomVo">
+		insert into bom_master
+		(product_item_code, business_code, stufe, product_item_nm,
+		m_item_code, m_item_nm, c_item_code, c_item_nm,
+		item_type_code, item_type_nm, spec, meins, creator, updater, date_created,
+		date_updated)
+		values
+		(#{product_item_code}, #{business_code}, #{stufe}, #{product_item_nm},
+		#{m_item_code},#{m_item_nm},#{c_item_code},#{c_item_nm},
+		#{item_type_code},#{item_type_nm},#{spec},#{meins},#{creator},#{updater},now(),now())
+	</insert>
+	<delete id="deleteBomlist" parameterType="SYBomVo">
+		delete from bom_master where
+		product_item_code = #{product_item_code} and
+		business_code = #{business_code} and
+		m_item_code = #{m_item_code}
+		<if test="c_item_code != null and '' != c_item_code">
+			and c_item_code = #{c_item_code}
+		</if>
+	</delete>
+
+
+
+	<!-- yb -->
+
+	<!-- //// sssss -->
+	<!-- print -->
+	<select id="selectPrintFI" parameterType="SYPrintVO" resultType="SYPrintVO">
+		SELECT
+		a.product_po AS 'product_po',
+		a.item_code AS 'item_code',
+		'' AS 'sn',
+		( SELECT prod_menge FROM product_operation_tbl WHERE product_po =
+		a.product_po AND real_seq = 1) AS 'prod_menge',
+		( SELECT n.mill_sheet_no FROM warehouse_raw_tbl m, warehousing_tbl n
+		WHERE m.product_po = a.product_po AND m.serial_no = n.serial_no limit
+		1) 'mill_sheet_no',
+		( SELECT item_nm FROM material_tbl WHERE a.item_code = item_code)
+		'item_nm',
+		( SELECT m.customer_nm FROM order_manager_tbl m, product_tbl n WHERE
+		m.order_num = n.order_num and m.item_code = n.item_code AND
+		a.product_po = n.product_po) 'customer_nm',
+		(d.prod_fail_menge) AS 'prod_fail_menge',
+		( SELECT DATE_FORMAT(prod_end_time, '%Y-%m-%d') FROM
+		product_operation_tbl WHERE product_po = a.product_po AND real_seq =
+		1) 's_prod_end_time',
+		( SELECT DATE_FORMAT(prod_end_time, '%Y-%m-%d') FROM
+		product_operation_tbl WHERE product_po = a.product_po AND real_seq =
+		d.real_seq-1) 'e_prod_end_time',
+		(DATE_FORMAT(d.prod_end_time, '%Y-%m-%d')) 'prod_end_time',
+		d.member_nm 'member_nm',
+		'' AS 'site',
+		(d.prod_menge) AS 'f_prod_menge',
+		c.inspection_item AS 'inspection_item',
+		c.inspection_tool AS 'inspection_tool',
+		( SELECT code_nm FROM sy_code_detail WHERE detail_code =
+		c.inspection_method) AS 'code_nm',
+		<!-- (CASE WHEN LEFT(c.routing_code, 1) = 'F' THEN '최종' WHEN b.sample_type 
+			= 'a' THEN '최종' WHEN b.sample_type = 'a' THEN '초물' WHEN b.sample_type = 'a' 
+			THEN '초물' END) AS 'point', -->
+		c.inspection_point,
+		c.spec AS 'spec',
+		c.min_spec AS 'min_spec',
+		c.max_spec AS 'max_spec',
+		b.insp_val AS 'insp_val',
+		b.insp_rst AS 'insp_rst',
+		a.`comment` AS 'comment'
+		FROM inspection_chk_sht a, inspection_val_mng b,
+		inspection_master c, product_operation_tbl d
+		WHERE
+		a.product_po = b.product_po
+		AND a.item_code = b.item_code
+		AND a.routing_code = b.routing_code
+		AND b.item_code = c.item_code
+		AND b.routing_code = c.routing_code
+		AND b.inspection_seq = c.inspection_seq
+		AND d.product_po = a.product_po
+		AND d.routing_code = a.routing_code
+		AND b.sample_type = 'c'
+		AND a.product_po = #{product_po}
+		AND a.routing_code
+		= #{routing_code}
+	</select>
+
+
+	<!-- upRouting_mstQc_yn -->
+	<update id="upRouting_mstQc_yn" parameterType="SYInspectionMasterVo">
+		UPDATE
+		routing_master
+		SET qc_yn = #{qc_yn}
+		WHERE
+		routing_code = #{routing_code}
+		AND
+		item_code = #{item_code}
+	</update>
+
+	<select id="selectS_product2" parameterType="SYProduct2Vo"
+		resultType="SYProduct2Vo">
+		SELECT dt, SUM(prod_menge) as sumPM, SUM(prod_fail_menge) as sumPFM,
+		ROUND(SUM(prod_fail_menge) / (SUM(prod_menge) +
+		SUM(prod_fail_menge))*100, 0) AS 'prod_fail_fa'
+		FROM (
+		SELECT DATE_FORMAT(b.prod_end_time, '%Y%m%d') AS dt,
+		a.item_code AS 'item_code',
+		a.item_nm AS 'item_nm',
+		a.order_menge AS 'order_menge',
+		b.routing_code AS 'routing_code',
+		b.routing_seq AS 'routing_seq',
+		b.routing_nm AS 'routing_nm',
+		b.prod_end_time AS 'prod_end_time',
+		b.machine_code AS 'machine_code',
+		b.machine_nm AS 'machine_nm',
+		c.product_po,
+		IFNULL(b.prod_menge, 0) AS 'prod_menge',
+		(IFNULL(b.prod_fail_menge, 0)
+		-
+		IFNULL((
+		SELECT prod_fail_menge
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND product_po = b.product_po
+		AND real_seq*1 <![CDATA[<]]>
+		b.real_seq*1
+		ORDER BY real_seq*1 desc
+		LIMIT 1
+		),0)) AS 'prod_fail_menge',
+
+		ROUND(IFNULL(( IFNULL(b.prod_fail_menge,0)/ (IFNULL(b.prod_menge,0) + (
+		IFNULL(b.prod_fail_menge, 0)
+		-
+		IFNULL((
+		SELECT prod_fail_menge
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND product_po = b.product_po
+		AND real_seq*1  <![CDATA[<]]>
+		b.real_seq*1
+		ORDER BY real_seq*1 desc
+		LIMIT 1
+		),0)
+		) ) ) *100,0),2) AS 'prod_fail_f'
+		FROM product_tbl a, product_operation_tbl b, product_operation_tbl c
+		WHERE
+		a.product_po = b.product_po
+		AND b.product_po = c.product_po
+		AND b.routing_code = LEFT(c.routing_code, 2)
+		AND RIGHT(c.routing_code, 2) ='-1'
+		AND b.prod_end_time IS NOT NULL
+		AND LENGTH(b.machine_code) > 2
+		<if test="item_code!=null and !''.equals(item_code) ">
+			And a.item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND a.item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+		<if test="dt_i !=null and !''.equals( dt_i ) ">
+			AND DATE_FORMAT(b.prod_end_time, '%Y%m%d') BETWEEN LEFT(#{dt_i}, 8) AND
+			RIGHT(#{dt_i}, 8)
+		</if>
+		<if test="dt_u !=null and !''.equals( dt_u ) ">
+			AND DATE_FORMAT(b.prod_end_time, '%Y%m%d') LIKE CONCAT('%', #{dt_u},
+			'%')
+			<!-- AND DATE_FORMAT(b.prod_end_time, '%Y%m%d') LIKE CONCAT('%', #{dt_u}, 
+				'%') -->
+		</if>
+
+		<if test="machine_class_code!=null and !''.equals(machine_class_code) ">
+			And b.machine_code IN(SELECT machine_code FROM machine_master WHERE
+			machine_class_code = #{machine_class_code} )
+		</if>
+
+		<if test="machine_code!=null and !''.equals(machine_code) ">
+			And b.machine_code = #{machine_code}
+		</if>
+
+		ORDER BY b.routing_seq
+		)d
+		GROUP BY dt
+	</select>
+
+	<select id="selectS_product2u" parameterType="SYProduct2Vo"
+		resultType="SYProduct2Vo">
+		SELECT dt, SUM(prod_menge) as sumPM, SUM(prod_fail_menge) as sumPFM,
+		ROUND(SUM(prod_fail_menge) / SUM(prod_menge)*100, 0) AS 'prod_fail_fa'
+		FROM (
+		SELECT DATE_FORMAT(b.prod_end_time, '%Y%m%d') AS dt,
+		a.item_code AS 'item_code',
+		a.item_nm AS 'item_nm',
+		a.order_menge AS 'order_menge',
+		b.routing_code AS 'routing_code',
+		b.routing_seq AS 'routing_seq',
+		b.routing_nm AS 'routing_nm',
+		b.prod_end_time AS 'prod_end_time',
+		b.machine_code AS 'machine_code',
+		b.machine_nm AS 'machine_nm',
+		IFNULL(b.prod_menge, 0) AS 'prod_menge',
+		(IFNULL(b.prod_fail_menge, 0)
+		-
+		IFNULL((
+		SELECT prod_fail_menge
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND product_po = b.product_po
+		AND real_seq*1 <![CDATA[<]]>
+		b.real_seq*1
+		ORDER BY real_seq*1 desc
+		LIMIT 1
+		),0)) AS 'prod_fail_menge',
+
+		ROUND(IFNULL(( IFNULL(b.prod_fail_menge,0)/ (IFNULL(b.prod_menge,0) + (
+		IFNULL(b.prod_fail_menge, 0)
+		-
+		IFNULL((
+		SELECT prod_fail_menge
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND product_po = b.product_po
+		AND real_seq*1  <![CDATA[<]]>
+		b.real_seq*1
+		ORDER BY real_seq*1 desc
+		LIMIT 1
+		),0)
+		) ) ) *100,0),2) AS 'prod_fail_f'
+		FROM product_tbl a, product_operation_tbl b, product_operation_tbl c
+		WHERE
+		a.product_po = b.product_po
+		AND b.product_po = c.product_po
+		AND b.routing_code = LEFT(c.routing_code, 2)
+		AND RIGHT(c.routing_code, 2) ='-1'
+		AND b.prod_end_time IS NOT NULL
+		AND LENGTH(b.machine_code) > 2
+		<if test="item_code!=null and !''.equals(item_code) ">
+			And a.item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND a.item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+		<if test="dt_i !=null and !''.equals( dt_i ) ">
+			AND DATE_FORMAT(b.prod_end_time, '%Y%m%d') BETWEEN LEFT(#{dt_i}, 8) AND
+			RIGHT(#{dt_i}, 8)
+		</if>
+		<if test="dt_u !=null and !''.equals( dt_u ) ">
+			AND DATE_FORMAT(b.prod_end_time, '%Y%m%d') LIKE CONCAT('%', #{dt_u},
+			'%')
+			<!-- AND DATE_FORMAT(b.prod_end_time, '%Y%m%d') LIKE CONCAT('%', #{dt_u}, 
+				'%') -->
+		</if>
+
+		<if test="machine_class_code!=null and !''.equals(machine_class_code) ">
+			And b.machine_code IN(SELECT machine_code FROM machine_master WHERE
+			machine_class_code = #{machine_class_code} )
+		</if>
+
+		<if test="machine_code!=null and !''.equals(machine_code) ">
+			And b.machine_code = #{machine_code}
+		</if>
+
+		ORDER BY b.routing_seq
+		)d
+		GROUP BY dt
+	</select>
+
+
+	<select id="selectS_productu" parameterType="SYProduct2Vo"
+		resultType="SYProduct2Vo">
+		SELECT
+		DATE_FORMAT(b.prod_end_time, '%Y%m%d') AS dt,
+		a.item_code AS 'item_code',
+		a.item_nm AS 'item_nm',
+		a.order_menge AS 'order_menge',
+		b.routing_code AS 'routing_code',
+		b.routing_seq AS 'routing_seq',
+		b.routing_nm AS 'routing_nm',
+		b.prod_end_time AS 'prod_end_time',
+		b.machine_code AS 'machine_code',
+		b.machine_nm AS 'machine_nm',
+		IFNULL(c.prod_menge,0) AS 'prod_menge',
+		IFNULL(c.prod_fail_menge,0) AS 'prod_fail_menge',
+		ROUND(IFNULL(( IFNULL(c.prod_fail_menge,0)/ (IFNULL(c.prod_menge,0) +
+		IFNULL(c.prod_fail_menge,0)) ) *100,0),2) AS 'prod_fail_f'
+		FROM product_tbl a, product_operation_tbl b, product_operation_tbl c
+		WHERE
+		a.product_po =b.product_po
+		AND b.product_po =c.product_po
+		AND b.routing_code = LEFT(c.routing_code,2)
+		AND RIGHT(c.routing_code,2) ='-1'
+		AND b.prod_end_time IS NOT NULL AND LENGTH(b.machine_code)>2
+
+		<if test="item_code!=null and !''.equals(item_code) ">
+			And item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+		<if test="dt !=null and !''.equals( dt ) ">
+			AND DATE_FORMAT(b.prod_end_time, '%Y%m%d') LIKE CONCAT('%', #{dt}, '%')
+		</if>
+
+		<if test="machine_class_code!=null and !''.equals(machine_class_code) ">
+			And b.machine_code IN(SELECT machine_code FROM machine_master WHERE
+			machine_class_code = #{machine_class_code} )
+		</if>
+
+		<if test="machine_code!=null and !''.equals(machine_code) ">
+			And b.machine_code = #{machine_code}
+		</if>
+
+		ORDER BY dt, b.routing_seq
+
+	</select>
+
+
+	<select id="selectS_product" parameterType="SYProduct2Vo"
+		resultType="SYProduct2Vo">
+		SELECT
+		DATE_FORMAT(b.prod_end_time, '%Y%m%d') AS 'dt',
+		a.item_code AS 'item_code',
+		a.item_nm AS 'item_nm',
+		a.order_menge AS 'order_menge',
+		b.routing_code AS 'routing_code',
+		b.routing_seq AS 'routing_seq',
+		b.routing_nm AS 'routing_nm',
+		b.prod_end_time AS 'prod_end_time',
+		b.machine_code AS 'machine_code',
+		b.machine_nm AS 'machine_nm',
+		c.product_po,
+		IFNULL(b.prod_menge,0) AS 'prod_menge',
+		(IFNULL(b.prod_fail_menge, 0)
+		-
+		IFNULL((
+		SELECT prod_fail_menge
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND product_po = b.product_po
+		AND real_seq*1  <![CDATA[<]]>
+		b.real_seq*1
+		ORDER BY real_seq*1 desc
+		LIMIT 1
+		),0)) AS 'prod_fail_menge',
+
+		ROUND(IFNULL(( IFNULL(b.prod_fail_menge,0)/ (IFNULL(b.prod_menge,0) + (
+		IFNULL(b.prod_fail_menge, 0)
+		-
+		IFNULL((
+		SELECT prod_fail_menge
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND product_po = b.product_po
+		AND real_seq*1 <![CDATA[<]]>
+		b.real_seq*1
+		ORDER BY real_seq*1 desc
+		LIMIT 1
+		),0)
+		) ) ) *100,0),2) AS 'prod_fail_f'
+		FROM product_tbl a, product_operation_tbl b, product_operation_tbl c
+		WHERE
+		a.product_po =b.product_po
+		AND b.product_po =c.product_po
+		AND b.routing_code = LEFT(c.routing_code,2)
+		AND RIGHT(c.routing_code,2) ='-1'
+		AND b.prod_end_time IS NOT NULL AND LENGTH(b.machine_code)>2
+
+		<if test="item_code!=null and !''.equals(item_code) ">
+			And item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+		<if test="dt !=null and !''.equals( dt ) ">
+			AND DATE_FORMAT(b.prod_end_time, '%Y%m%d') = #{dt}
+		</if>
+
+		<if test="machine_class_code!=null and !''.equals(machine_class_code) ">
+			And b.machine_code IN(SELECT machine_code FROM machine_master WHERE
+			machine_class_code = #{machine_class_code} )
+		</if>
+
+		<if test="machine_code!=null and !''.equals(machine_code) ">
+			And b.machine_code = #{machine_code}
+		</if>
+
+
+
+
+		ORDER BY b.routing_seq
+
+	</select>
+
+	<select id="selectS_product_fail" parameterType="SYProduct2Vo"
+		resultType="SYProduct2Vo">
+		SELECT
+		DATE_FORMAT(b.prod_end_time, '%Y%m%d') AS 'dt',
+		a.item_code AS 'item_code',
+		a.item_nm AS 'item_nm',
+		a.order_menge AS 'order_menge',
+		b.routing_code AS 'routing_code',
+		b.routing_seq AS 'routing_seq',
+		b.routing_nm AS 'routing_nm',
+		b.prod_end_time AS 'prod_end_time',
+		b.machine_code AS 'machine_code',
+		b.machine_nm AS 'machine_nm',
+		c.product_po,
+		IFNULL(b.prod_menge,0) AS 'prod_menge',
+		(IFNULL(b.prod_fail_menge, 0)
+		-
+		IFNULL((
+		SELECT prod_fail_menge
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND product_po = b.product_po
+		AND real_seq*1  <![CDATA[<]]>
+		b.real_seq*1
+		ORDER BY real_seq*1 desc
+		LIMIT 1
+		),0)) AS 'prod_fail_menge',
+
+		ROUND(IFNULL(( IFNULL(b.prod_fail_menge,0)/ (IFNULL(b.prod_menge,0) + (
+		IFNULL(b.prod_fail_menge, 0)
+		-
+		IFNULL((
+		SELECT prod_fail_menge
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND product_po = b.product_po
+		AND real_seq*1 <![CDATA[<]]>
+		b.real_seq*1
+		ORDER BY real_seq*1 desc
+		LIMIT 1
+		),0)
+		) ) ) *100,0),2) AS 'prod_fail_f'
+		FROM product_tbl a, product_operation_tbl b, product_operation_tbl c
+		WHERE
+		a.product_po =b.product_po
+		AND b.product_po =c.product_po
+		AND b.routing_code = LEFT(c.routing_code,2)
+		AND RIGHT(c.routing_code,2) ='-1'
+		AND b.prod_end_time IS NOT NULL AND LENGTH(b.machine_code)>2
+
+		<if test="item_code!=null and !''.equals(item_code) ">
+			And item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+		<if test="dt !=null and !''.equals( dt ) ">
+			AND DATE_FORMAT(b.prod_end_time, '%Y%m%d') = #{dt}
+		</if>
+
+		<if test="machine_class_code!=null and !''.equals(machine_class_code) ">
+			And b.machine_code IN(SELECT machine_code FROM machine_master WHERE
+			machine_class_code = #{machine_class_code} )
+		</if>
+
+		<if test="machine_code!=null and !''.equals(machine_code) ">
+			And b.machine_code = #{machine_code}
+		</if>
+
+		AND (IFNULL(b.prod_fail_menge, 0)
+		-
+		IFNULL((
+		SELECT prod_fail_menge
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND product_po = b.product_po
+		AND real_seq*1   <![CDATA[<]]>
+		b.real_seq*1
+		ORDER BY real_seq*1 desc
+		LIMIT 1
+		),0)) != 0
+
+
+		ORDER BY b.routing_seq
+
+	</select>
+
+	<select id="selectS_productu_fail" parameterType="SYProduct2Vo"
+		resultType="SYProduct2Vo">
+		SELECT
+		DATE_FORMAT(b.prod_end_time, '%Y%m%d') AS dt,
+		a.item_code AS 'item_code',
+		a.item_nm AS 'item_nm',
+		a.order_menge AS 'order_menge',
+		b.routing_code AS 'routing_code',
+		b.routing_seq AS 'routing_seq',
+		b.routing_nm AS 'routing_nm',
+		b.prod_end_time AS 'prod_end_time',
+		b.machine_code AS 'machine_code',
+		b.machine_nm AS 'machine_nm',
+		IFNULL(b.prod_menge,0) AS 'prod_menge',
+		(IFNULL(b.prod_fail_menge, 0)
+		-
+		IFNULL((
+		SELECT prod_fail_menge
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND product_po = b.product_po
+		AND real_seq*1 <![CDATA[<]]>
+		b.real_seq*1
+		ORDER BY real_seq*1 desc
+		LIMIT 1
+		),0)) AS 'prod_fail_menge',
+
+		ROUND(IFNULL(( IFNULL(b.prod_fail_menge,0)/ (IFNULL(b.prod_menge,0) + (
+		IFNULL(b.prod_fail_menge, 0)
+		-
+		IFNULL((
+		SELECT prod_fail_menge
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND product_po = b.product_po
+		AND real_seq*1  <![CDATA[<]]>
+		b.real_seq*1
+		ORDER BY real_seq*1 desc
+		LIMIT 1
+		),0)
+		) ) ) *100,0),2) AS 'prod_fail_f'
+		FROM product_tbl a, product_operation_tbl b, product_operation_tbl c
+		WHERE
+		a.product_po =b.product_po
+		AND b.product_po =c.product_po
+		AND b.routing_code = LEFT(c.routing_code,2)
+		AND RIGHT(c.routing_code,2) ='-1'
+		AND b.prod_end_time IS NOT NULL AND LENGTH(b.machine_code)>2
+
+		<if test="item_code!=null and !''.equals(item_code) ">
+			And item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+		<if test="dt !=null and !''.equals( dt ) ">
+			AND DATE_FORMAT(b.prod_end_time, '%Y%m%d') LIKE CONCAT('%', #{dt}, '%')
+		</if>
+
+		<if test="machine_class_code!=null and !''.equals(machine_class_code) ">
+			And b.machine_code IN(SELECT machine_code FROM machine_master WHERE
+			machine_class_code = #{machine_class_code} )
+		</if>
+
+		<if test="machine_code!=null and !''.equals(machine_code) ">
+			And b.machine_code = #{machine_code}
+		</if>
+
+		AND (IFNULL(b.prod_fail_menge, 0)
+		-
+		IFNULL((
+		SELECT prod_fail_menge
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND product_po = b.product_po
+		AND real_seq*1   <![CDATA[<]]>
+		b.real_seq*1
+		ORDER BY real_seq*1 desc
+		LIMIT 1
+		),0)) != 0
+
+		ORDER BY dt, b.routing_seq
+
+
+
+	</select>
+
+
+	<select id="checkMaterial" parameterType="SYMaterialVo"
+		resultType="int">
+		SELECT COUNT(*) AS cnt
+		FROM material_tbl
+		WHERE item_code = #{item_code}
+	</select>
+
+	<!-- selectMaterial -->
+	<select id="selectItemCode" parameterType="SYMaterialVo"
+		resultType="SYMaterialVo">
+		SELECT item_code, item_nm
+		FROM material_tbl
+		WHERE item_type_code
+		IN('MD1247', 'MD1248', 'MD1249')
+		<if test="item_code!=null and !''.equals(item_code) ">
+			And item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+		<if test=" business_codeT == ''.toString() ">
+			AND business_code = #{business_code}
+		</if>
+		<if test="business_codeT!=null and !''.equals(business_codeT) ">
+			AND business_code IN ( #{business_code} , #{business_codeT} )
+			<!-- AND (business_code = #{business_code} OR business_code = #{business_codeT}) -->
+		</if>
+		AND del_yn ='N'
+	</select>
+	
+	<select id="excelLoad" parameterType="SYMaterialVo" resultType="SYMaterialVo">
+	
+		SELECT	
+			m.item_code AS item_code, m.item_nm AS item_nm, 
+			GROUP_CONCAT(rm.routing_nm,'(', rm.routing_code ,')' ORDER BY rm.routing_seq*1 , rm.routing_code ASC) AS routing_nm 
+		
+		FROM material_tbl AS m
+		LEFT OUTER JOIN routing_master  AS rm
+		ON m.item_code = rm.item_code
+		
+		
+		WHERE m.del_yn = 'N'		
+		AND rm.use_yn = 'Y'
+		
+		GROUP BY m.item_code
+		
+		ORDER BY m.item_code
+		
+	</select>
+	
+	<select id="excelMax" parameterType="SYMaterialVo" resultType="Integer">
+	
+	select max(excelMax) 
+	from (SELECT COUNT(routing_nm) as excelMax from routing_master
+	WHERE use_yn = 'Y' 
+
+	GROUP BY item_code ) as p
+
+	</select>
+
+	<select id="selectItemCode2" parameterType="SYMaterialVo"
+		resultType="SYMaterialVo">
+		SELECT item_code,item_nm,item_spec, receiving_inspection_routing_yn
+		FROM material_tbl
+		WHERE item_type_code IN('MD1247', 'MD1248', 'MD1249')
+		<if test="item_code!=null and !''.equals(item_code) ">
+			And item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+		<if test=" business_codeT == ''.toString() ">
+			AND business_code = #{business_code}
+		</if>
+		<if test="business_codeT!=null and !''.equals(business_codeT) ">
+			AND business_code IN ( #{business_code} , #{business_codeT} )
+			<!-- AND (business_code = #{business_code} OR business_code = #{business_codeT}) -->
+		</if>
+		<if
+			test="receiving_inspection_yn!=null and !''.equals(receiving_inspection_yn) ">
+			AND receiving_inspection_yn = #{receiving_inspection_yn}
+		</if>
+		<if
+			test="receiving_inspection_routing_yn!=null and !''.equals(receiving_inspection_routing_yn) ">
+			AND receiving_inspection_routing_yn =
+			#{receiving_inspection_routing_yn}
+		</if>
+		AND del_yn ='N'
+	</select>
+
+	<select id="selectItemCode3" parameterType="SYMaterialVo"
+		resultType="SYMaterialVo">
+		SELECT item_code,item_nm,item_spec, receiving_inspection_routing_yn
+		FROM material_tbl
+		WHERE 1=1
+		<if test="item_code!=null and !''.equals(item_code) ">
+			And item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+		<if test=" business_codeT == ''.toString() ">
+			AND business_code = #{business_code}
+		</if>
+		<if test="business_codeT!=null and !''.equals(business_codeT) ">
+			AND business_code IN ( #{business_code} , #{business_codeT} )
+			<!-- AND (business_code = #{business_code} OR business_code = #{business_codeT}) -->
+		</if>
+		<if
+			test="receiving_inspection_yn!=null and !''.equals(receiving_inspection_yn) ">
+			AND receiving_inspection_yn = #{receiving_inspection_yn}
+		</if>
+		<if
+			test="receiving_inspection_routing_yn!=null and !''.equals(receiving_inspection_routing_yn) ">
+			AND receiving_inspection_routing_yn =
+			#{receiving_inspection_routing_yn}
+		</if>
+		AND del_yn ='N'
+	</select>
+
+	<select id="selectRou_mstG" parameterType="SYRoutingMasterVo"
+		resultType="SYRoutingMasterVo">
+		Select
+		<!-- routing_nm,qc_yn, item_code, routing_code -->
+		item_code, routing_code, routing_seq, routing_nm, routing_gubun,
+		warehouse_gubun, qc_yn, use_yn, creator, updater, date_created,
+		date_updated
+		From routing_master
+		WHERE item_code = #{item_code}
+		AND (
+		LEFT(routing_code, 1) ='F'
+		OR RIGHT(routing_code, 2) ='-1'
+		OR LEFT(routing_code, 1) = 'Q'
+		)
+		AND use_yn = 'Y'
+		<if test="qc_yn!=null and !''.equals(qc_yn) ">
+			AND qc_yn = #{qc_yn}
+		</if>
+		ORDER BY routing_seq+'' ASC
+		<!-- <if test="routing_code!=null and !''.equals(routing_code) "> AND routing_code 
+			= #{routing_code} </if> -->
+	</select>
+
+	<select id="selectInspection_master2" parameterType="SYInspectionMasterVo"
+		resultType="SYInspectionMasterVo">
+		SELECT
+		item_code, routing_code, inspection_seq, routing_nm, inspection_item,
+
+		inspection_gubun,
+		( SELECT code_nm FROM sy_code_detail WHERE detail_code =
+		inspection_gubun ) AS inspection_gubun_nm,
+
+		inspection_tool, inspection_point,
+		( SELECT code_nm FROM sy_code_detail WHERE detail_code =
+		inspection_method ) AS inspection_method_nm,
+		inspection_method, spec, min_spec, max_spec, use_yn, creator, updater, date_created,
+		date_updated
+		FROM inspection_master
+		WHERE use_yn = 'Y'
+		<if test="item_code!=null and !''.equals(item_code) ">
+			AND item_code = #{item_code}
+		</if>
+		<if test="routing_code!=null and !''.equals(routing_code) ">
+			AND routing_code = #{routing_code}
+		</if>
+		ORDER BY inspection_seq ASC
+	</select>
+
+	<select id="selectInstrumentTool" parameterType="SYInstrumentVo"
+		resultType="SYInstrumentVo">
+		SELECT DISTINCT(instrument_nm) FROM instrument_tbl
+		WHERE
+		del_yn ='N'
+	</select>
+
+
+	<insert id="insertInspection" parameterType="SYInspectionMasterVo">
+		INSERT INTO
+		inspection_master
+		(
+		item_code, routing_code, routing_nm, inspection_item,
+		inspection_gubun, inspection_tool,
+		inspection_method, spec, min_spec, max_spec,
+		use_yn, inspection_point,
+		creator, updater, date_created, date_updated )
+		VALUES
+		(
+		#{item_code}, #{routing_code}, #{routing_nm}, #{inspection_item},
+		#{inspection_gubun}, #{inspection_tool},
+		#{inspection_method}, #{spec}, #{min_spec}, #{max_spec},
+		'Y', #{inspection_point},
+		#{creator}, #{updater}, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+		)
+	</insert>
+
+
+	<update id="updateInspection" parameterType="SYInspectionMasterVo">
+		UPDATE
+		inspection_master
+		SET
+		inspection_item = #{inspection_item}
+		, inspection_tool = #{inspection_tool}
+		, inspection_method = #{inspection_method}
+		, inspection_gubun = #{inspection_gubun}
+		, spec = #{spec}
+		, min_spec = #{min_spec}
+		, max_spec = #{max_spec}
+		, inspection_point = #{inspection_point}
+		, use_yn = 'Y'
+		, date_updated = CURRENT_TIMESTAMP()
+		, updater = #{updater}
+		WHERE
+		item_code = #{item_code}
+		AND routing_code = #{routing_code}
+		AND inspection_seq = #{inspection_seq}
+	</update>
+
+
+	<update id="deleteInspection" parameterType="SYInspectionMasterVo">
+		UPDATE
+		inspection_master
+		SET
+		use_yn = 'N'
+		, date_updated = CURRENT_TIMESTAMP()
+		, updater = #{updater}
+		WHERE
+		item_code = #{item_code}
+		AND routing_code = #{routing_code}
+		AND inspection_seq = #{inspection_seq}
+	</update>
+
+	<select id="selectMaterial" parameterType="SYMaterialVo"
+		resultType="SYMaterialVo">
+		SELECT
+		business_code, business_nm, item_code, item_nm, item_spec, item_type_code,
+		item_type_nm,
+		meins, warehousing_price, release_price, receiving_inspection_yn, class_yn,
+		safety_stock_yn, safety_menge, routing_yn, del_yn,
+		outsourcing_price, location, one_yn,
+		creator, updater, date_created, date_updated,
+		(
+		SELECT warehouse_nm
+		FROM warehouse_master_header
+		WHERE del_yn = 'N'
+		AND warehouse_code = m.in_ware_code
+		) as in_ware_nm,
+		in_ware_code,
+		(
+		SELECT member_nm
+		FROM sy_member_master
+		WHERE member_id = m.creator
+		) as creator_nm,
+		(
+		SELECT member_nm
+		FROM sy_member_master
+		WHERE member_id = m.updater
+		) as updater_nm
+
+		FROM material_tbl as m
+		WHERE del_yn = 'N'
+		<if test="item_code!=null and !''.equals(item_code) ">
+			AND item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+		<!-- <if test="business_code!=null and !''.equals(business_code) "> AND 
+			business_code = #{business_code} </if> -->
+		<if test=" business_codeT == ''.toString() ">
+			AND business_code = #{business_code}
+		</if>
+		<if test="business_codeT!=null and !''.equals(business_codeT) ">
+			AND business_code IN ( #{business_code} , #{business_codeT} )
+			<!-- AND (business_code = #{business_code} OR business_code = #{business_codeT}) -->
+		</if>
+
+		<if test="class_yn!=null and !''.equals(class_yn) ">
+			AND class_yn = #{class_yn}
+		</if>
+		<if test="safety_stock_yn!=null and !''.equals(safety_stock_yn) ">
+			AND safety_stock_yn = #{safety_stock_yn}
+		</if>
+		<if test="item_type_code!=null and !''.equals(item_type_code) ">
+			AND item_type_code = #{item_type_code}
+		</if>
+
+		<if test="routing_yn!=null and !''.equals(routing_yn) ">
+			AND routing_yn = #{routing_yn}
+		</if>
+	</select>
+
+
+	<!-- selectMaterial2 -->
+	<select id="selectMaterial2" parameterType="SYMaterialVo"
+		resultType="SYMaterialVo">
+		SELECT
+		business_code, business_nm, item_code, item_nm, item_spec, item_type_code,
+		item_type_nm,
+		meins, warehousing_price, release_price, receiving_inspection_yn, class_yn,
+		safety_stock_yn, safety_menge, routing_yn, del_yn,
+		outsourcing_price, location, one_yn,
+		creator, updater, date_created, date_updated
+		FROM material_tbl
+		WHERE del_yn =
+		'N'
+		<if test="item_code!=null and !''.equals(item_code) ">
+			AND item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+		<if test=" business_codeT == ''.toString() ">
+			AND business_code = #{business_code}
+		</if>
+		<if test="business_codeT!=null and !''.equals(business_codeT) ">
+			AND business_code IN ( #{business_code} , #{business_codeT} )
+			<!-- AND (business_code = #{business_code} OR business_code = #{business_codeT}) -->
+		</if>
+
+		<if test="class_yn!=null and !''.equals(class_yn) ">
+			AND class_yn = #{class_yn}
+		</if>
+		<if test="safety_stock_yn!=null and !''.equals(safety_stock_yn) ">
+			AND safety_stock_yn = #{safety_stock_yn}
+		</if>
+		<if test="item_type_codeT != null and !''.equals( item_type_codeT ) ">
+			AND item_type_code IN ( #{item_type_code} ,
+			#{item_type_codeT} )
+		</if>
+		<if test="routing_yn!=null and !''.equals(routing_yn) ">
+			AND routing_yn = #{routing_yn}
+		</if>
+	</select>
+
+	<!-- selectMaterial3 -->
+	<select id="selectMaterial3" parameterType="SYMaterialVo"
+		resultType="SYMaterialVo">
+		SELECT
+		business_code, business_nm, item_code, item_nm, item_spec, item_type_code,
+		item_type_nm,
+		IFNULL((
+		SELECT SUM(warehousing_qty) AS warehousing_qty
+		FROM warehouse_tbl
+		WHERE del_yn = 'N'
+		AND item_code = m.item_code
+
+		GROUP BY item_code
+
+		),0) as warehousing_qty,
+
+
+		meins, warehousing_price, release_price, receiving_inspection_yn, class_yn,
+		safety_stock_yn, safety_menge, routing_yn, del_yn,
+		outsourcing_price, location, one_yn,
+		creator, updater, date_created, date_updated
+		FROM material_tbl as m
+		WHERE del_yn
+		= 'N'
+
+		AND item_type_code in ('MD1247', 'MD1248', 'MD1249')
+
+		<!-- <if test="business_code!=null and !''.equals(business_code) "> AND 
+			business_code = #{business_code} </if> -->
+		<if test=" business_codeT == ''.toString() ">
+			AND business_code = #{business_code}
+		</if>
+		<if test="business_codeT!=null and !''.equals(business_codeT) ">
+			AND business_code IN ( #{business_code} , #{business_codeT} )
+			<!-- AND (business_code = #{business_code} OR business_code = #{business_codeT}) -->
+		</if>
+
+		<if test="class_yn!=null and !''.equals(class_yn) ">
+			AND class_yn = #{class_yn}
+		</if>
+		<if test="safety_stock_yn!=null and !''.equals(safety_stock_yn) ">
+			AND safety_stock_yn = #{safety_stock_yn}
+		</if>
+
+		<if test="item_code!=null and !''.equals(item_code) ">
+			AND item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND item_nm = #{item_nm}
+		</if>
+
+		<if test="routing_yn!=null and !''.equals(routing_yn) ">
+			AND routing_yn = #{routing_yn}
+		</if>
+	</select>
+
+	<insert id="insertMaterial" parameterType="SYMaterialVo">
+		INSERT INTO material_tbl
+		( business_code, business_nm, item_code,
+		item_nm,
+
+		<if test="item_spec!=null and !''.equals(item_spec) ">
+			item_spec,
+		</if>
+
+		item_type_code, item_type_nm,
+
+		<if test="safety_menge!=null and !''.equals(safety_menge) ">
+			safety_menge,
+		</if>
+
+		meins,
+
+		<if test="warehousing_price!=null and !''.equals(warehousing_price) ">
+			warehousing_price,
+		</if>
+		<if test="release_price!=null and !''.equals(release_price) ">
+			release_price,
+		</if>
+		<if test="outsourcing_price!=null and !''.equals(outsourcing_price) ">
+			outsourcing_price,
+		</if>
+
+		<if test="location!=null and !''.equals(location) ">
+			location,
+		</if>
+
+		receiving_inspection_yn, class_yn, safety_stock_yn,
+
+		<if test="one_yn !=null and !''.equals( one_yn ) ">
+			one_yn,
+		</if>
+		del_yn,
+		<if test="in_ware_code !=null and !''.equals( in_ware_code ) ">
+			in_ware_code,
+		</if>
+		creator, updater, date_created, date_updated )
+		VALUES
+		(
+		#{business_code}, #{business_nm}, #{item_code}, #{item_nm},
+
+		<if test="item_spec!=null and !''.equals(item_spec) ">
+			#{item_spec},
+		</if>
+
+		#{item_type_code}, #{item_type_nm},
+
+		<if test="safety_menge!=null and !''.equals(safety_menge) ">
+			#{safety_menge} + 0 ,
+		</if>
+
+		#{meins},
+
+		<if test="warehousing_price!=null and !''.equals(warehousing_price) ">
+			#{warehousing_price},
+		</if>
+		<if test="release_price!=null and !''.equals(release_price) ">
+			#{release_price},
+		</if>
+
+		<if test="outsourcing_price!=null and !''.equals(outsourcing_price) ">
+			#{outsourcing_price},
+		</if>
+
+		<if test="location!=null and !''.equals(location) ">
+			#{location},
+		</if>
+		#{receiving_inspection_yn}, #{class_yn}, #{safety_stock_yn},
+		<if test="one_yn !=null and !''.equals( one_yn ) ">
+			#{one_yn},
+		</if>
+		'N',
+		<if test="in_ware_code !=null and !''.equals( in_ware_code ) ">
+			#{in_ware_code},
+		</if>
+		#{creator}, #{updater}, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+		)
+
+		<!-- CONCAT('CT', LPAD(fn_common_seq('account'),4,'0')) -->
+	</insert>
+
+	<update id="updateMaterial" parameterType="SYMaterialVo">
+		UPDATE material_tbl SET
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			item_nm = #{item_nm},
+		</if>
+		<if test="business_code!=null and !''.equals(business_code) ">
+			business_code = #{business_code},
+		</if>
+		<if test="business_nm!=null and !''.equals(business_nm) ">
+			business_nm = #{business_nm},
+		</if>
+		<if test="item_type_code!=null and !''.equals(item_type_code) ">
+			item_type_code = #{item_type_code},
+		</if>
+		<if test="item_type_nm!=null and !''.equals(item_type_nm) ">
+			item_type_nm = #{item_type_nm},
+		</if>
+		<!-- <if test="item_spec!=null and !''.equals(item_spec) "> -->
+		item_spec = #{item_spec},
+		<!-- </if> -->
+		<if test="meins!=null and !''.equals(meins) ">
+			meins = #{meins},
+		</if>
+		<!-- <if test="warehousing_price!=null and !''.equals(warehousing_price) 
+			"> -->
+		warehousing_price = #{warehousing_price},
+		<!-- </if> -->
+		<!-- <if test="release_price!=null and !''.equals(release_price) "> -->
+		release_price = #{release_price},
+		<!-- </if> -->
+		<if
+			test="receiving_inspection_yn!=null and !''.equals(receiving_inspection_yn) ">
+			receiving_inspection_yn = #{receiving_inspection_yn},
+		</if>
+		<if test="class_yn!=null and !''.equals(class_yn) ">
+			class_yn = #{class_yn},
+		</if>
+		<if test="safety_stock_yn!=null and !''.equals(safety_stock_yn) ">
+			safety_stock_yn = #{safety_stock_yn},
+		</if>
+
+		safety_menge = #{safety_menge} + 0 ,
+
+		<if test="routing_yn!=null and !''.equals(routing_yn) ">
+			routing_yn = #{routing_yn},
+		</if>
+
+		<if test="outsourcing_price!=null and !''.equals(outsourcing_price) ">
+			outsourcing_price = #{outsourcing_price},
+		</if>
+
+		<if test="location!=null and !''.equals(location) ">
+			location = #{location},
+		</if>
+		<if test="one_yn !=null and !''.equals( one_yn ) ">
+			one_yn= #{one_yn},
+		</if>
+		<if test="in_ware_code !=null and !''.equals( in_ware_code ) ">
+			in_ware_code= #{in_ware_code},
+		</if>
+		updater = #{updater},
+		date_updated = current_timestamp()
+		WHERE item_code = #{item_code}
+	</update>
+
+	<update id="updateMaterial2" parameterType="SYMaterialVo">
+		UPDATE material_tbl SET
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			item_nm = #{item_nm},
+		</if>
+		<if test="business_code!=null and !''.equals(business_code) ">
+			business_code = #{business_code},
+		</if>
+		<if test="business_nm!=null and !''.equals(business_nm) ">
+			business_nm = #{business_nm},
+		</if>
+		<if test="item_type_code!=null and !''.equals(item_type_code) ">
+			item_type_code = #{item_type_code},
+		</if>
+		<if test="item_type_nm!=null and !''.equals(item_type_nm) ">
+			item_type_nm = #{item_type_nm},
+		</if>
+		<!-- <if test="item_spec!=null and !''.equals(item_spec) "> -->
+		item_spec = #{item_spec},
+		<!-- </if> -->
+		<if test="meins!=null and !''.equals(meins) ">
+			meins = #{meins},
+		</if>
+		<if test="warehousing_price!=null and !''.equals(warehousing_price) ">
+			warehousing_price = #{warehousing_price},
+		</if>
+		<if test="release_price!=null and !''.equals(release_price) ">
+			release_price = #{release_price},
+		</if>
+		<if
+			test="receiving_inspection_yn!=null and !''.equals(receiving_inspection_yn) ">
+			receiving_inspection_yn = #{receiving_inspection_yn},
+		</if>
+		<if test="class_yn!=null and !''.equals(class_yn) ">
+			class_yn = #{class_yn},
+		</if>
+		<if test="safety_stock_yn!=null and !''.equals(safety_stock_yn) ">
+			safety_stock_yn = #{safety_stock_yn},
+		</if>
+		<if test="safety_menge !=null and !''.equals( safety_menge ) ">
+			safety_menge = #{safety_menge} + 0,
+		</if>
+
+
+		<if test="routing_yn!=null and !''.equals(routing_yn) ">
+			routing_yn = #{routing_yn},
+		</if>
+
+		<if test="outsourcing_price!=null and !''.equals(outsourcing_price) ">
+			outsourcing_price = #{outsourcing_price},
+		</if>
+
+		<if test="location!=null and !''.equals(location) ">
+			location = #{location},
+		</if>
+		<if test="one_yn !=null and !''.equals( one_yn ) ">
+			one_yn= #{one_yn},
+		</if>
+		updater = #{updater},
+		date_updated = current_timestamp()
+		WHERE item_code = #{item_code}
+	</update>
+
+	<update id="deleteMaterial" parameterType="SYMaterialVo">
+		UPDATE material_tbl
+		SET del_yn='Y'
+		WHERE item_code = #{item_code}
+	</update>
+
+	<select id="selectRouting_master" parameterType="SYRoutingMasterVo"
+		resultType="SYRoutingMasterVo">
+		SELECT
+		item_code, routing_code, routing_seq, routing_nm, routing_gubun,
+		warehouse_gubun, outsourcing_gubun, machine_gubun, qc_yn, use_yn,
+		creator, updater, date_created, date_updated
+		FROM routing_master
+		WHERE
+		use_yn = 'Y'
+		<if test="item_code!=null and !''.equals(item_code) ">
+			AND item_code = #{item_code}
+		</if>
+		<if test="routing_code!=null and !''.equals(routing_code) ">
+			AND routing_code = #{routing_code}
+		</if>
+		<!-- AND not routing_code LIKE '%-%' -->
+		ORDER BY routing_seq+'', routing_code ASC
+	</select>
+
+	<insert id="saveRouting_master" parameterType="SYRoutingMasterVo">
+		INSERT INTO
+		routing_master
+		( item_code, routing_code, routing_seq,
+		routing_nm, routing_gubun, warehouse_gubun,
+		outsourcing_gubun, machine_gubun,
+		use_yn,
+		creator, updater, date_created, date_updated )
+		VALUES
+		(
+		#{item_code}, #{routing_code}, #{routing_seq},
+		#{routing_nm}, #{routing_gubun}, #{warehouse_gubun},
+		#{outsourcing_gubun}, #{machine_gubun},
+		'Y',
+		#{creator}, #{updater}, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+		)
+
+	</insert>
+
+	<insert id="saveRouting_master2" parameterType="SYRoutingMasterVo">
+		INSERT INTO
+		routing_master
+		(
+		item_code, routing_code, routing_seq,
+		routing_nm, routing_gubun, warehouse_gubun,
+		outsourcing_gubun, machine_gubun,
+		use_yn,
+		creator, updater,
+		date_created, date_updated
+		)
+		
+		SELECT *
+		FROM (
+		SELECT
+		#{item_code} as item_code, #{routing_code} as routing_code, 
+		#{routing_seq} as
+		routing_seq,
+		#{routing_nm} as routing_nm, #{routing_gubun} as routing_gubun, #{warehouse_gubun}
+		as warehouse_gubun,
+		#{outsourcing_gubun} as outsourcing_gubun, #{machine_gubun} as machine_gubun,
+		'Y' as use_yn,
+		#{creator} as creator, #{updater} as updater,
+		CURRENT_TIMESTAMP() as date_created, CURRENT_TIMESTAMP() as date_updated
+		) rm
+		
+		ON DUPLICATE KEY
+		UPDATE
+		
+		routing_seq = rm.routing_seq
+		, routing_code = rm.routing_code
+		, routing_gubun = rm.routing_gubun
+		, routing_nm = rm.routing_nm
+		, warehouse_gubun = rm.warehouse_gubun
+		, outsourcing_gubun = #{outsourcing_gubun}
+		, machine_gubun = #{machine_gubun}
+		, use_yn = rm.use_yn
+		, date_updated = rm.date_updated
+		, updater = rm.updater
+	</insert>
+
+	<update id="updateRouting_master" parameterType="SYRoutingMasterVo">
+		UPDATE routing_master
+		SET
+		routing_seq = #{routing_seq}
+		<if test="routing_code!=null and !''.equals(routing_code) ">
+			, routing_code = #{routing_code}
+		</if>
+		, routing_gubun = #{routing_gubun}
+		, routing_nm = #{routing_nm}
+		, warehouse_gubun = #{warehouse_gubun}
+		, outsourcing_gubun = #{outsourcing_gubun}
+		, machine_gubun = #{machine_gubun}
+		, use_yn = 'Y'
+		, date_updated = CURRENT_TIMESTAMP()
+		, updater = #{updater}
+		WHERE
+		item_code = #{item_code}
+		AND routing_code = #{old_routing_code}
+	</update>
+
+	<delete id="allUpdateRouting_master" parameterType="SYMaterialVo">
+		UPDATE
+		routing_master
+		SET use_yn = 'N'
+		, warehouse_gubun = ''
+		, date_updated = CURRENT_TIMESTAMP()
+		, updater = #{updater}
+		WHERE
+		item_code = #{item_code}
+	</delete>
+
+	<select id="selectRouting_masterMax" parameterType="SYRoutingMasterVo"
+		resultType="String">
+		SELECT MAX(routing_code) FROM
+		routing_master
+		WHERE item_code = #{item_code} AND not routing_code LIKE '%-%' AND
+		routing_code LIKE CONCAT( #{routing_code}, '%')
+
+		<!-- SELECT COUNT(*) FROM routing_master WHERE item_code = #{item_code} 
+			AND routing_code = #{routing_code} -->
+	</select>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+	<!-- //// cw -->
+
+	<!-- selectQuality -->
+	<select id="selectQuality" parameterType="SYQualityVo"
+		resultType="SYQualityVo">
+		SELECT a.item_code, a.item_nm, a.item_code, b.routing_code,
+		b.routing_nm, b.routing_gubun, b.qc_yn
+		FROM material_tbl AS a
+		LEFT JOIN
+		routing_master AS b
+
+		ON a.item_code = b.item_code
+
+		WHERE a.del_yn = 'N'
+		AND b.use_yn = 'Y'
+
+
+		AND b.routing_code LIKE CONCAT('%',
+		'-1', '%')
+
+
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND a.item_code = #{item_code}
+
+		</if>
+		<if test="item_nm != null and !''.equals( item_nm ) ">
+			AND a.item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+
+		<if test=" business_codeT == ''.toString() ">
+			AND a.business_code = #{business_code}
+		</if>
+		<if test="business_codeT!=null and !''.equals(business_codeT) ">
+			AND a.business_code IN ( #{business_code} ,
+			#{business_codeT} )
+		</if>
+		<!-- <if test="business_code != null and !''.equals( business_code ) "> -->
+		<!-- AND a.business_code = #{business_code} -->
+		<!-- </if> -->
+
+
+		<if test="qc_yn != null and !''.equals( qc_yn ) ">
+			AND b.qc_yn = #{qc_yn}
+		</if>
+
+		ORDER BY b.routing_seq
+	</select>
+
+
+	<select id="selectInspect_master" parameterType="SYInspectMasterVo"
+		resultType="SYInspectMasterVo">
+		SELECT
+		item_code, routing_code, inspect_code,
+		routing_nm, routing_gubun, inspect_nm, inspect_spec,
+		use_yn, creator, updater, date_created, date_updated
+		FROM inspect_master
+		WHERE
+		use_yn = 'Y'
+		<if test="item_code!=null and !''.equals(item_code) ">
+			AND item_code = #{item_code}
+		</if>
+		<if test="routing_code!=null and !''.equals(routing_code) ">
+			AND routing_code = #{routing_code}
+		</if>
+		ORDER BY inspect_code ASC
+	</select>
+
+
+	<insert id="saveInspect_master" parameterType="SYInspectMasterVo">
+		INSERT INTO inspect_master (
+		item_code, routing_code, inspect_code, routing_nm,
+		routing_gubun, inspect_nm, inspect_spec, use_yn,
+		creator, updater, date_created, date_updated)
+		SELECT *
+		FROM (
+		SELECT
+		#{item_code} as item_code, #{routing_code} as routing_code, #{inspect_code} as
+		inspect_code, #{routing_nm} as routing_nm,
+		#{routing_gubun} as routing_gubun, #{inspect_nm} as inspect_nm, #{inspect_spec} as
+		inspect_spec, 'Y' as use_yn,
+		#{creator} as creator, #{updater} as updater, current_timestamp() as
+		date_created, current_timestamp() as date_updated
+		) s
+		ON DUPLICATE KEY
+		UPDATE
+		item_code = s.item_code,
+		routing_code = s.routing_code,
+		inspect_code = s.inspect_code,
+
+		<if test="routing_nm != null and !''.equals( routing_nm )">
+			routing_nm = s.routing_nm,
+		</if>
+
+		<if test="routing_gubun != null and !''.equals( routing_gubun )">
+			routing_gubun = s.routing_gubun,
+		</if>
+
+		<if test="inspect_nm != null and !''.equals( inspect_nm )">
+			inspect_nm = s.inspect_nm,
+		</if>
+
+		<if test="inspect_spec != null and !''.equals( inspect_spec )">
+			inspect_spec = s.inspect_spec,
+		</if>
+
+		use_yn = 'Y',
+
+		updater = s.updater,
+		date_updated = s.date_updated
+	</insert>
+
+	<update id="deleteInspect_master" parameterType="SYInspectMasterVo">
+		UPDATE
+		inspect_master SET use_yn='N'
+		WHERE inspect_code = #{inspect_code}
+	</update>
+
+	<update id="updateRouting_master_qc" parameterType="SYRoutingMasterVo">
+		UPDATE
+		routing_master
+		SET
+
+		qc_yn = #{qc_yn}
+		, date_updated = CURRENT_TIMESTAMP()
+		, updater = #{updater}
+		WHERE
+		item_code = #{item_code}
+		AND routing_code = #{routing_code}
+	</update>
+
+
+
+
+	<!-- selectMaterial_menge -->
+	<select id="selectMaterial_menge" parameterType="SYMaterialVo"
+		resultType="SYMaterialVo">
+		SELECT
+		business_code, business_nm, item_code, item_nm, item_spec, item_type_code,
+		item_type_nm,
+		meins, warehousing_price, release_price, receiving_inspection_yn, class_yn,
+		safety_stock_yn,
+		ifnull(
+		(
+		SELECT SUM(ifnull(warehousing_qty, 0)) as warehousing_qty
+		FROM warehouse_tbl
+		WHERE del_yn = 'N'
+		AND business_code = m.business_code
+		AND item_code = m.item_code
+
+		GROUP BY item_code
+
+		) , 0 ) as warehousing_qty,
+
+		safety_menge, routing_yn, del_yn,
+		creator, updater, date_created, date_updated
+		FROM material_tbl as m
+		WHERE del_yn
+		= 'N'
+		<if test="item_code!=null and !''.equals(item_code) ">
+			AND item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+		<!-- <if test="business_code!=null and !''.equals(business_code) "> AND 
+			business_code = #{business_code} </if> -->
+		<if test=" business_codeT == ''.toString() ">
+			AND business_code = #{business_code}
+		</if>
+		<if test="business_codeT!=null and !''.equals(business_codeT) ">
+			AND business_code IN ( #{business_code} ,
+			#{business_codeT} )
+		</if>
+
+		<if test="class_yn!=null and !''.equals(class_yn) ">
+			AND class_yn = #{class_yn}
+		</if>
+		<if test="safety_stock_yn!=null and !''.equals(safety_stock_yn) ">
+			AND safety_stock_yn = #{safety_stock_yn}
+		</if>
+		<if test="item_type_code!=null and !''.equals(item_type_code) ">
+			AND item_type_code = #{item_type_code}
+		</if>
+		<if test="routing_yn!=null and !''.equals(routing_yn) ">
+			AND routing_yn = #{routing_yn}
+		</if>
+
+	</select>
+
+
+
+
+	<!-- jsjsjsjsj 수입 검사 -->
+
+
+	<select id="selectIncome_inspect_master" parameterType="SYIncome_insp_mstVo"
+		resultType="SYIncome_insp_mstVo">
+		SELECT item_code, inspection_seq, inspection_item, inspection_gubun,
+		inspection_tool, inspection_method,
+		spec, min_spec, max_spec, use_yn, creator, updater, date_created,
+		date_updated
+		FROM income_inspect_master
+		WHERE use_yn = 'Y'
+		<if test="item_code!=null and !''.equals(item_code) ">
+			AND item_code = #{item_code}
+		</if>
+	</select>
+
+	<insert id="insertIncome_inspect_master" parameterType="SYIncome_insp_mstVo">
+		INSERT
+		INTO income_inspect_master
+		(
+		item_code, inspection_item, inspection_gubun,
+		spec, min_spec, max_spec,
+		use_yn,
+		creator, updater, date_created, date_updated )
+		VALUES
+		(
+		#{item_code}, #{inspection_item}, #{inspection_gubun},
+		#{spec}, #{min_spec}, #{max_spec},
+		'Y',
+		#{creator}, #{updater}, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+		)
+	</insert>
+
+	<update id="upReceiving_inspection_yn" parameterType="SYIncome_insp_mstVo">
+		UPDATE
+		material_tbl SET
+		receiving_inspection_routing_yn = #{receiving_inspection_routing_yn},
+		updater = #{updater},
+		date_updated = current_timestamp()
+		WHERE item_code = #{item_code}
+	</update>
+
+	<update id="updateIncome_inspect_master" parameterType="SYIncome_insp_mstVo">
+		UPDATE
+		income_inspect_master
+		SET
+		inspection_item = #{inspection_item}
+		, inspection_gubun = #{inspection_gubun}
+		, spec = #{spec}
+		, min_spec = #{min_spec}
+		, max_spec = #{max_spec}
+		, use_yn = 'Y'
+		, date_updated = CURRENT_TIMESTAMP()
+		, updater = #{updater}
+		WHERE
+		item_code = #{item_code}
+		AND inspection_seq = #{inspection_seq}
+	</update>
+
+	<update id="deleteIncome_inspect_master" parameterType="SYIncome_insp_mstVo">
+		UPDATE
+		income_inspect_master
+		SET
+		use_yn = 'N'
+		, date_updated = CURRENT_TIMESTAMP()
+		, updater = #{updater}
+		WHERE
+		item_code = #{item_code}
+		AND inspection_seq = #{inspection_seq}
+	</update>
+
+	<select id="selectIncome_result" parameterType="SYIncome_resultVo"
+		resultType="SYIncome_resultVo">
+		SELECT s.*,
+		(select insp_case from inspection_val_mng where product_po =
+		concat(purchase_order_num,'-',purchase_num) and sample_type = 'c'
+		limit 1) insp_case
+		FROM
+		(
+
+		SELECT
+		a.item_spec, a.item_type_code, a.item_type_nm, a.unit_price,
+		c.purchase_order_num,a.purchase_num,a.item_code,a.item_nm,c.account_code,
+		c.account_nm, a.menge, a.in_menge,
+		( SELECT income_date
+		FROM income_result
+		WHERE a.purchase_order_num =purchase_order_num
+		AND a.purchase_num =purchase_num AND del_yn ='N') AS income_date,
+		CASE WHEN
+		( SELECT pass_yn
+		FROM income_result
+		WHERE a.purchase_order_num =purchase_order_num
+		AND a.purchase_num =purchase_num AND del_yn ='N') IS NULL THEN '검사전' ELSE
+		'감사완료' END AS pass_yn,
+		(
+		case when (select count(*) From income_inspect_master where item_code =
+		a.item_code and use_yn = 'Y') = 0
+		then '품질검사항목없음'
+		when
+		(select purchase_status from purchase_order_detail where purchase_order_num =
+		a.purchase_order_num and purchase_num = a.purchase_num) = 'R'
+		then '검사전'
+		else '검사진행중'
+		end
+		) insp_status
+		FROM purchase_order_detail a,material_tbl
+		b,purchase_order_master c
+		WHERE 1=1
+		AND a.item_code =b.item_code
+		AND a.purchase_order_num = c.purchase_order_num
+		AND b.receiving_inspection_yn ='Y'
+		AND (a.purchase_status ='R' OR a.purchase_status ='I')
+		AND a.del_yn ='N'
+		<if test="account_nm!=null and !''.equals(account_nm) ">
+			AND account_nm LIKE CONCAT('%', #{account_nm}, '%')
+		</if>
+		<if test="item_code!=null and !''.equals(item_code) ">
+			AND b.item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND b.item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+		) s
+		WHERE
+		1=1
+		<if test="income_date !=null and !''.equals( income_date ) ">
+			AND income_date BETWEEN LEFT(#{income_date}, 8) AND
+			RIGHT(#{income_date}, 8)
+		</if>
+		<if test=" pang_yn == 'Y'.toString() ">
+			AND income_date IS NOT NULL
+		</if>
+		<if test=" pang_yn == 'N'.toString() ">
+			AND income_date IS NULL
+		</if>
+		<if test="insp_status !=null and !''.equals( insp_status ) ">
+			and insp_status = #{insp_status}
+		</if>
+
+	</select>
+
+	<select id="selectIncome_result2" parameterType="SYIncome_resultVo"
+		resultType="SYIncome_resultVo">
+		Select pass_yn, income_people
+		FROM income_result
+		WHERE purchase_order_num = #{purchase_order_num}
+		And purchase_num = #{purchase_num}
+		And del_yn = "N"
+	</select>
+
+	<select id="selectIncome_result3" parameterType="SYIncome_resultVo"
+		resultType="SYIncome_resultVo">
+		SELECT a.item_code, a.inspection_seq, a.inspection_item,
+		a.inspection_tool, a.inspection_method,
+		a.inspection_gubun,
+		(
+		SELECT code_nm FROM sy_code_detail
+		WHERE detail_code = a.inspection_gubun
+		) as inspection_gubun_nm, a.spec,
+		a.min_spec, a.max_spec, b.result_spec, b.pass_yn
+		FROM income_inspect_master a
+		LEFT JOIN income_inspect_result b
+		ON a.item_code =b.item_code AND a.inspection_seq =b.inspection_seq
+		WHERE
+		a.item_code = #{item_code}
+		ORDER BY a.inspection_seq ASC
+	</select>
+
+	<insert id="saveIncome_result2" parameterType="SYIncome_resultVo">
+		INSERT INTO
+		income_result
+		(
+		purchase_order_num, purchase_num, income_date,
+		item_code, item_nm,
+		item_spec, item_type_code,
+		item_type_nm, unit_price,
+		income_menge, income_people,
+		pass_yn, del_yn,
+		creator, updater, date_created, date_updated
+		)
+		SELECT *
+		FROM (
+		SELECT
+		#{purchase_order_num} as purchase_order_num, #{purchase_num} as purchase_num,
+		#{income_date} as income_date,
+		#{item_code} as item_code, #{item_nm} as item_nm,
+		#{item_spec} as item_spec, #{item_type_code} as item_type_code,
+		#{item_type_nm} as item_type_nm, #{unit_price} as unit_price,
+		#{income_menge} as income_menge, #{income_people} as income_people,
+
+		#{pass_yn} as pass_yn,
+		'N' as del_yn,
+
+		#{creator} as creator, #{updater} as updater,
+		CURRENT_TIMESTAMP() as date_created, CURRENT_TIMESTAMP() as date_updated
+		) rm
+		ON DUPLICATE KEY
+		UPDATE
+		income_people = rm.income_people
+
+		, pass_yn = rm.pass_yn
+		, item_code = rm.item_code
+		, item_nm = rm.item_nm
+		, item_spec = rm.item_spec
+		, item_type_code = rm.item_type_code
+		, item_type_nm = #{item_type_nm}
+
+		, unit_price = rm.unit_price
+		, income_menge = rm.income_menge
+		, income_date = #{income_date}
+
+		, date_updated = rm.date_updated
+		, updater = rm.updater
+	</insert>
+
+
+	<insert id="saveIncome_result3" parameterType="SYIncome_resultVo">
+		INSERT INTO
+		income_inspect_result
+		( purchase_order_num, item_code, inspection_seq, inspection_item,
+		inspection_gubun, inspection_tool, inspection_method, spec,
+		min_spec, max_spec, result_spec, pass_yn,
+		use_yn,
+		creator, updater, date_created, date_updated )
+		SELECT *
+		FROM (
+		SELECT
+		#{purchase_order_num} as purchase_order_num, #{item_code} as item_code, #{inspection_seq}
+		as inspection_seq, #{inspection_item} as inspection_item,
+		#{inspection_gubun} as inspection_gubun, #{inspection_tool} as
+		inspection_tool, #{inspection_method} as inspection_method, #{spec} as
+		spec,
+		#{min_spec} as min_spec, #{max_spec} as max_spec, #{result_spec} as result_spec,
+		#{pass_yn} as pass_yn,
+		'Y' as use_yn,
+		#{creator} as creator, #{updater} as updater,
+		CURRENT_TIMESTAMP() as date_created, CURRENT_TIMESTAMP() as date_updated
+		) rm
+		ON DUPLICATE KEY
+		UPDATE
+		result_spec = rm.result_spec
+		, pass_yn = rm.pass_yn
+		, inspection_item = rm.inspection_item
+		, inspection_gubun = rm.inspection_gubun
+		, spec = rm.spec
+		, min_spec = rm.min_spec
+		, max_spec = #{max_spec}
+		, date_updated = rm.date_updated
+		, updater = rm.updater
+	</insert>
+
+
+	<select id="selectTool_replacement_his" parameterType="SYtool_repmt_hisVo"
+		resultType="SYtool_repmt_hisVo">
+		SELECT
+		replacement_his, replacement_date, machine_class_code, machine_class_nm,
+		machine_code, machine_nm,
+		replacement_gubun,
+		( SELECT code_nm FROM sy_code_detail WHERE detail_code =
+		replacement_gubun ) AS 'replacement_gubun_nm',
+		replacement_comment, item_code, item_nm,
+		replacement_time, replacement_worker, del_yn, date_created, date_updated, creator,
+		updater
+		FROM tool_replacement_his
+		WHERE del_yn = 'N'
+		<if test="replacement_gubun !=null and !''.equals( replacement_gubun ) ">
+			AND replacement_gubun LIKE CONCAT('%', #{replacement_gubun}, '%')
+		</if>
+
+		<if test="replacement_worker !=null and !''.equals( replacement_worker ) ">
+			AND replacement_worker LIKE CONCAT('%', #{replacement_worker}, '%')
+		</if>
+
+		<if test="machine_class_code!=null and !''.equals(machine_class_code) ">
+			And machine_code IN(SELECT machine_code FROM machine_master WHERE
+			machine_class_code = #{machine_class_code} )
+		</if>
+
+		<if test="machine_code!=null and !''.equals(machine_code) ">
+			And machine_code = #{machine_code}
+		</if>
+
+		<!-- <if test="machine_class_code !=null and !''.equals( machine_class_code 
+			) "> AND machine_class_code = #{machine_class_code} </if> <if test="machine_code 
+			!=null and !''.equals( machine_code ) "> AND machine_code = #{machine_code} 
+			</if> -->
+
+		<if test="replacement_date !=null and !''.equals( replacement_date ) ">
+			AND replacement_date BETWEEN LEFT(#{replacement_date}, 8) AND
+			RIGHT(#{replacement_date}, 8)
+		</if>
+		ORDER BY date_created ASC
+	</select>
+
+	<insert id="insertTool_replacement_his" parameterType="SYtool_repmt_hisVo">
+		INSERT
+		INTO tool_replacement_his
+		( replacement_his, replacement_date,
+		machine_class_code, machine_class_nm, machine_code, machine_nm,
+		replacement_gubun, replacement_comment, item_code, item_nm,
+		replacement_time, replacement_worker,
+		del_yn,
+		creator, updater, date_created, date_updated )
+		VALUES
+		( fn_replacement_his(), #{replacement_date}, #{machine_class_code},
+		#{machine_class_nm}, #{machine_code}, #{machine_nm},
+		#{replacement_gubun}, #{replacement_comment}, #{item_code},
+		#{item_nm}, #{replacement_time}, #{replacement_worker},
+		'N',
+		#{creator}, #{updater}, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+		)
+	</insert>
+
+	<update id="updateTool_replacement_his" parameterType="SYtool_repmt_hisVo">
+		UPDATE
+		tool_replacement_his SET
+		replacement_worker = #{replacement_worker},
+		replacement_date = #{replacement_date},
+		replacement_time = #{replacement_time},
+		machine_class_code = #{machine_class_code},
+		machine_class_nm = #{machine_class_nm},
+		machine_code = #{machine_code},
+		machine_nm = #{machine_nm},
+		replacement_gubun = #{replacement_gubun},
+		replacement_comment = #{replacement_comment},
+		item_code = #{item_code},
+		item_nm = #{item_nm},
+		updater = #{updater},
+		date_updated = current_timestamp()
+		WHERE replacement_his = #{replacement_his}
+	</update>
+
+	<update id="deleteTool_replacement_his" parameterType="SYtool_repmt_hisVo">
+		UPDATE
+		tool_replacement_his
+		SET
+		del_yn = 'Y'
+		, date_updated = CURRENT_TIMESTAMP()
+		, updater = #{updater}
+		WHERE
+		replacement_his = #{replacement_his}
+	</update>
+
+
+
+	<!-- 1113 -->
+
+	<select id="selectMachine_nm" parameterType="SYMachineVO"
+		resultType="SYMachineVO">
+		SELECT
+
+		machine_code, machine_nm,
+		IFNULL((
+		SELECT
+		CASE
+		WHEN (STATUS IS NULL)
+		THEN 'n'
+		WHEN (STATUS = 'e')
+		THEN 'n'
+		ELSE status
+		END AS status
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND machine_code = m.machine_code
+
+		ORDER BY date_updated DESC
+		LIMIT 1
+
+		),'n') AS status,
+		hold_yn
+
+		FROM machine_master AS m
+		where 1=1
+		<if test="machine_class_code !=null and !''.equals( machine_class_code ) ">
+			AND machine_class_code = #{machine_class_code}
+		</if>
+		<if test="machine_code !=null and !''.equals( machine_code ) ">
+			AND machine_code = #{machine_code}
+		</if>
+		GROUP BY machine_code
+
+	</select>
+
+
+	<!-- 1125 hold 처리 -->
+	<update id="changeHold_Y" parameterType="SYMachineVO">
+		UPDATE machine_master
+		SET
+		hold_yn = 'Y',
+		date_updated = CURRENT_TIMESTAMP(),
+		updater = #{updater}
+		WHERE
+		machine_code = #{machine_code}
+	</update>
+
+	<update id="changeHold_N" parameterType="SYMachineVO">
+		UPDATE machine_master
+		SET
+		hold_yn = 'N'
+		, date_updated = CURRENT_TIMESTAMP()
+		, updater = #{updater}
+		WHERE
+		machine_code = #{machine_code}
+	</update>
+
+	<update id="changeHold_ALL_Y" parameterType="SYMachineVO">
+		UPDATE
+		machine_master
+		SET
+		hold_yn = 'Y'
+		, date_updated = CURRENT_TIMESTAMP()
+		, updater = #{updater}
+		WHERE
+		machine_code in (
+		SELECT
+		machine_code
+		FROM (
+		SELECT
+
+		machine_code, machine_nm,
+		IFNULL((
+		SELECT status
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND machine_code = m.machine_code
+		ORDER BY date_updated desc
+		LIMIT 1
+		),'n') AS status
+
+		FROM machine_master AS m
+		where 1=1
+		GROUP BY machine_code
+		) AS pp
+		WHERE 1 = 1
+		AND STATUS IN ('i','ue')
+		)
+
+	</update>
+
+
+	<update id="changeHold_ALL_N" parameterType="SYMachineVO">
+		UPDATE
+		machine_master
+		SET
+		hold_yn = 'N'
+		, date_updated = CURRENT_TIMESTAMP()
+		, updater = #{updater}
+
+		WHERE hold_yn = 'Y'
+
+	</update>
+
+	<!-- 1126 -->
+
+	<!-- <insert id="insertHold" parameterType="SYProductUnOperationVo"> INSERT 
+		INTO product_machine_hold_tbl ( product_po, routing_code, routing_seq, real_seq, 
+		prev_status, machine_code, machine_nm, prod_str_time, hold_str_time, hold_comment, 
+		del_yn, creator, updater, date_created, date_updated ) VALUES ( #{product_po}, 
+		#{routing_code}, #{routing_seq}, #{real_seq}, #{prev_status}, #{machine_code}, 
+		#{machine_nm} , #{prod_str_time}, current_timestamp(), #{hold_comment}, 'N', 
+		#{creator}, #{updater}, current_timestamp(), current_timestamp() ) </insert> -->
+
+
+	<insert id="insertHold" parameterType="SYProductUnOperationVO">
+		INSERT INTO
+		product_unoperation_tbl
+		(
+		product_po, routing_code,
+		prev_status, machine_code, machine_nm,
+		type, unprod_str_time, unprod_comment,
+
+		member_nm,
+		del_yn,
+
+		creator, updater, date_created, date_updated
+		)
+		VALUES
+		( #{product_po}, #{routing_code},
+		#{prev_status}, #{machine_code}, #{machine_nm},
+		#{type},current_timestamp(), #{unprod_comment},
+		(
+		SELECT member_nm
+		FROM sy_member_master
+		WHERE member_id = #{member_nm}
+		LIMIT 1
+		),
+		'N',
+		#{creator}, #{updater}, current_timestamp(), current_timestamp() )
+	</insert>
+
+	<update id="updateHold" parameterType="SYProductUnOperationVO">
+		UPDATE
+		product_unoperation_tbl SET
+
+		unprod_end_time = current_timestamp(),
+
+		updater = #{updater},
+		date_updated = current_timestamp()
+
+		WHERE product_po = #{product_po}
+		AND machine_code = #{machine_code}
+		AND unoperation_seq = #{unoperation_seq}
+
+	</update>
+
+	<!-- <select id="selectMachineHold" parameterType="SYHoldVo" resultType="SYHoldVo"> 
+		SELECT product_po, hold_seq, routing_code, routing_seq, real_seq, prev_status, 
+		machine_code, machine_nm, prod_str_time, hold_str_time, hold_end_time, hold_comment, 
+		del_yn, creator, updater, date_created, date_updated FROM product_machine_hold_tbl 
+		WHERE 1 = 1 AND product_po = #{product_po} AND machine_code = #{machine_code} 
+		AND hold_end_time IS NULL ORDER BY hold_str_time DESC LIMIT 1 </select> -->
+
+
+	<select id="selectMachineHold" parameterType="SYProductUnOperationVO"
+		resultType="SYProductUnOperationVO">
+		SELECT
+		product_po, unoperation_seq, routing_code,
+		prev_status,
+		machine_code, machine_nm,
+		member_emp_no, member_nm,
+
+		unprod_str_time, unprod_end_time,
+		unprod_comment,
+		del_yn,
+		creator, updater, date_created, date_updated
+
+		FROM product_unoperation_tbl
+		WHERE 1 = 1
+
+		AND product_po = #{product_po}
+		AND machine_code = #{machine_code}
+
+		AND unprod_end_time IS NULL
+
+		ORDER BY unprod_str_time DESC
+		LIMIT 1
+
+	</select>
+
+
+	<select id="selectMachineHold_from_seq" parameterType="SYProductUnOperationVO"
+		resultType="SYProductUnOperationVO">
+		SELECT
+		product_po, unoperation_seq, routing_code,
+		prev_status,
+		machine_code, machine_nm,
+		member_emp_no, member_nm,
+
+		unprod_str_time, unprod_end_time,
+		unprod_comment,
+		del_yn,
+		creator, updater, date_created, date_updated
+
+		FROM product_unoperation_tbl
+		WHERE 1 = 1
+
+		AND product_po = #{product_po}
+		AND machine_code = #{machine_code}
+		AND unoperation_seq = #{unoperation_seq}
+
+
+		ORDER BY unprod_str_time DESC
+		LIMIT 1
+
+	</select>
+
+
+	
+
+</mapper>

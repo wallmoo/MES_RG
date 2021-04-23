@@ -1,0 +1,86 @@
+@page{
+  size: auto;
+  margin: 5mm;
+}
+
+body
+    {
+/*         margin: 5mm 5mm 5mm 5mm; margin you want for the content */
+    }
+    
+table {
+    border-collapse: collapse;
+}
+
+table { page-break-inside:auto }
+tr      { page-break-inside:avoid; page-break-after:auto }
+   
+   
+table, th, td {
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+th, td {
+/*     padding: 5px; */
+/*     text-align: left;     */
+}
+ 
+/* ---------------------------------------------- */
+ footer {
+  font-size: 9px;
+  text-align: center;
+}
+
+@media print {
+  footer {
+    position: fixed;
+    bottom: 0mm;
+  }
+
+
+}
+/* ---------------------------------------------- */
+
+#oCell1 {width: 5%; text-align: center;}
+#oCell2 {width: 13%; text-align: center;}
+#oCell3 {width: 28%; text-align: center;}
+#oCell4 {width: 9%; text-align: center;}
+#oCell5 {width: 9%; text-align: center;}
+#oCell6 {width: 9%; text-align: center;}
+#oCell7 {width: 9%; text-align: center;}
+#oCell8 {width: 9%; text-align: center;}
+#oCell9 {width: 9%; text-align: center;} 
+
+
+#aCell1 {width: 9%; text-align: center;}
+#aCell2 {width: 9%; text-align: center;}
+#aCell3 {width: 9%; text-align: center;}
+
+#rCell1  {height: 25px; text-align: center;}
+#rCell2  {height: 25px; }
+#rCell3  {height: 25px; }
+#rCell4  {height: 25px; text-align: center;}
+#rCell5  {height: 25px; text-align: center;}
+#rCell6  {height: 25px; text-align: right;}
+#rCell7  {height: 25px; text-align: center;}
+#rCell8  {height: 25px; text-align: right;}
+#rCell9  {height: 25px; text-align: right;} 
+#rCell10 {height: 25px; text-align: right;} 
+#rCell11 {height: 25px; text-align: right;} 
+
+
+#mCell1  {height: 20px;text-align: center;}
+#mCell6  {height: 20px;text-align: right;}
+#mCell7  {height: 20px;text-align: right;}
+#mCell8  {height: 20px;text-align: right;}
+#mCell9  {height: 20px;text-align: right;} 
+#mCell10 {height: 20px;text-align: right;} 
+#mCell11 {height: 20px;text-align: right;} 
+
+
+#eCell1 {height: 40px; width: 25%;text-align: center;}
+#eCell2 {height: 40px; width: 25%;text-align: right;}
+#eCell3 {height: 40px; width: 25%;text-align: center;}
+#eCell4 {height: 40px; width: 25%;text-align: right;}
+
+#import_inspection_cell  {height: 20px; text-align: center;}
