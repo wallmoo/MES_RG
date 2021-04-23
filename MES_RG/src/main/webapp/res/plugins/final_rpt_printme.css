@@ -1,0 +1,55 @@
+@page{
+	counter-increment: page;
+	size:A4 landscape;
+	
+}
+
+body
+    {
+        margin: 5mm 5mm 5mm 5mm;
+    }
+    
+table {
+    border-collapse: collapse;
+}
+
+table { page-break-inside:auto }
+tr      { page-break-inside:avoid; page-break-after:auto }
+
+/* ---------------------------------------------- */
+ footer {
+  font-size: 9px;
+  text-align: center;
+}
+
+@media print {
+  footer {
+    position: fixed;
+    bottom: 0mm;
+  }
+
+
+}
+/* ---------------------------------------------- */
+
+.endline{page-break-before:always}
+
+.jb-wrap {
+	position: relative;
+}
+.jb-wrap img {
+	width: 100%;
+	vertical-align: middle;
+}
+.jb-text {
+	font-size: 11px;
+	color : #e04646;
+	text-align: center;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate( -50%, -50% );
+}
+
+
+/* #import_inspection_cell  {height: 20px; text-align: center;} */

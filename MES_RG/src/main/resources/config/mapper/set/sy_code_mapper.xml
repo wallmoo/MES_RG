@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.passcombine.set.dao.SYCodeDAO">
+
+	<select id="selectMasterCode" parameterType="SYCodeVo" resultType="SYCodeVo">
+SELECT master_code, code_nm, code_nm_en, code_dscr, code_order, code_use_yn, filter1_val, filter2_val, filter3_val
+  , date_created, date_updated, creator, updater
+FROM sy_code_master
+<where>
+	<if test="master_code != null and master_code != ''">
+		AND master_code = #{master_code}
+	</if>
+	<if test="code_nm != null and code_nm != ''">
+		AND (code_nm LIKE CONCAT('%', #{code_nm}, '%') OR code_nm_en LIKE CONCAT('%', #{code_nm}, '%')) 
+	</if>
+	<if test="code_use_yn != null and code_use_yn != ''">
+		AND code_use_yn = #{code_use_yn}
+	</if>
+</where>
+ORDER BY code_order
+	</select>
+
+	<insert id="insertMasterCode" parameterType="SYCodeVo">
+INSERT INTO sy_code_master
+(master_code, code_nm, code_nm_en, code_dscr, code_order, code_use_yn
+, filter1_val, filter2_val, filter3_val, date_created, date_updated, creator, updater)
+VALUES
+(concat('MC', fn_common_seq('master_code')), #{code_nm}, #{code_nm_en}, #{code_dscr}, #{code_order}, #{code_use_yn}
+, #{filter1_val}, #{filter2_val}, #{filter3_val}, current_timestamp(), current_timestamp(), #{creator}, #{updater})
+	</insert>
+
+	<update id="updateMasterCode" parameterType="SYCodeVo">
+UPDATE sy_code_master
+SET code_nm = #{code_nm}
+	, code_nm_en = #{code_nm_en}
+	, code_dscr = #{code_dscr}
+	, code_order = #{code_order}
+	, code_use_yn = #{code_use_yn}
+	, filter1_val = #{filter1_val}
+	, filter2_val = #{filter2_val}
+	, filter3_val = #{filter3_val}
+	, date_updated = current_timestamp()
+	, updater = #{updater}
+WHERE master_code = #{master_code}
+	</update>
+
+	<delete id="deleteMasterCode" parameterType="SYCodeVo">
+DELETE FROM sy_code_master
+WHERE master_code = #{master_code}
+	</delete>
+
+	<select id="selectDetailCode" parameterType="SYCodeVo" resultType="SYCodeVo">
+SELECT master_code, detail_code, code_nm, code_nm_en, code_dscr, code_order, code_use_yn
+	, filter1_val, filter2_val, filter3_val
+  , date_created, date_updated, creator, updater
+FROM sy_code_detail
+<where>
+	<if test="master_code != null and master_code != ''">
+		AND master_code = #{master_code}
+	</if>
+	<if test="detail_code != null and detail_code != ''">
+		AND detail_code = #{detail_code}
+	</if>
+	<if test="code_use_yn != null and code_use_yn != ''">
+		AND code_use_yn = #{code_use_yn}
+	</if>
+	<if test="filter1_val != null and filter1_val != ''">
+		AND filter1_val = #{filter1_val}
+	</if>
+	<if test="filter2_val != null and filter2_val != ''">
+		AND filter2_val = #{filter2_val}
+	</if>
+	<if test="filter3_val != null and filter3_val != ''">
+		AND filter3_val = #{filter3_val}
+	</if>
+	<if test="code_nm != null and code_nm != ''">
+		AND (code_nm LIKE CONCAT('%', #{code_nm}, '%') OR code_nm_en LIKE CONCAT('%', #{code_nm}, '%')) 
+	</if>
+</where>
+ORDER BY code_order
+	</select>
+
+	<insert id="insertDetailCode" parameterType="SYCodeVo">
+INSERT INTO sy_code_detail (
+	master_code, detail_code, code_nm, code_nm_en, code_dscr, code_order, code_use_yn
+	, filter1_val, filter2_val, filter3_val, date_created, date_updated, creator, updater
+) VALUES (
+	#{master_code}, concat('MD', fn_common_seq('detail_code')), #{code_nm}, #{code_nm_en}, #{code_dscr}, #{code_order}, #{code_use_yn}
+	, #{filter1_val}, #{filter2_val}, #{filter3_val}, current_timestamp(), current_timestamp(), #{creator}, #{updater}
+)
+	</insert>
+
+	<update id="updateDetailCode" parameterType="SYCodeVo">
+UPDATE sy_code_detail
+SET code_nm = #{code_nm}
+	, code_nm_en = #{code_nm_en}
+	, code_dscr = #{code_dscr}
+	, code_order = #{code_order}
+	, code_use_yn = #{code_use_yn}
+	, filter1_val = #{filter1_val}
+	, filter2_val = #{filter2_val}
+	, filter3_val = #{filter3_val}
+	, date_updated = current_timestamp()
+	, updater = #{updater}
+WHERE master_code = #{master_code}
+	AND detail_code = #{detail_code}
+	</update>
+
+	<delete id="deleteDetailCode" parameterType="SYCodeVo">
+DELETE FROM sy_code_detail
+WHERE master_code = #{master_code}
+	<if test="detail_code != null and detail_code != ''">
+		AND detail_code = #{detail_code}
+	</if>
+	</delete>
+
+</mapper>

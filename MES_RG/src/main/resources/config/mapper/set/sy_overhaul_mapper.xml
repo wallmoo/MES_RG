@@ -1,0 +1,814 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.passcombine.set.dao.SYOverhaulDAO">
+
+	<select id="selectrepairReqT" parameterType="SYRepairVo" resultType="SYRepairVo">
+		select 
+			rrt.repair_num ,
+			rrt.repair_class_code ,
+			rrt.repair_class_nm ,
+		
+			fn_code_nm('MC1017',rrt.customer_integration_nm) customer_integration_nm,
+			rrt.carry_in_customer_code ,
+			rrt.carry_in_land ,
+			fn_cust_nm(rrt.carry_in_customer_code) as in_customer_nm,
+			rrt.carry_out_customer_code ,
+			rrt.carry_out_land ,
+			fn_cust_nm(rrt.carry_out_customer_code) as  out_customer_nm,
+			rrt.item_code ,
+			rrt.item_nm ,
+			rrt.sernr ,
+			rrt.carry_in_date ,
+			rrt.repair_date ,
+			rrt.out_date,
+			rrt.using_day ,
+			rrt.customer_integration_nm as customer_integration_code,
+			
+			rrt.proc1_code,
+			rrt.proc1_file_group,
+			fn_repair_file_name(rrt.proc1_file_group) proc1_file_name,
+			fn_repair_file_path(rrt.proc1_file_group) proc1_file_path,
+			rrt.proc1_date,
+			DATE_FORMAT(rrt.proc1_date,'%m-%d') as proc1_date_d , 
+			rrt.proc1_manager_nm,
+			
+			rrt.proc2_code,
+			rrt.proc2_file_group,
+			fn_repair_file_name(rrt.proc2_file_group) proc2_file_name,
+			fn_repair_file_path(rrt.proc2_file_group) proc2_file_path,
+			rrt.proc2_date,
+			 DATE_FORMAT(rrt.proc2_date,'%m-%d') as proc2_date_d , 
+			 rrt.proc2_manager_nm,
+			
+			rrt.proc3_code,
+			rrt.proc3_file_group,
+			fn_repair_file_name(rrt.proc3_file_group) proc3_file_name,
+			fn_repair_file_path(rrt.proc3_file_group) proc3_file_path,
+			rrt.proc3_date,
+			DATE_FORMAT(rrt.proc3_date,'%m-%d') as proc3_date_d , 
+			rrt.proc3_manager_nm,
+			
+			rrt.proc4_code,
+			rrt.proc4_file_group,
+			fn_repair_file_name(rrt.proc4_file_group) proc4_file_name,
+			fn_repair_file_path(rrt.proc4_file_group) proc4_file_path,
+			rrt.proc4_date,
+			 DATE_FORMAT(rrt.proc4_date,'%m-%d') as proc4_date_d , 
+			 rrt.proc4_manager_nm,
+			
+			rrt.proc5_code,
+			rrt.proc5_file_group,
+			fn_repair_file_name(rrt.proc5_file_group) proc5_file_name,
+			fn_repair_file_path(rrt.proc5_file_group) proc5_file_path,
+			rrt.proc5_date,
+			 DATE_FORMAT(rrt.proc5_date,'%m-%d') as proc5_date_d  , 
+			 rrt.proc5_manager_nm,
+			
+			rrt.proc6_code,
+			rrt.proc6_file_group,
+			fn_repair_file_name(rrt.proc6_file_group) proc6_file_name,
+			fn_repair_file_path(rrt.proc6_file_group) proc6_file_path,
+			rrt.proc6_date,
+			 DATE_FORMAT(rrt.proc6_date,'%m-%d') as proc6_date_d , 
+			 rrt.proc6_manager_nm,
+			
+			success_status,
+			repair_comment
+		from repair_request_tbl rrt 
+		where del_yn = 'N' AND     out_date IS null
+	 	<!-- 	<if test="carry_in_date_st != null and '' != carry_in_date_st">
+				AND carry_in_date between date(#{carry_in_date_st}) and date(#{carry_in_date_ed})
+			</if> -->
+			<if test="carry_in_date_st != null and '' != carry_in_date_st">
+				AND repair_date between date(#{carry_in_date_st}) and date(#{carry_in_date_ed})
+			</if>
+			
+			<if test="out_date_start != null and '' != out_date_start">
+				AND out_date between date(#{out_date_start}) and date(#{out_date_end})
+			</if>
+	 		<if test="customer_integration_nm != null and '' != customer_integration_nm">
+				AND fn_code_nm('MC1017',customer_integration_nm) = #{customer_integration_nm}
+			</if>
+			<if test="customer_integration_code != null and '' != customer_integration_code">
+				AND customer_integration_nm = #{customer_integration_code}
+			</if>
+	 		<if test="item_code != null and '' != item_code">
+				AND item_code = #{item_code}
+			</if>
+	 		<if test="item_nm != null and '' != item_nm">
+				AND item_nm = #{item_nm}
+			</if>
+	 		<if test="sernr != null and '' != sernr">
+				AND sernr = #{sernr}
+			</if>
+			<if test="carry_in_customer_code != null and '' != carry_in_customer_code">
+				and carry_in_customer_code = #{carry_in_customer_code}
+			</if>
+			<if test="carry_out_customer_code != null and '' != carry_out_customer_code">
+				and carry_out_customer_code = #{carry_out_customer_code}
+			</if>
+		
+		order by repair_date desc
+	</select>
+	<select id="selectrepairReqTcnt" parameterType="String" resultType="int">
+		select count(*) from repair_request_tbl where repair_num = #{value}
+	</select>
+	<select id="findinout" parameterType="SYCustomerVo" resultType="SYCustomerVo">
+		Select customer_code,land, customer_nm
+		From customer_Tbl
+		Where business_nm in ('Overhaul/Consumable Parts','Overhaul')
+		<if test="customer_integration_code != null and '' != customer_integration_code">
+			and customer_integration_code = #{customer_integration_code}
+		</if>
+		<if test="customer_code != null and '' != customer_code">
+			and customer_code = #{customer_code}
+		</if>
+	</select>
+	<insert id="insRepair" parameterType="SYRepairVo">
+		insert repair_request_tbl 
+			(
+				repair_num, using_day, item_nm, item_code, sernr, carry_in_date, repair_date, customer_integration_nm, carry_out_customer_code,
+				carry_in_customer_code, repair_class_code, repair_class_nm, carry_out_land, carry_in_land,
+				success_status , 
+				repair_comment,
+				del_yn , creator , updater , date_created , date_updated
+			) 
+		values 
+			(
+				fn_repair_num(), #{using_day}, #{item_nm}, #{item_code}, #{sernr}, #{carry_in_date}, #{repair_date}, #{customer_integration_nm}, #{carry_out_customer_code},
+				#{carry_in_customer_code}, #{repair_class_code}, #{repair_class_nm}, #{carry_out_land}, #{carry_in_land},
+				'N',#{repair_comment},
+				'N',#{creator},#{updater},now(),now()
+			)
+	</insert>
+	<update id="modRepair" parameterType="SYRepairVo">
+		update repair_request_tbl set
+			using_day = #{using_day}, 
+			item_nm = #{item_nm}, 
+			item_code = #{item_code}, 
+			sernr = #{sernr}, 
+			carry_in_date = #{carry_in_date}, 
+			repair_date = #{repair_date}, 
+			customer_integration_nm = #{customer_integration_nm}, 
+			carry_out_customer_code = #{carry_out_customer_code},
+			carry_in_customer_code = #{carry_in_customer_code}, 
+			repair_class_code = #{repair_class_code}, 
+			repair_class_nm = #{repair_class_nm}, 
+			carry_out_land = #{carry_out_land}, 
+			carry_in_land = #{carry_in_land}, 
+			repair_comment = #{repair_comment},
+			updater = #{updater},
+			date_updated = now()
+			where repair_num = #{repair_num}
+	</update>
+	<update id="delRepair" parameterType="SYRepairVo">
+		update repair_request_tbl set
+			del_yn = 'Y',
+			updater = #{updater},
+			date_updated = now()
+		where repair_num = #{repair_num}
+	</update>
+	<select id="getItemnm" parameterType="SYMaterialVo" resultType="SYMaterialVo">
+		select item_nm,item_code from material_tbl where item_type_code in ('MD1247','MD1248')
+	</select>
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	<!-- jyp -->
+	
+	<update id="insRepairReportFile" parameterType="SYRepairVo">
+		UPDATE repair_request_tbl
+		SET 
+			<if test="proc1_code != null and '' != proc1_code">
+				proc1_code = #{proc1_code},
+				proc1_file_group = #{proc1_file_group},
+				proc1_date = #{proc1_date},
+				proc1_manager_nm = #{proc1_manager_nm},
+			</if>
+			
+			<if test="proc2_code != null and '' != proc2_code">
+				proc2_code = #{proc2_code},
+				proc2_file_group = #{proc2_file_group},
+				proc2_date = #{proc2_date},
+				proc2_manager_nm = #{proc2_manager_nm},
+				<if test="proc2_outsourcing_price != null and '' != proc2_outsourcing_price">
+					proc2_outsourcing_price = #{proc2_outsourcing_price},
+				</if>
+			</if>
+			
+			<if test="proc3_code != null and '' != proc3_code">
+				proc3_code = #{proc3_code},
+				proc3_file_group = #{proc3_file_group},
+				proc3_date = #{proc3_date},
+				proc3_manager_nm = #{proc3_manager_nm},
+			</if>
+			
+			<if test="proc4_code != null and '' != proc4_code">
+				proc4_code = #{proc4_code},
+				proc4_file_group = #{proc4_file_group},
+				proc4_date = #{proc4_date},
+				proc4_manager_nm = #{proc4_manager_nm},
+			</if>
+			
+			<if test="proc5_code != null and '' != proc5_code">
+				proc5_code = #{proc5_code},
+				proc5_file_group = #{proc5_file_group},
+				proc5_date = #{proc5_date},
+				proc5_manager_nm = #{proc5_manager_nm},
+			</if>
+			
+			<if test="proc6_code != null and '' != proc6_code">
+				proc6_code = #{proc6_code},
+				proc6_file_group = #{proc6_file_group},
+				proc6_date = #{proc6_date},
+				proc6_manager_nm = #{proc6_manager_nm},
+				success_status = 'Y',
+			</if>
+			updater = #{updater}, date_updated = NOW()
+			
+		WHERE
+			repair_num = #{repair_num}
+	</update>
+	
+	
+	<update id="delRepairReportFile" parameterType="SYRepairVo">
+		UPDATE repair_request_tbl
+		SET
+			<if test="report_code != null and 'MD1271'.equals(report_code)">
+				
+				proc1_file_group = '',
+				
+				proc1_code = '',
+				proc1_date = '',
+				proc1_manager_nm = '',
+			</if>
+			<if test="report_code != null and 'MD1272'.equals(report_code)">
+				proc2_file_group = '',
+				
+				proc2_code = '',
+				proc2_date = '',
+				proc2_manager_nm = '',
+			</if>
+			<if test="report_code != null and 'MD1273'.equals(report_code)">
+				proc3_file_group = '',
+				
+				proc3_code = '',
+				proc3_date = '',
+				proc3_manager_nm = '',
+			</if>
+			<if test="report_code != null and 'MD1274'.equals(report_code)">
+				
+				proc4_file_group = '',
+				
+				proc4_code = '',
+				proc4_date = '',
+				proc4_manager_nm = '',
+			</if>
+			<if test="report_code != null and 'MD1275'.equals(report_code)">
+				proc5_file_group = '',
+				
+				proc5_code = '',
+				proc5_date = '',
+				proc5_manager_nm = '',
+			</if>
+			<if test="report_code != null and 'MD1276'.equals(report_code)">
+				proc6_file_group = '',
+				
+				proc6_code = '',
+				proc6_date = '',
+				proc6_manager_nm = '',
+			</if>
+			date_updated = NOW(), updater = #{updater}
+		WHERE
+			repair_num = #{repair_num}
+	</update>
+	
+	
+	<!-- jyp -->
+	
+	
+	
+	
+	
+	
+	<!-- CW -->
+	
+	<!-- <select id="selectRepairAnalysis" parameterType="SYRepairAnalysisVo" resultType="SYRepairAnalysisVo">
+		SELECT 
+			repair_num,
+			item_code,
+			item_nm,
+			from_ym,
+			from_date,
+			time_1, time_2, time_3, time_4, time_5,
+			concat(ROUND((time_1 / 60),1),'시간') AS timef_1, 
+			concat(ROUND((time_2 / 60),1),'시간') AS timef_2, 
+			concat(ROUND((time_3 / 60),1),'시간') AS timef_3,  		
+			concat(ROUND((time_4 / 60),1),'시간') AS timef_4, 			
+			concat(ROUND((time_5 / 60),1),'시간') AS timef_5,  
+			concat(ROUND(((time_1 + time_2 + time_3 + time_4 + time_5) / 60 ),1),'시간') AS total_f
+		
+		FROM repair_analysis_view2
+		WHERE 1 = 1 
+		<if test="from_date != null and '' != from_date">
+			AND date_format(out_date, '%Y%m%d') BETWEEN left(#{from_date}, 8) AND right(#{from_date}, 8)
+		</if>
+		<if test="item_code != null and '' != item_code">
+			AND item_code = #{item_code}
+		</if>
+		<if test="item_nm != null and '' != item_nm">
+			AND item_nm = #{item_nm}
+		</if>
+		
+		GROUP BY repair_num
+	</select> -->
+ 
+ 
+	<select id="selectRepairAnalysis" parameterType="SYRepairAnalysisVo" resultType="SYRepairAnalysisVo">
+		SELECT 
+			repair_num,
+			item_code,
+			item_nm,
+			sernr,
+			from_ym,
+			from_date,
+			time_0, time_1, time_2, time_3, time_4, time_5, time_6, 
+			concat(ROUND((time_0 / 60),1),'시간') AS timef_0,   
+			concat(ROUND((time_1 / 60),1),'시간') AS timef_1, 
+			concat(ROUND((time_2 / 60),1),'시간') AS timef_2, 
+			concat(ROUND((time_3 / 60),1),'시간') AS timef_3,  		
+			concat(ROUND((time_4 / 60),1),'시간') AS timef_4, 			
+			concat(ROUND((time_5 / 60),1),'시간') AS timef_5, 
+			concat(ROUND((time_6 / 60),1),'시간') AS timef_6,  
+			concat(ROUND(((time_0 + time_1 + time_2 + time_3 + time_4 + time_5 + time_6) / 60 ),1),'시간') AS total_f
+		
+		FROM repair_analysis_view
+		WHERE 1 = 1 
+		<if test="from_date != null and '' != from_date">
+			AND date_format(out_date, '%Y%m%d') BETWEEN left(#{from_date}, 8) AND right(#{from_date}, 8)
+		</if>
+		<if test="item_code != null and '' != item_code">
+			AND item_code = #{item_code}
+		</if>
+		<if test="item_nm != null and '' != item_nm">
+			AND item_nm = #{item_nm}
+		</if>
+		<if test="repair_num != null and '' != repair_num">
+			AND repair_num = #{repair_num}
+		</if>
+		
+		GROUP BY repair_num
+	</select>
+  
+ 
+	<update id="updateOutDate" parameterType="SYRepairVo">
+		UPDATE repair_request_tbl
+		SET 
+
+			<!-- out_date = date_format(current_timestamp(),'%Y%m%d'), -->
+			out_date = #{out_date},
+			out_date_time = #{out_date_time},
+			
+			updater = #{updater}, date_updated = NOW()
+			
+		WHERE
+			repair_num = #{repair_num}
+	</update>
+	
+	
+	<update id="cancelCompleteReport" parameterType="SYRepairVo">
+		UPDATE repair_request_tbl
+		SET 
+		
+			out_date = null,
+			out_date_time = null,
+			proc6_code = null,
+			proc6_file_group = null,
+			proc6_date = null,
+			proc6_manager_nm = null,
+			success_status = 'N',
+						
+			updater = #{updater}, date_updated = NOW()
+			
+		WHERE
+			repair_num = #{repair_num}
+	</update>
+	
+	<select id="selectrepairReqR" parameterType="SYRepairVo" resultType="SYRepairVo">
+		select 
+			rrt.repair_num ,
+			rrt.repair_class_code ,
+			rrt.repair_class_nm ,
+			fn_code_nm('MC1017',rrt.customer_integration_nm) customer_integration_nm,
+			rrt.carry_in_customer_code ,
+			rrt.carry_in_land ,
+			fn_cust_nm(rrt.carry_in_customer_code) as in_customer_nm,
+			rrt.carry_out_customer_code ,
+			rrt.carry_out_land ,
+			fn_cust_nm(rrt.carry_out_customer_code) as  out_customer_nm,
+			rrt.item_code ,
+			rrt.item_nm ,
+			rrt.sernr ,
+			rrt.carry_in_date ,
+			rrt.repair_date ,
+			IFNULL(date_format(rrt.out_date, '%Y%m%d'), 0) as out_date,
+			rrt.using_day ,
+			rrt.customer_integration_nm as customer_integration_code,
+			
+			rrt.proc1_code,
+			rrt.proc1_file_group,
+			fn_repair_file_name(rrt.proc1_file_group) proc1_file_name,
+			fn_repair_file_path(rrt.proc1_file_group) proc1_file_path,
+			rrt.proc1_date, rrt.proc1_manager_nm,
+			
+			rrt.proc2_code,
+			rrt.proc2_file_group,
+			fn_repair_file_name(rrt.proc2_file_group) proc2_file_name,
+			fn_repair_file_path(rrt.proc2_file_group) proc2_file_path,
+			rrt.proc2_date, rrt.proc2_manager_nm,
+			
+			rrt.proc3_code,
+			rrt.proc3_file_group,
+			fn_repair_file_name(rrt.proc3_file_group) proc3_file_name,
+			fn_repair_file_path(rrt.proc3_file_group) proc3_file_path,
+			rrt.proc3_date, rrt.proc3_manager_nm,
+			
+			rrt.proc4_code,
+			rrt.proc4_file_group,
+			fn_repair_file_name(rrt.proc4_file_group) proc4_file_name,
+			fn_repair_file_path(rrt.proc4_file_group) proc4_file_path,
+			rrt.proc4_date, rrt.proc4_manager_nm,
+			
+			rrt.proc5_code,
+			rrt.proc5_file_group,
+			fn_repair_file_name(rrt.proc5_file_group) proc5_file_name,
+			fn_repair_file_path(rrt.proc5_file_group) proc5_file_path,
+			rrt.proc5_date, rrt.proc5_manager_nm,
+			
+			rrt.proc6_code,
+			rrt.proc6_file_group,
+			fn_repair_file_name(rrt.proc6_file_group) proc6_file_name,
+			fn_repair_file_path(rrt.proc6_file_group) proc6_file_path,
+			rrt.proc6_date, rrt.proc6_manager_nm,
+			
+			success_status
+		from repair_request_tbl rrt 
+		where del_yn = 'N'  
+	 	<!-- 	<if test="carry_in_date_st != null and '' != carry_in_date_st">
+				AND carry_in_date between date(#{carry_in_date_st}) and date(#{carry_in_date_ed})
+			</if> -->
+			<if test="repair_num != null and '' != repair_num">
+				AND repair_num = #{repair_num}
+			</if>
+			<if test="carry_in_date_st != null and '' != carry_in_date_st">
+				AND repair_date between date(#{carry_in_date_st}) and date(#{carry_in_date_ed})
+			</if>
+			<if test="in_date_start != null and '' != in_date_start">
+				AND repair_date between date(#{in_date_start}) and date(#{in_date_end})
+			</if>
+			<if test="out_date_start != null and '' != out_date_start">
+				AND out_date between date(#{out_date_start}) and date(#{out_date_end})
+			</if>
+	 		<if test="customer_integration_nm != null and '' != customer_integration_nm">
+				AND fn_code_nm('MC1017',customer_integration_nm) = #{customer_integration_nm}
+			</if>
+	 		<if test="item_code != null and '' != item_code">
+				AND item_code = #{item_code}
+			</if>
+	 		<if test="item_nm != null and '' != item_nm">
+				AND item_nm = #{item_nm}
+			</if>
+	 		<if test="sernr != null and '' != sernr">
+				AND sernr = #{sernr}
+			</if>
+			<if test="carry_in_customer_code != null and '' != carry_in_customer_code">
+				and carry_in_customer_code = #{carry_in_customer_code}
+			</if>
+			<if test="carry_out_customer_code != null and '' != carry_out_customer_code">
+				and carry_out_customer_code = #{carry_out_customer_code}
+			</if>
+			<if test='status != null and "before" == status'>
+			
+				AND (out_date IS NULL OR out_date = '')
+			</if>
+			<if test='status != null and "after" == status'>
+				AND out_date IS NOT NULL
+			</if>
+		order by repair_date desc
+	</select>
+	
+	
+	
+	<!-- <select id="selectrepairOther" parameterType="SYRepairVo" resultType="SYRepairVo">
+	
+		 SELECT 
+			rrt.repair_num , 
+			rrt.repair_class_code , 
+			rrt.repair_class_nm ,
+			fn_code_nm('MC1017',rrt.customer_integration_nm) customer_integration_nm, 
+			rrt.carry_in_customer_code , 
+			rrt.carry_in_land ,
+			fn_cust_nm(rrt.carry_in_customer_code) as in_customer_nm, 
+			rrt.carry_out_customer_code , 
+			rrt.carry_out_land , 
+			fn_cust_nm(rrt.carry_out_customer_code) as out_customer_nm, 
+			rrt.item_code ,
+			rrt.item_nm , 
+			rrt.sernr , 
+			rrt.carry_in_date , 
+			rrt.repair_date , 
+			rrt.out_date, 
+			rrt.using_day , 
+			rrt.customer_integration_nm as customer_integration_code, 
+			rrt.proc1_code,
+			rrt.proc1_file_group, 
+			fn_repair_file_name(rrt.proc1_file_group) proc1_file_name, 
+			fn_repair_file_path(rrt.proc1_file_group) proc1_file_path, 
+			rrt.proc1_date, 
+			rrt.proc1_manager_nm, 
+			rrt.proc2_code, 
+			rrt.proc2_file_group, 
+			fn_repair_file_name(rrt.proc2_file_group) proc2_file_name, 
+			fn_repair_file_path(rrt.proc2_file_group) proc2_file_path, 
+			rrt.proc2_date,
+			rrt.proc2_request_date,
+			rrt.proc2_account_code,
+			
+			CASE
+			WHEN (proc2_outsourcing_price IS NULL)
+			THEN IFNULL((
+				SELECT outsourcing_price
+				FROM material_tbl
+				WHERE del_yn = 'N'
+				AND item_code = rrt.item_code
+			),0)
+			ELSE IFNULL(proc2_outsourcing_price,0)
+			END AS proc2_outsourcing_price,
+			
+			rrt.proc2_account_nm,
+			rrt.proc2_manager_nm, 
+			success_status
+			  
+	  	FROM repair_request_tbl rrt 
+	   
+		WHERE del_yn = 'N' 
+		AND proc1_date IS NOT NULL 
+		<if test="current_status == null or ''.equals( current_status )">
+			AND proc2_date IS NULL 
+			AND proc2_request_date IS NULL 
+		</if>
+		<if test='"B".equals( current_status )'>
+			AND proc2_date IS NULL 
+			AND proc2_request_date IS NOT NULL 
+		</if>
+		<if test='"A".equals( current_status )'>
+			AND proc2_date IS NOT NULL 
+		</if>
+		AND proc3_date IS null
+	   	
+	   	<if test="proc2_request_date != null and !''.equals( proc2_request_date ) ">
+			AND date_format(proc2_request_date, '%Y%m%d') BETWEEN left(#{proc2_request_date}, 8) AND right(#{proc2_request_date}, 8)
+		</if>
+		<if test="repair_num != null and '' != repair_num">
+			AND repair_num = #{repair_num}
+		</if>
+		<if test="item_code != null and '' != item_code">
+			AND item_code = #{item_code}
+		</if>
+		 <if test="item_nm != null and '' != item_nm">
+			AND item_nm = #{item_nm}
+		</if>
+		<if test="proc2_account_code != null and '' != proc2_account_code">
+			AND proc2_account_code = #{proc2_account_code}
+		</if>
+		<if test="proc2_account_nm != null and '' != proc2_account_nm">
+			AND proc2_account_nm = #{proc2_account_nm}
+		</if>
+		ORDER BY repair_date DESC 
+        
+	
+	</select> -->
+	
+	<!-- 201118 selectrepairOther수정 -->
+	<select id="selectrepairOther" parameterType="SYRepairVo" resultType="SYRepairVo">
+   
+       SELECT 
+         rrt.repair_num , 
+         rrt.repair_class_code , 
+         rrt.repair_class_nm ,
+         fn_code_nm('MC1017',rrt.customer_integration_nm) customer_integration_nm, 
+         rrt.carry_in_customer_code , 
+         rrt.carry_in_land ,
+         fn_cust_nm(rrt.carry_in_customer_code) as in_customer_nm, 
+         rrt.carry_out_customer_code , 
+         rrt.carry_out_land , 
+         fn_cust_nm(rrt.carry_out_customer_code) as out_customer_nm, 
+         rrt.item_code ,
+         rrt.item_nm , 
+         rrt.sernr , 
+         rrt.carry_in_date , 
+         rrt.repair_date , 
+         rrt.out_date, 
+         rrt.using_day , 
+         rrt.customer_integration_nm as customer_integration_code, 
+         CONCAT(ROUND(TIME_TO_SEC(timediff(date_format(rrt.proc2_date,'%Y-%m-%d %H:%i:%s'), date_format(rrt.proc2_request_date,'%Y-%m-%d %H:%i:%s')))/3600,1),'시간') AS diff_time,
+         rrt.proc1_code,
+         rrt.proc1_file_group, 
+         fn_repair_file_name(rrt.proc1_file_group) proc1_file_name, 
+         fn_repair_file_path(rrt.proc1_file_group) proc1_file_path, 
+  		 rrt.proc1_date,
+         date_format(rrt.proc1_date, '%Y%m%d') as proc1_date_ymd,
+         rrt.proc1_manager_nm, 
+         rrt.proc2_code, 
+         rrt.proc2_file_group, 
+         fn_repair_file_name(rrt.proc2_file_group) proc2_file_name, 
+         fn_repair_file_path(rrt.proc2_file_group) proc2_file_path, 
+         rrt.proc2_date,
+         date_format(rrt.proc2_date, '%Y%m%d') as proc2_date_ymd,
+         date_format(rrt.proc2_request_date, '%Y%m%d') as proc2_request_date,
+<!--          rrt.proc2_request_date, -->
+         rrt.proc2_account_code,
+         
+         CASE
+         WHEN (proc2_outsourcing_price IS NULL)
+         THEN IFNULL((
+            SELECT outsourcing_price
+            FROM material_tbl
+            WHERE del_yn = 'N'
+            AND item_code = rrt.item_code
+         ),0)
+         ELSE IFNULL(proc2_outsourcing_price,0)
+         END AS proc2_outsourcing_price,
+         
+         rrt.proc2_account_nm,
+         rrt.proc2_manager_nm, 
+         success_status
+           
+        FROM repair_request_tbl rrt 
+      
+      WHERE del_yn = 'N' 
+      AND proc1_date IS NOT NULL 
+      <if test="current_status == null or ''.equals( current_status )">
+         AND proc2_date IS NULL 
+         AND proc2_request_date IS NULL 
+      </if>
+      <if test='"B".equals( current_status )'>
+         AND proc2_date IS NULL 
+         AND proc2_request_date IS NOT NULL 
+         AND proc3_date IS null
+      </if>
+      <if test='"A".equals( current_status )'>
+         AND proc2_date IS NOT NULL 
+      </if>
+      
+         
+         <if test="proc2_request_date != null and !''.equals( proc2_request_date ) ">
+         AND date_format(proc2_request_date, '%Y%m%d') BETWEEN left(#{proc2_request_date}, 8) AND right(#{proc2_request_date}, 8)
+      </if>
+      <if test="repair_num != null and '' != repair_num">
+         AND repair_num = #{repair_num}
+      </if>
+      <if test="item_code != null and '' != item_code">
+         AND item_code = #{item_code}
+      </if>
+       <if test="item_nm != null and '' != item_nm">
+         AND item_nm = #{item_nm}
+      </if>
+      <if test="proc2_account_code != null and '' != proc2_account_code">
+         AND proc2_account_code = #{proc2_account_code}
+      </if>
+      <if test="proc2_account_nm != null and '' != proc2_account_nm">
+         AND proc2_account_nm = #{proc2_account_nm}
+      </if>
+      ORDER BY proc1_date asc 
+        
+   
+   </select>
+
+	
+	<update id="updateRepairOrder" parameterType="SYRepairVo">
+		update repair_request_tbl set
+		
+			<if test="proc2_outsourcing_price != null and !''.equals( proc2_outsourcing_price ) ">
+				proc2_outsourcing_price = #{proc2_outsourcing_price},
+			</if>
+			<if test="proc2_account_code != null and !''.equals( proc2_account_code ) ">
+				proc2_account_code = #{proc2_account_code},
+			</if>
+			<if test="proc2_account_nm != null and !''.equals( proc2_account_nm ) ">
+				proc2_account_nm = #{proc2_account_nm},
+			</if>
+			<if test="proc2_request_date != null and !''.equals( proc2_request_date ) ">
+				proc2_request_date = #{proc2_request_date},
+			</if>
+			
+			updater = #{updater},
+			date_updated = now()
+		where repair_num = #{repair_num}
+	</update>
+	
+		
+	<select id="selectrepairUsingDay" parameterType="SYRepairVo" resultType="SYRepairVo">
+	select  ifnull(MAX(using_day),0) as using_day FROM (
+		SELECT   DATEDIFF(DATE_FORMAT(#{repair_date}, '%Y-%m-%d'),DATE_FORMAT(out_date, '%Y-%m-%d'))  as using_day
+  		FROM repair_request_tbl 
+  		WHERE sernr = #{sernr} 
+  		AND del_yn ='N'
+   		ORDER BY out_date desc
+ 		LIMIT 0,1
+ 		) cc where 1=1
+	
+	</select>
+	
+	<select id="selectrepairItem" parameterType="SYRepairVo" resultType="SYRepairVo">
+		
+		SELECT DISTINCT
+
+			item_code, item_nm
+		
+		FROM repair_request_tbl
+		
+		WHERE 1 = 1 
+		
+	</select>
+	
+	<!-- 	210204 검사보고서관리 날짜 업데이트 -->
+	<update id="updateReportDate" parameterType="SYRepairVo">
+		UPDATE repair_request_tbl
+		SET 
+			<if test="proc1_date != null and '' != proc1_date">
+				proc1_date = #{proc1_date},
+			</if>
+			
+			<if test="proc2_date != null and '' != proc2_date">
+				proc2_date = #{proc2_date},
+			</if>
+			
+			<if test="proc3_date != null and '' != proc3_date">
+				proc3_date = #{proc3_date},
+			</if>
+			
+			<if test="proc4_date != null and '' != proc4_date">
+				proc4_date = #{proc4_date},
+			</if>
+			
+			<if test="proc5_date != null and '' != proc5_date">
+				proc5_date = #{proc5_date},
+			</if>
+			
+			<if test="proc6_date != null and '' != proc6_date">
+				proc6_date = #{proc6_date},
+<!-- 				success_status = 'Y', -->
+			</if>
+			updater = #{updater}, date_updated = NOW()
+			
+		WHERE
+			repair_num = #{repair_num}
+	</update>
+	
+</mapper>

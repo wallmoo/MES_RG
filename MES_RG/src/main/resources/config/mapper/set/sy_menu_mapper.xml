@@ -1,0 +1,186 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.passcombine.set.dao.SYMenuDAO">
+	
+	<select id="selectMenu" parameterType="SYMenuVo" resultType="SYMenuVo">
+SELECT menu_cd, menu_div, menu_type, menu_nm, menu_nm_en, menu_dscr
+  , menu_p_cd, menu_path, menu_use_yn, menu_order, ifnull(menu_icon, '') as menu_icon
+  , date_created, date_updated, creator, updater 
+  , ( SELECT x.menu_nm FROM sy_menu x WHERE x.menu_cd = a.menu_p_cd LIMIT 0, 1) as menu_p_nm
+	, ( SELECT COUNT(menu_cd) FROM sy_menu x WHERE x.menu_p_cd = a.menu_cd ) as cnt_child
+FROM sy_menu a
+WHERE 1=1
+	<if test="menu_div != null and !''.equals(menu_div) ">
+		AND a.menu_div = #{menu_div}
+	</if>
+	<if test="menu_cd != null and !''.equals(menu_cd) ">
+		AND a.menu_cd = #{menu_cd}
+	</if>
+	<if test="menu_p_cd != null and !''.equals(menu_p_cd) ">
+		AND a.menu_p_cd = #{menu_p_cd}
+	</if>
+	<if test="menu_nm != null and !''.equals(menu_nm) ">
+		AND a.menu_nm LIKE concat('%', #{menu_nm}, '%')
+	</if>
+	<if test="menu_use_yn != null and !''.equals(menu_use_yn) ">
+		AND a.menu_use_yn = #{menu_use_yn}
+	</if>
+ORDER BY a.menu_order
+	</select>
+	
+	<select id="selectMenuInfo" parameterType="SYMenuVo" resultType="SYMenuVo">
+SELECT menu_cd, menu_div, menu_type, menu_nm, menu_nm_en, menu_dscr
+  , menu_p_cd, menu_path, menu_use_yn, menu_order, ifnull(menu_icon, '') as menu_icon
+  , date_created, date_updated, creator, updater 
+  , ( SELECT x.menu_nm FROM sy_menu x WHERE x.menu_cd = a.menu_p_cd LIMIT 0, 1) as menu_p_nm
+	, ( SELECT COUNT(menu_cd) FROM sy_menu x WHERE x.menu_p_cd = a.menu_cd ) as cnt_child
+FROM sy_menu a
+WHERE 1=1
+	<if test="menu_div != null and !''.equals(menu_div) ">
+		AND a.menu_div = #{menu_div}
+	</if>
+	<if test="menu_cd != null and !''.equals(menu_cd) ">
+		AND a.menu_cd = #{menu_cd}
+	</if>
+LIMIT 0, 1
+	</select>
+	
+	<select id="selectMenuAll" parameterType="SYMenuVo" resultType="SYMenuVo">
+SELECT  m.menu_cd, m.menu_div, m.menu_type, m.menu_nm, m.menu_dscr
+  , m.menu_p_cd, m.menu_path, m.menu_use_yn, m.menu_order, ifnull(m.menu_icon, '') as menu_icon
+  , m.date_created, m.date_updated, m.creator, m.updater
+  , ( SELECT COUNT(*) FROM sy_menu x WHERE x.menu_p_cd = m.menu_cd ) as cnt_child
+  , h_menu.level as lvl
+FROM (
+    SELECT fn_connect_by_priorid_menu(a.menu_cd, #{menu_div}) AS menu_cd, @level AS level, @id as id
+    FROM (
+      SELECT @start_with := '-1',
+        @id := @start_with,
+        @level := -1
+      ) var, sy_menu a
+    WHERE @id IS NOT NULL
+  ) h_menu
+  JOIN sy_menu m
+		ON h_menu.menu_cd= m.menu_cd
+ORDER BY m.menu_order
+	</select>
+	
+	<insert id="insertMenu" parameterType="SYMenuVo">
+INSERT INTO sy_menu (
+	menu_cd, menu_div, menu_type, menu_nm, menu_nm_en, menu_dscr
+	, menu_p_cd, menu_path, menu_use_yn, menu_order, menu_icon
+	, date_created, date_updated, creator, updater
+) VALUES (
+	FN_COMMON_SEQ('menu'), #{menu_div}, #{menu_type}, #{menu_nm}, #{menu_nm_en}, #{menu_dscr}
+	, #{menu_p_cd}, #{menu_path}, #{menu_use_yn}, #{menu_order}, #{menu_icon}
+	, current_timestamp(), current_timestamp(), #{creator}, #{updater}
+)
+	</insert>
+	
+	<update id="updateMenu" parameterType="SYMenuVo">
+UPDATE sy_menu
+SET menu_type = #{menu_type}
+	, menu_nm = #{menu_nm}
+	, menu_nm_en = #{menu_nm_en}
+	, menu_p_cd = #{menu_p_cd}
+	, menu_path = #{menu_path}
+	, menu_dscr = #{menu_dscr}
+	, menu_use_yn = #{menu_use_yn}
+	, menu_order = #{menu_order}
+	, menu_icon = #{menu_icon}
+	, date_updated = current_timestamp()
+	, updater = #{updater}
+WHERE menu_cd = #{menu_cd}
+	</update>
+		
+	<delete id="deleteMenu" parameterType="SYMenuVo">
+DELETE FROM sy_menu
+WHERE menu_cd = #{menu_cd}
+	</delete>
+	
+	<select id="selectMenuAcl" parameterType="SYMenuVo" resultType="SYMenuVo">
+SELECT  m.menu_cd, m.menu_div, m.menu_type, m.menu_nm, m.menu_dscr
+  , m.menu_p_cd, m.menu_path, m.menu_use_yn, m.menu_order, ifnull(m.menu_icon, '') as menu_icon
+  , m.date_created, m.date_updated, m.creator, m.updater
+  , ( SELECT COUNT(*) FROM sy_menu x WHERE x.menu_p_cd = m.menu_cd ) as cnt_child
+  , h_menu.level as lvl
+FROM (
+    SELECT fn_connect_by_priorid_menu(a.menu_cd, #{menu_div}) AS menu_cd, @level AS level, @id as id
+    FROM (
+      SELECT @start_with := '-1',
+        @id := @start_with,
+        @level := -1
+      ) var, sy_menu a
+    WHERE @id IS NOT NULL
+  ) h_menu
+  JOIN sy_menu m
+		ON h_menu.menu_cd= m.menu_cd
+WHERE m.menu_use_yn = #{menu_use_yn}
+	AND menu_p_cd != -1
+	AND EXISTS (
+    SELECT 1
+    FROM sy_menu_acl x
+    WHERE x.menu_cd = m.menu_cd
+      AND x.role_cd = #{role_cd}
+      AND (mng_yn = 'Y' OR write_yn = 'Y' OR read_yn = 'Y')
+  )
+ORDER BY m.menu_order
+	</select>
+	
+	<select id="selectMenuRole" parameterType="SYMenuVo" resultType="SYMenuVo">
+SELECT #{role_cd} as role_cd
+  , fn_code_filter_nm('MC1003', 1, #{role_cd}) as role_nm
+  , ifnull(mng_yn, 'N') as mng_yn
+  , ifnull(write_yn, 'N') as write_yn
+  , ifnull(read_yn, 'N') as read_yn
+  , aa.* 
+FROM (
+  SELECT  m.menu_cd, m.menu_div, m.menu_type
+    , CASE 
+	      WHEN h_menu.level = 1 THEN m.menu_nm
+	      WHEN h_menu.level = 2 THEN concat(' ', m.menu_nm)
+      END AS menu_nm
+    , m.menu_dscr
+    , m.menu_p_cd, m.menu_path, m.menu_use_yn, m.menu_order, ifnull(m.menu_icon, '') as menu_icon
+    , m.date_created, m.date_updated, m.creator, m.updater
+    , ifnull(( SELECT COUNT(*) FROM sy_menu x WHERE x.menu_p_cd = m.menu_cd ), 0) as cnt_child
+    , h_menu.level as lvl
+  FROM (
+      SELECT fn_connect_by_priorid_menu(a.menu_cd, #{menu_div}) AS menu_cd, @level AS level, @id as id
+      FROM (
+        SELECT @start_with := '-1',
+          @id := @start_with,
+          @level := -1
+        ) var, sy_menu a
+      WHERE @id IS NOT NULL
+    ) h_menu
+    JOIN sy_menu m
+  		ON h_menu.menu_cd= m.menu_cd
+  WHERE m.menu_use_yn = 'Y'
+  	AND menu_p_cd != -1
+) aa 
+  LEFT OUTER JOIN sy_menu_acl bb
+    ON aa.menu_cd = bb.menu_cd
+      AND bb.role_cd = #{role_cd}
+ORDER BY aa.menu_order
+	</select>
+	
+	<insert id="insertMenuRole" parameterType="SYMenuVo">
+INSERT INTO sy_menu_acl (
+  role_cd, menu_div, menu_cd, mng_yn, write_yn, read_yn
+  , date_created, date_updated, creator, updater
+) VALUES (
+  #{role_cd}, #{menu_div}, #{menu_cd}, #{mng_yn}, #{write_yn}, #{read_yn}
+  , current_timestamp(), current_timestamp(), #{creator}, #{updater}
+)
+	</insert>
+	
+	<delete id="deleteMenuRole" parameterType="SYMenuVo">
+DELETE FROM sy_menu_acl
+WHERE role_cd = #{role_cd}
+	AND menu_div = #{menu_div}
+	</delete>
+	
+</mapper>
