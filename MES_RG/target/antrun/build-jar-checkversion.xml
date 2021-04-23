@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<project name="maven-antrun-" default="jar-checkversion"  >
+<target name="jar-checkversion">
+  <jar destfile="target/checkversion.jar">
+    <manifest>
+      <attribute name="Revision-Number" value="${SVN.Revision}"/>
+      <attribute name="Build-Date" value="2021.04.22. 06:55:23"/>
+    </manifest>
+  </jar>
+  <copy file="target/checkversion.jar" tofile="target/set/WEB-INF/lib/checkversion.jar" failonerror="false" overwrite="true"/>
+</target>
+</project>

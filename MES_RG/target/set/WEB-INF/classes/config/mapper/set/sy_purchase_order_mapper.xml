@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.passcombine.set.dao.SYPurchaseOrderDAO">
+
+
+	<select id="selectPurchaseOrderNum" resultType="String">
+		
+		SELECT fn_purchase_order_num()
+	
+	</select>
+	
+	<select id="selectPurchaseOrderMain" parameterType="SYPurchaseOrderDetailVo" resultType="SYPurchaseOrderDetailVo">
+		SELECT 
+			om.account_code, om.account_nm, om.purchase_status as purchase_status_main,
+			od.purchase_order_num, od.purchase_num, om.purchase_date, od.purchase_req_date, od.purchase_end_date, od.purchase_status,
+			od.item_code, od.item_nm, od.item_spec, od.item_type_code, od.item_type_nm,
+			od.unit_price, ifnull(od.menge,0) as menge, ifnull(od.in_menge,0) as in_menge, od.total_price, od.del_yn,
+			
+			(
+				SELECT in_ware_code 
+				FROM material_tbl
+				WHERE del_yn = 'N'
+				AND item_code = od.item_code
+			) as in_ware_code,
+			(
+				SELECT 
+					safety_menge
+				FROM material_tbl
+				WHERE del_yn = 'N'
+				AND safety_stock_yn = 'Y'
+				AND item_code = od.item_code
+				
+			) as safety_menge,
+			
+			(
+				SELECT
+					warehousing_qty
+				FROM warehouse_tbl
+				WHERE del_yn = 'N'
+				AND item_code = od.item_code
+				AND warehouse_code = in_ware_code 
+			) as warehousing_qty,
+			(
+				SELECT receiving_inspection_yn
+				FROM material_tbl
+				WHERE del_yn = 'N'
+				AND item_code = od.item_code
+				
+			) AS receiving_inspection_yn,
+			(
+				SELECT receiving_inspection_routing_yn
+				FROM material_tbl
+				WHERE del_yn = 'N'
+				AND item_code = od.item_code
+			) AS receiving_inspection_routing_yn,
+			od.pass_menge,
+			od.creator, od.updater, od.date_created, od.date_updated
+		FROM purchase_order_detail AS od
+		
+		LEFT JOIN purchase_order_master om
+		ON od.purchase_order_num= om.purchase_order_num
+		
+		WHERE 1 = 1
+		AND od.del_yn = 'N'
+		
+		<if test="account_nm != null and !''.equals( account_nm ) ">
+			AND om.account_nm = #{account_nm}
+		</if>
+		
+		<if test="purchase_order_num != null and !''.equals( purchase_order_num ) ">
+			AND od.purchase_order_num = #{purchase_order_num}
+		</if>
+		
+		<if test="purchase_req_date != null and !''.equals( purchase_req_date ) ">
+			AND date_format(od.purchase_req_date, '%Y%m%d') BETWEEN left(#{purchase_req_date}, 8) AND right(#{purchase_req_date}, 8)
+		</if>
+		
+		<if test="item_type_code != null and !''.equals( item_type_code ) ">
+			AND od.item_type_code = #{item_type_code}
+		</if>
+		
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND od.item_code = #{item_code}
+		</if>
+		
+		<if test="item_nm != null and !''.equals( item_nm ) ">
+			AND od.item_nm = #{item_nm}
+		</if>
+		<if test="purchase_status != null and !''.equals( purchase_status ) ">
+			AND od.purchase_status = #{purchase_status}
+		</if>
+
+		ORDER BY od.purchase_order_num, od.purchase_req_date, od.date_created ASC
+	</select>
+
+	<select id="selectPurchaseOrderDetail" parameterType="SYPurchaseOrderDetailVo" resultType="SYPurchaseOrderDetailVo">
+		SELECT 
+			om.account_code, om.account_nm, 
+			od.purchase_order_num, od.purchase_num, om.purchase_date, od.purchase_req_date, od.purchase_end_date, od.purchase_status,
+			od.item_code, od.item_nm, od.item_spec, od.item_type_code, od.item_type_nm,
+			od.unit_price, ifnull(od.menge,0) as menge, ifnull(od.in_menge,0) as in_menge, od.total_price, od.del_yn,
+			(
+				SELECT in_ware_code 
+				FROM material_tbl
+				WHERE del_yn = 'N'
+				AND item_code = od.item_code
+			) as in_ware_code,
+			ifnull(
+			(
+				SELECT 
+					ifnull(safety_menge,0)
+				FROM material_tbl
+				WHERE del_yn = 'N'
+				AND safety_stock_yn = 'Y'
+				AND item_code = od.item_code
+				
+			),0) as safety_menge,
+			ifnull(
+			(
+				SELECT
+					ifnull(warehousing_qty,0)
+				FROM warehouse_tbl
+				WHERE del_yn = 'N'
+				AND item_code = od.item_code
+				AND warehouse_code = in_ware_code
+			),0) as warehousing_qty,
+			
+			
+			od.creator, od.updater, od.date_created, od.date_updated
+		FROM purchase_order_detail AS od
+		
+		LEFT JOIN purchase_order_master om
+		ON od.purchase_order_num= om.purchase_order_num
+		
+		WHERE 1 = 1
+		AND od.del_yn = 'N'
+		<if test="account_nm != null and !''.equals( account_nm ) ">
+			AND om.account_nm = #{account_nm}
+		</if>
+		<if test="purchase_order_num != null and !''.equals( purchase_order_num ) ">
+			AND od.purchase_order_num = #{purchase_order_num}
+		</if>
+		<!-- <if test="purchase_date != null and !''.equals( purchase_date ) ">
+			AND date_format(om.purchase_date, '%Y%m%d')  = #{purchase_date}
+		</if> -->
+		
+		<if test="item_type_code != null and !''.equals( item_type_code ) ">
+			AND od.item_type_code = #{item_type_code}
+		</if>
+		
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND od.item_code = #{item_code}
+		</if>
+		
+		<if test="item_nm != null and !''.equals( item_nm ) ">
+			AND od.item_nm = #{item_nm}
+		</if>
+		<if test="purchase_status != null and !''.equals( purchase_status ) ">
+			AND om.purchase_status = #{purchase_status}
+		</if>
+		
+		<if test="purchase_num != null and !''.equals( purchase_num ) ">
+			AND od.purchase_num = #{purchase_num}
+		</if>
+
+		ORDER BY od.purchase_order_num, od.date_created ASC
+		
+	</select>
+	
+	
+	<insert id="savePurchaseOrder" parameterType="SYPurchaseOrderVo">
+ 		INSERT INTO purchase_order_master (
+			purchase_order_num, purchase_status, purchase_date,
+			account_code, account_nm,
+		 	creator, updater, date_created, date_updated)
+		SELECT *
+		  FROM (
+		  		SELECT  
+	
+				#{purchase_order_num} as purchase_order_num,
+		  		 #{purchase_status} as purchase_status,
+		<!--   		'R' as purchase_status, -->
+		  		#{purchase_date} as purchase_date, 
+		  		<!-- #{account_code} as account_code,  -->
+		  		(
+		  			SELECT account_code
+		  			FROM account_tbl
+		  			WHERE del_yn = 'N'
+		  			AND account_nm = #{account_nm}
+		  		) as account_code,
+		  		#{account_nm} as account_nm,
+				#{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated
+		  ) s
+		  ON DUPLICATE KEY
+		UPDATE
+			purchase_order_num = s.purchase_order_num,
+			
+			purchase_status = s.purchase_status,
+
+			purchase_date = s.purchase_date,
+										
+			account_code = s.account_code,
+			account_nm = s.account_nm,
+					
+			updater = s.updater,
+			date_updated = s.date_updated
+	</insert>
+
+	<delete id="deletePurchaseOrder" parameterType="SYPurchaseOrderVo">
+		DELETE FROM purchase_order_master
+		WHERE 1 = 1
+		<if test="purchase_order_num != null and !''.equals( purchase_order_num ) ">
+			AND purchase_order_num = #{purchase_order_num}
+		</if>
+
+	</delete>
+	
+	<insert id="savePurchaseOrderDetail" parameterType="SYPurchaseOrderDetailVo">
+ 		INSERT INTO purchase_order_detail (
+			purchase_order_num, purchase_num, purchase_req_date, purchase_end_date,  purchase_status,
+			item_code, item_nm, item_spec, item_type_code, item_type_nm,
+			unit_price, menge, in_menge, total_price, 
+			del_yn,		
+		 	creator, updater, date_created, date_updated)
+		SELECT *
+		  FROM (
+		  		SELECT  
+	
+				#{purchase_order_num} as purchase_order_num,
+		  		#{purchase_num} as purchase_num, #{purchase_req_date} as purchase_req_date,
+		  		'' as purchase_end_date, 'R' as purchase_status, 
+		  		#{item_code} as item_code, #{item_nm} as item_nm, #{item_spec} as item_spec, 
+		  		#{item_type_code} as item_type_code, #{item_type_nm} as item_type_nm,
+		  		#{unit_price} as unit_price, #{menge} as menge, '0' as in_menge, #{total_price} as total_price,
+		  		'N' as del_yn,
+				#{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated
+		  ) s
+		  ON DUPLICATE KEY
+		UPDATE
+			purchase_order_num = s.purchase_order_num,
+			purchase_num = s.purchase_num,
+			purchase_req_date = s.purchase_req_date,
+			purchase_end_date = s.purchase_end_date,
+			purchase_status = s.purchase_status,
+										
+			item_code = s.item_code,
+			item_nm = s.item_nm,
+			item_spec = s.item_spec,
+			item_type_code = s.item_type_code,
+			item_type_nm = s.item_type_nm,
+			
+			unit_price = s.unit_price,
+			menge = s.menge,
+			in_menge = s.in_menge,
+			total_price = s.total_price,
+			
+			del_yn = s.del_yn,
+					
+			updater = s.updater,
+			date_updated = s.date_updated
+	</insert>
+
+	<update id="deletePurchaseOrderDetail" parameterType="SYPurchaseOrderDetailVo">
+		UPDATE purchase_order_detail
+		SET  del_yn = 'Y'
+		WHERE 1 = 1
+		<if test="purchase_order_num != null and !''.equals( purchase_order_num ) ">
+			AND purchase_order_num = #{purchase_order_num}
+		</if>
+		<if test="purchase_num != null and !''.equals( purchase_num ) ">
+			AND purchase_num = #{purchase_num}
+		</if>
+	</update>
+	
+	<update id="updatePurchaseOrder" parameterType="SYPurchaseOrderVo">
+		UPDATE purchase_order_master
+		SET  
+			purchase_status = #{purchase_status}
+	
+		WHERE 1 = 1
+		<if test="purchase_order_num != null and !''.equals( purchase_order_num ) ">
+			AND purchase_order_num = #{purchase_order_num}
+		</if>
+		<if test="purchase_num != null and !''.equals( purchase_num ) ">
+			AND purchase_num = #{purchase_num}
+		</if> 
+	
+	
+	</update>
+	<update id="updatePurchaseOrderDetail" parameterType="SYPurchaseOrderDetailVo">
+		UPDATE purchase_order_detail
+		SET  
+			purchase_end_date = #{purchase_end_date},
+			in_menge = #{in_menge}
+	
+		WHERE 1 = 1
+		<if test="purchase_order_num != null and !''.equals( purchase_order_num ) ">
+			AND purchase_order_num = #{purchase_order_num}
+		</if>
+		<if test="purchase_num != null and !''.equals( purchase_num ) ">
+			AND purchase_num = #{purchase_num}
+		</if> 
+	
+	
+	</update>
+	
+	<update id="updatePurchaseIncoming" parameterType="SYPurchaseOrderDetailVo">
+		UPDATE purchase_order_detail
+		SET  
+			purchase_status = #{purchase_status},
+			pass_menge = #{pass_menge}
+	
+		WHERE 1 = 1
+		<if test="purchase_order_num != null and !''.equals( purchase_order_num ) ">
+			AND purchase_order_num = #{purchase_order_num}
+		</if>
+		<if test="purchase_num != null and !''.equals( purchase_num ) ">
+			AND purchase_num = #{purchase_num}
+		</if> 
+	
+	
+	</update>
+
+	
+</mapper>

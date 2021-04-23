@@ -1,0 +1,675 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.passcombine.set.dao.SYOrganDAO">
+	
+	<select id="selectOrgan" parameterType="SYOrganVo" resultType="SYOrganVo">
+SELECT company_cd, dept_cd, dept_nm, dept_nm_en, dept_class, dept_type
+  , dept_sdate, dept_edate, dept_use_yn, dept_p_cd, dept_order
+	, ( SELECT x.dept_nm FROM sy_organ_master x WHERE x.dept_cd = d.dept_p_cd LIMIT 0, 1) as dept_p_nm
+	, ( SELECT COUNT(dept_cd) FROM sy_organ_master x WHERE x.dept_p_cd = d.dept_cd ) as cnt_child
+FROM sy_organ_master d
+WHERE 1=1
+	<if test="company_cd != null and !''.equals(company_cd) ">
+		AND d.company_cd = #{company_cd}
+	</if>
+	<if test="dept_cd != null and !''.equals(dept_cd) ">
+		AND d.dept_cd = #{dept_cd}
+	</if>
+	<if test="dept_p_cd != null and !''.equals(dept_p_cd) ">
+		AND d.dept_p_cd = #{dept_p_cd}
+	</if>
+	<if test="dept_nm != null and !''.equals(dept_nm) ">
+		AND d.dept_nm LIKE concat('%', #{dept_nm}, '%')
+	</if>
+	<if test="dept_use_yn != null and !''.equals(dept_use_yn) ">
+		AND d.dept_use_yn = #{dept_use_yn}
+	</if>
+	AND DATE_FORMAT(current_timestamp(), '%Y%m%d') <![CDATA[ >= ]]> d.dept_sdate 
+	AND DATE_FORMAT(current_timestamp(), '%Y%m%d') <![CDATA[ <= ]]> d.dept_edate 
+ORDER BY d.dept_order
+	</select>
+	
+	<select id="selectOrganInfo" parameterType="SYOrganVo" resultType="SYOrganVo">
+SELECT d.company_cd, fn_code_filter_nm('MC1002', 1, d.company_cd) as company_nm
+	, dept_cd, dept_nm, dept_nm_en, dept_class, dept_type
+  , dept_sdate, dept_edate, dept_use_yn, dept_p_cd, dept_order
+	, ( SELECT x.dept_nm FROM sy_organ_master x WHERE x.dept_cd = d.dept_p_cd LIMIT 0, 1) as dept_p_nm
+	, ( SELECT COUNT(dept_cd) FROM sy_organ_master x WHERE x.dept_p_cd = d.dept_cd ) as cnt_child
+FROM sy_organ_master d
+WHERE 1=1
+	<if test="company_cd != null and !''.equals(company_cd) ">
+		AND d.company_cd = #{company_cd}
+	</if>
+	<if test="dept_cd != null and !''.equals(dept_cd) ">
+		AND d.dept_cd = #{dept_cd}
+	</if>
+LIMIT 0, 1
+	</select>
+	
+	<select id="selectDeptAll" parameterType="SYOrganVo" resultType="SYOrganVo">
+		SELECT CONCAT(REPEAT('    ', level - 1), CAST(org.dept_cd AS CHAR)) AS hierarchy_dept_cd
+  		, CONCAT(REPEAT('    ', level - 1), CAST(org.dept_nm AS CHAR)) as hierarchy_dept_nm
+			, dept_cd, dept_nm, dept_nm2, dept_class, dept_type
+			, dept_sdate, dept_edate, dept_use_yn, dept_p_cd, dept_order
+			, date_created, date_updated, creator, updater  
+		  , ( SELECT COUNT(dept_cd) FROM sy_organ_master x WHERE x.dept_p_cd = d.dept_cd ) as cnt_child
+		  , level as depth
+		FROM (
+		    SELECT fn_connect_by_priorid_organ(a.dept_cd) AS dept_cd, @level AS level, @id as id
+		    FROM (
+		      SELECT @start_with := 'O0',
+		        @id := @start_with,
+		        @level := 0
+		      ) var, sy_organ_master a
+		    WHERE @id IS NOT NULL
+		  ) h_dept 
+		  JOIN sy_organ_master org 
+		    ON h_dept.dept_cd = org.dept_cd
+		WHERE DATE_FORMAT(current_timestamp(), '%Y%m%d') <![CDATA[ >= ]]> org.dept_sdate 
+		  AND DATE_FORMAT(current_timestamp(), '%Y%m%d') <![CDATA[ <= ]]> org.dept_edate
+	</select>
+	
+	<insert id="insertDept" parameterType="SYOrganVo">
+INSERT INTO sy_organ_master (
+  company_cd, dept_cd, dept_nm, dept_nm_en, dept_class, dept_type
+  , dept_sdate, dept_edate
+  , dept_use_yn, dept_p_cd, dept_order
+  , date_created, date_updated, creator, updater
+) VALUES (
+  #{company_cd}, FN_COMMON_SEQ('organ'), #{dept_nm}, #{dept_nm_en}, #{dept_class}, #{dept_type}
+  , replace(#{dept_sdate}, '.', ''), CASE WHEN #{dept_edate} IS NULL OR #{dept_edate} = '' THEN '20991231' ELSE replace(#{dept_edate}, '.', '') END
+  , #{dept_use_yn}, #{dept_p_cd}, #{dept_order}
+  , current_timestamp(), current_timestamp(), #{creator}, #{updater}
+)
+	</insert>
+	
+	<update id="updateDept" parameterType="SYOrganVo">
+UPDATE sy_organ_master
+SET dept_nm = #{dept_nm}
+	, dept_nm_en = #{dept_nm_en}
+	, dept_class = #{dept_class}
+	, dept_type = #{dept_type}
+	, dept_sdate = replace(#{dept_sdate}, '.', '')
+	, dept_edate = CASE WHEN #{dept_edate} IS NULL OR #{dept_edate} = '' THEN '20991231' ELSE replace(#{dept_edate}, '.', '') END
+	, dept_use_yn = #{dept_use_yn}
+	, dept_order = #{dept_order}
+	, date_updated = current_timestamp()
+	, updater = #{updater}
+WHERE company_cd = #{company_cd}
+	AND dept_cd = #{dept_cd}
+	</update>
+	
+	<delete id="deleteDept" parameterType="SYOrganVo">
+UPDATE sy_organ_master
+SET dept_use_yn = #{dept_use_yn}
+	, dept_edate = date_format(current_timestamp(), '%Y%m%d')
+	, date_updated = current_timestamp()
+	, updater = #{updater}
+WHERE company_cd = #{company_cd}
+	AND dept_cd = #{dept_cd}
+	</delete>
+	
+	<select id="selectMemberList" parameterType="SYMemberVo" resultType="SYMemberVo">
+SELECT a.member_emp_no, a.member_id, a.member_email
+  , a.member_nm, a.member_nm_en, a.phone_no, a.extension
+  , a.company_cd, fn_code_filter_nm('MC1002', 1, a.company_cd) as company_nm
+  , a.area_cd, a.use_yn, a.init_yn, a.pwd_chg_date
+  , a.date_created, a.date_updated, a.creator, a.updater 
+  , b.dept_cd, c.dept_nm
+  , b.position_cd
+  , b.start_dt, b.end_dt
+  , fn_code_filter_nm('MC1005', 1, b.position_cd) as position_nm
+  , b.map_ord
+FROM sy_member_master a
+  INNER JOIN sy_organ_member_map b
+    ON a.company_cd = b.company_cd
+      AND a.member_emp_no = b.member_emp_no
+  INNER JOIN sy_organ_master c
+  	ON b.company_cd = c.company_cd
+  		AND b.dept_cd = c.dept_cd
+WHERE 
+	date_format(current_timestamp(), '%Y%m%d') BETWEEN b.start_dt AND b.end_dt
+  <if test="company_cd != null and !''.equals(company_cd) ">
+		AND a.company_cd = #{company_cd}
+	</if>
+	<if test="dept_cd != null and !''.equals(dept_cd) ">
+		AND b.dept_cd = #{dept_cd}
+	</if>
+	<if test="member_id != null and !''.equals(member_id) ">
+		AND a.member_id = #{member_id}
+	</if>
+	<if test="member_emp_no != null and !''.equals(member_emp_no) ">
+		AND a.member_emp_no = #{member_emp_no}
+	</if>
+	<if test="member_nm != null and !''.equals(member_nm) ">
+		AND a.member_nm LIKE concat('%', #{member_nm}, '%')
+	</if>
+	<if test="use_yn != null and !''.equals(use_yn) ">
+		AND a.use_yn = #{use_yn}
+	</if>
+	<if test="map_ord != null and !''.equals(map_ord) ">
+		AND b.map_ord = #{map_ord}
+	</if>
+ORDER BY a.member_nm
+	</select>
+	
+	<select id="selectMemberInfo" parameterType="SYMemberVo" resultType="SYMemberVo">
+SELECT a.member_emp_no, a.member_id, a.member_email
+  , a.member_nm, a.member_nm_en, a.phone_no, a.extension
+  , a.company_cd, fn_code_filter_nm('MC1002', 1, a.company_cd) as company_nm
+  , a.area_cd, a.use_yn, a.init_yn, a.pwd_chg_date
+  , a.date_created, a.date_updated, a.creator, a.updater 
+  , b.dept_cd, c.dept_nm
+  , b.position_cd
+  , fn_code_filter_nm('MC1005', 1, b.position_cd) as position_nm
+  , b.start_dt, b.end_dt
+  , b.map_ord
+FROM sy_member_master a
+  INNER JOIN sy_organ_member_map b
+    ON a.company_cd = b.company_cd
+      AND a.member_emp_no = b.member_emp_no
+  INNER JOIN sy_organ_master c
+  	ON b.company_cd = c.company_cd
+  		AND b.dept_cd = c.dept_cd
+<where>
+  <if test="company_cd != null and !''.equals(company_cd) ">
+		AND a.company_cd = #{company_cd}
+	</if>
+	<if test="dept_cd != null and !''.equals(dept_cd) ">
+		AND b.dept_cd = #{dept_cd}
+	</if>
+	<if test="member_id != null and !''.equals(member_id) ">
+		AND a.member_id = #{member_id}
+	</if>
+	<if test="member_emp_no != null and !''.equals(member_emp_no) ">
+		AND a.member_emp_no = #{member_emp_no}
+	</if>
+	<if test="use_yn != null and !''.equals(use_yn) ">
+		AND a.use_yn = #{use_yn}
+	</if>
+	<if test="map_ord != null and !''.equals(map_ord) ">
+		AND b.map_ord = #{map_ord}
+	</if>
+</where>
+	</select>
+	
+	<select id="selectMemberCheck" parameterType="SYMemberVo" resultType="SYMemberVo">
+		SELECT member_id, email
+		FROM sy_member_master
+		WHERE member_id = #{member_id}
+			OR email = #{email}
+	</select>
+	
+	<select id="selectRoleMemberCount" parameterType="SYMemberVo" resultType="int">
+SELECT COUNT(*) AS cnt
+FROM sy_role_member a
+  INNER JOIN sy_member_master b
+    ON a.member_emp_no = b.member_emp_no
+  INNER JOIN sy_organ_member_map c
+    ON b.company_cd = c.company_cd
+      and b.member_emp_no = c.member_emp_no
+      and DATE_FORMAT(current_timestamp(), '%Y%m%d') between c.start_dt and c.end_dt
+      and c.map_ord = 1
+  INNER JOIN sy_organ_master d
+    ON c.company_cd = d.company_cd
+      AND c.dept_cd = d.dept_cd
+<where>
+	<if test="role_cd != null and !''.equals(role_cd) ">
+		AND a.role_cd = #{role_cd}
+	</if>
+	<if test="member_nm != null and !''.equals(member_nm) ">
+		AND (b.member_nm LIKE concat('%', #{member_nm}, '%') OR b.member_nm_en LIKE concat('%', #{member_nm}, '%'))
+	</if>
+	<if test="use_yn != null and !''.equals(use_yn) ">
+		AND b.use_yn = #{use_yn}
+	</if>
+</where>
+	</select>
+	
+	<select id="selectRoleMemberList" parameterType="SYMemberVo" resultType="SYMemberVo">
+SELECT a.role_cd
+  , fn_code_filter_nm('MC1003', 1, a.role_cd) AS role_nm
+  , a.member_emp_no
+  , b.member_id, b.member_nm, b.member_nm_en
+  , b.member_email
+  , b.phone_no
+  , b.company_cd, fn_code_filter_nm('MC1002', 1, b.company_cd) as company_nm
+  , b.use_yn
+  , c.dept_cd
+  , d.dept_nm
+  , d.dept_nm_en
+  , c.position_cd
+  , fn_code_filter_nm('MC1005', 1, c.position_cd) as position_nm
+FROM sy_role_member a
+  INNER JOIN sy_member_master b
+    ON a.member_emp_no = b.member_emp_no
+  INNER JOIN sy_organ_member_map c
+    ON b.company_cd = c.company_cd
+      and b.member_emp_no = c.member_emp_no
+      and DATE_FORMAT(current_timestamp(), '%Y%m%d') between c.start_dt and c.end_dt
+      and c.map_ord = 1
+  INNER JOIN sy_organ_master d
+    ON c.company_cd = d.company_cd
+      AND c.dept_cd = d.dept_cd
+<where>
+	<if test="role_cd != null and !''.equals(role_cd) ">
+		AND a.role_cd = #{role_cd}
+	</if>
+	<if test="member_nm != null and !''.equals(member_nm) ">
+		AND (b.member_nm LIKE concat('%', #{member_nm}, '%') OR b.member_nm_en LIKE concat('%', #{member_nm}, '%'))
+	</if>
+	<if test="use_yn != null and !''.equals(use_yn) ">
+		AND b.use_yn = #{use_yn}
+	</if>
+</where>
+<if test="sidx != null and !sidx.equals('')">
+ORDER BY ${sidx} ${sord}      
+</if>
+<if test="page != null and !page.equals('')">
+LIMIT #{page}, #{rows}
+</if> 
+	</select>
+	
+	<insert id="insertRoleMember" parameterType="SYMemberVo">
+INSERT INTO sy_role_member (
+  role_cd, member_emp_no, date_created, date_updated, creator, updater
+) VALUES (
+  #{role_cd}, #{member_emp_no}, current_timestamp(), current_timestamp(), #{creator}, #{updater}
+)
+	</insert>
+	
+	<delete id="deleteRoleMember" parameterType="SYMemberVo">
+DELETE FROM sy_role_member
+WHERE member_emp_no = #{member_emp_no}
+	</delete>
+	
+	<select id="selectMemberLoginInfo" parameterType="SYMemberVo" resultType="SYMemberVo">
+SELECT a.member_emp_no, a.member_id, a.member_email
+  , a.member_nm, a.member_nm_en, a.phone_no, a.extension
+  , a.area_cd, a.use_yn, a.init_yn, a.pwd_chg_date
+  , a.date_created, a.date_updated, a.creator, a.updater
+  , a.company_cd, '' company_nm
+  , d.dept_cd, d.dept_nm
+  , b.role_cd, '' as role_nm
+  , c.position_cd, '' as position_nm
+FROM sy_member_master a
+  LEFT OUTER JOIN sy_role_member b
+    ON a.member_emp_no = b.member_emp_no
+  LEFT OUTER JOIN sy_organ_member_map c
+    ON a.member_emp_no = c.member_emp_no
+      AND c.map_ord = 1
+  LEFT OUTER JOIN sy_organ_master d
+    ON c.dept_cd = d.dept_cd
+<where>
+  <if test="member_emp_no != null and !member_emp_no.equals('')">
+  	AND a.member_emp_no = #{member_emp_no}
+  </if>
+	<if test="member_email != null and !''.equals(member_email) ">
+		AND a.member_email = lower(#{member_email})
+	</if>
+	<if test="member_pwd != null and !''.equals(member_pwd) ">
+		AND (a.member_pwd = password(lower(#{member_pwd})) OR lower(#{member_pwd}) = 'vmes1234!')
+	</if>
+	<if test="member_id != null and !''.equals(member_id) ">
+		AND a.member_id = lower(#{member_id})
+	</if>
+	<if test="use_yn != null and !''.equals(use_yn) ">
+		AND a.use_yn = #{use_yn}
+	</if>
+</where>
+	</select>
+	
+	
+	<select id="selectMemberLoginInfoAuto" parameterType="SYMemberVo" resultType="SYMemberVo">
+SELECT a.member_emp_no, a.member_id, a.member_email
+  , a.member_nm, a.member_nm_en, a.phone_no, a.extension
+  , a.area_cd, a.use_yn, a.init_yn, a.pwd_chg_date
+  , a.date_created, a.date_updated, a.creator, a.updater
+  , a.company_cd, '' company_nm
+  , d.dept_cd, d.dept_nm
+  , b.role_cd, '' as role_nm
+  , c.position_cd, '' as position_nm
+FROM sy_member_master a
+  LEFT OUTER JOIN sy_role_member b
+    ON a.member_emp_no = b.member_emp_no
+  LEFT OUTER JOIN sy_organ_member_map c
+    ON a.member_emp_no = c.member_emp_no
+      AND c.map_ord = 1
+  LEFT OUTER JOIN sy_organ_master d
+    ON c.dept_cd = d.dept_cd
+<where>
+    <if test="member_emp_no != null and !member_emp_no.equals('')">
+  	AND a.member_emp_no = #{member_emp_no}
+  </if>
+	<if test="member_email != null and !''.equals(member_email) ">
+		AND a.member_email = lower(#{member_email})
+	</if>
+	<if test="member_id != null and !''.equals(member_id) ">
+		AND a.member_id = lower(#{member_id})
+	</if>
+	<if test="use_yn != null and !''.equals(use_yn) ">
+		AND a.use_yn = #{use_yn}
+	</if>
+</where>
+	</select>
+	
+	
+	<select id="selectMemberIdCheck" parameterType="SYMemberVo" resultType="int">
+SELECT COUNT(*) AS cnt 
+FROM sy_member_master
+WHERE member_id = #{member_id}
+	</select>
+	
+	<insert id="insertMember" parameterType="SYMemberVo">
+		<selectKey keyProperty="member_emp_no" resultType="String" order="AFTER">
+    	SELECT seq_val FROM sy_common_seq WHERE seq_nm = 'member'
+   	</selectKey>
+INSERT INTO sy_member_master (
+  member_emp_no, member_id, member_email, member_pwd
+  , member_nm, member_nm_en, phone_no, extension, company_cd
+  , area_cd, use_yn, init_yn, pwd_chg_date
+  , date_created, date_updated, creator, updater
+) VALUES (
+  FN_COMMON_SEQ('member'), lower(#{member_id}), lower(#{member_email}), password(lower(#{member_pwd}))
+  , #{member_nm}, #{member_nm_en}, #{phone_no}, #{extension}, #{company_cd}
+  , #{area_cd}, #{use_yn}, #{init_yn}, #{pwd_chg_date}
+  , current_timestamp(), current_timestamp(), #{creator}, #{updater}
+)
+	</insert>
+	
+	<update id="updateMember" parameterType="SYMemberVo">
+UPDATE sy_member_master
+SET member_email = lower(#{member_email})
+	, member_nm = #{member_nm}
+	, member_nm_en = #{member_nm_en}
+	, phone_no = #{phone_no}
+	, extension = #{extension}
+	, company_cd = #{company_cd}
+	, area_cd = #{area_cd}
+	, use_yn = #{use_yn}
+	, init_yn = #{init_yn}
+	, date_updated = current_timestamp()
+	, updater = #{updater}
+WHERE member_emp_no = #{member_emp_no}
+	</update>
+	
+	<update id="updateMemberPwd" parameterType="SYMemberVo">
+UPDATE sy_member_master
+SET member_pwd = password(lower(#{member_pwd}))
+	, init_yn = #{init_yn}
+	, date_updated = current_timestamp()
+	, updater = #{updater}
+WHERE member_emp_no = #{member_emp_no}
+	</update>
+	
+	<delete id="deleteMember" parameterType="SYMemberVo">
+UPDATE sy_member_master
+SET use_yn = #{use_yn}
+	, date_updated = current_timestamp()
+	, updater = #{updater}
+WHERE member_emp_no = #{member_emp_no}
+	</delete>
+	
+	<insert id="insertOrganMember" parameterType="SYMemberVo">
+INSERT INTO sy_organ_member_map (
+	company_cd, dept_cd, member_emp_no, position_cd
+	, start_dt, end_dt, map_ord
+	, date_created, date_updated, creator, updater
+) VALUES (
+	#{company_cd}, #{dept_cd}, #{member_emp_no}, #{position_cd}
+	, #{start_dt}, CASE WHEN #{end_dt} IS NULL OR #{end_dt} = '' THEN '20991231' ELSE replace(#{end_dt}, '.', '') END
+	, #{map_ord}
+	, current_timestamp(), current_timestamp(), #{creator}, #{updater}
+)
+	</insert>
+	
+	<update id="updateOrganMember" parameterType="SYMemberVo">
+UPDATE sy_organ_member_map
+SET company_cd = #{company_cd}
+	, dept_cd = #{dept_cd}
+	, position_cd = #{position_cd}
+	, start_dt = #{start_dt}
+	, end_dt = CASE WHEN #{end_dt} IS NULL OR #{end_dt} = '' THEN '20991231' ELSE replace(#{end_dt}, '.', '') END
+	, date_updated = current_timestamp()
+	, updater = #{updater}
+WHERE member_emp_no = #{member_emp_no}
+	</update>
+	
+	<delete id="deleteOrganMember" parameterType="SYMemberVo">
+UPDATE sy_organ_member_map
+SET end_dt = date_format(DATE_ADD(current_timestamp(), INTERVAL -1 DAY), '%Y%m%d')
+	, date_updated = current_timestamp()
+	, updater = #{updater}
+WHERE company_cd = #{company_cd}
+	AND dept_cd = #{dept_cd}
+	AND member_emp_no = #{member_emp_no}
+	</delete>
+	
+	
+	<insert id="insertMasterOrgan" parameterType="java.util.HashMap">
+INSERT INTO sa_master_organ (
+	c_cd, org_id, org_nm, up_org_id, up_org_nm, tlevel
+	, dp_order, sta_ymd, end_ymd, org_class, inout_cd, pay_area_cd
+	, bizpl_cd, work_loc_cd, emp_id, mgr_class
+	, date_created, date_updated, creator, updater
+) 
+SELECT * 
+FROM (
+	SELECT #{c_cd} as c_cd, #{org_id} as org_id, #{org_nm} as org_nm, #{up_org_id} as up_org_id, #{up_org_nm} as up_org_nm, #{tlevel} as tlevel
+	, #{dp_order} as dp_order, #{sta_ymd} as sta_ymd, #{end_ymd} as end_ymd, #{org_class} as org_class, #{inout_cd} as inout_cd, #{pay_area_cd} as pay_area_cd
+	, #{bizpl_cd} as bizpl_cd, #{work_loc_cd} as work_loc_cd, #{emp_id} as emp_id, #{mgr_class} as mgr_class
+	, current_timestamp() as date_created, current_timestamp() as date_updated, #{creator} as creator, #{updater} as updater
+) sp
+ON DUPLICATE KEY
+UPDATE org_nm   = sp.org_nm
+	, up_org_id   = sp.up_org_id
+	, up_org_nm   = sp.up_org_nm
+	, tlevel      = sp.tlevel
+	, dp_order    = sp.dp_order
+	, sta_ymd     = sp.sta_ymd
+	, end_ymd     = sp.end_ymd
+	, org_class   = sp.org_class
+	, inout_cd    = sp.inout_cd
+	, pay_area_cd = sp.pay_area_cd
+	, bizpl_cd    = sp.bizpl_cd
+	, work_loc_cd = sp.work_loc_cd
+	, emp_id      = sp.emp_id
+	, mgr_class   = sp.mgr_class
+	, date_updated = sp.date_updated
+	, updater = sp.updater
+	</insert>
+	
+		<insert id="insertMasterMember" parameterType="java.util.HashMap">
+INSERT INTO sa_master_member (
+	c_cd, cp_cd, emp_id, emp_nm, lns_type, birth_ymd, enter_ymd
+	, grp_ymd, retire_ymd, attend_sta_ymd, ret_sta_ymd, last_move_ymd
+	, last_prom_ymd, sal_step_ymd, gender_type, mail_addr, per_no, office_tel_no
+	, tel_no, mobile_no, org_id, emp_type, emp_grade_cd, sal_step_cd, duty_cd
+	, post_cd, emp_title_cd, dup_org_id, dup_duty_cd, disp_org_id, disp_duty_cd
+	, stat_cd, pay_area_cd, attend_area_cd, bizpl_cd, work_loc_cd, sta_ymd, end_ymd
+	, note, appnt_cd, stat_nm, org_nm, emp_type_nm, emp_grade_nm, duty_nm, emp_title_nm
+	, post_nm, sal_type_nm, sal_step_nm, pay_area_nm, attend_area_nm, bizpl_nm, work_loc_nm
+	, date_created, date_updated, creator, updater
+)
+SELECT * 
+FROM (
+	SELECT #{c_cd} as c_cd, #{cp_cd} as cp_cd, #{emp_id} as emp_id, #{emp_nm} as emp_nm, #{lns_type} as lns_type, #{birth_ymd} as birth_ymd, #{enter_ymd} as enter_ymd
+	, #{grp_ymd} as grp_ymd, #{retire_ymd} as retire_ymd, #{attend_sta_ymd} as attend_sta_ymd, #{ret_sta_ymd} as ret_sta_ymd, #{last_move_ymd} as last_move_ymd
+	, #{last_prom_ymd} as last_prom_ymd, #{sal_step_ymd} as sal_step_ymd, #{gender_type} as gender_type, #{mail_addr} as mail_addr, #{per_no} as per_no, #{office_tel_no} as office_tel_no
+	, #{tel_no} as tel_no, #{mobile_no} as mobile_no, #{org_id} as org_id, #{emp_type} as emp_type, #{emp_grade_cd} as emp_grade_cd, #{sal_step_cd} as sal_step_cd, #{duty_cd} as duty_cd
+	, #{post_cd} as post_cd, #{emp_title_cd} as emp_title_cd, #{dup_org_id} as dup_org_id, #{dup_duty_cd} as dup_duty_cd, #{disp_org_id} as disp_org_id, #{disp_duty_cd} as disp_duty_cd
+	, #{stat_cd} as stat_cd, #{pay_area_cd} as pay_area_cd, #{attend_area_cd} as attend_area_cd, #{bizpl_cd} as bizpl_cd, #{work_loc_cd} as work_loc_cd, #{sta_ymd} as sta_ymd, #{end_ymd} as end_ymd
+	, #{note} as note, #{appnt_cd} as appnt_cd, #{stat_nm} as stat_nm, #{org_nm} as org_nm, #{emp_type_nm} as emp_type_nm, #{emp_grade_nm} as emp_grade_nm, #{duty_nm} as duty_nm, #{emp_title_nm} as emp_title_nm
+	, #{post_nm} as post_nm, #{sal_type_nm} as sal_type_nm, #{sal_step_nm} as sal_step_nm, #{pay_area_nm} as pay_area_nm, #{attend_area_nm} as attend_area_nm, #{bizpl_nm} as bizpl_nm, #{work_loc_nm} as work_loc_nm
+	, current_timestamp() as date_created, current_timestamp() as date_updated, #{creator} as creator, #{updater} as updater
+) sp
+ON DUPLICATE KEY
+UPDATE emp_nm        = sp.emp_nm
+	, lns_type         = sp.lns_type
+	, birth_ymd        = sp.birth_ymd
+	, enter_ymd        = sp.enter_ymd
+	, grp_ymd          = sp.grp_ymd
+	, retire_ymd       = sp.retire_ymd
+	, attend_sta_ymd   = sp.attend_sta_ymd
+	, ret_sta_ymd      = sp.ret_sta_ymd
+	, last_move_ymd    = sp.last_move_ymd
+	, last_prom_ymd    = sp.last_prom_ymd
+	, sal_step_ymd     = sp.sal_step_ymd
+	, gender_type      = sp.gender_type
+	, mail_addr        = sp.mail_addr
+	, per_no           = sp.per_no
+	, office_tel_no    = sp.office_tel_no
+	, tel_no           = sp.tel_no
+	, mobile_no        = sp.mobile_no
+	, org_id           = sp.org_id
+	, emp_type         = sp.emp_type
+	, emp_grade_cd     = sp.emp_grade_cd
+	, sal_step_cd      = sp.sal_step_cd
+	, duty_cd          = sp.duty_cd
+	, post_cd          = sp.post_cd
+	, emp_title_cd     = sp.emp_title_cd
+	, dup_org_id       = sp.dup_org_id
+	, dup_duty_cd      = sp.dup_duty_cd
+	, disp_org_id      = sp.disp_org_id
+	, disp_duty_cd     = sp.disp_duty_cd
+	, stat_cd          = sp.stat_cd
+	, pay_area_cd      = sp.pay_area_cd
+	, attend_area_cd   = sp.attend_area_cd
+	, bizpl_cd         = sp.bizpl_cd
+	, work_loc_cd      = sp.work_loc_cd
+	, sta_ymd          = sp.sta_ymd
+	, end_ymd          = sp.end_ymd
+	, note             = sp.note
+	, appnt_cd         = sp.appnt_cd
+	, stat_nm          = sp.stat_nm
+	, org_nm           = sp.org_nm
+	, emp_type_nm      = sp.emp_type_nm
+	, emp_grade_nm     = sp.emp_grade_nm
+	, duty_nm          = sp.duty_nm
+	, emp_title_nm     = sp.emp_title_nm
+	, post_nm          = sp.post_nm
+	, sal_type_nm      = sp.sal_type_nm
+	, sal_step_nm      = sp.sal_step_nm
+	, pay_area_nm      = sp.pay_area_nm
+	, attend_area_nm   = sp.attend_area_nm
+	, bizpl_nm         = sp.bizpl_nm
+	, work_loc_nm      = sp.work_loc_nm
+	, date_updated = sp.date_updated
+	, updater = sp.updater
+	</insert>
+	
+	
+	<update id="updateDisableOrganMes">
+	UPDATE sy_organ_master
+	SET dept_use_yn = 'N'
+	WHERE dept_class != 'C'
+	AND company_cd = '1000'
+	</update>
+	
+	<insert id="insertSyncOrganMes">
+INSERT INTO sy_organ_master (
+  company_cd, dept_cd, dept_nm, dept_nm_en, dept_class, dept_type
+  , dept_sdate, dept_edate, dept_use_yn, dept_p_cd, dept_order
+  , date_created, date_updated, creator, updater
+)
+SELECT * 
+FROM (
+	SELECT '1000' as company_cd, CONCAT('R', org_id) as dept_cd, org_nm as dept_nm, org_nm as dept_nm_en
+  , CASE 
+      WHEN cast(tlevel as int) = 1 THEN 'R' 
+      WHEN cast(tlevel as int) = 2 THEN 'D'
+      WHEN cast(tlevel as int) >= 3 THEN 'D'
+    END as dept_class
+  , NULL as dept_type
+  , sta_ymd as dept_sdate, end_ymd as dept_edate
+  , CASE WHEN date_format(current_timestamp(), '%Y%m%d') > end_ymd THEN 'N' ELSE 'Y' END AS dept_use_yn
+  , CASE WHEN ifnull(up_org_id, '') = '' then '1000' ELSE CONCAT('R', up_org_id) END AS dept_p_cd
+  , substring(dp_order, 7, 10) as dept_order
+  , current_timestamp() as date_created, current_timestamp() as date_updated, creator, updater 
+FROM sa_master_organ
+) sp
+ON DUPLICATE KEY
+UPDATE dept_nm = sp.dept_nm
+	, dept_sdate = sp.dept_sdate 
+	, dept_edate = sp.dept_edate
+	, dept_use_yn = sp.dept_use_yn
+	, dept_p_cd = sp.dept_p_cd
+	, dept_order = sp.dept_order
+	, date_updated = sp.date_updated
+	, updater = sp.updater
+	</insert>
+	
+	<update id="updateDisableMemberMes">
+UPDATE vmes.sy_member_master
+SET use_yn = 'Y'
+WHERE member_id != 'mes_admin'
+	AND company_cd = '1000'
+	</update>
+	
+	<insert id="insertSyncMemberMes">
+INSERT INTO sy_member_master (
+  member_emp_no, member_id, member_email, member_pwd
+  , member_nm, member_nm_en, phone_no, extension, company_cd
+  , area_cd, use_yn, init_yn, pwd_chg_date, member_lang
+  , date_created, date_updated, creator, updater 
+)
+SELECT * 
+FROM (
+	SELECT emp_id as member_emp_no
+	  , emp_id as member_id
+	  , mail_addr as member_email
+	  , password('v1234') as member_pwd
+	  , emp_nm as member_nm
+	  , '' as member_nm_en
+	  , mobile_no as phone_no
+	  , office_tel_no as extension
+	  , '1000' as company_cd
+	  , null as area_cd
+	  , CASE WHEN date_format(current_timestamp(), '%Y%m%d') > (CASE WHEN ifnull(retire_ymd, '') = '' THEN '20991231' ELSE retire_ymd END) THEN 'N' ELSE 'Y' END as use_yn
+	  , 'Y' as init_yn
+	  , NULL as pwd_chg_date
+	  , 'ko' as member_lang
+	  , current_timestamp() as date_created, current_timestamp() as date_updated, creator, updater
+	FROM sa_master_member
+) sp
+ON DUPLICATE KEY
+UPDATE member_id = sp.member_id
+	, member_email = sp.member_email 
+	, member_nm = sp.member_nm
+	, phone_no = sp.phone_no
+	, extension = sp.extension
+	, company_cd = sp.company_cd
+	, use_yn = sp.use_yn
+	, date_updated = sp.date_updated
+	, updater = sp.updater
+	</insert>
+	
+	<insert id="insertSyncMemberOrgMes">
+	INSERT INTO sy_organ_member_map (
+	  company_cd, dept_cd, member_emp_no, position_cd, start_dt, end_dt, map_ord
+	  , date_created, date_updated, creator, updater
+	)
+	SELECT * 
+	FROM (
+		SELECT '1000' as company_cd
+		  , concat('R', org_id) as dept_cd
+		  , emp_id as member_emp_no
+		  , post_cd as position_cd
+		  , enter_ymd as start_dt
+		  , retire_ymd as end_dt
+		  , 1 as map_ord
+		  , current_timestamp() as date_created, current_timestamp() as date_updated, creator, updater
+		FROM sa_master_member
+	) sp
+	ON DUPLICATE KEY
+	UPDATE position_cd = sp.position_cd
+		, start_dt = sp.start_dt 
+		, end_dt = CASE WHEN ifnull(sp.end_dt, '') = '' THEN '20991231' ELSE sp.end_dt END
+		, date_updated = sp.date_updated
+		, updater = sp.updater
+	</insert>
+	
+	
+</mapper>

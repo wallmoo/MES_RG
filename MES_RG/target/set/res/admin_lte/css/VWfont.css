@@ -1,0 +1,28 @@
+/*
+ * Vieworks Web Font
+ */
+
+@font-face {
+    font-family: 'VWLweb';
+    src: url('/res/admin_lte/css/font/VWLweb.eot');
+    src: url('/res/admin_lte/css/font/VWLweb.eot?#iefix') format('embedded-opentype'),
+         url('/res/admin_lte/css/font/VWLweb.woff') format('woff'),
+         url('/res/admin_lte/css/font/VWLweb.ttf') format('truetype');
+    font-style: normal;
+}
+@font-face {
+    font-family: 'VWMweb';
+    src: url('/res/admin_lte/css/font/VWMweb.eot');
+    src: url('/res/admin_lte/css/font/VWMweb.eot?#iefix') format('embedded-opentype'),
+         url('/res/admin_lte/css/font/VWMweb.woff') format('woff'),
+         url('/res/admin_lte/css/font/VWMweb.ttf') format('truetype');
+    font-style: normal;
+}
+@font-face {
+    font-family: 'VWBweb';
+    src: url('/res/admin_lte/css/font/VWBweb.eot');
+    src: url('/res/admin_lte/css/font/VWBweb.eot?#iefix') format('embedded-opentype'),
+         url('/res/admin_lte/css/font/VWBweb.woff') format('woff'),
+         url('/res/admin_lte/css/font/VWBweb.ttf') format('truetype');
+    font-style: normal;
+}

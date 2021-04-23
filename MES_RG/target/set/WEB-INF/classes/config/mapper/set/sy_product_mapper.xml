@@ -1,0 +1,4794 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.passcombine.set.dao.SYProductDAO">
+
+
+	<select id="selectOrderNum" resultType="String">
+		
+		SELECT fn_product_order()
+	
+	</select>
+
+	<select id="selectRouting_master" parameterType="SYRoutingMasterVo" resultType="SYRoutingMasterVo">
+		SELECT 
+			item_code, routing_code, routing_seq, routing_nm, routing_gubun, warehouse_gubun, 
+			outsourcing_gubun, machine_gubun,
+			use_yn, creator, updater, date_created, date_updated
+		FROM routing_master
+		WHERE use_yn = 'Y'
+		<if test="item_code!=null and !''.equals(item_code) ">
+			AND item_code = #{item_code}
+		</if>
+		<if test="routing_code!=null and !''.equals(routing_code) ">
+			AND routing_code = #{routing_code}
+		</if>
+		<!-- AND not routing_code LIKE '%-%' -->
+		ORDER BY routing_seq*1 , routing_code ASC
+	</select>
+	
+	
+	
+	<select id="selectProduct" parameterType="SYProductVO" resultType="SYProductVO">
+		SELECT
+
+			product_po, product_class, product_status, product_status_info,
+			routing_code, routing_nm , 
+			next_routing_code, next_routing_nm,
+			product_req_date, product_date,
+			order_num, item_code, item_nm, delivery_date, order_menge,
+			warehouse_delivery_menge, product_menge, 
+			raw_out_yn, date_created, 
+			(
+			SELECT one_yn FROM material_tbl WHERE item_code = pp.item_code
+			LIMIT 1
+			) as one_yn
+		FROM (
+		
+			SELECT 
+					product_po, product_class, product_status, product_status_info,
+					routing_code, 
+					(
+						SELECT GROUP_CONCAT(routing_nm, "(", routing_code, ")")
+						 
+						FROM product_operation_tbl 
+						WHERE  del_yn = 'N'
+						AND product_po = p.product_po 
+						AND routing_code = p.routing_code
+					) as routing_nm,
+					IFNULL((
+						SELECT routing_code 
+						FROM product_operation_tbl 
+						WHERE  del_yn = 'N'
+						AND product_po = p.product_po 
+						AND real_seq*1 > (
+											SELECT real_seq
+											FROM product_operation_tbl
+											WHERE 1 = 1
+											AND del_yn = 'N'
+											AND product_po = p.product_po
+											AND routing_code = p.routing_code
+											LIMIT 1 
+						)
+								ORDER BY real_seq*1 asc
+						LIMIT 1
+					),'') as next_routing_code,
+					IFNULL((
+						SELECT CONCAT(routing_nm, "(", routing_code, ")")
+						FROM product_operation_tbl 
+						WHERE  del_yn = 'N'
+						AND product_po = p.product_po 
+						AND real_seq*1 > (
+											SELECT real_seq
+											FROM product_operation_tbl
+											WHERE 1 = 1
+											AND del_yn = 'N'
+											AND product_po = p.product_po
+											AND routing_code = p.routing_code
+											LIMIT 1 
+						)
+						ORDER BY real_seq*1 asc
+						LIMIT 1
+					),'') as next_routing_nm,
+					product_req_date, product_date,
+					order_num, item_code, item_nm, delivery_date, order_menge,
+					warehouse_delivery_menge, product_menge, 
+					raw_out_yn, date_created
+
+					FROM product_tbl as p
+					
+				WHERE 1 = 1
+				AND del_yn = 'N'
+		) AS pp
+		
+		WHERE 1 = 1 
+		<if test="order_num != null and !''.equals( order_num ) ">
+			AND order_num = #{order_num}
+		</if>
+		<if test="product_status != null and !''.equals( product_status ) ">
+			AND product_status = #{product_status}
+		</if>
+		<if test="product_status_info != null and !''.equals( product_status_info ) ">
+			AND product_status_info = #{product_status_info}
+		</if>
+		<if test="product_po != null and !''.equals( product_po ) ">
+			AND product_po = #{product_po}
+		</if>
+		<if test="product_req_date != null and !''.equals( product_req_date ) ">
+			AND date_format(product_req_date, '%Y%m%d') BETWEEN left(#{product_req_date}, 8) AND right(#{product_req_date}, 8)
+		</if>
+		
+		<if test="routing_code != null and !''.equals( routing_code ) ">
+			AND routing_code = #{routing_code}
+		</if>
+		
+		<if test="next_routing_code != null and !''.equals( next_routing_code ) ">
+			AND next_routing_code = #{next_routing_code}
+		</if>
+		
+		<if test="product_class != null and !''.equals( product_class ) ">
+			AND product_class = #{product_class}
+		</if>
+		
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND item_code = #{item_code}
+		</if>
+		
+		<if test="item_nm != null and !''.equals( item_nm ) ">
+			AND item_nm = #{item_nm}
+		</if>
+		
+		<if test="raw_out_yn != null and !''.equals( raw_out_yn ) ">
+			AND raw_out_yn = #{raw_out_yn}
+		</if>
+		
+		<if test='"P".equals( search_type ) '>
+			AND product_po like 'P%'
+		</if>
+		
+		<if test='"S".equals( search_type ) '>
+			AND product_po like 'S%'
+		</if>
+
+		ORDER BY SUBSTRING_INDEX(product_po,'_',1), SUBSTRING_INDEX(product_po,'_',-1)*1 , product_req_date, date_created ASC
+	</select>
+	
+	<select id="selectProduct_one" parameterType="SYProductVO" resultType="SYProductVO">
+		SELECT
+
+			product_po, product_class, product_status, product_status_info,
+			routing_code,
+			product_req_date, product_date,
+			order_num, item_code, item_nm, delivery_date, order_menge,
+			warehouse_delivery_menge, product_menge, 
+			raw_out_yn, date_created, 
+			one_yn
+		FROM (
+		
+			SELECT 
+					p.product_po, p.product_class, p.product_status, p.product_status_info,
+					p.routing_code, 	
+					p.product_req_date, p.product_date,
+					p.order_num, p.item_code, p.item_nm, delivery_date, p.order_menge,
+					p.warehouse_delivery_menge, p.product_menge, 
+					p.raw_out_yn, p.date_created, m.one_yn
+
+					FROM product_tbl as p
+					LEFT JOIN material_tbl AS m
+					ON p.item_code = m.item_code
+					WHERE 1 = 1
+					AND p.del_yn = 'N'
+					AND m.one_yn = 'Y'
+					
+					<if test='"N".equals( raw_out_yn ) '>
+						AND p.product_status != 'y'
+					</if>
+		) AS pp
+		
+		WHERE 1 = 1 
+	
+		
+		<if test="raw_out_yn != null and !''.equals( raw_out_yn ) ">
+			AND raw_out_yn = #{raw_out_yn}
+		</if>
+
+		ORDER BY product_po, product_req_date, date_created ASC
+	</select>
+	
+	
+	<select id="selectProduct_V1" parameterType="SYProductVO" resultType="SYProductVO">
+		
+		SELECT 
+			p.product_po, p.product_status, p.product_status_info,
+			po.status, po.routing_code , po.routing_nm, po.real_seq,
+			p.product_req_date, product_date,
+			p.order_num, p.item_code, p.item_nm, p.delivery_date, p.order_menge,
+			p.warehouse_delivery_menge, p.product_menge, 
+			p.raw_out_yn
+			
+		FROM product_tbl as p
+		LEFT JOIN product_operation_tbl AS po
+		ON p.product_po = po.product_po
+		
+		WHERE p.del_yn = 'N'
+		AND po.del_yn = 'N'
+		AND po.real_seq = (
+							SELECT 					
+								real_seq				
+							FROM product_operation_tbl AS po		
+							WHERE del_yn = 'N'
+							AND product_po = p.product_po
+							AND real_seq = (	
+											SELECT 
+												real_seq
+											FROM product_operation_tbl									
+											WHERE del_yn = 'N'
+											AND product_po = po.product_po
+											AND routing_code = 'V1' ) - 1
+							AND po.status = 'e'
+							) + 1
+		<if test="order_num != null and !''.equals( order_num ) ">
+			AND p.order_num = #{order_num}
+		</if>
+		<if test="product_status != null and !''.equals( product_status ) ">
+			AND p.product_status = #{product_status}
+		</if>
+		<if test="product_status_info != null and !''.equals( product_status_info ) ">
+			AND p.product_status_info = #{product_status_info}
+		</if>
+		<if test='"i".equals( status )'>
+			AND po.status in ('i' , 'us', 'ue')
+		</if>
+		
+		<if test='"e".equals( status )'>
+			AND po.status  in ('e' , 'y')
+		</if>
+		
+		<if test='"n".equals( status )'>
+			AND po.status = 'n'
+		</if>
+		
+		<if test="product_po != null and !''.equals( product_po ) ">
+			AND p.product_po = #{product_po}
+		</if>
+		<if test="product_date != null and !''.equals( product_date ) ">
+			AND date_format(p.product_date, '%Y%m%d') BETWEEN left(#{product_date}, 8) AND right(#{product_date}, 8)
+		</if>
+		
+		<if test="product_req_date != null and !''.equals( product_req_date ) ">
+			AND date_format(p.product_date, '%Y%m%d') BETWEEN left(#{product_req_date}, 8) AND right(#{product_req_date}, 8)
+		</if>
+		
+		<if test="routing_code != null and !''.equals( routing_code ) ">
+			AND p.routing_code = #{p.routing_code}
+		</if>
+		<if test="product_class != null and !''.equals( product_class ) ">
+			AND p.product_class = #{p.product_class}
+		</if>
+		
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND p.item_code = #{item_code}
+		</if>
+		
+		<if test="item_nm != null and !''.equals( item_nm ) ">
+			AND p.item_nm = #{item_nm}
+		</if>
+		
+		<if test="raw_out_yn != null and !''.equals( raw_out_yn ) ">
+			AND p.raw_out_yn = #{raw_out_yn}
+		</if>
+
+		ORDER BY SUBSTRING_INDEX(p.product_po,'_',1), SUBSTRING_INDEX(p.product_po,'_',-1)*1 , p.product_req_date, p.date_created ASC
+	</select>
+
+
+	<insert id="saveProduct" parameterType="SYProductVO">
+ 		INSERT INTO product_tbl (
+			product_po, product_class, product_status, product_status_info,
+			routing_code, product_req_date, product_date,
+			order_num, item_code, item_nm, 
+			
+			unit_price,
+			
+			delivery_date, 
+			order_menge, warehouse_delivery_menge, product_menge, 
+			raw_out_yn,
+			del_yn,
+		 	creator, updater, date_created, date_updated)
+		SELECT *
+		  FROM (
+		  		SELECT  
+		 
+				#{product_po} as product_po,
+				 #{product_class} as product_class, 'n' as product_status, 'n' as product_status_info,
+		  		'' as routing_code, #{product_req_date} as product_req_date, #{product_date} as product_date, 
+		  		#{order_num} as order_num, #{item_code} as item_code, #{item_nm} as item_nm, 
+		  		(
+		  			SELECT unit_price
+		  			FROM order_manager_tbl
+		  			WHERE order_num = #{order_num}
+		  			AND item_code = #{item_code}  		
+		  		) as unit_price,
+	  				  		
+		  		#{delivery_date} as delivery_date, 
+		  		#{order_menge} as order_menge, #{warehouse_delivery_menge} as warehouse_delivery_menge, #{product_menge} as product_menge, 
+		  		'N' as raw_out_yn, 'N' as del_yn,
+				#{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated
+		  ) s
+		  ON DUPLICATE KEY
+		UPDATE
+			product_po = s.product_po,
+			product_class = s.product_class,
+			product_status = s.product_status,
+			product_status_info = s.product_status_info,
+										
+			routing_code = s.routing_code,
+			product_req_date = s.product_req_date,
+			product_date = s.product_date,
+			
+			order_num = s.order_num,
+			item_code = s.item_code,
+			item_nm = s.item_nm,
+			unit_price = s.unit_price,
+			delivery_date = s.delivery_date,
+			
+			order_menge = s.order_menge,
+			warehouse_delivery_menge = s.warehouse_delivery_menge,
+			product_menge = s.product_menge,
+			raw_out_yn = s.raw_out_yn,
+			del_yn = s.del_yn,
+					
+			updater = s.updater,
+			date_updated = s.date_updated
+	</insert>
+	
+	<update id="deleteProduct" parameterType="SYProductVO">
+		UPDATE product_tbl SET del_yn='Y'
+		 WHERE product_po = #{product_po}
+	</update>
+	
+	<update id="updateProductDate" parameterType="SYProductVO">
+		UPDATE product_tbl SET  product_req_date = #{product_req_date},
+			updater = #{updater},	date_updated = current_timestamp()
+		 WHERE product_po = #{product_po}
+	</update>
+	
+	<update id="updateProductStatus" parameterType="SYProductVO">
+		UPDATE product_tbl SET  
+		<if test="product_status != null and !''.equals( product_status ) ">
+			product_status = #{product_status},
+		</if>
+		<if test="product_status_info != null and !''.equals( product_status_info ) ">
+			product_status_info = #{product_status_info},
+		</if>
+		<if test="routing_code != null and !''.equals( routing_code ) ">
+			 routing_code = #{routing_code},
+		</if>
+		<if test="product_date != null and !''.equals( product_date ) ">
+			product_date = CURDATE(),
+		</if>
+			updater = #{updater},	
+			date_updated = current_timestamp()
+		 WHERE product_po = #{product_po}
+	</update>
+	
+	<!-- selectProductPlanNow -->
+	<select id="selectProductPlanNow" parameterType="SYWarehouseVo" resultType="SYWarehouseVo">
+		<!-- SELECT 
+
+			item_code, item_nm, 
+			SUM(menge) AS menge,
+			safety_stock_qty, safety_stock_yn, warehousing_qty
+
+		FROM
+		
+		(
+			SELECT 
+				o.business_code, o.order_num, o.item_code, o.item_nm, m.item_type_code,
+				o.delivery_date, o.customer_code, o.customer_nm, o.request_num, o.sap_code, o.comment, o.land, o.manager_nm,
+				o.unit_price, o.menge, o.total_price, o.success_status,
+				m.safety_stock_yn as safety_stock_yn, 
+				IFNULL(m.safety_menge,0) as safety_stock_qty,
+				
+				ifnull(( 
+					SELECT SUM(ifnull(warehousing_qty,0)) 
+					FROM warehouse_tbl
+					WHERE 1 = 1
+					AND (business_code = 'MD1243' OR business_code = 'MD1282')
+					AND item_code = o.item_code
+					GROUP BY item_code		
+				),0) as warehousing_qty,
+				(
+					SELECT product_po
+					FROM product_tbl AS p
+					
+					WHERE p.del_yn = 'N'
+			
+					AND p.order_num = o.order_num
+					AND p.item_code = o.item_code
+					LIMIT 1
+					
+				) AS product_po,
+				o.creator, o.updater, o.date_created, o.date_updated
+			FROM material_tbl m, 
+		    LEFT JOIN order_manager_tbl AS o
+			ON o.item_code = m.item_code
+			WHERE 1 = 1
+			AND m.del_yn = 'N'
+		) as pp
+	
+		WHERE 1 = 1
+		
+		AND product_po IS NULL
+		
+		<if test="business_codeT == ''.toString() ">
+			AND business_code = #{business_code}
+		</if>
+		<if test="business_codeT!=null and !''.equals(business_codeT) ">
+			AND (business_code = #{business_code} OR business_code = #{business_codeT}) 
+		</if>
+		<if test="warehouse_code!=null and !''.equals(warehouse_code) ">
+			AND warehouse_code = #{warehouse_code}
+		</if>
+		<if test="item_code!=null and !''.equals(item_code) ">
+			AND item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+		<if test="item_type_code != null and '' != item_type_code">
+ 			AND item_type_code = #{item_type_code}
+ 		</if>
+ 		
+ 		<if test="safety_stock_yn != null and '' != safety_stock_yn">
+ 			AND safety_stock_yn = #{safety_stock_yn}
+ 		</if>
+ 		
+		GROUP BY item_code
+		
+		ORDER BY safety_stock_yn DESC , warehousing_qty*1 , (safety_stock_qty*1 - warehousing_qty*1)  DESC -->
+			
+		SELECT 
+			o.business_code, o.order_num, m.item_code, m.item_nm, m.item_type_code,
+			o.delivery_date, o.customer_code, o.customer_nm, o.request_num, o.sap_code, o.comment, o.land, o.manager_nm,
+			o.unit_price, SUM(IFNULL(o.menge,0)) as menge, o.total_price, o.success_status,
+			m.safety_stock_yn as safety_stock_yn, 
+			IFNULL(m.safety_menge,0) as safety_stock_qty,
+			
+			ifnull(( 
+				SELECT SUM(ifnull(warehousing_qty,0)) 
+				FROM warehouse_tbl
+				WHERE 1 = 1
+				AND (business_code = 'MD1243' OR business_code = 'MD1282')
+				AND item_code = o.item_code
+				GROUP BY item_code		
+			),0) as warehousing_qty,
+			(
+				SELECT product_po
+				FROM product_tbl AS p
+				
+				WHERE p.del_yn = 'N'
+		
+				AND p.order_num = o.order_num
+				AND p.item_code = o.item_code
+				LIMIT 1
+				
+			) AS product_po,
+			o.creator, o.updater, o.date_created, o.date_updated
+		FROM material_tbl m 
+	   LEFT JOIN order_manager_tbl AS o
+		ON o.item_code = m.item_code
+		WHERE 1 = 1
+		AND m.del_yn = 'N'
+		AND m.item_type_code in ('MD1247','MD1248','MD1249')
+		
+		
+		<if test="business_codeT == ''.toString() ">
+			AND o.business_code = #{business_code}
+		</if>
+		<if test="business_codeT!=null and !''.equals(business_codeT) ">
+			AND (o.business_code = #{business_code} OR o.business_code = #{business_codeT}) 
+		</if>
+		<if test="warehouse_code!=null and !''.equals(warehouse_code) ">
+			AND m.warehouse_code = #{warehouse_code}
+		</if>
+		<if test="item_code!=null and !''.equals(item_code) ">
+			AND m.item_code = #{item_code}
+		</if>
+		<if test="item_nm!=null and !''.equals(item_nm) ">
+			AND m.item_nm LIKE CONCAT('%', #{item_nm}, '%')
+		</if>
+		<if test="item_type_code != null and '' != item_type_code">
+ 			AND m.item_type_code = #{item_type_code}
+ 		</if>
+ 		
+ 		<if test="safety_stock_yn != null and '' != safety_stock_yn">
+ 			AND m.safety_stock_yn = #{safety_stock_yn}
+ 		</if>
+		GROUP BY m.item_code
+
+	
+		ORDER BY safety_stock_yn DESC , warehousing_qty*1 , (safety_stock_qty*1 - warehousing_qty*1)  DESC
+	
+	</select>
+	
+	
+	
+<!-- 	<select id="selectProductOperation" parameterType="SYProductOperationVO" resultType="SYProductOperationVO">
+		SELECT 
+			product_po, routing_code, routing_seq, real_seq, routing_nm, routing_gubun,
+			status, machine_code, machine_nm, warehouse_gubun,
+			member_emp_no, member_nm, 
+			date_format(prod_str_time,"%H:%i:%s") as prod_str_time, 
+			date_format(prod_end_time,"%H:%i:%s") as prod_end_time,
+ 
+			time_format(
+				timediff(
+					date_format(prod_end_time,"%Y-%m-%d %H:%i:%s"), 
+					date_format(prod_str_time,"%Y-%m-%d %H:%i:%s")
+				),
+				"%H:%i:%s") 
+				AS process_time,
+			ifnull(prod_menge,0) as prod_menge,
+			ifnull(prod_fail_menge,0) as prod_fail_menge,
+			outsourcing_gubun, machine_gubun,
+						
+			skip_yn, del_yn, creator, updater, date_created, date_updated
+				
+			
+			FROM product_operation_tbl as po
+		WHERE 1 = 1
+		AND del_yn = 'N'
+		
+		<if test="product_po != null and !''.equals( product_po ) ">
+			AND product_po = #{product_po}
+		</if>
+		<if test="routing_code != null and !''.equals( routing_code ) ">
+			AND routing_code = #{routing_code}
+		</if>
+		<if test="routing_seq != null and !''.equals( routing_seq ) ">
+			AND routing_seq = #{routing_seq}
+		</if>
+		<if test="member_nm != null and !''.equals( member_nm ) ">
+			AND member_nm = #{member_nm}
+		</if>
+		<if test="skip_yn != null and !''.equals( skip_yn ) ">
+			AND skip_yn = #{skip_yn}
+		</if>
+		<if test="outsourcing_gubun != null and !''.equals( outsourcing_gubun ) ">
+			AND outsourcing_gubun = #{outsourcing_gubun}
+		</if>
+		<if test="status != null and !''.equals( status ) ">
+			AND status = #{status}
+		</if>
+		ORDER BY product_po, real_seq*1 , date_created ASC
+	</select> -->
+	
+	<select id="selectProductOperation" parameterType="SYProductOperationVO" resultType="SYProductOperationVO">
+		SELECT 
+			product_po, routing_code, routing_seq, real_seq, routing_nm, routing_gubun,
+			status, machine_code, machine_nm, warehouse_gubun,
+			member_emp_no, member_nm, 				
+			prod_str_time, prod_end_time,
+		  	CASE 
+			WHEN (prod_end_time IS NOT NULL)
+			THEN CONCAT(SEC_TO_TIME(process_time - un_process_time),'')
+			ELSE ''
+			END AS process_time, 
+			
+			prod_menge, prod_fail_menge,
+			(
+				SELECT prod_menge
+				FROM product_operation_tbl
+				WHERE del_yn = 'N'
+				AND product_po = pp.product_po
+				AND real_seq*1 <![CDATA[<]]>  pp.real_seq
+				ORDER BY real_seq*1 desc
+				LIMIT 1
+			)
+			as prev_prod_menge,
+			(
+				SELECT prod_fail_menge
+				FROM product_operation_tbl
+				WHERE del_yn = 'N'
+				AND product_po = pp.product_po
+				AND real_seq*1 <![CDATA[<]]>  pp.real_seq
+				ORDER BY real_seq*1 desc
+				LIMIT 1
+			)
+			as prev_prod_fail_menge,
+			outsourcing_gubun, machine_gubun,			
+			skip_yn, del_yn, creator, updater, date_created, date_updated
+		FROM (	
+		
+			SELECT 
+				product_po, routing_code, routing_seq, real_seq, routing_nm, routing_gubun,
+				status, machine_code, machine_nm, warehouse_gubun,
+				member_emp_no, member_nm, 
+				date_format(prod_str_time,"%m-%d %H:%i") as prod_str_time, 
+				date_format(prod_end_time,"%m-%d %H:%i") as prod_end_time,
+	 
+				ifnull(TIME_TO_SEC(
+					timediff(
+						date_format(prod_end_time,"%Y-%m-%d %H:%i:%s"), 
+						date_format(prod_str_time,"%Y-%m-%d %H:%i:%s")
+				)),0) AS process_time,
+				IFNULL((
+					SELECT SUM(TIME_TO_SEC(
+					timediff(
+						date_format(unprod_end_time,"%Y-%m-%d %H:%i:%s"), 
+						date_format(unprod_str_time,"%Y-%m-%d %H:%i:%s")
+					)) ) 
+					FROM product_unoperation_tbl
+					WHERE del_yn = 'N' 
+					AND product_po = po.product_po
+					AND routing_code = po.routing_code
+				),0) AS un_process_time,
+					
+					
+				ifnull(prod_menge,0) as prod_menge,
+				ifnull(prod_fail_menge,0) as prod_fail_menge,
+				outsourcing_gubun, machine_gubun,
+							
+				skip_yn, del_yn, creator, updater, date_created, date_updated
+					
+				
+				FROM product_operation_tbl as po
+	
+			WHERE 1 = 1
+			AND del_yn = 'N'
+			
+		) AS pp
+		WHERE 1 = 1
+		<if test="product_po != null and !''.equals( product_po ) ">
+			AND product_po = #{product_po}
+		</if>
+		<if test="routing_code != null and !''.equals( routing_code ) ">
+			AND routing_code = #{routing_code}
+		</if>
+		<if test="routing_seq != null and !''.equals( routing_seq ) ">
+			AND routing_seq = #{routing_seq}
+		</if>
+		<if test="member_nm != null and !''.equals( member_nm ) ">
+			AND member_nm = #{member_nm}
+		</if>
+		<if test="skip_yn != null and !''.equals( skip_yn ) ">
+			AND skip_yn = #{skip_yn}
+		</if>
+		<if test="outsourcing_gubun != null and !''.equals( outsourcing_gubun ) ">
+			AND outsourcing_gubun = #{outsourcing_gubun}
+		</if>
+		<if test="status != null and !''.equals( status ) ">
+			AND status = #{status}
+		</if>
+		ORDER BY product_po, real_seq*1 , date_created ASC
+	</select>
+	
+	
+	<select id="selectProductOperation_V1" parameterType="SYProductOperationVO" resultType="SYProductOperationVO">
+		SELECT 
+			product_po, routing_code, routing_seq, real_seq, routing_nm, routing_gubun,
+			status, machine_code, machine_nm, warehouse_gubun,
+			member_emp_no, member_nm, 				
+			prod_str_time, prod_end_time,
+		  	CASE 
+			WHEN (prod_end_time IS NOT NULL)
+			THEN CONCAT(SEC_TO_TIME(process_time - un_process_time),'')
+			ELSE ''
+			END AS process_time, 
+			
+			prod_menge, prod_fail_menge,
+			(
+				SELECT prod_menge
+				FROM product_operation_tbl
+				WHERE del_yn = 'N'
+				AND product_po = pp.product_po
+				AND real_seq*1 <![CDATA[<]]>  pp.real_seq
+				ORDER BY real_seq*1 desc
+				LIMIT 1
+			)
+			as prev_prod_menge,
+			(
+				SELECT prod_fail_menge
+				FROM product_operation_tbl
+				WHERE del_yn = 'N'
+				AND product_po = pp.product_po
+				AND real_seq*1 <![CDATA[<]]>  pp.real_seq
+				ORDER BY real_seq*1 desc
+				LIMIT 1
+			)
+			as prev_prod_fail_menge,
+			outsourcing_gubun, machine_gubun,			
+			skip_yn, del_yn, creator, updater, date_created, date_updated
+		FROM (	
+		
+			SELECT 
+				product_po, routing_code, routing_seq, real_seq, routing_nm, routing_gubun,
+				status, machine_code, machine_nm, warehouse_gubun,
+				member_emp_no, member_nm, 
+				date_format(prod_str_time,"%m-%d %H:%i") as prod_str_time, 
+				date_format(prod_end_time,"%m-%d %H:%i") as prod_end_time,
+	 
+				ifnull(TIME_TO_SEC(
+					timediff(
+						date_format(prod_end_time,"%Y-%m-%d %H:%i:%s"), 
+						date_format(prod_str_time,"%Y-%m-%d %H:%i:%s")
+				)),0) AS process_time,
+				IFNULL((
+					SELECT SUM(TIME_TO_SEC(
+					timediff(
+						date_format(unprod_end_time,"%Y-%m-%d %H:%i:%s"), 
+						date_format(unprod_str_time,"%Y-%m-%d %H:%i:%s")
+					)) ) 
+					FROM product_unoperation_tbl
+					WHERE del_yn = 'N' 
+					AND product_po = po.product_po
+					AND routing_code = po.routing_code
+				),0) AS un_process_time,
+					
+					
+				ifnull(prod_menge,0) as prod_menge,
+				ifnull(prod_fail_menge,0) as prod_fail_menge,
+				outsourcing_gubun, machine_gubun,
+							
+				skip_yn, del_yn, creator, updater, date_created, date_updated
+					
+				
+				FROM product_operation_tbl as po
+	
+			WHERE 1 = 1
+			AND del_yn = 'N'
+			
+		) AS pp
+		WHERE 1 = 1
+		
+		AND real_seq*1 >= ( 
+							SELECT 
+								real_seq
+							FROM product_operation_tbl									
+							WHERE del_yn = 'N'
+							AND product_po = pp.product_po
+							AND routing_code = 'V1'
+		
+							)
+		<if test="product_po != null and !''.equals( product_po ) ">
+			AND product_po = #{product_po}
+		</if>
+		<if test="routing_code != null and !''.equals( routing_code ) ">
+			AND routing_code = #{routing_code}
+		</if>
+		<if test="routing_seq != null and !''.equals( routing_seq ) ">
+			AND routing_seq = #{routing_seq}
+		</if>
+		<if test="member_nm != null and !''.equals( member_nm ) ">
+			AND member_nm = #{member_nm}
+		</if>
+		<if test="skip_yn != null and !''.equals( skip_yn ) ">
+			AND skip_yn = #{skip_yn}
+		</if>
+		<if test="outsourcing_gubun != null and !''.equals( outsourcing_gubun ) ">
+			AND outsourcing_gubun = #{outsourcing_gubun}
+		</if>
+		<if test="status != null and !''.equals( status ) ">
+			AND status = #{status}
+		</if>
+		ORDER BY product_po, real_seq*1 , date_created ASC
+	</select>
+
+	<select id="selectProductOperationStatus" parameterType="SYProductOperationVO" resultType="SYProductOperationVO">
+		SELECT 
+			product_po, routing_code, routing_seq, real_seq,
+			status, 
+			skip_yn, del_yn, creator, updater, date_created, date_updated
+			
+			
+			
+			FROM product_operation_tbl
+		WHERE 1 = 1
+		AND del_yn = 'N'
+		
+		<if test="product_po != null and !''.equals( product_po ) ">
+			AND product_po = #{product_po}
+		</if>
+		<if test="routing_code != null and !''.equals( routing_code ) ">
+			AND routing_code = #{routing_code}
+		</if>
+		<if test="routing_seq != null and !''.equals( routing_seq ) ">
+			AND routing_seq = #{routing_seq}
+		</if>
+		<if test="member_nm != null and !''.equals( member_nm ) ">
+			AND member_nm = #{member_nm}
+		</if>
+		<if test="skip_yn != null and !''.equals( skip_yn ) ">
+			AND skip_yn = #{skip_yn}
+		</if>
+	
+		ORDER BY product_po, real_seq*1, date_created ASC
+	</select>
+
+
+	<insert id="saveProductOperation" parameterType="SYProductOperationVO">
+ 		INSERT INTO product_operation_tbl (
+			product_po, routing_code, routing_seq, real_seq, routing_nm, routing_gubun,
+			status, machine_code, machine_nm, warehouse_gubun,
+			member_emp_no, member_nm, prod_str_time, prod_end_time,
+			
+			outsourcing_gubun, machine_gubun,
+			
+			skip_yn,
+			del_yn,
+			
+		 	creator, updater, date_created, date_updated)
+		SELECT *
+		  FROM (
+		  		SELECT  
+		 
+				#{product_po} as product_po, #{routing_code} as routing_code, #{routing_seq} as routing_seq,
+				#{real_seq} as real_seq,
+		  		#{routing_nm} as routing_nm, #{routing_gubun} as routing_gubun, 'n' as status,
+		  		#{machine_code} as machine_code, #{machine_nm} as machine_nm, #{warehouse_gubun} as warehouse_gubun, 
+		  		#{member_emp_no} as member_emp_no, #{member_nm} as member_nm, 
+		  		#{prod_str_time} as prod_str_time, #{prod_end_time} as prod_end_time, 
+		  		
+		  		#{outsourcing_gubun} as outsourcing_gubun, #{machine_gubun} as machine_gubun, 
+		  		
+		  		#{skip_yn} as skip_yn,
+		  		 'N' as del_yn,
+				#{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated
+		  ) s
+		  ON DUPLICATE KEY
+		UPDATE
+			product_po = s.product_po,
+			routing_code = s.routing_code,
+			routing_seq = s.routing_seq,
+			real_seq = s.real_seq,
+										
+			routing_nm = s.routing_nm,
+			routing_gubun = s.routing_gubun,
+			machine_code = s.machine_code,	
+			machine_nm = s.machine_nm,
+			
+			warehouse_gubun = s.warehouse_gubun,
+			member_emp_no = s.member_emp_no,
+			member_nm = s.member_nm,
+			
+			prod_str_time = s.prod_str_time,
+			prod_end_time = s.prod_end_time,
+			
+			outsourcing_gubun = s.outsourcing_gubun,
+			machine_gubun = s.machine_gubun,
+			
+			skip_yn = s.skip_yn,
+			del_yn = s.del_yn,
+					
+			updater = s.updater,
+			date_updated = s.date_updated
+	</insert>
+
+	<update id="deleteProductOperation" parameterType="SYProductOperationVO">
+		UPDATE product_operation_tbl SET del_yn='Y',
+
+		<if test="updater != null and !''.equals( updater ) ">
+				updater = #{updater},
+		</if>
+		date_updated = current_timestamp()
+		WHERE product_po = #{product_po}
+		
+		<if test="routing_code != null and !''.equals( routing_code ) ">
+			AND routing_code = #{routing_code}
+		</if>
+		<if test="routing_seq != null and !''.equals( routing_seq ) ">
+			AND routing_seq = #{routing_seq}
+		</if>
+
+	
+	</update>
+	
+	
+	<update id="updateProductOperation" parameterType="SYProductOperationVO">
+		UPDATE product_operation_tbl 
+		SET 
+	
+		
+	
+		<if test="member_nm != null and !''.equals( member_nm ) ">
+			 member_nm = #{member_nm},
+			 
+			 member_emp_no = ( SELECT member_emp_no from sy_member_master WHERE member_nm = #{member_nm} ),
+		</if>
+		<if test="status != null and !''.equals( status ) ">
+			 status = #{status},
+		</if>
+		<if test="prod_str_time != null and !''.equals( prod_str_time ) ">
+			 prod_str_time = current_timestamp(),
+		</if>
+		<if test="prod_end_time != null and !''.equals( prod_end_time ) ">
+			 prod_end_time = current_timestamp(),
+		</if>
+		updater = #{updater},
+		date_updated = current_timestamp()
+		
+		WHERE product_po = #{product_po}
+		
+		AND routing_code = #{routing_code}
+	
+		<if test="routing_seq != null and !''.equals( routing_seq ) ">
+			AND routing_seq = #{routing_seq}
+		</if>
+
+	
+	</update>
+	
+	
+	<update id="updateProductOperationInfo" parameterType="SYProductOperationVO">
+		UPDATE product_operation_tbl 
+		
+		SET 
+		
+		<if test="member_nm != null and !''.equals( member_nm ) ">
+			 member_nm = #{member_nm},
+			 
+			 member_emp_no = ( SELECT member_emp_no from sy_member_master WHERE member_nm = #{member_nm} ),
+		</if>
+		<if test="machine_code != null and !''.equals( machine_code ) ">
+			 machine_code = #{machine_code},
+			 
+			 machine_nm = ( SELECT machine_nm from machine_master WHERE machine_code = #{machine_code} ),
+		</if>
+		
+		<if test="machine_nm != null and !''.equals( machine_nm ) ">
+			 machine_nm = #{machine_nm},
+			 
+			 machine_code = ( SELECT machine_code from machine_master WHERE machine_nm = #{machine_nm} ),
+		</if>
+		<if test="status != null and !''.equals( status ) ">
+			 status = #{status},
+		</if>
+		<if test="prod_str_time != null and !''.equals( prod_str_time ) ">
+			 prod_str_time = current_timestamp(),
+		</if>
+		<if test="prod_end_time != null and !''.equals( prod_end_time ) ">
+			 prod_end_time = current_timestamp(),
+		</if>
+		<if test="prod_menge != null and !''.equals( prod_menge ) ">
+			 prod_menge = #{prod_menge},
+		</if>
+		<if test="prod_fail_menge != null and !''.equals( prod_fail_menge ) ">
+			 prod_fail_menge = #{prod_fail_menge},
+		</if>
+		updater = #{updater},
+		date_updated = current_timestamp()
+		WHERE 
+			product_po = #{product_po}
+		AND routing_code = #{routing_code}
+
+		<if test="routing_seq != null and !''.equals( routing_seq ) ">
+			AND routing_seq = #{routing_seq}
+		</if>
+
+	
+	</update>
+	
+	
+	
+	
+	
+	
+	<select id="selectProductUnOperation" parameterType="SYProductUnOperationVO" resultType="SYProductUnOperationVO">
+		SELECT 
+			product_po, routing_code, 
+			(
+				SELECT routing_nm FROM product_operation_tbl
+				WHERE routing_code = pu.routing_code
+				AND product_po = pu.product_po
+				GROUP BY routing_code
+			) as routing_nm,
+			
+			unoperation_seq, type,
+			member_emp_no, member_nm, 
+			date_format(unprod_str_time,"%m-%d %H:%i") as unprod_str_time, 
+			date_format(unprod_end_time,"%m-%d %H:%i") as unprod_end_time, 
+			time_format(
+				timediff(
+					date_format(unprod_end_time,"%Y-%m-%d %H:%i:%s"), 
+					date_format(unprod_str_time,"%Y-%m-%d %H:%i:%s")
+				),
+				"%H:%i:%s") 
+				AS process_time,
+			unprod_comment,
+			del_yn, creator, updater, date_created, date_updated
+	
+			FROM product_unoperation_tbl as pu
+		WHERE 1 = 1
+		AND del_yn = 'N'
+		
+		<if test="product_po != null and !''.equals( product_po ) ">
+			AND product_po = #{product_po}
+		</if>
+		<if test="routing_code != null and !''.equals( routing_code ) ">
+			AND routing_code = #{routing_code}
+		</if>
+		<if test="unoperation_seq != null and !''.equals( unoperation_seq ) ">
+			AND unoperation_seq = #{unoperation_seq}
+		</if>
+
+		<if test="member_nm != null and !''.equals( member_nm ) ">
+			AND member_nm = #{member_nm},
+			AND member_emp_no = 
+			(
+				SELECT member_emp_no FROM sy_member_master 
+				WHERE member_nm = #{member_nm}
+			)
+		</if>
+	
+		AND type != 'WH'
+
+		ORDER BY product_po, unoperation_seq, date_created ASC
+	</select>
+	
+	<select id="selectProductUnOperation_V1" parameterType="SYProductUnOperationVO" resultType="SYProductUnOperationVO">
+		
+		SELECT 
+			po.product_po, po.routing_code, 
+				(
+				SELECT routing_nm
+				FROM product_operation_tbl
+				WHERE product_po = po.product_po
+				AND routing_code = po.routing_code
+				LIMIT 1
+			) AS routing_nm,
+			
+			pu.unoperation_seq, type,
+			pu.member_emp_no, pu.member_nm, 
+			date_format(pu.unprod_str_time,"%m-%d %H:%i") as unprod_str_time, 
+			date_format(pu.unprod_end_time,"%m-%d %H:%i") as unprod_end_time, 
+			time_format(
+				timediff(
+					date_format(pu.unprod_end_time,"%Y-%m-%d %H:%i:%s"), 
+					date_format(pu.unprod_str_time,"%Y-%m-%d %H:%i:%s")
+				),
+				"%H:%i:%s") 
+				AS process_time,
+			pu.unprod_comment
+	
+			FROM product_unoperation_tbl as pu
+			LEFT JOIN product_operation_tbl AS po
+			ON pu.product_po = po.product_po
+			AND pu.routing_code = po.routing_code
+			WHERE 1 = 1
+			AND po.del_yn = 'N'
+			AND pu.del_yn = 'N'
+			AND po.real_seq*1 >= ( 
+							SELECT 
+								real_seq
+							FROM product_operation_tbl									
+							WHERE del_yn = 'N'
+							AND product_po = po.product_po
+							AND routing_code = 'V1'
+		
+							)
+		
+		<if test="product_po != null and !''.equals( product_po ) ">
+			AND pu.product_po = #{product_po}
+		</if>
+		<if test="routing_code != null and !''.equals( routing_code ) ">
+			AND pu.routing_code = #{routing_code}
+		</if>
+		<if test="unoperation_seq != null and !''.equals( unoperation_seq ) ">
+			AND pu.unoperation_seq = #{unoperation_seq}
+		</if>
+
+		<if test="member_nm != null and !''.equals( member_nm ) ">
+			AND pu.member_nm = #{member_nm},
+			AND pu.member_emp_no = 
+			(
+				SELECT member_emp_no FROM sy_member_master 
+				WHERE member_nm = #{member_nm}
+			)
+		</if>
+	
+		ORDER BY po.product_po, po.real_seq*1 ASC
+	</select>
+	
+	<select id="selectProductUnOperationSeq" parameterType="SYProductUnOperationVO" resultType="String">
+		
+		SELECT MAX(unoperation_seq) 
+		FROM product_unoperation_tbl
+		WHERE del_yn = 'N'
+		AND product_po = #{product_po}
+		AND routing_code = #{routing_code}
+
+	
+	</select>
+	
+	<insert id="insertProductUnOperation" parameterType="SYProductUnOperationVO">
+		INSERT INTO product_unoperation_tbl (
+			product_po, routing_code,
+			member_emp_no, member_nm, 
+
+			unprod_str_time,
+
+			unprod_comment,
+			del_yn,
+		 	creator, updater, date_created, date_updated)
+		VALUES
+		( 
+			#{product_po}, #{routing_code},
+	  		#{member_emp_no}, #{member_nm}, 
+
+			current_timestamp(), 
+	
+	  		#{unprod_comment}, 
+	  		 'N',
+			#{creator}, #{updater}, current_timestamp(), current_timestamp()
+		)
+	</insert>
+	
+	<update id="updateProductUnOperation" parameterType="SYProductUnOperationVO">
+		UPDATE product_unoperation_tbl 
+		
+			SET member_emp_no = #{member_emp_no},
+			member_nm = #{member_nm},
+			unprod_end_time = current_timestamp,
+			unprod_comment = #{unprod_comment}
+			
+		 WHERE product_po = #{product_po}
+		 AND routing_code = #{routing_code}
+		 AND unoperation_seq = #{unoperation_seq}
+	</update>
+	
+	<insert id="saveProductUnOperation" parameterType="SYProductUnOperationVO">
+ 		INSERT INTO product_unoperation_tbl (
+			product_po, routing_code,
+			member_emp_no, member_nm, 
+			<if test="unprod_str_time != null and !''.equals( unprod_str_time ) ">
+				unprod_str_time,
+			</if>
+			<if test="unprod_end_time != null and !''.equals( unprod_end_time ) ">
+				unprod_end_time,
+			</if>
+			unprod_comment,
+
+			del_yn,
+		 	creator, updater, date_created, date_updated)
+		SELECT *
+		  FROM (
+		  		SELECT  
+		 
+				#{product_po} as product_po, #{routing_code} as routing_code,
+		  		#{member_emp_no} as member_emp_no, #{member_nm} as member_nm, 
+		
+		
+				<if test="unprod_str_time != null and !''.equals( unprod_str_time ) ">
+					current_timestamp() as unprod_str_time, 
+				</if>
+				<if test="unprod_end_time != null and !''.equals( unprod_end_time ) ">
+					current_timestamp() as unprod_end_time, 
+				</if>
+				
+		  		#{unprod_comment} as unprod_comment, 
+		  		 'N' as del_yn,
+				#{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated
+		  ) s
+		  ON DUPLICATE KEY
+		UPDATE
+			product_po = s.product_po,
+			routing_code = s.routing_code,
+
+			member_emp_no = s.member_emp_no,
+			member_nm = s.member_nm,
+			<if test="unprod_str_time != null and !''.equals( unprod_str_time ) ">
+				unprod_str_time = s.unprod_str_time,
+			</if>
+			<if test="unprod_end_time != null and !''.equals( unprod_end_time ) ">
+				unprod_end_time = s.unprod_end_time, 
+			</if>
+		
+			
+			unprod_comment = s.unprod_comment,
+			del_yn = s.del_yn,
+					
+			updater = s.updater,
+			date_updated = s.date_updated
+	</insert>
+
+	<update id="deleteProductUnOperation" parameterType="SYProductUnOperationVO">
+		UPDATE product_unoperation_tbl SET del_yn='Y',
+		<if test="updater != null and !''.equals( updater ) ">
+				updater = #{updater},
+		</if>
+		date_updated = current_timestamp()
+		WHERE product_po = #{product_po}
+		
+		<if test="routing_code != null and !''.equals( routing_code ) ">
+			AND routing_code = #{routing_code}
+		</if>
+		<if test="unoperation_seq != null and !''.equals( unoperation_seq ) ">
+			AND unoperation_seq = #{unoperation_seq}
+		</if>
+
+	
+	</update>
+	
+
+	
+	<select id="selectProductMonitoring" parameterType="SYProductVO" resultType="SYProductVO">
+		
+		
+		SELECT 
+		
+		product_po, product_class, product_status, product_status_info,
+		routing_code, routing_nm, machine_code, next_routing_nm, next_routing_code,
+		product_req_date, product_date,
+		order_num, item_code, item_nm, delivery_date, order_menge,
+		warehouse_delivery_menge, product_menge, prod_fail_menge,
+		raw_out_yn, routing_nms, routing_codes, prod_menges, prod_fail_menges	
+		
+		FROM (
+			SELECT 
+				product_po, product_class, product_status, product_status_info,
+				routing_code, 
+				(
+					SELECT routing_nm 
+					FROM product_operation_tbl 
+					WHERE del_yn = 'N'
+					AND product_po = p.product_po 
+					AND routing_code = p.routing_code
+				) as routing_nm,
+				(
+					SELECT machine_code 
+					FROM product_operation_tbl 
+					WHERE  del_yn = 'N'
+					AND product_po = p.product_po 
+					AND routing_code = p.routing_code
+				) as machine_code,
+				(
+					SELECT routing_nm
+					FROM product_operation_tbl
+					WHERE  del_yn = 'N'
+					AND product_po = p.product_po 
+					AND real_seq = 	
+					 (
+						SELECT (real_seq+1) AS next_real_seq
+						FROM product_operation_tbl
+						WHERE del_yn = 'N'
+						AND product_po = p.product_po
+						AND routing_code = p.routing_code	
+					) 
+				) as next_routing_nm,
+				(
+					SELECT routing_code
+					FROM product_operation_tbl
+					WHERE  del_yn = 'N'
+					AND product_po = p.product_po 
+					AND real_seq = 	
+					 (
+						SELECT (real_seq+1) AS next_real_seq
+						FROM product_operation_tbl
+						WHERE del_yn = 'N'
+						AND product_po = p.product_po
+						AND routing_code = p.routing_code	
+					) 
+				) as next_routing_code,
+				product_req_date, product_date,
+				order_num, item_code, item_nm, delivery_date, order_menge,
+				warehouse_delivery_menge, product_menge, 
+							
+				(
+					SELECT prod_fail_menge
+					FROM product_operation_tbl
+					WHERE del_yn = 'N'
+					AND product_po = p.product_po
+					AND routing_code = p.routing_code
+				
+				)as prod_fail_menge,
+				
+				raw_out_yn,
+				(
+					SELECT 		
+						GROUP_CONCAT(routing_nm ORDER BY real_seq*1 ASC ) AS routing_nm
+						FROM product_operation_tbl AS po
+						WHERE del_yn = 'N'
+						AND product_po = p.product_po
+						
+		
+				) AS routing_nms,
+				(
+					SELECT 		
+	
+						GROUP_CONCAT(routing_code ORDER BY real_seq*1 ASC ) AS routing_codes
+						FROM product_operation_tbl AS po
+						WHERE del_yn = 'N'
+						AND product_po = p.product_po
+			
+					
+				) AS routing_codes,
+				(
+					SELECT 		
+						GROUP_CONCAT(ifnull(prod_menge,0) ORDER BY real_seq*1 ASC ) AS prod_menges
+						FROM product_operation_tbl AS po
+						WHERE del_yn = 'N'
+						AND product_po = p.product_po
+						
+				
+				) AS prod_menges,
+				(
+					SELECT 		
+						GROUP_CONCAT(ifnull(prod_fail_menge,0) ORDER BY real_seq*1 ASC ) AS prod_fail_menges
+						FROM product_operation_tbl AS po
+						WHERE del_yn = 'N'
+						AND product_po = p.product_po
+					
+						
+				) AS prod_fail_menges
+				
+				FROM product_tbl as p
+				
+			WHERE 1 = 1
+			AND del_yn = 'N'
+			
+	
+		
+		) as t
+			WHERE 1 = 1	
+			AND product_status != 'y'
+		<if test="order_num != null and !''.equals( order_num ) ">
+			AND order_num = #{order_num}
+		</if>
+		
+		<if test='"n".equals( product_status ) '>
+			AND product_status in ('n' , 'i')
+			AND product_status_info in ('n' , 'e')
+		</if>
+		
+		<if test='"i".equals( product_status ) '>
+			AND product_status = 'i'
+			AND product_status_info in ('i')
+		</if>
+		
+		<if test='"e".equals( product_status ) '>
+			AND product_status = 'i'
+			AND product_status_info in ('e')
+		</if>
+		
+
+		<if test="product_po != null and !''.equals( product_po ) ">
+			AND product_po = #{product_po}
+		</if>
+		<if test="product_req_date != null and !''.equals( product_req_date ) ">
+			AND date_format(product_req_date, '%Y%m%d') BETWEEN left(#{product_req_date}, 8) AND right(#{product_req_date}, 8)
+		</if>
+		
+		<if test="routing_code != null and !''.equals( routing_code ) ">
+			AND routing_code = #{routing_code}
+		</if>
+		
+		<if test="next_routing_nm != null and !''.equals( next_routing_nm ) ">
+			AND next_routing_nm = #{next_routing_nm}
+		</if>
+		<if test="product_class != null and !''.equals( product_class ) ">
+			AND product_class = #{product_class}
+		</if>
+		
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND item_code = #{item_code}
+		</if>
+		
+		<if test="item_nm != null and !''.equals( item_nm ) ">
+			AND item_nm = #{item_nm}
+		</if>
+		
+		<if test="raw_out_yn != null and !''.equals( raw_out_yn ) ">
+			AND raw_out_yn = #{raw_out_yn}
+		</if>
+		<choose>
+		
+			<when test="'PN'.equals( flag )">			
+				ORDER BY item_code DESC
+			</when>
+			
+			<otherwise>			
+				ORDER BY product_po	DESC			
+			</otherwise>
+		
+		</choose> 
+		
+	
+
+
+	</select>
+	
+	
+	<select id="selectProductMonitoring2" parameterType="SYProductVO" resultType="SYProductVO">
+		
+		
+		SELECT 
+		
+		product_po, product_class, product_status, product_status_info,
+		routing_code, routing_nm, machine_code, next_routing_nm, next_routing_code,
+		product_req_date, product_date,
+		order_num, item_code, item_nm, delivery_date, order_menge,
+		warehouse_delivery_menge, product_menge, prod_fail_menge,
+		raw_out_yn,
+		(
+			SELECT 		
+				GROUP_CONCAT(routing_nm ORDER BY real_seq*1 ASC ) AS routing_nm
+				FROM product_operation_tbl AS po
+				WHERE del_yn = 'N'
+				AND product_po = t.product_po
+				AND real_seq*1 >= t.real_seq*1
+
+		) AS routing_nms,
+		(
+			SELECT 		
+
+				GROUP_CONCAT(routing_code ORDER BY real_seq*1 ASC ) AS routing_codes
+				FROM product_operation_tbl AS po
+				WHERE del_yn = 'N'
+				AND product_po = t.product_po
+				AND real_seq*1 >= t.real_seq*1
+			
+		) AS routing_codes,
+		(
+			SELECT 		
+				GROUP_CONCAT(ifnull(prod_menge,0) ORDER BY real_seq*1 ASC ) AS prod_menges
+				FROM product_operation_tbl AS po
+				WHERE del_yn = 'N'
+				AND product_po = t.product_po
+				AND real_seq*1 >= t.real_seq*1
+		
+		) AS prod_menges,
+		(
+			SELECT 		
+				GROUP_CONCAT(ifnull(prod_fail_menge,0) ORDER BY real_seq*1 ASC ) AS prod_fail_menges
+				FROM product_operation_tbl AS po
+				WHERE del_yn = 'N'
+				AND product_po = t.product_po
+				AND real_seq*1 >= t.real_seq*1
+				
+		) AS prod_fail_menges
+		
+		FROM (
+			SELECT 
+				product_po, product_class, product_status, product_status_info,
+				(
+					SELECT real_seq 
+					FROM product_operation_tbl 
+					WHERE del_yn = 'N'
+					AND product_po = p.product_po 
+					AND routing_code = p.routing_code
+				) AS real_seq,
+				routing_code, 
+				(
+					SELECT routing_nm 
+					FROM product_operation_tbl 
+					WHERE del_yn = 'N'
+					AND product_po = p.product_po 
+					AND routing_code = p.routing_code
+				) as routing_nm,
+				(
+					SELECT machine_code 
+					FROM product_operation_tbl 
+					WHERE  del_yn = 'N'
+					AND product_po = p.product_po 
+					AND routing_code = p.routing_code
+				) as machine_code,
+				(
+					SELECT routing_nm
+					FROM product_operation_tbl
+					WHERE  del_yn = 'N'
+					AND product_po = p.product_po 
+					AND real_seq = 	
+					 (
+						SELECT (real_seq+1) AS next_real_seq
+						FROM product_operation_tbl
+						WHERE del_yn = 'N'
+						AND product_po = p.product_po
+						AND routing_code = p.routing_code	
+					) 
+				) as next_routing_nm,
+				(
+					SELECT routing_code
+					FROM product_operation_tbl
+					WHERE  del_yn = 'N'
+					AND product_po = p.product_po 
+					AND real_seq = 	
+					 (
+						SELECT (real_seq+1) AS next_real_seq
+						FROM product_operation_tbl
+						WHERE del_yn = 'N'
+						AND product_po = p.product_po
+						AND routing_code = p.routing_code	
+					) 
+				) as next_routing_code,
+				product_req_date, product_date,
+				order_num, item_code, item_nm, delivery_date, order_menge,
+				warehouse_delivery_menge, product_menge, 
+							
+				(
+					SELECT prod_fail_menge
+					FROM product_operation_tbl
+					WHERE del_yn = 'N'
+					AND product_po = p.product_po
+					AND routing_code = p.routing_code
+				
+				)as prod_fail_menge,
+				
+				raw_out_yn
+
+				FROM product_tbl as p
+				
+			WHERE 1 = 1
+			AND del_yn = 'N'	
+		) as t
+			WHERE 1 = 1	
+			AND product_status != 'y'
+		<if test="order_num != null and !''.equals( order_num ) ">
+			AND order_num = #{order_num}
+		</if>
+		
+		<if test='"n".equals( product_status ) '>
+			AND product_status in ('n' , 'i')
+			AND product_status_info in ('n' , 'e')
+		</if>
+		
+		<if test='"i".equals( product_status ) '>
+			AND product_status = 'i'
+			AND product_status_info in ('i')
+		</if>
+		
+		<if test='"e".equals( product_status ) '>
+			AND product_status = 'i'
+			AND product_status_info in ('e')
+		</if>
+		
+
+		<if test="product_po != null and !''.equals( product_po ) ">
+			AND product_po = #{product_po}
+		</if>
+		<if test="product_req_date != null and !''.equals( product_req_date ) ">
+			AND date_format(product_req_date, '%Y%m%d') BETWEEN left(#{product_req_date}, 8) AND right(#{product_req_date}, 8)
+		</if>
+		
+		<if test="routing_code != null and !''.equals( routing_code ) ">
+			AND routing_code = #{routing_code}
+		</if>
+		
+		<if test="next_routing_nm != null and !''.equals( next_routing_nm ) ">
+			AND next_routing_nm = #{next_routing_nm}
+		</if>
+		<if test="product_class != null and !''.equals( product_class ) ">
+			AND product_class = #{product_class}
+		</if>
+		
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND item_code = #{item_code}
+		</if>
+		
+		<if test="item_nm != null and !''.equals( item_nm ) ">
+			AND item_nm = #{item_nm}
+		</if>
+		
+		<if test="raw_out_yn != null and !''.equals( raw_out_yn ) ">
+			AND raw_out_yn = #{raw_out_yn}
+		</if>
+		<choose>
+		
+			<when test="'PN'.equals( flag )">			
+				ORDER BY item_code DESC
+			</when>
+			
+			<otherwise>			
+				ORDER BY product_po	DESC			
+			</otherwise>
+		
+		</choose> 
+		
+	
+
+
+	</select>
+	
+	
+
+	<select id="selectOutSourcing" parameterType="SYProductOperationVO" resultType="SYProductOperationVO">
+	
+		SELECT 
+		product_po,
+		item_code,
+		item_nm,
+		
+		CASE
+		WHEN (outsourcing_price IS NULL)
+		THEN IFNULL((
+			SELECT outsourcing_price
+			FROM material_tbl
+			WHERE del_yn = 'N'
+			AND item_code = cc.item_code
+		),0)
+		ELSE IFNULL(outsourcing_price,0)
+		END AS outsourcing_price,
+		
+		routing_code,
+		routing_nm,
+		prev_prod_menge,
+		prod_menge,
+		CASE 
+		WHEN (delivery_request_date IS NULL)
+		THEN ''
+		ELSE prev_prod_menge
+		END AS req_prod_menge,
+		account_code,
+		(
+			SELECT account_nm
+			FROM account_tbl
+			WHERE account_code = cc.account_code	
+			LIMIT 1
+		) as account_nm,
+		delivery_request_date,
+		(
+			SELECT warehouse_gubun
+			FROM product_operation_tbl
+			WHERE product_po = cc.product_po
+			AND routing_code = cc.routing_code
+		) as warehouse_gubun,
+		
+		date_format(delivery_request_date,'%Y-%m-%d') AS end_date
+		
+		
+		FROM (
+		
+		SELECT
+		   	vwtable2.product_po  AS product_po, 
+			vwtable2.routing_code AS routing_code,
+			vwtable2.routing_nm as routing_nm,
+		   	vwtable2.routing_seq AS routing_seq,
+			vwtable2.prod_str_time AS prod_str_time, 
+			vwtable2.prod_end_time  AS prod_end_time ,
+			vwtable2.prod_menge AS prod_menge,
+		   	d.product_po AS prev_product_po,  
+		   	d.routing_code  AS prev_routing_code, 
+			d.routing_seq AS prev_routing_seq,
+			d.prod_menge AS prev_prod_menge,
+			vwtable2.delivery_request_date AS delivery_request_date,
+			vwtable2.account_code as account_code,
+			vwtable2.outsourcing_price as outsourcing_price,
+			vwtable2.status as status,
+			(
+				SELECT item_code
+				FROM product_tbl
+				WHERE del_yn = 'N'
+				AND product_po = vwtable2.product_po
+			) AS item_code,
+			(
+				SELECT item_nm
+				FROM product_tbl
+				WHERE del_yn = 'N'
+				AND product_po = vwtable2.product_po
+			) AS item_nm
+		FROM
+		    (
+		  		SELECT * FROM product_operation_tbl
+		  		WHERE  del_yn = 'N'  
+		  		AND outsourcing_gubun ='Y'           
+		    ) AS vwtable2
+		LEFT JOIN product_operation_tbl d
+		 		ON   d.product_po = vwtable2.product_po  
+		 		AND  d.prod_end_time IS not  NULL
+				AND  d.real_seq  = vwtable2.real_seq-1
+		 		AND  d.status  = 'e'
+		UNION ALL
+		SELECT
+		   	vwtable2.product_po as product_po, 
+			vwtable2.routing_code as routing_code,
+			vwtable2.routing_nm as routing_nm,
+		   	vwtable2.routing_seq as routing_seq,
+			vwtable2.prod_str_time as prod_str_time, 
+			vwtable2.prod_end_time  AS prod_end_time ,
+			d.prod_menge AS prev_prod_menge,
+		   	d.product_po AS prev_product_po ,  
+		   	d.routing_code  AS prev_routing_code , 
+			d.routing_seq AS prev_routing_seq ,
+			vwtable2.prod_menge as prod_menge, 
+			vwtable2.delivery_request_date AS delivery_request_date,
+			vwtable2.account_code as account_code,
+			vwtable2.outsourcing_price as outsourcing_price,
+			vwtable2.status as status,
+			vwtable2.item_code,
+			vwtable2.item_nm
+		FROM
+		    (
+		  		SELECT  
+				  	a.product_po, 
+				  	a.routing_code,
+				  	a.routing_nm,
+		    		a.routing_seq,
+					a.prod_str_time, 
+					a.prod_end_time, 
+					CASE
+					WHEN (b.product_class = 'f') THEN b.product_menge
+					WHEN (b.product_class = 'o') THEN b.order_menge
+					END  AS prod_menge,
+					a.delivery_request_date,
+					a.account_code,
+					a.outsourcing_price,
+					a.status,
+					b.item_code,
+					b.item_nm
+		     		FROM product_operation_tbl a, product_tbl b
+		  			WHERE  a.product_po =b.product_po AND  a.outsourcing_gubun ='Y' 
+		  			AND real_seq  = 1
+		 			AND status  = 'n'
+		            
+		    ) AS vwtable2
+		LEFT JOIN product_operation_tbl d
+ 		ON   d.product_po = vwtable2.product_po  
+ 		AND  d.real_seq  = 1
+ 		AND  d.status  = 'n'
+ 		) cc 
+ 		
+ 		WHERE prev_routing_code IS NOT null
+ 
+ 		AND status != 'e'
+ 		AND account_code IS NULL
+ 
+
+			
+		<if test="product_po != null and !''.equals( product_po ) ">
+			AND product_po = #{product_po}
+		</if>
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND item_code = #{item_code}
+		</if>
+		<if test="item_nm != null and !''.equals( item_nm ) ">
+			AND item_nm = #{item_nm}
+		</if>
+		<if test="routing_nm != null and !''.equals( routing_nm ) ">
+			AND routing_nm = #{routing_nm}
+		</if>		
+		
+		<if test="account_nm != null and !''.equals( account_nm ) ">
+			AND account_code = 
+			(
+				SELECT account_code
+				FROM account_tbl
+				WHERE account_nm = #{account_nm}	
+				LIMIT 1
+			)
+		</if>	
+		
+		<if test="delivery_request_date != null and !''.equals( delivery_request_date ) ">
+			AND date_format(delivery_request_date, '%Y%m%d') BETWEEN left(#{delivery_request_date}, 8) AND right(#{delivery_request_date}, 8)
+		</if>
+			
+		ORDER BY prod_end_time DESC
+	</select>
+	
+	
+	
+	<update id="updateProductOperationOS_REQ" parameterType="SYProductOperationVO">
+	
+		UPDATE product_operation_tbl 
+		SET 
+	
+		account_code = #{account_code},
+		<if test="outsourcing_price != null and !''.equals( outsourcing_price ) ">
+			outsourcing_price = #{outsourcing_price},
+		</if>
+		
+		delivery_request_date = #{delivery_request_date},
+		prod_str_time = current_timestamp(),
+		updater = #{updater},
+		date_updated = current_timestamp()
+		
+		WHERE product_po = #{product_po}
+		
+		AND routing_code = #{routing_code}
+	
+	</update>
+	
+	
+	<update id="updateProductOperationOS_END" parameterType="SYProductOperationVO">
+	
+		UPDATE product_operation_tbl 
+		SET 
+		<if test="outsourcing_price != null and !''.equals( outsourcing_price ) ">
+			outsourcing_price = #{outsourcing_price},
+		</if>
+		prod_menge =  #{prod_menge},
+		prod_fail_menge =  #{prod_fail_menge},
+		status = 'e',	
+		prod_end_time = current_timestamp(),
+
+	
+		member_nm = #{member_nm},
+
+		updater = #{updater},
+		date_updated = current_timestamp()
+		
+		WHERE product_po = #{product_po}
+		
+		AND routing_code = #{routing_code}
+	
+	</update>
+	
+	
+	<select id="selectOutSourcingAll" parameterType="SYProductOperationVO" resultType="SYProductOperationVO">
+	
+		SELECT 
+		product_po,
+		item_code,
+		item_nm,
+		
+		CASE
+		WHEN (outsourcing_price IS NULL)
+		THEN IFNULL((
+			SELECT outsourcing_price
+			FROM material_tbl
+			WHERE del_yn = 'N'
+			AND item_code = cc.item_code
+		),0)
+		ELSE IFNULL(outsourcing_price,0)
+		END AS outsourcing_price,
+		
+		routing_code,
+		routing_nm,
+		prev_prod_menge,
+		prod_menge,
+		prev_prod_fail_menge,
+		CASE 
+		WHEN (delivery_request_date IS NULL)
+		THEN ''
+		ELSE prev_prod_menge
+		END AS req_prod_menge,
+		account_code,
+		(
+			SELECT account_nm
+			FROM account_tbl
+			WHERE account_code = cc.account_code	
+			LIMIT 1
+		) as account_nm,
+		delivery_request_date,
+		(
+			SELECT warehouse_gubun
+			FROM product_operation_tbl
+			WHERE product_po = cc.product_po
+			AND routing_code = cc.routing_code
+		) as warehouse_gubun,
+		date_format(delivery_request_date,'%Y-%m-%d') AS end_date
+		
+		
+		FROM (
+		
+		SELECT
+		   	vwtable2.product_po  AS product_po, 
+			vwtable2.routing_code AS routing_code,
+			vwtable2.routing_nm as routing_nm,
+		   	vwtable2.routing_seq AS routing_seq,
+			vwtable2.prod_str_time AS prod_str_time, 
+			vwtable2.prod_end_time  AS prod_end_time ,
+			vwtable2.prod_menge AS prod_menge,
+				d.prod_fail_menge AS prev_prod_fail_menge,
+		   	d.product_po AS prev_product_po,  
+		   	d.routing_code  AS prev_routing_code, 
+			d.routing_seq AS prev_routing_seq,
+			d.prod_menge AS prev_prod_menge,
+			vwtable2.delivery_request_date AS delivery_request_date,
+			vwtable2.account_code as account_code,
+			vwtable2.outsourcing_price as outsourcing_price,
+			vwtable2.status as status,
+			(
+				SELECT item_code
+				FROM product_tbl
+				WHERE product_po = vwtable2.product_po
+			) AS item_code,
+			(
+				SELECT item_nm
+				FROM product_tbl
+				WHERE product_po = vwtable2.product_po
+			) AS item_nm
+		FROM
+		    (
+		  		SELECT * FROM product_operation_tbl
+		  		WHERE   outsourcing_gubun ='Y'           
+		    ) AS vwtable2
+		LEFT JOIN product_operation_tbl d
+		 		ON   d.product_po = vwtable2.product_po  
+		 		AND  d.prod_end_time IS not  NULL
+				AND  d.real_seq  = vwtable2.real_seq-1
+		 		AND  d.status  = 'e'
+		UNION ALL
+		SELECT
+		   	vwtable2.product_po as product_po, 
+			vwtable2.routing_code as routing_code,
+			vwtable2.routing_nm as routing_nm,
+		   	vwtable2.routing_seq as routing_seq,
+			vwtable2.prod_str_time as prod_str_time, 
+			vwtable2.prod_end_time  AS prod_end_time ,
+			d.prod_menge AS prev_prod_menge,
+						d.prod_fail_menge AS prev_prod_fail_menge,
+		   	d.product_po AS prev_product_po ,  
+		   	d.routing_code  AS prev_routing_code , 
+			d.routing_seq AS prev_routing_seq ,
+			vwtable2.prod_menge as prod_menge, 
+			vwtable2.delivery_request_date AS delivery_request_date,
+			vwtable2.account_code as account_code,
+			vwtable2.outsourcing_price as outsourcing_price,
+			vwtable2.status as status,
+			vwtable2.item_code,
+			vwtable2.item_nm
+		FROM
+		    (
+		  		SELECT  
+				  	a.product_po, 
+				  	a.routing_code,
+				  	a.routing_nm,
+		    		a.routing_seq,
+					a.prod_str_time, 
+					a.prod_end_time, 
+					CASE
+					WHEN (b.product_class = 'f') THEN b.product_menge
+					WHEN (b.product_class = 'o') THEN b.order_menge
+					END  AS prod_menge,
+					a.prod_fail_menge,
+					a.delivery_request_date,
+					a.account_code,
+					a.outsourcing_price,
+					a.status,
+					b.item_code,
+					b.item_nm
+		     		FROM product_operation_tbl a, product_tbl b
+		  			WHERE  a.product_po =b.product_po AND  a.outsourcing_gubun ='Y' 
+		  			AND real_seq  = 1
+		 			AND status  = 'n'
+		            
+		    ) AS vwtable2
+		LEFT JOIN product_operation_tbl d
+ 		ON   d.product_po = vwtable2.product_po  
+ 		AND  d.real_seq  = 1
+ 		AND  d.status  = 'n'
+ 		) cc 
+ 		
+ 		WHERE prev_routing_code IS NOT null
+ 
+		
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND item_code = #{item_code}
+		</if>
+		<if test="item_nm != null and !''.equals( item_nm ) ">
+			AND item_nm = #{item_nm}
+		</if>
+		<if test="routing_nm != null and !''.equals( routing_nm ) ">
+			AND routing_nm = #{routing_nm}
+		</if>		
+		
+		<if test="account_nm != null and !''.equals( account_nm ) ">
+			AND account_code = 
+			(
+				SELECT account_code
+				FROM account_tbl
+				WHERE account_nm = #{account_nm}	
+				LIMIT 1
+			)
+		</if>	
+		
+		<if test="delivery_request_date != null and !''.equals( delivery_request_date ) ">
+			AND date_format(delivery_request_date, '%Y%m%d') BETWEEN left(#{delivery_request_date}, 8) AND right(#{delivery_request_date}, 8)
+		</if>
+		
+		<if test='status.equals( "n" )'>
+			AND status = 'n'
+			AND account_code IS NULL
+		</if>
+			
+		<if test='status.equals( "p" )'>
+			AND status = 'n'
+			AND account_code IS NOT NULL
+		</if>
+		
+		<if test='status.equals( "e" )'>
+			AND status = 'e'
+		</if>
+
+		
+		
+		ORDER BY delivery_request_date
+	</select>
+	
+	
+	
+	
+	
+	
+	<select id="selectLot" parameterType="SYProductOperationVO" resultType="SYProductOperationVO">
+		SELECT 
+			po.product_po, 
+			po.routing_code, po.routing_seq, 
+			po.routing_nm, po.routing_gubun,
+			po.machine_code, po.machine_nm,
+			po.prod_str_time, po.prod_end_time,
+			IFNULL((
+				SELECT prod_menge 
+				FROM product_operation_tbl
+				WHERE 1 = 1 
+				AND product_po = p.product_po
+				AND real_seq = 		
+		
+				(
+					SELECT real_seq
+					FROM product_operation_tbl
+					WHERE 1 = 1 
+					AND product_po = p.product_po
+					AND prod_menge IS NOT NULL
+					ORDER BY real_seq DESC
+					LIMIT 1
+				) 
+			),0) AS prod_menge,
+			IFNULL((
+				SELECT prod_fail_menge 
+				FROM product_operation_tbl
+				WHERE 1 = 1 
+				AND product_po = p.product_po
+				AND real_seq = 		
+		
+				(
+					SELECT real_seq
+					FROM product_operation_tbl
+					WHERE 1 = 1 
+					AND product_po = p.product_po
+					AND prod_fail_menge IS NOT NULL
+					ORDER BY real_seq DESC
+					LIMIT 1
+				) 
+			),0) AS prod_fail_menge,
+			p.item_code, p.item_nm,
+			p.product_date,
+						
+			po.skip_yn, po.del_yn,
+			po.creator, po.updater, po.date_created, po.date_updated
+				
+			
+			FROM product_operation_tbl as po
+			LEFT JOIN product_tbl as p
+			ON p.product_po = po.product_po
+			WHERE 1 = 1
+			AND po.del_yn = 'N'
+			AND p.del_yn = 'N'
+			
+			<if test="product_po != null and !''.equals( product_po ) ">
+				AND po.product_po = #{product_po}
+			</if>
+			<if test="item_code != null and !''.equals( item_code ) ">
+				AND p.item_code = #{item_code}
+			</if>
+			<if test="item_nm != null and !''.equals( item_nm ) ">
+				AND p.item_nm = #{item_nm}
+			</if>
+		<!-- 	<if test="product_date != null and !''.equals( product_date ) ">
+				AND date_format(p.product_date, '%Y%m%d') BETWEEN left(#{product_date}, 8) AND right(#{product_date}, 8)
+			</if>  -->
+			<if test="product_date != null and !''.equals( product_date ) ">
+				AND date_format(po.prod_end_time, '%Y%m%d') BETWEEN left(#{product_date}, 8) AND right(#{product_date}, 8)
+			</if> 
+			<if test="routing_code != null and !''.equals( routing_code ) ">
+				AND LEFT(po.routing_code,1) = #{routing_code}
+			</if>
+			<if test="status != null and !''.equals( status ) ">
+				AND po.status = #{status}
+			</if>
+			GROUP BY p.product_po
+			ORDER BY p.product_date DESC
+	</select>
+	
+	
+	<select id="selectLot2" parameterType="SYWareHouseRawVo" resultType="SYWareHouseRawVo">
+		SELECT 
+			wr.product_po,
+			wr.item_code,
+			wr.item_nm, 
+			wr.serial_no,
+			wr.warehouse_raw_qty,
+			w.mill_sheet_no,
+			w.file_path,
+			w.file_name,
+			w.file_ext
+			
+			FROM warehouse_raw_tbl AS wr
+			LEFT JOIN warehousing_tbl AS w
+			ON w.item_code = wr.item_code
+			AND w.serial_no = wr.serial_no
+			WHERE wr.del_yn = 'N'
+			AND w.del_yn = 'N'
+			AND wr.out_warehousing_status = 'o'
+			
+			AND wr.product_po = #{product_po}
+			
+			ORDER BY wr.date_updated DESC
+	</select>
+	
+	
+	<select id="selectLot3" parameterType="SYProductOperationVO" resultType="SYProductOperationVO">
+		
+		SELECT 
+		
+			po.routing_code,
+			po.routing_nm,
+			po.routing_seq,
+			po.machine_code,
+			po.machine_nm, 
+			ifnull(po.prod_menge,0) as prod_menge,
+
+
+			CASE
+			WHEN (po.prod_fail_menge IS NULL )
+			THEN 0
+			ELSE
+			(ifnull(po.prod_fail_menge,0) 
+			- IFNULL((
+				 	SELECT prod_fail_menge
+				 	FROM product_operation_tbl
+				 	WHERE del_yn = 'N'
+				 	AND product_po = po.product_po
+				 	AND real_seq*1 <![CDATA[<]]> po.real_seq*1
+				 	ORDER BY real_seq*1 desc
+				 	LIMIT 1
+				 ),ifnull(po.prod_fail_menge,0)))
+				 END as prod_fail_menge,
+			po.member_nm,
+			p.product_req_date,
+			p.product_date,
+			<!-- TIME_TO_SEC(timediff(date_format(po.prod_end_time,'%Y-%m-%d %H:%i:%s'), 
+			date_format(po.prod_str_time,'%Y-%m-%d %H:%i:%s'))
+			) AS process_time -->
+			concat(ROUND(((TIME_TO_SEC(timediff(date_format(po.prod_end_time,'%Y-%m-%d %H:%i:%s'), 
+			date_format(po.prod_str_time,'%Y-%m-%d %H:%i:%s'))
+			))/3600),1),'시간') AS process_time	
+			FROM product_operation_tbl AS po
+			LEFT JOIN product_tbl AS p
+			
+			ON p.product_po = po.product_po
+			WHERE po.del_yn = 'N'
+			AND p.del_yn = 'N'
+			AND po.product_po = #{product_po}
+			
+			ORDER BY po.real_seq*1 ASC
+
+
+	</select>
+	
+	
+	
+	
+	
+	
+	<!-- 1103 아이템별 공정현황 -->
+	
+	<select id="selectItemFair" parameterType="SYItem_fairVo" resultType="SYItem_fairVo">
+		SELECT
+
+			gb, routing_code, routing_nm,
+			item_code, item_nm,
+			    
+			   CONCAT(ROUND((SUM(IFNULL(
+   
+			   TIME_TO_SEC(timediff(date_format(work_end_time,'%Y-%m-%d %H:%i:%s'), date_format(work_str_time,'%Y-%m-%d %H:%i:%s'))),0)
+			   -
+			      IFNULL(TIME_TO_SEC(timediff(date_format(unwork_end_time,'%Y-%m-%d %H:%i:%s'), date_format(unwork_str_time,'%Y-%m-%d %H:%i:%s'))),0)
+			   )/3600),2),'시간') AS work_time,
+			   
+			   CONCAT(ROUND((SUM(ifNULL(TIME_TO_SEC(timediff(date_format(unwork_end_time,'%Y-%m-%d %H:%i:%s'), date_format(unwork_str_time,'%Y-%m-%d %H:%i:%s'))),0))/3600),2),'시간') AS unwork_time,
+			   
+			   CONCAT(ROUND((SUM(IFNULL(TIME_TO_SEC(timediff(date_format(work_end_time,'%Y-%m-%d %H:%i:%s'), date_format(work_str_time,'%Y-%m-%d %H:%i:%s'))),0)
+			   )/3600),2),'시간') AS all_time   
+			FROM 
+			(
+			
+			   SELECT
+			   
+			   gb, 
+			   product_po, routing_code,routing_nm,
+			   item_code, item_nm, real_seq,
+			   
+			   CASE 
+			   WHEN (gb = 'WAITING' 
+			   AND (date_format(work_str_time,'%Y-%m-%d') <![CDATA[<]]>  date_format(work_end_time,'%Y-%m-%d'))
+			   AND (date_format(work_str_time,'%Y-%m-%d %H:%i:%s') <![CDATA[<=]]> date_format(work_end_time,'%Y-%m-%d 08:30:00'))
+			   )
+			   THEN date_format(work_end_time,'%Y-%m-%d 08:30:00')
+			   
+			   WHEN (gb = 'WAITING' 
+			   AND (date_format(work_str_time,'%Y-%m-%d %H:%i:%s') <![CDATA[>]]> date_format(work_end_time,'%Y-%m-%d 08:30:00'))
+			   AND (date_format(work_str_time,'%Y-%m-%d %H:%i:%s') <![CDATA[>]]> date_format(work_end_time,'%Y-%m-%d %H:%i:%s'))
+			   )
+			   THEN date_format(work_end_time,'%Y-%m-%d %H:%i:%s')
+			   ELSE work_str_time
+			   END AS work_str_time,
+			
+			   
+			   work_end_time,
+			   unwork_str_time, unwork_end_time
+			   
+			   FROM (
+			   
+			   SELECT
+			   
+			   mw.routing_nm AS gb,
+			   mw.product_po, mw.routing_code, mw.routing_nm,
+			   mw.item_code, mw.item_nm, mw.real_seq,
+			   mw.work_str_time, mw.work_end_time,
+			   muw.unwork_str_time, muw.unwork_end_time
+			   
+			   FROM view_routing_work AS mw
+			   LEFT JOIN view_routing_unwork AS muw
+			   ON mw.product_po = muw.product_po
+			   AND mw.routing_code = muw.routing_code
+			   
+			   GROUP BY mw.product_po, mw.item_code , mw.routing_code, mw.real_seq
+			   
+			   
+			   UNION 
+			   
+			   SELECT
+			   'WAITING' AS gb,
+			   product_po, routing_code, routing_nm,
+			   item_code, item_nm, real_seq+0.5 AS real_seq,
+			   work_end_time AS work_str_time,
+			   IFNULL((
+			      SELECT work_str_time
+			      FROM view_routing_work
+			      WHERE product_po = mw.product_po
+			      AND real_seq = mw.real_seq + 1
+			   ),work_end_time) AS work_end_time,
+			   
+			   0 as unwork_str_time, 0 as unwork_end_time
+			   
+			   FROM view_routing_work AS mw
+			   
+			   GROUP BY product_po, item_code , routing_code
+			   
+			   ) AS pp
+			   
+			   WHERE 1 = 1
+			
+   			<if test="work_end_time != null and !''.equals( work_end_time ) ">
+				AND date_format(work_end_time, '%Y%m%d') BETWEEN left(#{work_end_time}, 8) AND right(#{work_end_time}, 8)
+			</if>
+			
+			<if test="item_code != null and !''.equals( item_code ) ">
+				AND item_code = #{item_code}
+			</if>
+			<if test="item_nm != null and !''.equals( item_nm ) ">
+				AND item_nm = #{item_nm}
+			</if>
+			) AS ppp
+			   
+			GROUP BY gb, item_code, routing_code
+			ORDER BY  item_code, real_seq*1 
+
+	</select>
+
+	<select id="selectItemFair_graph" parameterType="SYItem_fairVo" resultType="SYItem_fairVo">
+		SELECT
+
+			gb,  routing_code, routing_nm,
+			item_code, item_nm,
+	
+			    
+			   ROUND((SUM(IFNULL(
+   
+			   TIME_TO_SEC(timediff(date_format(work_end_time,'%Y-%m-%d %H:%i:%s'), date_format(work_str_time,'%Y-%m-%d %H:%i:%s'))),0)
+			   -
+			      IFNULL(TIME_TO_SEC(timediff(date_format(unwork_end_time,'%Y-%m-%d %H:%i:%s'), date_format(unwork_str_time,'%Y-%m-%d %H:%i:%s'))),0)
+			   )/3600),2) AS work_time,
+			   
+			   ROUND((SUM(ifNULL(TIME_TO_SEC(timediff(date_format(unwork_end_time,'%Y-%m-%d %H:%i:%s'), date_format(unwork_str_time,'%Y-%m-%d %H:%i:%s'))),0))/3600),2) AS unwork_time,
+			   
+			   ROUND((SUM(IFNULL(TIME_TO_SEC(timediff(date_format(work_end_time,'%Y-%m-%d %H:%i:%s'), date_format(work_str_time,'%Y-%m-%d %H:%i:%s'))),0)
+			   )/3600),2) AS all_time  ,
+			   
+			   ROUND((SUM(ifNULL(TIME_TO_SEC(timediff(date_format(waiting_end_time,'%Y-%m-%d %H:%i:%s'), date_format(waiting_str_time,'%Y-%m-%d %H:%i:%s'))),0))/3600),2) AS waiting_time
+			FROM 
+			(
+			
+			   SELECT
+			   
+			   gb, 
+			   product_po, routing_code, routing_nm,
+			   item_code, item_nm, real_seq,
+			   
+			   work_str_time, work_end_time,
+			   unwork_str_time, unwork_end_time,
+			   CASE 
+			   WHEN (
+				(date_format(waiting_str_time,'%Y-%m-%d') <![CDATA[<]]> date_format(waiting_end_time,'%Y-%m-%d'))
+			   AND (date_format(waiting_str_time,'%Y-%m-%d %H:%i:%s') <![CDATA[<=]]> date_format(waiting_end_time,'%Y-%m-%d 08:30:00'))
+			   )
+			   THEN date_format(waiting_end_time,'%Y-%m-%d 08:30:00')
+			   
+			   WHEN ((date_format(waiting_str_time,'%Y-%m-%d %H:%i:%s') <![CDATA[>]]> date_format(waiting_end_time,'%Y-%m-%d 08:30:00'))
+			   AND (date_format(waiting_str_time,'%Y-%m-%d %H:%i:%s') <![CDATA[>]]>  date_format(waiting_end_time,'%Y-%m-%d %H:%i:%s'))
+			   )
+			   THEN date_format(waiting_end_time,'%Y-%m-%d %H:%i:%s')
+			   
+			   ELSE waiting_str_time
+			   
+			   END AS waiting_str_time,
+			   
+			   
+			   waiting_end_time
+			   
+			   FROM (
+			   
+			   SELECT
+			   
+			   mw.routing_nm AS gb,
+			   mw.product_po, mw.routing_code, mw.routing_nm,
+			   mw.item_code, mw.item_nm, mw.real_seq,
+			   mw.work_str_time, mw.work_end_time,
+			   muw.unwork_str_time, muw.unwork_end_time,
+			   
+			   mw.work_end_time AS waiting_str_time,
+			   IFNULL((
+			      SELECT work_str_time
+			      FROM view_routing_work
+			      WHERE product_po = mw.product_po
+			      AND real_seq = mw.real_seq + 1
+			   ),mw.work_end_time) AS waiting_end_time
+			   
+			   FROM view_routing_work AS mw
+			   LEFT JOIN view_routing_unwork AS muw
+			   ON mw.product_po = muw.product_po
+			   AND mw.routing_code = muw.routing_code
+			   
+			   GROUP BY mw.product_po, mw.item_code , mw.routing_code, mw.real_seq
+			   
+				) AS pp
+
+			) AS ppp
+			
+			WHERE 1 = 1 
+
+			<if test="work_end_time != null and !''.equals( work_end_time ) ">
+				AND date_format(work_end_time, '%Y%m%d') BETWEEN left(#{work_end_time}, 8) AND right(#{work_end_time}, 8)
+			</if>
+			
+			<if test="item_code != null and !''.equals( item_code ) ">
+				AND item_code = #{item_code}
+			</if>
+			<if test="item_nm != null and !''.equals( item_nm ) ">
+				AND item_nm = #{item_nm}
+			</if>
+			
+			   
+			GROUP BY gb, item_code, routing_code
+			ORDER BY  item_code, real_seq*1 
+
+	</select>
+	
+	<select id="selectProductOperStatus_2" parameterType="SYProductOperStatusVO" resultType="SYProductOperStatusVO">
+	
+	
+
+
+
+
+SELECT 
+
+      gb,
+      product_po,
+      item_code, item_nm,
+      machine_code,
+      work_str_time, 
+      work_end_time,   
+         change_str_time,
+         origin_end_time,
+      TIME_TO_SEC(timediff(date_format(work_end_time,'%Y-%m-%d %H:%i:%s'), date_format(work_str_time,'%Y-%m-%d %H:%i:%s'))) AS work_time_sec,
+      CONCAT(ROUND(TIME_TO_SEC(timediff(date_format(work_end_time,'%Y-%m-%d %H:%i:%s'), date_format(work_str_time,'%Y-%m-%d %H:%i:%s')))/3600,2),'시간') AS work_time_hour,   
+      today_str_time,
+      today_end_time,
+      TIME_TO_SEC(timediff(date_format(today_end_time,'%Y-%m-%d %H:%i:%s'), date_format(today_str_time,'%Y-%m-%d %H:%i:%s'))) AS today_time_sec,
+      CONCAT(ROUND(TIME_TO_SEC(timediff(date_format(today_end_time,'%Y-%m-%d %H:%i:%s'), date_format(today_str_time,'%Y-%m-%d %H:%i:%s')))/3600,2),'시간') AS today_time_hour,
+      
+      ROUND(((
+       TIME_TO_SEC(timediff(date_format(work_end_time,'%Y-%m-%d %H:%i:%s'), date_format(work_str_time,'%Y-%m-%d %H:%i:%s')))
+      /TIME_TO_SEC(timediff(date_format(today_end_time,'%Y-%m-%d %H:%i:%s'), date_format(today_str_time,'%Y-%m-%d %H:%i:%s')))
+      )*100),2) AS per,
+      
+      
+      prod_menge, prod_fail_menge
+         
+      FROM
+      (
+
+      SELECT 
+      
+            gb,
+            product_po,
+            item_code, item_nm,
+            machine_code,
+            work_str_time, 
+            work_end_time,   
+            change_str_time,
+            origin_end_time,   
+            (
+               SELECT work_str_time
+               FROM view_machine_process_row   
+               WHERE machine_code = pr.machine_code
+               AND date_format(work_str_time,'%Y-%m-%d') = date_format(pr.work_str_time,'%Y-%m-%d')
+               ORDER BY work_str_time
+               LIMIT 1
+            ) AS today_str_time,
+            
+            IFNULL((
+               SELECT work_end_time
+               FROM view_machine_process_row   
+               WHERE machine_code = pr.machine_code
+               AND date_format(work_end_time,'%Y-%m-%d') = date_format(pr.work_str_time,'%Y-%m-%d')
+               ORDER BY work_end_time desc
+               LIMIT 1
+            ), date_format(work_str_time,'%Y-%m-%d 23:59:59')) AS today_end_time,
+            
+            prod_menge, prod_fail_menge
+      
+      FROM view_machine_process_row AS pr
+) AS pp
+
+WHERE 1 = 1
+		<if test="gb != null and !''.equals(gb) ">
+			AND gb = #{gb}
+		</if>
+		
+		<if test="work_str_time != null and !''.equals( work_str_time ) ">
+			AND ( 
+			    date_format(work_str_time, '%Y-%m-%d') BETWEEN left(#{work_str_time}, 10) AND right(#{work_str_time}, 10)
+			    OR
+			    date_format(work_end_time, '%Y-%m-%d') BETWEEN left(#{work_str_time}, 10) AND right(#{work_str_time}, 10)
+			)
+		</if>
+
+		<if test="product_po != null and !''.equals(product_po) ">
+			AND product_po = #{product_po}
+		</if>
+
+ 		<if test="machine_code != null and !''.equals(machine_code) ">
+			AND machine_code = #{machine_code}
+		</if> 
+		
+		<if test="item_code != null and !''.equals(item_code) ">
+			AND item_code = #{item_code}
+		</if>
+		
+		<if test="item_nm != null and !''.equals(item_nm) ">
+			AND item_nm = #{item_nm}
+		</if>
+
+ORDER BY machine_code, work_str_time
+	
+	</select>
+	
+	
+	<select id="selectProductOperStatus" parameterType="SYProductOperStatusVO" resultType="SYProductOperStatusVO">
+	
+		
+		SELECT    
+         gb,
+         product_po,
+         item_code, item_nm,
+         routing_code,
+         (
+         	SELECT routing_nm
+         	FROM product_operation_tbl
+         	WHERE product_po = pp.product_po
+         
+         	AND routing_code = pp.routing_code
+         	LIMIT 1
+         ) AS routing_nm,
+         
+         machine_code,
+         date_format(work_str_time,'%Y-%m-%d %H:%i:%s') as work_str_time, 
+         work_end_time,
+         TIME_TO_SEC(timediff(date_format(work_end_time,'%Y-%m-%d %H:%i:%s'), date_format(work_str_time,'%Y-%m-%d %H:%i:%s'))) AS work_time_sec,
+  
+         CONCAT(ROUND((TIME_TO_SEC(timediff(date_format(work_end_time,'%Y-%m-%d %H:%i:%s'), 
+         date_format(work_str_time,'%Y-%m-%d %H:%i:%s')))/3600),2),'시간') 
+         AS work_time,
+         prod_menge, prod_fail_menge
+      
+      FROM (
+      	SELECT
+      	   'PROCESS' AS gb,
+            product_po,
+            item_code, item_nm,
+            STATUS, machine_code,
+            routing_code,
+
+            work_str_time,
+				work_end_time, 
+				 CASE
+            WHEN (
+	        		date_format(work_end_time, '%Y-%m-%d') =	date_format(origin_end_time, '%Y-%m-%d') 
+		       )
+		       THEN prod_menge
+				 ELSE 0
+				 END prod_menge,
+				 
+				CASE
+            WHEN (
+	        	  date_format(work_end_time, '%Y-%m-%d') =	date_format(origin_end_time, '%Y-%m-%d') 
+		       )
+		       THEN prod_fail_menge
+				 ELSE 0
+				 END prod_fail_menge   
+			FROM (
+	         SELECT 
+	            'PROCESS' AS gb,
+	            po.product_po,
+	            p.item_code, p.item_nm,
+	            po.STATUS, po.machine_code,
+	            po.routing_code,
+	            po.prod_end_time as origin_end_time,
+	            po.prod_str_time as work_str_time, 
+	            CASE 
+	            WHEN ( (SELECT unprod_str_time FROM product_unoperation_tbl 
+	            WHERE product_po = po.product_po AND routing_code = po.routing_code LIMIT 1) IS NOT NULL )
+	            THEN (SELECT unprod_str_time FROM product_unoperation_tbl 
+	            WHERE product_po = po.product_po AND routing_code = po.routing_code LIMIT 1)
+	            
+	            ELSE IFNULL(po.prod_end_time,date_format(now(),'%Y-%m-%d %H:%i:%s')) 
+	            END as work_end_time,
+	            po.prod_menge,
+	            po.prod_fail_menge
+	            
+	            
+	           
+	
+	         
+	         FROM product_operation_tbl AS po
+	         LEFT JOIN product_tbl AS p
+	         ON po.product_po = p.product_po
+	         
+	         WHERE 1 = 1 
+	         AND p.del_yn = 'N'
+	         AND po.del_yn = 'N'
+	         AND po.STATUS != 'n'
+	         AND po.machine_code IS NOT NULL
+	         AND po.machine_code != ''
+	      ) as pp
+         
+         
+         UNION
+         
+         SELECT 
+         
+            'WAITING' AS gb,
+            '' as product_po, 
+            '' as item_code, '' as item_nm,
+            '' as STATUS, po.machine_code,
+            po.routing_code,
+            po.prod_end_time AS work_str_time,
+            
+            IFNULL((
+               SELECT prod_str_time
+               FROM product_operation_tbl
+               WHERE 1 = 1
+               AND machine_code = po.machine_code
+               AND prod_str_time > po.prod_str_time
+               ORDER BY prod_str_time asc
+               LIMIT 1
+            ),date_format(now(),'%Y-%m-%d %H:%i:%s')) AS work_end_time,
+            0 as prod_menge, 0 as prod_fail_menge
+            
+         FROM product_operation_tbl AS po
+         LEFT JOIN product_tbl AS p
+         ON po.product_po = p.product_po
+         
+         
+         WHERE 1 = 1 
+         AND p.del_yn = 'N'
+         AND po.del_yn = 'N'
+         AND po.STATUS != 'n'
+         AND po.machine_code IS NOT NULL
+         AND po.machine_code != ''
+         AND po.prod_end_time IS NOT NULL
+         
+         AND date_format(po.prod_end_time,'%Y-%m-%d %H:%i:%s') <![CDATA[<]]>
+         date_format(IFNULL((SELECT prod_str_time
+               FROM product_operation_tbl
+               WHERE 1 = 1
+               AND machine_code = po.machine_code
+               AND prod_str_time > po.prod_str_time
+               ORDER BY prod_str_time asc
+               LIMIT 1),date_format(now(),'%Y-%m-%d %H:%i:%s') ),'%Y-%m-%d %H:%i:%s')
+               
+   
+         UNION
+         
+         SELECT 
+
+            'UNPROCESS' AS gb,
+            product_po,
+            item_code, item_nm,
+            'u' AS STATUS,
+            machine_code,
+            routing_code,
+            unprod_str_time AS work_str_time,
+            IFNULL(unprod_end_time,date_format(now(),'%Y-%m-%d %H:%i:%s')) AS work_end_time,
+           0 AS prod_menge,
+            0 AS prod_fail_menge
+         FROM (
+            SELECT 
+               pu.product_po, 
+               p.item_code, p.item_nm,
+               pu.routing_code,
+               (
+                  SELECT machine_code
+                  FROM product_operation_tbl
+                  WHERE del_yn = 'N'
+                  AND product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+               ) AS machine_code,
+               pu.unprod_str_time, pu.unprod_end_time
+               
+            FROM product_unoperation_tbl AS pu
+            LEFT JOIN product_tbl AS p
+            ON pu.product_po = p.product_po
+            WHERE 1 = 1 
+            AND pu.del_yn = 'N'
+            AND p.del_yn = 'N'
+         ) AS ii
+         
+         UNION 
+         
+         SELECT 
+         
+            'PROCESS' AS gb,
+            product_po,
+            item_code, item_nm,
+            'p' AS STATUS,
+            machine_code,
+            routing_code,
+            prod_str_time as work_str_time,
+            prod_end_time as work_end_time,
+            
+            IFNULL(( 
+            SELECT prod_menge
+            FROM product_operation_tbl
+            WHERE product_po = ii.product_po
+            AND routing_code = ii.routing_code
+            AND (
+	        		date_format(work_end_time, '%Y-%m-%d') = date_format(origin_end_time, '%Y-%m-%d')
+		       )
+            ),0) AS prod_menge,
+            
+            IFNULL(( 
+            SELECT prod_fail_menge
+            FROM product_operation_tbl
+            WHERE product_po = ii.product_po
+            AND routing_code = ii.routing_code
+            AND date_format(work_end_time, '%Y-%m-%d') = date_format(origin_end_time, '%Y-%m-%d')
+        			
+		  
+            ),0) AS prod_fail_menge
+            
+         FROM (   
+            SELECT 
+               pu.product_po, 
+               p.item_code, p.item_nm,
+               pu.routing_code,
+               (
+               	SELECT prod_end_time
+               	FROM product_operation_tbl
+               	where product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+               
+               ) as origin_end_time,
+               (
+                  SELECT machine_code
+                  FROM product_operation_tbl
+                  WHERE del_yn = 'N'
+                  AND product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+               ) AS machine_code,
+               pu.unprod_end_time as prod_str_time, 
+               
+               CASE 
+               WHEN ( (   SELECT unprod_str_time 
+                  FROM product_unoperation_tbl
+                  WHERE product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+                  AND unoperation_seq*1 > pu.unoperation_seq*1
+                  ORDER BY unoperation_seq 
+                  LIMIT 1) IS NULL)
+               THEN IFNULL((SELECT prod_end_time FROM product_operation_tbl 
+                     WHERE product_po = pu.product_po AND routing_code = pu.routing_code),date_format(now(),'%Y-%m-%d %H:%i:%s'))
+               
+               ELSE 
+               IFNULL((
+                  SELECT unprod_str_time 
+                  FROM product_unoperation_tbl
+                  WHERE product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+                  AND unoperation_seq*1 > pu.unoperation_seq*1
+                  ORDER BY unoperation_seq 
+                  LIMIT 1
+               ),date_format(now(),'%Y-%m-%d %H:%i:%s'))
+               END AS prod_end_time
+            FROM product_unoperation_tbl AS pu
+            LEFT JOIN product_tbl AS p
+            ON pu.product_po = p.product_po
+         
+            WHERE 1 = 1 
+            AND pu.del_yn = 'N'
+            AND p.del_yn = 'N'
+            AND pu.unprod_end_time IS NOT NULL
+         ) AS ii
+         
+         
+      ) AS pp
+      
+      WHERE 1 = 1
+
+
+		<if test="gb != null and !''.equals(gb) ">
+			AND gb = #{gb}
+		</if>
+		
+		<if test="work_str_time != null and !''.equals( work_str_time ) ">
+		  
+			AND ( 
+			    date_format(work_str_time, '%Y-%m-%d') BETWEEN left(#{work_str_time}, 10) AND right(#{work_str_time}, 10)
+			    OR
+			    date_format(work_end_time, '%Y-%m-%d') BETWEEN left(#{work_str_time}, 10) AND right(#{work_str_time}, 10)
+				OR (
+					gb != 'WAITING'
+					AND
+					date_format(work_str_time, '%Y-%m-%d')  <![CDATA[<=]]>  date_format(left(#{work_str_time}, 10), '%Y-%m-%d')
+					AND
+					date_format(work_end_time, '%Y-%m-%d')  <![CDATA[>=]]>  date_format(right(#{work_str_time}, 10), '%Y-%m-%d')
+				   )
+				)
+		</if>
+
+		<if test="product_po != null and !''.equals(product_po) ">
+			AND product_po = #{product_po}
+		</if>
+
+ 		<if test="machine_code != null and !''.equals(machine_code) ">
+			AND machine_code = #{machine_code}
+		</if> 
+		
+		<if test="item_code != null and !''.equals(item_code) ">
+			AND item_code = #{item_code}
+		</if>
+		
+		<if test="item_nm != null and !''.equals(item_nm) ">
+			AND item_nm = #{item_nm}
+		</if>
+
+	ORDER BY machine_code, work_str_time
+	
+	
+	</select>
+	
+	<select id="selectProductOperStatus_V2" parameterType="SYProductOperStatusVO" resultType="SYProductOperStatusVO">
+	
+		
+		SELECT    
+         gb,
+         product_po,
+         item_code, item_nm,
+         routing_code,
+         (
+         	SELECT routing_nm
+         	FROM product_operation_tbl
+         	WHERE product_po = pp.product_po
+         
+         	AND routing_code = pp.routing_code
+         	LIMIT 1
+         ) AS routing_nm,
+         
+         machine_code,
+         date_format(work_str_time,'%Y-%m-%d %H:%i:%s') as work_str_time, 
+         work_end_time,
+         TIME_TO_SEC(timediff(date_format(work_end_time,'%Y-%m-%d %H:%i:%s'), date_format(work_str_time,'%Y-%m-%d %H:%i:%s'))) AS work_time_sec,
+  
+         CONCAT(ROUND((TIME_TO_SEC(timediff(date_format(work_end_time,'%Y-%m-%d %H:%i:%s'), 
+         date_format(work_str_time,'%Y-%m-%d %H:%i:%s')))/3600),2),'시간') 
+         AS work_time,
+         prod_menge, prod_fail_menge
+      
+      FROM (
+      	SELECT
+      	   'PROCESS' AS gb,
+            product_po,
+            item_code, item_nm,
+            STATUS, machine_code,
+            routing_code,
+
+            work_str_time,
+				work_end_time, 
+				 CASE
+            WHEN (
+	        		date_format(work_end_time, '%Y-%m-%d') =	date_format(origin_end_time, '%Y-%m-%d') 
+		       )
+		       THEN prod_menge
+				 ELSE 0
+				 END prod_menge,
+				 
+				CASE
+            WHEN (
+	        	  date_format(work_end_time, '%Y-%m-%d') =	date_format(origin_end_time, '%Y-%m-%d') 
+		       )
+		       THEN prod_fail_menge
+				 ELSE 0
+				 END prod_fail_menge   
+			FROM (
+	         SELECT 
+	            'PROCESS' AS gb,
+	            po.product_po,
+	            p.item_code, p.item_nm,
+	            po.STATUS, po.machine_code,
+	            po.routing_code,
+	            po.prod_end_time as origin_end_time,
+	            po.prod_str_time as work_str_time, 
+	            CASE 
+	            WHEN ( (SELECT unprod_str_time FROM product_unoperation_tbl 
+	            WHERE product_po = po.product_po AND routing_code = po.routing_code LIMIT 1) IS NOT NULL )
+	            THEN (SELECT unprod_str_time FROM product_unoperation_tbl 
+	            WHERE product_po = po.product_po AND routing_code = po.routing_code LIMIT 1)
+	            
+	            ELSE IFNULL(po.prod_end_time,date_format(now(),'%Y-%m-%d %H:%i:%s')) 
+	            END as work_end_time,
+	            po.prod_menge,
+	            po.prod_fail_menge
+	            
+	         
+	         FROM product_operation_tbl AS po
+	         LEFT JOIN product_tbl AS p
+	         ON po.product_po = p.product_po
+	         
+	         WHERE 1 = 1 
+	         AND p.del_yn = 'N'
+	         AND po.del_yn = 'N'
+	         AND po.STATUS != 'n'
+	         AND po.machine_code IS NOT NULL
+	         AND po.machine_code != ''
+	      ) as pp
+ 
+         UNION
+         
+         SELECT 
+         
+            'WAITING' AS gb,
+            '' as product_po, 
+            '' as item_code, '' as item_nm,
+            '' as STATUS, po.machine_code,
+            po.routing_code,
+            po.prod_end_time AS work_str_time,
+            
+            IFNULL((
+               SELECT prod_str_time
+               FROM product_operation_tbl
+               WHERE 1 = 1
+               AND machine_code = po.machine_code
+               AND date_format(prod_str_time,'%Y-%m-%d %H:%i:%s') > date_format(po.prod_str_time,'%Y-%m-%d %H:%i:%s')
+               ORDER BY prod_str_time asc
+               LIMIT 1
+            ),date_format(now(),'%Y-%m-%d %H:%i:%s')) AS work_end_time,
+            0 as prod_menge, 0 as prod_fail_menge
+            
+         FROM product_operation_tbl AS po
+         LEFT JOIN product_tbl AS p
+         ON po.product_po = p.product_po
+         
+         
+         WHERE 1 = 1 
+         AND p.del_yn = 'N'
+         AND po.del_yn = 'N'
+         AND po.STATUS != 'n'
+         AND po.machine_code IS NOT NULL
+         AND po.machine_code != ''
+         AND po.prod_end_time IS NOT NULL
+
+   
+         UNION
+         
+         SELECT 
+
+            'UNPROCESS' AS gb,
+            product_po,
+            item_code, item_nm,
+            'u' AS STATUS,
+            machine_code,
+            routing_code,
+            unprod_str_time AS work_str_time,
+            CASE 
+            WHEN (date_format(unprod_end_time, '%Y-%m-%d %H:%i:%s') <![CDATA[<]]> date_format(next_work_str_time, '%Y-%m-%d %H:%i:%s'))
+            THEN IFNULL(unprod_end_time,date_format(now(),'%Y-%m-%d %H:%i:%s'))
+            ELSE IFNULL(next_work_str_time,date_format(now(),'%Y-%m-%d %H:%i:%s'))
+            END as work_end_time,
+
+           0 AS prod_menge,
+            0 AS prod_fail_menge
+         FROM (
+            SELECT 
+               pu.product_po, 
+               p.item_code, p.item_nm,
+               pu.routing_code,
+               (
+                  SELECT machine_code
+                  FROM product_operation_tbl
+                  WHERE del_yn = 'N'
+                  AND product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+               ) AS machine_code,
+               pu.unprod_str_time, pu.unprod_end_time,
+               
+               (
+               	SELECT prod_str_time
+               	FROM product_operation_tbl
+               	WHERE del_yn = 'N'
+						AND machine_code = (
+							                  SELECT machine_code
+							                  FROM product_operation_tbl
+							                  WHERE del_yn = 'N'
+							                  AND product_po = pu.product_po
+							                  AND routing_code = pu.routing_code
+							               )
+						AND date_format(prod_str_time,'%Y-%m-%d %H:%i:%s') > date_format(pu.unprod_str_time,'%Y-%m-%d %H:%i:%s')
+						ORDER BY prod_str_time asc
+						LIMIT 1 
+               	
+               ) as next_work_str_time
+               
+            FROM product_unoperation_tbl AS pu
+            LEFT JOIN product_tbl AS p
+            ON pu.product_po = p.product_po
+            WHERE 1 = 1 
+            AND pu.del_yn = 'N'
+            AND p.del_yn = 'N'
+         ) AS ii
+         
+         UNION 
+         
+         SELECT 
+         
+            'PROCESS2' AS gb,
+            product_po,
+            item_code, item_nm,
+            'p' AS STATUS,
+            machine_code,
+            routing_code,
+            prod_str_time as work_str_time,
+            
+            CASE 
+            WHEN (date_format(prod_end_time, '%Y-%m-%d %H:%i:%s') <![CDATA[<]]> date_format(next_work_str_time, '%Y-%m-%d %H:%i:%s'))
+            THEN prod_end_time
+            ELSE next_work_str_time
+            END as work_end_time,
+		
+            IFNULL(( 
+            SELECT prod_menge
+            FROM product_operation_tbl
+            WHERE product_po = ii.product_po
+            AND routing_code = ii.routing_code
+            AND (
+	        		date_format(work_end_time, '%Y-%m-%d') = date_format(origin_end_time, '%Y-%m-%d')
+		       )
+            ),0) AS prod_menge,
+            
+            IFNULL(( 
+            SELECT prod_fail_menge
+            FROM product_operation_tbl
+            WHERE product_po = ii.product_po
+            AND routing_code = ii.routing_code
+            AND date_format(work_end_time, '%Y-%m-%d') = date_format(origin_end_time, '%Y-%m-%d')
+        			
+		  
+            ),0) AS prod_fail_menge
+            
+         FROM (   
+            SELECT 
+               pu.product_po, 
+               p.item_code, p.item_nm,
+               pu.routing_code,
+               (
+               	SELECT prod_end_time
+               	FROM product_operation_tbl
+               	where product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+               
+               ) as origin_end_time,
+               (
+                  SELECT machine_code
+                  FROM product_operation_tbl
+                  WHERE del_yn = 'N'
+                  AND product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+               ) AS machine_code,
+               pu.unprod_end_time as prod_str_time, 
+               
+               CASE 
+               WHEN ( (   
+						SELECT unprod_str_time 
+                  FROM product_unoperation_tbl
+                  WHERE product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+                  AND unoperation_seq*1 > pu.unoperation_seq*1
+                  ORDER BY unoperation_seq 
+                  LIMIT 1) IS NULL)
+               THEN IFNULL((SELECT prod_end_time FROM product_operation_tbl 
+                     WHERE product_po = pu.product_po AND routing_code = pu.routing_code),date_format(now(),'%Y-%m-%d %H:%i:%s'))
+               
+               ELSE 
+               IFNULL((
+                  SELECT unprod_str_time 
+                  FROM product_unoperation_tbl
+                  WHERE product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+                  AND unoperation_seq*1 > pu.unoperation_seq*1
+                  ORDER BY unoperation_seq 
+                  LIMIT 1
+               ),date_format(now(),'%Y-%m-%d %H:%i:%s'))
+               END AS prod_end_time,
+               
+               (
+               	SELECT prod_str_time
+               	FROM product_operation_tbl
+               	WHERE del_yn = 'N'
+						AND machine_code = (
+							                  SELECT machine_code
+							                  FROM product_operation_tbl
+							                  WHERE del_yn = 'N'
+							                  AND product_po = pu.product_po
+							                  AND routing_code = pu.routing_code
+							               )
+						AND date_format(prod_str_time,'%Y-%m-%d %H:%i:%s') > date_format(pu.unprod_end_time,'%Y-%m-%d %H:%i:%s')
+						ORDER BY prod_str_time asc
+						LIMIT 1 
+               	
+               ) as next_work_str_time
+            
+            FROM product_unoperation_tbl AS pu
+            LEFT JOIN product_tbl AS p
+            ON pu.product_po = p.product_po
+         
+            WHERE 1 = 1 
+            AND pu.del_yn = 'N'
+            AND p.del_yn = 'N'
+            AND pu.unprod_end_time IS NOT NULL
+         ) AS ii
+         
+         
+      ) AS pp
+      
+      WHERE 1 = 1
+
+
+		<if test="gb != null and !''.equals(gb) ">
+			AND gb = #{gb}
+		</if>
+		
+		<if test="work_str_time != null and !''.equals( work_str_time ) ">
+		  
+			AND ( 
+			    date_format(work_str_time, '%Y-%m-%d') BETWEEN left(#{work_str_time}, 10) AND right(#{work_str_time}, 10)
+			    OR
+			    date_format(work_end_time, '%Y-%m-%d') BETWEEN left(#{work_str_time}, 10) AND right(#{work_str_time}, 10)
+				OR (
+					gb != 'WAITING'
+					AND
+					date_format(work_str_time, '%Y-%m-%d')  <![CDATA[<=]]>  date_format(left(#{work_str_time}, 10), '%Y-%m-%d')
+					AND
+					date_format(work_end_time, '%Y-%m-%d')  <![CDATA[>=]]>  date_format(right(#{work_str_time}, 10), '%Y-%m-%d')
+				   )
+				)
+		</if>
+
+		<if test="product_po != null and !''.equals(product_po) ">
+			AND product_po = #{product_po}
+		</if>
+
+ 		<if test="machine_code != null and !''.equals(machine_code) ">
+			AND machine_code = #{machine_code}
+		</if> 
+		
+		<if test="item_code != null and !''.equals(item_code) ">
+			AND item_code = #{item_code}
+		</if>
+		
+		<if test="item_nm != null and !''.equals(item_nm) ">
+			AND item_nm = #{item_nm}
+		</if>
+
+	ORDER BY machine_code, work_str_time
+	
+	
+	</select>
+	
+	<!-- 1125 -->
+	<select id="selectHoldStatus" parameterType="SYProductOperationVO" resultType="SYProductOperationVO">
+	
+		SELECT 
+			product_po, routing_code, routing_seq, real_seq, status, 
+			machine_code, machine_nm, prod_str_time
+
+			FROM product_operation_tbl
+			WHERE del_yn = 'N'
+			
+			<if test="machine_code != null and !''.equals( machine_code ) ">
+				AND machine_code = #{machine_code}
+			</if>
+			
+			ORDER BY date_updated desc
+			LIMIT 1
+		
+	</select>
+	
+	<update id="updateOperationHold" parameterType="SYProductOperationVO">
+		UPDATE product_operation_tbl
+			SET
+			status = #{status}
+			
+			WHERE 
+			product_po = #{product_po}
+			AND routing_code = #{routing_code}
+	</update>
+	
+	<update id="updateProductHold" parameterType="SYProductVO">
+		UPDATE product_tbl
+			SET
+			product_status_info = #{product_status_info}
+			
+			WHERE 
+			product_po = #{product_po}
+			
+	</update>
+	<select id="selectHold_Y_Target" resultType="SYProductOperationVO">
+	
+		SELECT machine_code
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND machine_code IS NOT NULL
+		AND machine_code != ''
+		AND STATUS IN ('i','ue')
+		GROUP BY machine_code
+		ORDER BY date_updated DESC
+	</select>
+	
+	<select id="selectProduct_status_info" resultType="SYProductVO">
+	
+		SELECT order_num, item_code, item_nm, product_status_info
+		FROM product_tbl
+		WHERE del_yn = 'N'
+		
+		<if test="order_num !=null and !''.equals( order_num ) ">
+			AND order_num = #{order_num}
+		</if>
+		<if test="item_code !=null and !''.equals( item_code ) ">
+			AND item_code = #{item_code}
+		</if>
+
+		ORDER BY date_updated DESC
+		
+	</select>
+	
+	
+	<select id="selectHold_N_Target" resultType="SYProductOperationVO">
+	
+		SELECT machine_code
+		FROM product_operation_tbl
+		WHERE del_yn = 'N'
+		AND machine_code IS NOT NULL
+		AND machine_code != ''
+		AND STATUS IN ('h')
+		GROUP BY machine_code
+		ORDER BY date_updated DESC
+	</select>
+	
+	
+	
+		
+	<select id="selectProductOperStatus_real" parameterType="SYProductOperStatusVO" resultType="SYProductOperStatusVO">
+	
+		
+		SELECT    
+         gb,
+         product_po,
+         item_code, item_nm,
+         routing_code,
+         (
+         	SELECT routing_nm
+         	FROM product_operation_tbl
+         	WHERE product_po = pp.product_po
+         
+         	AND routing_code = pp.routing_code
+         	LIMIT 1
+         ) AS routing_nm,
+         
+         machine_code,
+         date_format(work_str_time,'%Y-%m-%d %H:%i:%s') as work_str_time, 
+         work_end_time,
+         TIME_TO_SEC(timediff(date_format(work_end_time,'%Y-%m-%d %H:%i:%s'), date_format(work_str_time,'%Y-%m-%d %H:%i:%s'))) AS work_time_sec,
+  
+         CONCAT(ROUND((TIME_TO_SEC(timediff(date_format(work_end_time,'%Y-%m-%d %H:%i:%s'), 
+         date_format(work_str_time,'%Y-%m-%d %H:%i:%s')))/3600),2),'시간') 
+         AS work_time,
+         prod_menge, prod_fail_menge
+      
+      FROM (
+      	SELECT
+      	   'PROCESS' AS gb,
+            product_po,
+            item_code, item_nm,
+            STATUS, machine_code,
+            routing_code,
+
+            work_str_time,
+				work_end_time, 
+				 CASE
+            WHEN (
+	        		date_format(work_end_time, '%Y-%m-%d') =	date_format(origin_end_time, '%Y-%m-%d') 
+		       )
+		       THEN prod_menge
+				 ELSE 0
+				 END prod_menge,
+				 
+				CASE
+            WHEN (
+	        	  date_format(work_end_time, '%Y-%m-%d') =	date_format(origin_end_time, '%Y-%m-%d') 
+		       )
+		       THEN prod_fail_menge
+				 ELSE 0
+				 END prod_fail_menge   
+			FROM (
+	         SELECT 
+	            'PROCESS' AS gb,
+	            po.product_po,
+	            p.item_code, p.item_nm,
+	            po.STATUS, po.machine_code,
+	            po.routing_code,
+	            po.prod_end_time as origin_end_time,
+	            po.prod_str_time as work_str_time, 
+	            CASE 
+	            WHEN ( (SELECT unprod_str_time FROM product_unoperation_tbl 
+	            WHERE product_po = po.product_po AND routing_code = po.routing_code LIMIT 1) IS NOT NULL )
+	            THEN (SELECT unprod_str_time FROM product_unoperation_tbl 
+	            WHERE product_po = po.product_po AND routing_code = po.routing_code LIMIT 1)
+	            
+	            ELSE IFNULL(po.prod_end_time,date_format(now(),'%Y-%m-%d %H:%i:%s')) 
+	            END as work_end_time,
+	            po.prod_menge,
+	            po.prod_fail_menge
+	            
+	         
+	         FROM product_operation_tbl AS po
+	         LEFT JOIN product_tbl AS p
+	         ON po.product_po = p.product_po
+	         
+	         WHERE 1 = 1 
+	         AND p.del_yn = 'N'
+	         AND po.del_yn = 'N'
+	         AND po.STATUS != 'n'
+	         AND po.machine_code IS NOT NULL
+	         AND po.machine_code != ''
+	      ) as pp
+ 
+         UNION
+         
+         SELECT 
+         
+            'WAITING' as gb,
+            '' as product_po, 
+            '' as item_code, '' as item_nm,
+            '' as STATUS, machine_code,
+            routing_code,
+            work_str_time,
+            CASE
+            WHEN ( date_format(work_end_time,'%Y-%m-%d %H:%i:%s') <![CDATA[<=]]> date_format(unprod_end_time,'%Y-%m-%d %H:%i:%s') ) 
+            THEN work_end_time
+            ELSE unprod_end_time
+            END AS work_end_time,
+            prod_menge, prod_fail_menge
+ 
+ 			FROM (
+	 				SELECT 
+	         
+	            'WAITING' AS gb,
+	            po.product_po,
+	            p.item_code, p.item_nm,
+	            po.STATUS, po.machine_code,
+	            po.routing_code,
+	            po.prod_end_time AS work_str_time,
+	            
+	            IFNULL((
+	               SELECT prod_str_time
+	               FROM product_operation_tbl
+	               WHERE 1 = 1
+	               AND machine_code = po.machine_code
+	               AND date_format(prod_str_time,'%Y-%m-%d %H:%i:%s') >= date_format(po.prod_end_time,'%Y-%m-%d %H:%i:%s')
+	               ORDER BY prod_str_time asc
+	               LIMIT 1
+	            ),date_format(now(),'%Y-%m-%d %H:%i:%s')) AS work_end_time,
+	            
+	            IFNULL((
+	               SELECT in_puo.unprod_end_time
+	               FROM product_unoperation_tbl AS in_puo
+	            	LEFT JOIN product_operation_tbl AS in_po
+	            	ON in_puo.product_po = in_po.product_po
+	               WHERE 1 = 1
+	  
+	               AND date_format(in_puo.unprod_end_time,'%Y-%m-%d %H:%i:%s') >= date_format(po.prod_end_time,'%Y-%m-%d %H:%i:%s')
+	             	AND in_po.machine_code = po.machine_code
+	               ORDER BY in_puo.unprod_str_time asc
+	               LIMIT 1
+	            ),date_format(now(),'%Y-%m-%d %H:%i:%s')) AS unprod_end_time,
+	             
+	            0 as prod_menge, 0 as prod_fail_menge
+	            
+	         FROM product_operation_tbl AS po
+	         LEFT JOIN product_tbl AS p
+	         ON po.product_po = p.product_po
+	         
+	         
+	         WHERE 1 = 1 
+	         AND p.del_yn = 'N'
+	         AND po.del_yn = 'N'
+	         AND po.STATUS != 'n'
+	         AND po.machine_code IS NOT NULL
+	         AND po.machine_code != ''
+	         AND po.prod_end_time IS NOT NULL
+			) AS ii 
+   
+         UNION
+         
+         SELECT 
+
+            'UNPROCESS' AS gb,
+            product_po,
+            item_code, item_nm,
+            'u' AS STATUS,
+            machine_code,
+            routing_code,
+            unprod_str_time AS work_str_time,
+            CASE 
+            WHEN ( next_work_str_time IS NULL)
+            THEN unprod_end_time
+            WHEN (next_work_str_time IS NOT NULL and date_format(unprod_end_time,'%Y-%m-%d %H:%i:%s') <![CDATA[<=]]> date_format(next_work_str_time,'%Y-%m-%d %H:%i:%s') )
+            THEN unprod_end_time
+            ELSE next_work_str_time
+            END as work_end_time,
+          
+           0 AS prod_menge,
+            0 AS prod_fail_menge
+         FROM (
+            SELECT 
+               pu.product_po, 
+               p.item_code, p.item_nm,
+               pu.routing_code,
+               (
+                  SELECT machine_code
+                  FROM product_operation_tbl
+                  WHERE del_yn = 'N'
+                  AND product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+               ) AS machine_code,
+               pu.unprod_str_time, pu.unprod_end_time,
+               
+               (
+               	SELECT prod_str_time
+               	FROM product_operation_tbl
+               	WHERE del_yn = 'N'
+						AND machine_code = (
+							                  SELECT machine_code
+							                  FROM product_operation_tbl
+							                  WHERE del_yn = 'N'
+							                  AND product_po = pu.product_po
+							                  AND routing_code = pu.routing_code
+							               )
+						AND date_format(prod_str_time,'%Y-%m-%d %H:%i:%s') >= date_format(pu.unprod_str_time,'%Y-%m-%d %H:%i:%s')
+						ORDER BY prod_str_time asc
+						LIMIT 1 
+               	
+               ) as next_work_str_time
+               
+            FROM product_unoperation_tbl AS pu
+            LEFT JOIN product_tbl AS p
+            ON pu.product_po = p.product_po
+            WHERE 1 = 1 
+            AND pu.del_yn = 'N'
+            AND p.del_yn = 'N'
+            AND TYPE = 'U'
+         ) AS ii
+         
+         UNION 
+         
+         SELECT 
+
+            'WAITING' AS gb,
+            product_po,
+            item_code, item_nm,
+            'u' AS STATUS,
+            machine_code,
+            routing_code,
+            unprod_str_time AS work_str_time,
+           unprod_end_time as work_end_time,
+
+           0 AS prod_menge,
+            0 AS prod_fail_menge
+         FROM (
+            SELECT 
+              'WAITING_HOLD' AS gb,
+               pu.product_po, 
+               p.item_code, p.item_nm,
+               pu.routing_code,
+               (
+                  SELECT machine_code
+                  FROM product_operation_tbl
+                  WHERE del_yn = 'N'
+                  AND product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+               ) AS machine_code,
+               pu.unprod_str_time,  IFNULL(pu.unprod_end_time, date_format(NOW(),'%Y-%m-%d %H:%i:%s')) as unprod_end_time,
+               
+               (
+               	SELECT prod_str_time
+               	FROM product_operation_tbl
+               	WHERE del_yn = 'N'
+						AND machine_code = (
+							                  SELECT machine_code
+							                  FROM product_operation_tbl
+							                  WHERE del_yn = 'N'
+							                  AND product_po = pu.product_po
+							                  AND routing_code = pu.routing_code
+							               )
+						AND date_format(prod_str_time,'%Y-%m-%d %H:%i:%s') >= date_format(pu.unprod_str_time,'%Y-%m-%d %H:%i:%s')
+						ORDER BY prod_str_time asc
+						LIMIT 1 
+               	
+               ) as next_work_str_time
+               
+            FROM product_unoperation_tbl AS pu
+            LEFT JOIN product_tbl AS p
+            ON pu.product_po = p.product_po
+            WHERE 1 = 1 
+            AND pu.del_yn = 'N'
+            AND p.del_yn = 'N'
+            AND TYPE = 'WH'
+         ) AS ii
+         
+         UNION 
+         SELECT 
+
+            'HOLD' AS gb,
+            product_po,
+            item_code, item_nm,
+            'u' AS STATUS,
+            machine_code,
+            routing_code,
+            unprod_str_time AS work_str_time,
+            unprod_end_time as work_end_time,
+
+           0 AS prod_menge,
+            0 AS prod_fail_menge
+         FROM (
+            SELECT 
+               pu.product_po, 
+               p.item_code, p.item_nm,
+               pu.routing_code,
+               (
+                  SELECT machine_code
+                  FROM product_operation_tbl
+                  WHERE del_yn = 'N'
+                  AND product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+               ) AS machine_code,
+               pu.unprod_str_time, IFNULL(pu.unprod_end_time,date_format(now(),'%Y-%m-%d %H:%i:%s')) as unprod_end_time,
+               
+               (
+               	SELECT prod_str_time
+               	FROM product_operation_tbl
+               	WHERE del_yn = 'N'
+						AND machine_code = (
+							                  SELECT machine_code
+							                  FROM product_operation_tbl
+							                  WHERE del_yn = 'N'
+							                  AND product_po = pu.product_po
+							                  AND routing_code = pu.routing_code
+							               )
+						AND date_format(prod_str_time,'%Y-%m-%d %H:%i:%s') >= date_format(pu.unprod_str_time,'%Y-%m-%d %H:%i:%s')
+						ORDER BY prod_str_time asc
+						LIMIT 1 
+               	
+               ) as next_work_str_time
+               
+            FROM product_unoperation_tbl AS pu
+            LEFT JOIN product_tbl AS p
+            ON pu.product_po = p.product_po
+            WHERE 1 = 1 
+            AND pu.del_yn = 'N'
+            AND p.del_yn = 'N'
+            AND TYPE = 'H'
+         ) AS ii
+         
+         UNION 
+         
+         SELECT 
+         
+            'PROCESS' AS gb,
+            product_po,
+            item_code, item_nm,
+            'p' AS STATUS,
+            machine_code,
+            routing_code,
+            prod_str_time as work_str_time,
+            
+            CASE 
+            WHEN (date_format(prod_end_time, '%Y-%m-%d %H:%i:%s') <![CDATA[<=]]> date_format(next_work_str_time, '%Y-%m-%d %H:%i:%s'))
+            THEN prod_end_time
+            
+            WHEN (date_format(prod_end_time, '%Y-%m-%d %H:%i:%s') > date_format(next_work_str_time, '%Y-%m-%d %H:%i:%s'))
+            THEN next_work_str_time
+            ELSE prod_end_time
+            END as work_end_time,
+		
+            IFNULL(( 
+            SELECT prod_menge
+            FROM product_operation_tbl
+            WHERE product_po = ii.product_po
+            AND routing_code = ii.routing_code
+            AND (
+	        		date_format(work_end_time, '%Y-%m-%d') = date_format(origin_end_time, '%Y-%m-%d')
+		       )
+            ),0) AS prod_menge,
+            
+            IFNULL(( 
+            SELECT prod_fail_menge
+            FROM product_operation_tbl
+            WHERE product_po = ii.product_po
+            AND routing_code = ii.routing_code
+            AND date_format(work_end_time, '%Y-%m-%d') = date_format(origin_end_time, '%Y-%m-%d')
+        			
+		  
+            ),0) AS prod_fail_menge
+            
+         FROM (   
+            SELECT 
+               pu.product_po, 
+               p.item_code, p.item_nm,
+               pu.routing_code,
+               (
+               	SELECT prod_end_time
+               	FROM product_operation_tbl
+               	where product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+               
+               ) as origin_end_time,
+               (
+                  SELECT machine_code
+                  FROM product_operation_tbl
+                  WHERE del_yn = 'N'
+                  AND product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+               ) AS machine_code,
+               pu.unprod_end_time as prod_str_time, 
+               
+               CASE 
+               WHEN ( (   
+						SELECT unprod_str_time 
+                  FROM product_unoperation_tbl
+                  WHERE product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+                  AND unoperation_seq*1 > pu.unoperation_seq*1
+          
+                  ORDER BY unoperation_seq 
+                  LIMIT 1) IS NULL)
+               THEN IFNULL((SELECT prod_end_time FROM product_operation_tbl 
+                     WHERE product_po = pu.product_po AND routing_code = pu.routing_code),date_format(now(),'%Y-%m-%d %H:%i:%s'))
+               
+               ELSE 
+               IFNULL((
+                  SELECT unprod_str_time 
+                  FROM product_unoperation_tbl
+                  WHERE product_po = pu.product_po
+                  AND routing_code = pu.routing_code
+                  AND unoperation_seq*1 > pu.unoperation_seq*1
+   
+                  ORDER BY unoperation_seq 
+                  LIMIT 1
+               ),date_format(NOW(),'%Y-%m-%d %H:%i:%s'))
+               END AS prod_end_time,
+               
+               (
+               	SELECT prod_str_time
+               	FROM product_operation_tbl
+               	WHERE del_yn = 'N'
+						AND machine_code = (
+							                  SELECT machine_code
+							                  FROM product_operation_tbl
+							                  WHERE del_yn = 'N'
+							                  AND product_po = pu.product_po
+							                  AND routing_code = pu.routing_code
+							               )
+						AND date_format(prod_str_time,'%Y-%m-%d %H:%i:%s') >= date_format(pu.unprod_end_time,'%Y-%m-%d %H:%i:%s')
+						ORDER BY prod_str_time asc
+						LIMIT 1 
+               	
+               ) as next_work_str_time
+            
+            FROM product_unoperation_tbl AS pu
+            LEFT JOIN product_tbl AS p
+            ON pu.product_po = p.product_po
+         
+            WHERE 1 = 1 
+            AND pu.del_yn = 'N'
+            AND p.del_yn = 'N'
+				
+      		AND pu.TYPE != 'H'
+            AND pu.unprod_end_time IS NOT NULL
+         ) AS ii
+         
+         
+         
+         
+         
+      ) AS pp
+      
+      WHERE 1 = 1
+
+
+
+		<if test="gb != null and !''.equals(gb) ">
+			AND gb = #{gb}
+		</if>
+		
+		<if test="work_str_time != null and !''.equals( work_str_time ) ">
+		  
+			AND ( 
+			    date_format(work_str_time, '%Y-%m-%d') BETWEEN left(#{work_str_time}, 10) AND right(#{work_str_time}, 10)
+			    OR
+			    date_format(work_end_time, '%Y-%m-%d') BETWEEN left(#{work_str_time}, 10) AND right(#{work_str_time}, 10)
+				OR (
+					gb != 'WAITING'
+					AND
+					date_format(work_str_time, '%Y-%m-%d')  <![CDATA[<=]]>  date_format(left(#{work_str_time}, 10), '%Y-%m-%d')
+					AND
+					date_format(work_end_time, '%Y-%m-%d')  <![CDATA[>=]]>  date_format(right(#{work_str_time}, 10), '%Y-%m-%d')
+				   )
+				)
+		</if>
+
+		<if test="product_po != null and !''.equals(product_po) ">
+			AND product_po = #{product_po}
+		</if>
+
+ 		<if test="machine_code != null and !''.equals(machine_code) ">
+			AND machine_code = #{machine_code}
+		</if> 
+		
+		<if test="item_code != null and !''.equals(item_code) ">
+			AND item_code = #{item_code}
+		</if>
+		
+		<if test="item_nm != null and !''.equals(item_nm) ">
+			AND item_nm = #{item_nm}
+		</if>
+
+	ORDER BY machine_code, work_str_time, work_end_time
+	
+	
+	</select>
+	
+	
+	<select id="selectProductItem" parameterType="SYProductVO" resultType="SYProductVO">
+		
+		SELECT DISTINCT
+
+			item_code, item_nm
+		
+		FROM product_tbl
+		
+		WHERE 1 = 1 
+		AND del_yn = 'N'
+		
+	</select>
+	
+	
+	
+<!-- 	1222 공정관리분석 조회 -->
+	<select id="selectProductAnalysis" parameterType="SYProductAnalysisVO" resultType="SYProductAnalysisVO">
+		
+		SELECT 
+
+			product_po, item_code, item_nm, product_req_date,
+			
+			(
+			SELECT 
+			CONCAT(CONCAT(ROUND(COUNT(p.menu_name)/2),'@'),GROUP_CONCAT(p.menu_name ORDER BY p.check_seq*1 ASC )) AS menu_nm
+			FROM ( 
+			   SELECT * FROM view_routing_analysis   
+			   UNION ALL
+			   SELECT * FROM view_routing_analysis_w   
+			) AS p
+			
+			WHERE 1 = 1
+			AND product_po = ppp.product_po
+			AND item_code = ppp.item_code
+			
+			GROUP BY product_po
+			) AS menu_name,
+			
+			SUM(r1) AS 'r1', SUM(w1) AS 'w1', 
+			SUM(r2) AS 'r2', SUM(w2) AS 'w2', 
+			SUM(r3) AS 'r3', SUM(w3) AS 'w3', 
+			SUM(r4) AS 'r4', SUM(w4) AS 'w4', 
+			SUM(r5) AS 'r5', SUM(w5) AS 'w5', 
+			SUM(r6) AS 'r6', SUM(w6) AS 'w6', 
+			SUM(r7) AS 'r7', SUM(w7) AS 'w7', 
+			SUM(r8) AS 'r8', SUM(w8) AS 'w8', 
+			SUM(r9) AS 'r9', SUM(w9) AS 'w9', 
+			SUM(r10) AS 'r10', SUM(w10) AS 'w10',
+			SUM(r11) AS 'r11', SUM(w11) AS 'w11', 
+			SUM(r12) AS 'r12', SUM(w12) AS 'w12', 
+			SUM(r13) AS 'r13', SUM(w13) AS 'w13', 
+			SUM(r14) AS 'r14', SUM(w14) AS 'w14', 
+			SUM(r15) AS 'r15', SUM(w15) AS 'w15', 
+			SUM(r16) AS 'r16', SUM(w16) AS 'w16', 
+			SUM(r17) AS 'r17', SUM(w17) AS 'w17', 
+			SUM(r18) AS 'r18', SUM(w18) AS 'w18', 
+			SUM(r19) AS 'r19', SUM(w19) AS 'w19',
+			SUM(r10) AS 'r20', SUM(w20) AS 'w20',
+			SUM(r21) AS 'r21', SUM(w21) AS 'w21', 
+			SUM(r22) AS 'r22', SUM(w22) AS 'w22', 
+			SUM(r23) AS 'r23', SUM(w23) AS 'w23', 
+			SUM(r24) AS 'r24', SUM(w24) AS 'w24', 
+			SUM(r25) AS 'r25', SUM(w25) AS 'w25', 
+			SUM(r26) AS 'r26', SUM(w26) AS 'w26', 
+			SUM(r27) AS 'r27', SUM(w27) AS 'w27', 
+			SUM(r28) AS 'r28', SUM(w28) AS 'w28', 
+			SUM(r29) AS 'r29', SUM(w29) AS 'w29',
+			SUM(r30) AS 'r30', SUM(w30) AS 'w30',
+			SUM(r31) AS 'r31', SUM(w31) AS 'w31', 
+			SUM(r32) AS 'r32', SUM(w32) AS 'w32', 
+			SUM(r33) AS 'r33', SUM(w33) AS 'w33', 
+			SUM(r34) AS 'r34', SUM(w34) AS 'w34', 
+			SUM(r35) AS 'r35', SUM(w35) AS 'w35', 
+			SUM(r36) AS 'r36', SUM(w36) AS 'w36', 
+			SUM(r37) AS 'r37', SUM(w37) AS 'w37', 
+			SUM(r38) AS 'r38', SUM(w38) AS 'w38', 
+			SUM(r39) AS 'r39', SUM(w39) AS 'w39',
+			SUM(r40) AS 'r40', SUM(w40) AS 'w40'
+			FROM 
+			(
+			
+			SELECT
+			
+			product_po, item_code, item_nm, product_req_date ,
+			
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 1) THEN process_time END AS  'r1',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 1) THEN process_time END AS  'w1',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 2) THEN process_time END AS  'r2',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 2) THEN process_time END AS  'w2',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 3) THEN process_time END AS  'r3',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 3) THEN process_time END AS  'w3',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 4) THEN process_time END AS  'r4',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 4) THEN process_time END AS  'w4',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 5) THEN process_time END AS  'r5',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 5) THEN process_time END AS  'w5',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 6) THEN process_time END AS  'r6',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 6) THEN process_time END AS  'w6',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 7) THEN process_time END AS  'r7',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 7) THEN process_time END AS  'w7',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 8) THEN process_time END AS  'r8',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 8) THEN process_time END AS  'w8',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 9) THEN process_time END AS  'r9',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 9) THEN process_time END AS  'w9',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 10) THEN process_time END AS  'r10',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 10) THEN process_time END AS  'w10',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 11) THEN process_time END AS  'r11',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 11) THEN process_time END AS  'w11',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 12) THEN process_time END AS  'r12',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 12) THEN process_time END AS  'w12',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 13) THEN process_time END AS  'r13',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 13) THEN process_time END AS  'w13',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 14) THEN process_time END AS  'r14',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 14) THEN process_time END AS  'w14',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 15) THEN process_time END AS  'r15',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 15) THEN process_time END AS  'w15',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 16) THEN process_time END AS  'r16',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 16) THEN process_time END AS  'w16',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 17) THEN process_time END AS  'r17',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 17) THEN process_time END AS  'w17',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 18) THEN process_time END AS  'r18',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 18) THEN process_time END AS  'w18',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 19) THEN process_time END AS  'r19',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 19) THEN process_time END AS  'w19',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 20) THEN process_time END AS  'r20',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 20) THEN process_time END AS  'w20',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 21) THEN process_time END AS  'r21',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 21) THEN process_time END AS  'w21',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 22) THEN process_time END AS  'r22',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 22) THEN process_time END AS  'w22',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 23) THEN process_time END AS  'r23',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 23) THEN process_time END AS  'w23',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 24) THEN process_time END AS  'r24',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 24) THEN process_time END AS  'w24',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 25) THEN process_time END AS  'r25',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 25) THEN process_time END AS  'w25',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 26) THEN process_time END AS  'r26',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 26) THEN process_time END AS  'w26',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 27) THEN process_time END AS  'r27',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 27) THEN process_time END AS  'w27',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 28) THEN process_time END AS  'r28',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 28) THEN process_time END AS  'w28',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 29) THEN process_time END AS  'r29',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 29) THEN process_time END AS  'w29',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 30) THEN process_time END AS  'r30',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 30) THEN process_time END AS  'w30',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 31) THEN process_time END AS  'r31',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 31) THEN process_time END AS  'w31',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 32) THEN process_time END AS  'r32',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 32) THEN process_time END AS  'w32',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 33) THEN process_time END AS  'r33',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 33) THEN process_time END AS  'w33',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 34) THEN process_time END AS  'r34',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 34) THEN process_time END AS  'w34',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 35) THEN process_time END AS  'r35',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 35) THEN process_time END AS  'w35',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 36) THEN process_time END AS  'r36',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 36) THEN process_time END AS  'w36',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 37) THEN process_time END AS  'r37',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 37) THEN process_time END AS  'w37',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 38) THEN process_time END AS  'r38',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 38) THEN process_time END AS  'w38',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 39) THEN process_time END AS  'r39',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 39) THEN process_time END AS  'w39',
+			
+			CASE WHEN (gb = 'PROCESS' AND real_seq = 40) THEN process_time END AS  'r40',
+			CASE WHEN (gb = 'WAITING' AND real_seq = 40) THEN process_time END AS  'w40'
+			
+			
+			FROM ( 
+			SELECT 
+			
+			p.*,
+			ROUND(
+			   IFNULL(TIME_TO_SEC(
+			      TIMEDIFF(
+			         date_format(prod_end_time,'%Y-%m-%d %H:%i:%s'), 
+			         date_format(prod_str_time,'%Y-%m-%d %H:%i:%s')))/3600,0),2) AS process_time
+			
+			
+			FROM ( 
+			
+			   SELECT * FROM view_routing_analysis
+			   
+			   UNION
+			   
+			   SELECT * FROM view_routing_analysis_w
+			
+			) AS p
+			
+			ORDER BY product_po, product_req_date, real_seq*1 ASC
+			
+			) AS pp
+			
+			
+			ORDER BY product_po, product_req_date, real_seq*1 ASC
+			) AS ppp
+			
+			WHERE 1 = 1 
+		
+		<if test="product_req_date != null and !''.equals( product_req_date ) ">
+			AND date_format(product_req_date, '%Y%m%d') BETWEEN left(#{product_req_date}, 8) AND right(#{product_req_date}, 8)
+		</if>
+		<if test="item_code != null and !''.equals(item_code) ">
+			AND item_code = #{item_code}
+		</if>
+		<if test="item_nm != null and !''.equals(item_nm) ">
+			AND item_nm = #{item_nm}
+		</if>
+		
+		
+		GROUP BY product_po
+	</select>
+	
+	
+	<select id="selectMonitorAccount" parameterType="SYProductOperationVO"
+		resultType="SYProductOperationVO">
+
+		SELECT 
+
+			*
+			FROM (
+			
+			SELECT 
+			
+			account_code, account_nm
+			
+			
+			FROM
+			
+			(
+			
+			
+			SELECT 
+			      product_po, item_code, item_nm,
+			      CASE
+			      WHEN (outsourcing_price IS NULL)
+			      THEN IFNULL((
+			         SELECT outsourcing_price
+			         FROM material_tbl
+			         WHERE del_yn = 'N'
+			         AND item_code = cc.item_code
+			      ),0)
+			      ELSE IFNULL(outsourcing_price,0)
+			      END AS outsourcing_price,
+			      routing_code, routing_nm,
+			      prev_prod_menge, prod_menge, prev_prod_fail_menge,
+			      CASE 
+			      WHEN (delivery_request_date IS NULL)
+			      THEN ''
+			      ELSE prev_prod_menge
+			      END AS req_prod_menge,
+			      account_code,
+			      (
+			         SELECT account_nm
+			         FROM account_tbl
+			         WHERE account_code = cc.account_code   
+			         LIMIT 1
+			      ) as account_nm,
+			      delivery_request_date,
+			      (
+			         SELECT warehouse_gubun
+			         FROM product_operation_tbl
+			         WHERE product_po = cc.product_po
+			         AND routing_code = cc.routing_code
+			      ) as warehouse_gubun,
+			      date_format(delivery_request_date,'%Y-%m-%d') AS end_date
+			
+			FROM (
+			      SELECT
+			          vwtable2.product_po  AS product_po, 
+			         vwtable2.routing_code AS routing_code,
+			         vwtable2.routing_nm as routing_nm,
+			         vwtable2.routing_seq AS routing_seq,
+			         vwtable2.prod_str_time AS prod_str_time, 
+			         vwtable2.prod_end_time  AS prod_end_time ,
+			         vwtable2.prod_menge AS prod_menge,
+			         d.prod_fail_menge AS prev_prod_fail_menge,
+			         d.product_po AS prev_product_po,  
+			          d.routing_code  AS prev_routing_code, 
+			         d.routing_seq AS prev_routing_seq,
+			         d.prod_menge AS prev_prod_menge,
+			         vwtable2.delivery_request_date AS delivery_request_date,
+			         vwtable2.account_code as account_code,
+			         vwtable2.outsourcing_price as outsourcing_price,
+			         vwtable2.status as status,
+			         (
+			            SELECT item_code
+			            FROM product_tbl
+			            WHERE product_po = vwtable2.product_po
+			         ) AS item_code,
+			         (
+			            SELECT item_nm
+			            FROM product_tbl
+			            WHERE product_po = vwtable2.product_po
+			         ) AS item_nm
+			      FROM
+			          (
+			              SELECT * FROM product_operation_tbl
+			              WHERE   outsourcing_gubun ='Y'           
+			          ) AS vwtable2
+			      LEFT JOIN product_operation_tbl d
+			             ON   d.product_po = vwtable2.product_po  
+			             AND  d.prod_end_time IS not  NULL
+			            AND  d.real_seq  = vwtable2.real_seq-1
+			             AND  d.status  = 'e'
+			      UNION ALL
+			      SELECT
+			         vwtable2.product_po as product_po, 
+			         vwtable2.routing_code as routing_code,
+			         vwtable2.routing_nm as routing_nm,
+			         vwtable2.routing_seq as routing_seq,
+			         vwtable2.prod_str_time as prod_str_time, 
+			         vwtable2.prod_end_time  AS prod_end_time ,
+			         d.prod_menge AS prev_prod_menge,
+			         d.prod_fail_menge AS prev_prod_fail_menge,
+			         d.product_po AS prev_product_po ,  
+			          d.routing_code  AS prev_routing_code , 
+			         d.routing_seq AS prev_routing_seq ,
+			         vwtable2.prod_menge as prod_menge, 
+			         vwtable2.delivery_request_date AS delivery_request_date,
+			         vwtable2.account_code as account_code,
+			         vwtable2.outsourcing_price as outsourcing_price,
+			         vwtable2.status as status,
+			         vwtable2.item_code,
+			         vwtable2.item_nm
+			      FROM
+			          (
+			              SELECT  
+			                 a.product_po, 
+			                 a.routing_code,
+			                 a.routing_nm,
+			                a.routing_seq,
+			               a.prod_str_time, 
+			               a.prod_end_time, 
+			               CASE
+			               WHEN (b.product_class = 'f') THEN b.product_menge
+			               WHEN (b.product_class = 'o') THEN b.order_menge
+			               END  AS prod_menge,
+			               a.prod_fail_menge,
+			               a.delivery_request_date,
+			               a.account_code,
+			               a.outsourcing_price,
+			               a.status,
+			               b.item_code,
+			               b.item_nm
+			                 FROM product_operation_tbl a, product_tbl b
+			                 WHERE  a.product_po =b.product_po AND  a.outsourcing_gubun ='Y' 
+			                 AND real_seq  = 1
+			                AND status  = 'n'
+			                  
+			          ) AS vwtable2
+			      LEFT JOIN product_operation_tbl d
+			       ON   d.product_po = vwtable2.product_po  
+			       AND  d.real_seq  = 1
+			       AND  d.status  = 'n'
+			       ) cc 
+			       
+			       WHERE prev_routing_code IS NOT null
+			       
+			       AND STATUS = 'e'
+			
+			       AND delivery_request_date IS NOT NULL
+			       
+			       ORDER BY delivery_request_date asc
+			       
+			) AS p
+			
+			UNION ALL
+			
+			SELECT 
+			
+			proc2_account_code AS account_code,
+			proc2_account_nm AS account_nm
+			
+			
+			FROM repair_request_tbl
+			
+			WHERE del_yn = 'N'
+			AND proc2_date IS NOT NULL
+			AND proc2_outsourcing_price IS NOT NULL 
+			
+			) AS pp
+			
+			WHERE 1 = 1 
+			
+			AND account_code IS NOT NULL
+			AND account_nm IS NOT NULL
+			
+			GROUP BY account_code
+			ORDER BY account_nm asc
+			       
+
+	</select>
+	
+	<select id="selectMonitoringList" parameterType="SYProductMonitoringVO"
+		resultType="SYProductMonitoringVO">
+
+		SELECT 
+
+			gb, 
+			ymd,
+			YEAR, MONTH,
+			SUM(bal_count) AS bal_count,
+			SUM(bal_price) AS bal_price,
+			SUM(in_count) AS in_count,
+			SUM(in_price) AS in_price,
+			SUM(no_count) AS no_count,
+			SUM(no_price) AS no_price
+			
+			FROM (
+			
+			
+			SELECT 
+			
+			'MD1243' AS gb,
+			account_code,
+			account_nm,
+			date_format(end_date, '%Y%m%d') AS ymd,
+			CONCAT(YEAR(end_date)) AS YEAR,
+			CONCAT(MONTH(end_date)) AS MONTH,
+			item_code, item_nm,
+			0 AS bal_count,
+			0 AS bal_price,
+			prod_menge AS in_count,
+			outsourcing_price AS in_price,
+			0 AS no_count,
+			0 AS no_price
+			
+			FROM
+			
+			(
+			
+			
+			SELECT 
+			      product_po, item_code, item_nm,
+			      CASE
+			      WHEN (outsourcing_price IS NULL)
+			      THEN IFNULL((
+			         SELECT outsourcing_price
+			         FROM material_tbl
+			         WHERE del_yn = 'N'
+			         AND item_code = cc.item_code
+			      ),0)
+			      ELSE IFNULL(outsourcing_price,0)
+			      END AS outsourcing_price,
+			      routing_code, routing_nm,
+			      prev_prod_menge, prod_menge, prev_prod_fail_menge,
+			      CASE 
+			      WHEN (delivery_request_date IS NULL)
+			      THEN ''
+			      ELSE prev_prod_menge
+			      END AS req_prod_menge,
+			      account_code,
+			      (
+			         SELECT account_nm
+			         FROM account_tbl
+			         WHERE account_code = cc.account_code   
+			         LIMIT 1
+			      ) as account_nm,
+			      delivery_request_date,
+			      (
+			         SELECT warehouse_gubun
+			         FROM product_operation_tbl
+			         WHERE product_po = cc.product_po
+			         AND routing_code = cc.routing_code
+			      ) as warehouse_gubun,
+			      date_format(delivery_request_date,'%Y-%m-%d') AS end_date
+			
+			FROM (
+			      SELECT
+			          vwtable2.product_po  AS product_po, 
+			         vwtable2.routing_code AS routing_code,
+			         vwtable2.routing_nm as routing_nm,
+			         vwtable2.routing_seq AS routing_seq,
+			         vwtable2.prod_str_time AS prod_str_time, 
+			         vwtable2.prod_end_time  AS prod_end_time ,
+			         vwtable2.prod_menge AS prod_menge,
+			         d.prod_fail_menge AS prev_prod_fail_menge,
+			         d.product_po AS prev_product_po,  
+			          d.routing_code  AS prev_routing_code, 
+			         d.routing_seq AS prev_routing_seq,
+			         d.prod_menge AS prev_prod_menge,
+			         vwtable2.delivery_request_date AS delivery_request_date,
+			         vwtable2.account_code as account_code,
+			         vwtable2.outsourcing_price as outsourcing_price,
+			         vwtable2.status as status,
+			         (
+			            SELECT item_code
+			            FROM product_tbl
+			            WHERE product_po = vwtable2.product_po
+			         ) AS item_code,
+			         (
+			            SELECT item_nm
+			            FROM product_tbl
+			            WHERE product_po = vwtable2.product_po
+			         ) AS item_nm
+			      FROM
+			          (
+			              SELECT * FROM product_operation_tbl
+			              WHERE   outsourcing_gubun ='Y'           
+			          ) AS vwtable2
+			      LEFT JOIN product_operation_tbl d
+			             ON   d.product_po = vwtable2.product_po  
+			             AND  d.prod_end_time IS not  NULL
+			            AND  d.real_seq  = vwtable2.real_seq-1
+			             AND  d.status  = 'e'
+			      UNION ALL
+			      SELECT
+			         vwtable2.product_po as product_po, 
+			         vwtable2.routing_code as routing_code,
+			         vwtable2.routing_nm as routing_nm,
+			         vwtable2.routing_seq as routing_seq,
+			         vwtable2.prod_str_time as prod_str_time, 
+			         vwtable2.prod_end_time  AS prod_end_time ,
+			         d.prod_menge AS prev_prod_menge,
+			         d.prod_fail_menge AS prev_prod_fail_menge,
+			         d.product_po AS prev_product_po ,  
+			          d.routing_code  AS prev_routing_code , 
+			         d.routing_seq AS prev_routing_seq ,
+			         vwtable2.prod_menge as prod_menge, 
+			         vwtable2.delivery_request_date AS delivery_request_date,
+			         vwtable2.account_code as account_code,
+			         vwtable2.outsourcing_price as outsourcing_price,
+			         vwtable2.status as status,
+			         vwtable2.item_code,
+			         vwtable2.item_nm
+			      FROM
+			          (
+			              SELECT  
+			                 a.product_po, 
+			                 a.routing_code,
+			                 a.routing_nm,
+			                a.routing_seq,
+			               a.prod_str_time, 
+			               a.prod_end_time, 
+			               CASE
+			               WHEN (b.product_class = 'f') THEN b.product_menge
+			               WHEN (b.product_class = 'o') THEN b.order_menge
+			               END  AS prod_menge,
+			               a.prod_fail_menge,
+			               a.delivery_request_date,
+			               a.account_code,
+			               a.outsourcing_price,
+			               a.status,
+			               b.item_code,
+			               b.item_nm
+			                 FROM product_operation_tbl a, product_tbl b
+			                 WHERE  a.product_po =b.product_po AND  a.outsourcing_gubun ='Y' 
+			                 AND real_seq  = 1
+			                AND status  = 'n'
+			                  
+			          ) AS vwtable2
+			      LEFT JOIN product_operation_tbl d
+			       ON   d.product_po = vwtable2.product_po  
+			       AND  d.real_seq  = 1
+			       AND  d.status  = 'n'
+			       ) cc 
+			       
+			       WHERE prev_routing_code IS NOT null
+			       
+			       AND STATUS = 'e'
+			              
+			       AND delivery_request_date IS NOT NULL
+			       
+			       ORDER BY delivery_request_date asc
+			       
+			) AS p
+			
+			UNION ALL
+			
+			SELECT 
+			'MD1244' AS gb,
+			proc2_account_code AS account_code,
+			proc2_account_nm AS account_nm,
+			date_format(proc2_date, '%Y%m%d') AS ymd,
+			CONCAT(YEAR(proc2_date)) AS YEAR,
+			CONCAT(MONTH(proc2_date)) AS MONTH,
+			item_code, item_nm,
+			0 AS bal_count,
+			0 AS bal_price,
+			1 AS in_count,
+			proc2_outsourcing_price AS in_price,
+			0 AS no_count,
+			0 AS no_price
+			
+			FROM repair_request_tbl
+			
+			WHERE del_yn = 'N'
+			AND proc2_date IS NOT NULL
+			AND proc2_outsourcing_price IS NOT NULL 
+			
+			) AS pp
+			
+			WHERE 1 = 1 
+			AND account_code IS NOT NULL
+			AND account_nm IS NOT NULL
+			
+			<if test="year != null and '' != year">
+			AND year = #{year}
+			</if>
+			<if test="gb != null and '' != gb">
+				AND gb = #{gb}
+			</if>
+			<if test="account_code != null and '' != account_code">
+				AND account_code = #{account_code}
+			</if>
+			
+			GROUP BY gb,YEAR, month
+
+	</select>
+	
+	<select id="selectMonitoringGraph" parameterType="SYProductMonitoringVO"
+		resultType="SYProductMonitoringVO">
+
+		SELECT 
+
+			gb, 
+			
+			YEAR,
+			account_code, account_nm,
+			SUM(bal_count) AS bal_count,
+			SUM(bal_price) AS bal_price,
+			SUM(in_count) AS in_count,
+			SUM(in_price) AS in_price,
+			SUM(no_count) AS no_count,
+			SUM(no_price) AS no_price
+			
+			FROM (
+			
+			
+			SELECT 
+			
+			'MD1243' AS gb,
+			account_code,
+			account_nm,
+			date_format(end_date, '%Y%m%d') AS ymd,
+			CONCAT(YEAR(end_date)) AS YEAR,
+			CONCAT(MONTH(end_date)) AS MONTH,
+			item_code, item_nm,
+			0 AS bal_count,
+			0 AS bal_price,
+			prod_menge AS in_count,
+			outsourcing_price AS in_price,
+			0 AS no_count,
+			0 AS no_price
+			
+			FROM
+			
+			(
+			
+			
+			SELECT 
+			      product_po, item_code, item_nm,
+			      CASE
+			      WHEN (outsourcing_price IS NULL)
+			      THEN IFNULL((
+			         SELECT outsourcing_price
+			         FROM material_tbl
+			         WHERE del_yn = 'N'
+			         AND item_code = cc.item_code
+			      ),0)
+			      ELSE IFNULL(outsourcing_price,0)
+			      END AS outsourcing_price,
+			      routing_code, routing_nm,
+			      prev_prod_menge, prod_menge, prev_prod_fail_menge,
+			      CASE 
+			      WHEN (delivery_request_date IS NULL)
+			      THEN ''
+			      ELSE prev_prod_menge
+			      END AS req_prod_menge,
+			      account_code,
+			      (
+			         SELECT account_nm
+			         FROM account_tbl
+			         WHERE account_code = cc.account_code   
+			         LIMIT 1
+			      ) as account_nm,
+			      delivery_request_date,
+			      (
+			         SELECT warehouse_gubun
+			         FROM product_operation_tbl
+			         WHERE product_po = cc.product_po
+			         AND routing_code = cc.routing_code
+			      ) as warehouse_gubun,
+			      date_format(delivery_request_date,'%Y-%m-%d') AS end_date
+			
+			FROM (
+			      SELECT
+			          vwtable2.product_po  AS product_po, 
+			         vwtable2.routing_code AS routing_code,
+			         vwtable2.routing_nm as routing_nm,
+			         vwtable2.routing_seq AS routing_seq,
+			         vwtable2.prod_str_time AS prod_str_time, 
+			         vwtable2.prod_end_time  AS prod_end_time ,
+			         vwtable2.prod_menge AS prod_menge,
+			         d.prod_fail_menge AS prev_prod_fail_menge,
+			         d.product_po AS prev_product_po,  
+			          d.routing_code  AS prev_routing_code, 
+			         d.routing_seq AS prev_routing_seq,
+			         d.prod_menge AS prev_prod_menge,
+			         vwtable2.delivery_request_date AS delivery_request_date,
+			         vwtable2.account_code as account_code,
+			         vwtable2.outsourcing_price as outsourcing_price,
+			         vwtable2.status as status,
+			         (
+			            SELECT item_code
+			            FROM product_tbl
+			            WHERE product_po = vwtable2.product_po
+			         ) AS item_code,
+			         (
+			            SELECT item_nm
+			            FROM product_tbl
+			            WHERE product_po = vwtable2.product_po
+			         ) AS item_nm
+			      FROM
+			          (
+			              SELECT * FROM product_operation_tbl
+			              WHERE   outsourcing_gubun ='Y'           
+			          ) AS vwtable2
+			      LEFT JOIN product_operation_tbl d
+			             ON   d.product_po = vwtable2.product_po  
+			             AND  d.prod_end_time IS not  NULL
+			            AND  d.real_seq  = vwtable2.real_seq-1
+			             AND  d.status  = 'e'
+			      UNION ALL
+			      SELECT
+			         vwtable2.product_po as product_po, 
+			         vwtable2.routing_code as routing_code,
+			         vwtable2.routing_nm as routing_nm,
+			         vwtable2.routing_seq as routing_seq,
+			         vwtable2.prod_str_time as prod_str_time, 
+			         vwtable2.prod_end_time  AS prod_end_time ,
+			         d.prod_menge AS prev_prod_menge,
+			         d.prod_fail_menge AS prev_prod_fail_menge,
+			         d.product_po AS prev_product_po ,  
+			          d.routing_code  AS prev_routing_code , 
+			         d.routing_seq AS prev_routing_seq ,
+			         vwtable2.prod_menge as prod_menge, 
+			         vwtable2.delivery_request_date AS delivery_request_date,
+			         vwtable2.account_code as account_code,
+			         vwtable2.outsourcing_price as outsourcing_price,
+			         vwtable2.status as status,
+			         vwtable2.item_code,
+			         vwtable2.item_nm
+			      FROM
+			          (
+			              SELECT  
+			                 a.product_po, 
+			                 a.routing_code,
+			                 a.routing_nm,
+			                a.routing_seq,
+			               a.prod_str_time, 
+			               a.prod_end_time, 
+			               CASE
+			               WHEN (b.product_class = 'f') THEN b.product_menge
+			               WHEN (b.product_class = 'o') THEN b.order_menge
+			               END  AS prod_menge,
+			               a.prod_fail_menge,
+			               a.delivery_request_date,
+			               a.account_code,
+			               a.outsourcing_price,
+			               a.status,
+			               b.item_code,
+			               b.item_nm
+			                 FROM product_operation_tbl a, product_tbl b
+			                 WHERE  a.product_po =b.product_po AND  a.outsourcing_gubun ='Y' 
+			                 AND real_seq  = 1
+			                AND status  = 'n'
+			                  
+			          ) AS vwtable2
+			      LEFT JOIN product_operation_tbl d
+			       ON   d.product_po = vwtable2.product_po  
+			       AND  d.real_seq  = 1
+			       AND  d.status  = 'n'
+			       ) cc 
+			       
+			       WHERE prev_routing_code IS NOT null
+			       
+			       AND STATUS = 'e'
+			
+			       AND delivery_request_date IS NOT NULL
+			       
+			       ORDER BY delivery_request_date asc
+			       
+			) AS p
+			
+			UNION ALL
+			
+			SELECT 
+			'MD1244' AS gb,
+			proc2_account_code AS account_code,
+			proc2_account_nm AS account_nm,
+			date_format(proc2_date, '%Y%m%d') AS ymd,
+			CONCAT(YEAR(proc2_date)) AS YEAR,
+			CONCAT(MONTH(proc2_date)) AS MONTH,
+			item_code, item_nm,
+			0 AS bal_count,
+			0 AS bal_price,
+			1 AS in_count,
+			proc2_outsourcing_price AS in_price,
+			0 AS no_count,
+			0 AS no_price
+			
+			FROM repair_request_tbl
+			
+			WHERE del_yn = 'N'
+			AND proc2_date IS NOT NULL
+			AND proc2_outsourcing_price IS NOT NULL 
+			
+			) AS pp
+			
+			WHERE 1 = 1 
+			
+			AND account_code IS NOT NULL
+			AND account_nm IS NOT NULL
+			       
+			
+			
+			<if test="year != null and '' != year">
+			AND year = #{year}
+			</if>
+			<if test="gb != null and '' != gb">
+				AND gb = #{gb}
+			</if>
+			<if test="account_code != null and '' != account_code">
+				AND account_code = #{account_code}
+			</if>
+			<if test="month != null and '' != month">
+				AND month = #{month}
+			</if>
+			
+			GROUP BY YEAR, account_code
+			
+			
+			ORDER BY in_price DESC
+
+
+	</select>
+	
+	<select id="selectMonitoringListDown" parameterType="SYProductMonitoringVO"
+		resultType="SYProductMonitoringVO">
+
+		SELECT 
+
+			* 
+			
+			FROM (
+			
+			
+			SELECT 
+			
+			'MD1243' AS gb,
+			account_code,
+			account_nm,
+			date_format(end_date, '%Y%m%d') AS ymd,
+			CONCAT(YEAR(end_date)) AS YEAR,
+			CONCAT(MONTH(end_date)) AS MONTH,
+			item_code, item_nm,
+			0 AS bal_count,
+			0 AS bal_price,
+			prod_menge AS in_count,
+			outsourcing_price AS in_price,
+			0 AS no_count,
+			0 AS no_price
+			
+			FROM
+			
+			(
+			
+			
+			SELECT 
+			      product_po, item_code, item_nm,
+			      CASE
+			      WHEN (outsourcing_price IS NULL)
+			      THEN IFNULL((
+			         SELECT outsourcing_price
+			         FROM material_tbl
+			         WHERE del_yn = 'N'
+			         AND item_code = cc.item_code
+			      ),0)
+			      ELSE IFNULL(outsourcing_price,0)
+			      END AS outsourcing_price,
+			      routing_code, routing_nm,
+			      prev_prod_menge, prod_menge, prev_prod_fail_menge,
+			      CASE 
+			      WHEN (delivery_request_date IS NULL)
+			      THEN ''
+			      ELSE prev_prod_menge
+			      END AS req_prod_menge,
+			      account_code,
+			      (
+			         SELECT account_nm
+			         FROM account_tbl
+			         WHERE account_code = cc.account_code   
+			         LIMIT 1
+			      ) as account_nm,
+			      delivery_request_date,
+			      (
+			         SELECT warehouse_gubun
+			         FROM product_operation_tbl
+			         WHERE product_po = cc.product_po
+			         AND routing_code = cc.routing_code
+			      ) as warehouse_gubun,
+			      date_format(delivery_request_date,'%Y-%m-%d') AS end_date
+			
+			FROM (
+			      SELECT
+			          vwtable2.product_po  AS product_po, 
+			         vwtable2.routing_code AS routing_code,
+			         vwtable2.routing_nm as routing_nm,
+			         vwtable2.routing_seq AS routing_seq,
+			         vwtable2.prod_str_time AS prod_str_time, 
+			         vwtable2.prod_end_time  AS prod_end_time ,
+			         vwtable2.prod_menge AS prod_menge,
+			         d.prod_fail_menge AS prev_prod_fail_menge,
+			         d.product_po AS prev_product_po,  
+			          d.routing_code  AS prev_routing_code, 
+			         d.routing_seq AS prev_routing_seq,
+			         d.prod_menge AS prev_prod_menge,
+			         vwtable2.delivery_request_date AS delivery_request_date,
+			         vwtable2.account_code as account_code,
+			         vwtable2.outsourcing_price as outsourcing_price,
+			         vwtable2.status as status,
+			         (
+			            SELECT item_code
+			            FROM product_tbl
+			            WHERE product_po = vwtable2.product_po
+			         ) AS item_code,
+			         (
+			            SELECT item_nm
+			            FROM product_tbl
+			            WHERE product_po = vwtable2.product_po
+			         ) AS item_nm
+			      FROM
+			          (
+			              SELECT * FROM product_operation_tbl
+			              WHERE   outsourcing_gubun ='Y'           
+			          ) AS vwtable2
+			      LEFT JOIN product_operation_tbl d
+			             ON   d.product_po = vwtable2.product_po  
+			             AND  d.prod_end_time IS not  NULL
+			            AND  d.real_seq  = vwtable2.real_seq-1
+			             AND  d.status  = 'e'
+			      UNION ALL
+			      SELECT
+			         vwtable2.product_po as product_po, 
+			         vwtable2.routing_code as routing_code,
+			         vwtable2.routing_nm as routing_nm,
+			         vwtable2.routing_seq as routing_seq,
+			         vwtable2.prod_str_time as prod_str_time, 
+			         vwtable2.prod_end_time  AS prod_end_time ,
+			         d.prod_menge AS prev_prod_menge,
+			         d.prod_fail_menge AS prev_prod_fail_menge,
+			         d.product_po AS prev_product_po ,  
+			          d.routing_code  AS prev_routing_code , 
+			         d.routing_seq AS prev_routing_seq ,
+			         vwtable2.prod_menge as prod_menge, 
+			         vwtable2.delivery_request_date AS delivery_request_date,
+			         vwtable2.account_code as account_code,
+			         vwtable2.outsourcing_price as outsourcing_price,
+			         vwtable2.status as status,
+			         vwtable2.item_code,
+			         vwtable2.item_nm
+			      FROM
+			          (
+			              SELECT  
+			                 a.product_po, 
+			                 a.routing_code,
+			                 a.routing_nm,
+			                a.routing_seq,
+			               a.prod_str_time, 
+			               a.prod_end_time, 
+			               CASE
+			               WHEN (b.product_class = 'f') THEN b.product_menge
+			               WHEN (b.product_class = 'o') THEN b.order_menge
+			               END  AS prod_menge,
+			               a.prod_fail_menge,
+			               a.delivery_request_date,
+			               a.account_code,
+			               a.outsourcing_price,
+			               a.status,
+			               b.item_code,
+			               b.item_nm
+			                 FROM product_operation_tbl a, product_tbl b
+			                 WHERE  a.product_po =b.product_po AND  a.outsourcing_gubun ='Y' 
+			                 AND real_seq  = 1
+			                AND status  = 'n'
+			                  
+			          ) AS vwtable2
+			      LEFT JOIN product_operation_tbl d
+			       ON   d.product_po = vwtable2.product_po  
+			       AND  d.real_seq  = 1
+			       AND  d.status  = 'n'
+			       ) cc 
+			       
+			       WHERE prev_routing_code IS NOT null
+			       
+			       AND STATUS = 'e'
+			       
+			       AND delivery_request_date IS NOT NULL
+			       
+			       ORDER BY delivery_request_date asc
+			       
+			) AS p
+			
+			UNION ALL
+			
+			SELECT 
+			'MD1244' AS gb,
+			proc2_account_code AS account_code,
+			proc2_account_nm AS account_nm,
+			date_format(proc2_date, '%Y%m%d') AS ymd,
+			CONCAT(YEAR(proc2_date)) AS YEAR,
+			CONCAT(MONTH(proc2_date)) AS MONTH,
+			item_code, item_nm,
+			0 AS bal_count,
+			0 AS bal_price,
+			1 AS in_count,
+			proc2_outsourcing_price AS in_price,
+			0 AS no_count,
+			0 AS no_price
+			
+			FROM repair_request_tbl
+			
+			WHERE del_yn = 'N'
+			AND proc2_date IS NOT NULL
+			AND proc2_outsourcing_price IS NOT NULL 
+			
+			) AS pp
+			
+			WHERE 1 = 1 
+			
+			AND account_code IS NOT NULL
+			AND account_nm IS NOT NULL
+			       
+			<if test="year != null and '' != year">
+			AND year = #{year}
+			</if>
+			<if test="month != null and '' != month">
+			AND month = #{month}
+			</if>
+			<if test="gb != null and '' != gb">
+				AND gb = #{gb}
+			</if>
+			<if test="account_code != null and '' != account_code">
+				AND account_code = #{account_code}
+			</if>
+			
+			ORDER BY account_code, item_code ASC
+	</select>
+	
+	
+	<!-- 210122 -->
+	<update id="updateOutsourcing" parameterType="SYProductOperationVO">
+		UPDATE product_operation_tbl
+		SET
+			<if test="outsourcing_gubun != null and !''.equals( outsourcing_gubun ) ">
+				outsourcing_gubun = #{outsourcing_gubun}
+			</if>
+			, date_updated = CURRENT_TIMESTAMP()
+			, updater = #{updater}
+		
+		WHERE
+		<if test="routing_code != null and '' != routing_code">
+			routing_code = #{routing_code}
+		</if>
+		<if test="product_po != null and '' != product_po">
+			AND product_po = #{product_po}
+		</if>
+	</update>
+	
+</mapper>

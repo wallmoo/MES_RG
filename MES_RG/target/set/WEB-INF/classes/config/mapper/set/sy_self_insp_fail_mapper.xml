@@ -1,0 +1,363 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.passcombine.set.dao.SYSelf_InspFailDAO">
+
+	<select id="selectSelfInspFail" parameterType="SYSelf_InspFailVo" resultType="SYSelf_InspFailVo">
+					SELECT 
+				(
+					SELECT fail_num
+					FROM self_insp_fail_tbl
+					WHERE product_po = vp.product_po
+					AND routing_code = vp.routing_code
+				)
+				as fail_num,
+				vp.product_po,
+				vp.routing_code, vp.routing_nm,
+				vp.gubun,
+				vp.dis_routing_nm,
+				vp.receipt_date,
+				vp.customer_nm,
+				vp.item_code,
+				vp.prod_menge, vp.prod_fail_menge,	
+				sf.fail_type_code,
+				(
+					SELECT code_nm
+					FROM sy_code_detail
+					WHERE detail_code = sf.fail_type_code
+				) as fail_type_nm,
+				sf.reason, sf.cause,
+				sf.comment1, sf.comment2,
+				sf.complete_date, sf.comment_date, 
+				sf.file_cate, sf.file_path, sf.file_name, sf.file_ext, sf.file_size, 
+				sf.t_file_cate, sf.t_file_path, sf.t_file_name, sf.t_file_ext, sf.t_file_size,
+				(
+					SELECT member_nm
+					FROM sy_member_master
+					WHERE member_id = sf.creator
+					LIMIT 1
+				) as creator,
+				(
+					SELECT member_nm
+					FROM sy_member_master
+					WHERE member_id = sf.updater
+					LIMIT 1
+				) as updater
+				
+			
+			
+			FROM 	
+			(		
+				SELECT
+
+					product_po,		
+					CASE 
+					WHEN (account_code IS NOT NULL) 
+					THEN '외주'
+					ELSE '사내'
+					END AS gubun,
+					
+					CASE 
+					WHEN (account_code IS NOT NULL) 
+					THEN (SELECT account_nm FROM account_tbl WHERE account_code = pp.account_code)
+					ELSE routing_nm
+					END AS dis_routing_nm,
+					receipt_date,
+					customer_nm, item_code,
+					prod_menge, prod_fail_menge,
+					routing_code, routing_nm
+					
+					FROM
+					(
+					
+						SELECT 
+							p.product_po,
+							po.routing_code,
+							po.routing_nm,
+							(
+								SELECT account_code
+								FROM product_operation_tbl
+								WHERE product_po = p.product_po
+								AND LEFT(routing_code,2) = LEFT(po.routing_code,2)
+								ORDER BY po.real_seq ASC
+								LIMIT 1
+							) AS account_code,
+							date_format(po.prod_end_time, '%Y-%m-%d') AS receipt_date,
+							(
+								SELECT customer_nm
+								FROM order_manager_tbl
+								WHERE order_num = p.order_num
+								AND item_code = p.item_code
+							) AS customer_nm,
+							p.item_code,
+							po.prod_menge,					
+							(
+								select sum(ifnull(c_dfct_cnt, 0)) from inspection_chk_sht
+								where po.product_po = product_po and p.item_code = item_code and po.routing_code = routing_code
+							) prod_fail_menge
+							FROM product_operation_tbl po, product_tbl p
+							where p.product_po = po.product_po
+							and p.del_yn = 'N'
+							AND 
+							(
+								select sum(ifnull(c_dfct_cnt, 0)) from inspection_chk_sht
+								where po.product_po = product_po and p.item_code = item_code and po.routing_code = routing_code
+							) != 0
+							and (right(po.routing_code,2) = '-1' || left(po.routing_code, 1) = 'F' || left(po.routing_code, 1) = 'Q')
+					
+					) AS pp 
+			)	AS vp
+
+			LEFT JOIN self_insp_fail_tbl AS sf	
+			ON sf.product_po = vp.product_po
+			AND sf.routing_code = vp.routing_code
+			WHERE 1 = 1 
+
+		
+			<if test="receipt_date != null and '' != receipt_date">
+				AND date_format(vp.receipt_date, '%Y%m%d') BETWEEN left(#{receipt_date}, 8) AND right(#{receipt_date}, 8)
+			</if>	
+			<!-- <if test="current_status == null or ''.equals( current_status )">
+				
+			</if>	 -->
+			<if test='"B".equals( current_status )'>
+				AND sf.complete_date IS NULL
+			</if>	
+			<if test='"A".equals( current_status )'>
+				AND sf.complete_date IS NOT NULL
+			</if>
+			<if test="gubun != null and '' != gubun">
+				AND vp.gubun = #{gubun}
+			</if>
+			<if test="item_code != null and '' != item_code">
+				AND vp.item_code = #{item_code}
+			</if>	
+			
+			GROUP BY product_po, routing_code
+		
+		
+		
+		
+		
+<!-- 			SELECT  -->
+<!-- 				( -->
+<!-- 					SELECT fail_num -->
+<!-- 					FROM self_insp_fail_tbl -->
+<!-- 					WHERE product_po = vp.product_po -->
+<!-- 					AND routing_code = vp.routing_code -->
+<!-- 				) -->
+<!-- 				as fail_num, -->
+<!-- 				vp.product_po, -->
+<!-- 				vp.routing_code, vp.routing_nm, -->
+<!-- 				vp.gubun, -->
+<!-- 				vp.dis_routing_nm, -->
+<!-- 				vp.receipt_date, -->
+<!-- 				vp.customer_nm, -->
+<!-- 				vp.item_code, -->
+<!-- 				vp.prod_menge, vp.prod_fail_menge,	 -->
+<!-- 				sf.fail_type_code, -->
+<!-- 				( -->
+<!-- 					SELECT code_nm -->
+<!-- 					FROM sy_code_detail -->
+<!-- 					WHERE detail_code = sf.fail_type_code -->
+<!-- 				) as fail_type_nm, -->
+<!-- 				sf.reason, sf.cause, -->
+<!-- 				sf.comment1, sf.comment2, -->
+<!-- 				sf.complete_date, sf.comment_date,  -->
+<!-- 				sf.file_cate, sf.file_path, sf.file_name, sf.file_ext, sf.file_size,  -->
+<!-- 				sf.t_file_cate, sf.t_file_path, sf.t_file_name, sf.t_file_ext, sf.t_file_size -->
+			
+<!-- 			FROM 	 -->
+<!-- 			(		 -->
+<!-- 				SELECT -->
+
+<!-- 					product_po,		 -->
+<!-- 					CASE  -->
+<!-- 					WHEN (account_code IS NOT NULL)  -->
+<!-- 					THEN '외주' -->
+<!-- 					ELSE '사내' -->
+<!-- 					END AS gubun, -->
+					
+<!-- 					CASE  -->
+<!-- 					WHEN (account_code IS NOT NULL)  -->
+<!-- 					THEN (SELECT account_nm FROM account_tbl WHERE account_code = pp.account_code) -->
+<!-- 					ELSE routing_nm -->
+<!-- 					END AS dis_routing_nm, -->
+<!-- 					receipt_date, -->
+<!-- 					customer_nm, item_code, -->
+<!-- 					prod_menge, prod_fail_menge, -->
+<!-- 					routing_code, routing_nm -->
+					
+<!-- 					FROM -->
+<!-- 					( -->
+					
+<!-- 						SELECT  -->
+<!-- 							p.product_po, -->
+<!-- 							po.routing_code, -->
+<!-- 							po.routing_nm, -->
+<!-- 							( -->
+<!-- 								SELECT account_code -->
+<!-- 								FROM product_operation_tbl -->
+<!-- 								WHERE product_po = p.product_po -->
+<!-- 								AND LEFT(routing_code,2) = LEFT(po.routing_code,2) -->
+<!-- 								ORDER BY po.real_seq ASC -->
+<!-- 								LIMIT 1 -->
+<!-- 							) AS account_code, -->
+<!-- 							date_format(po.prod_end_time, '%Y-%m-%d') AS receipt_date, -->
+<!-- 							( -->
+<!-- 								SELECT customer_nm -->
+<!-- 								FROM order_manager_tbl -->
+<!-- 								WHERE order_num = p.order_num -->
+<!-- 								AND item_code = p.item_code -->
+<!-- 							) AS customer_nm, -->
+<!-- 							p.item_code, -->
+<!-- 							po.prod_menge,	po.prod_fail_menge -->
+							
+							
+<!-- 							FROM product_operation_tbl AS po -->
+<!-- 							LEFT JOIN product_tbl AS p -->
+<!-- 							ON p.product_po = po.product_po -->
+							
+<!-- 							WHERE p.del_yn = 'N' -->
+<!-- 							AND ifnull(prod_fail_menge,0) != 0 -->
+							
+<!-- 							AND po.routing_code LIKE '%-1%'  -->
+					
+<!-- 					) AS pp  -->
+<!-- 			)	AS vp -->
+
+<!-- 			LEFT JOIN self_insp_fail_tbl AS sf	 -->
+<!-- 			ON sf.product_po = vp.product_po -->
+<!-- 			AND sf.routing_code = vp.routing_code -->
+<!-- 			WHERE 1 = 1  -->
+
+		
+<!-- 			<if test="receipt_date != null and '' != receipt_date"> -->
+<!-- 				AND date_format(vp.receipt_date, '%Y%m%d') BETWEEN left(#{receipt_date}, 8) AND right(#{receipt_date}, 8) -->
+<!-- 			</if>	 -->
+<!-- 			<if test="current_status == null or ''.equals( current_status )"> -->
+<!-- 				AND sf.complete_date IS NULL -->
+<!-- 			</if>	 -->
+<!-- 			<if test='"A".equals( current_status )'> -->
+<!-- 				AND sf.complete_date IS NOT NULL -->
+<!-- 			</if> -->
+<!-- 			<if test="gubun != null and '' != gubun"> -->
+<!-- 				AND vp.gubun = #{gubun} -->
+<!-- 			</if> -->
+<!-- 			<if test="item_code != null and '' != item_code"> -->
+<!-- 				AND vp.item_code = #{item_code} -->
+<!-- 			</if>	 -->
+			
+<!-- 			GROUP BY product_po, routing_code -->
+	
+	</select>
+			
+	<insert id="saveSelfInspFail" parameterType="SYSelf_InspFailVo">
+ 		INSERT INTO self_insp_fail_tbl (
+
+ 			fail_num,
+ 			
+ 			product_po,
+ 			routing_code,
+ 			
+ 			
+			fail_type_code,
+			reason, cause,
+			comment1,comment2,
+			complete_date, comment_date, 
+			
+			<if test="file_cate != null and '' != file_cate">
+			file_cate, file_path, file_name, file_ext, file_size,
+			</if>
+			
+			<if test="t_file_cate != null and '' != t_file_cate">
+			t_file_cate, t_file_path, t_file_name, t_file_ext, t_file_size,
+			</if>
+			
+			del_yn,
+			creator, updater, date_created, date_updated)
+		SELECT *
+		  FROM (
+		  		SELECT  
+		   		<choose>
+					<when test="fail_num != null and !''.equals( fail_num )">			
+						#{fail_num} as fail_num,
+					</when>
+					
+					<otherwise>			
+						fn_self_insp_fail_num() as fail_num, 			
+					</otherwise>			
+				</choose>
+				
+				#{product_po} as product_po, 
+				#{routing_code} as routing_code, 
+				
+				
+				#{fail_type_code} as fail_type_code, 
+				#{reason} as reason, #{cause} as cause,
+		  		#{comment1} as comment1, #{comment2} as comment2,
+		  		#{complete_date} as complete_date, 
+		  		#{comment_date} as comment_date, 
+		  	
+		  		
+		  		<if test="file_cate != null and '' != file_cate">
+			  		#{file_cate} as file_cate, #{file_path} as file_path,
+			  		#{file_name} as file_name, #{file_ext} as file_ext, #{file_size} as file_size,
+		  		</if>
+		  		
+		  		<if test="t_file_cate != null and '' != t_file_cate">
+			  		#{t_file_cate} as t_file_cate, #{t_file_path} as t_file_path,
+			  		#{t_file_name} as t_file_name, #{t_file_ext} as t_file_ext, #{t_file_size} as t_file_size,
+		  		</if>
+		  		
+		  		'N' as del_yn,
+				#{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated
+		  ) s
+		  ON DUPLICATE KEY
+		UPDATE
+			fail_num = s.fail_num,
+			
+			
+			product_po = s.product_po,
+			routing_code = s.routing_code,
+			
+			
+			fail_type_code = s.fail_type_code,
+			reason = s.reason,
+			cause = s.cause,
+
+			comment1 = s.comment1,			
+			comment2 = s.comment2,
+
+			complete_date = s.complete_date,
+			comment_date = s.comment_date,
+	
+			
+			<if test="file_cate != null and '' != file_cate">
+				file_cate = s.file_cate,
+				file_path = s.file_path,
+				file_name = s.file_name,
+				file_ext = s.file_ext,
+				file_size= s.file_size,
+			</if>	
+			
+			<if test="t_file_cate != null and '' != t_file_cate">
+				t_file_cate = s.t_file_cate,
+				t_file_path = s.t_file_path,
+				t_file_name = s.t_file_name,
+				t_file_ext = s.t_file_ext,
+				t_file_size= s.t_file_size,
+			</if>	
+			del_yn = s.del_yn,
+			updater = s.updater,
+			date_updated = s.date_updated
+	</insert>
+	<update id="deleteSelfInspFail" parameterType="SYSelf_InspFailVo">
+		UPDATE self_insp_fail_tbl 
+			SET del_yn='Y'
+		 WHERE fail_num = #{fail_num}
+	</update>
+	
+	
+</mapper>

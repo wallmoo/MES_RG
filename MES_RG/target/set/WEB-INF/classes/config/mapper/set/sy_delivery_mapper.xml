@@ -1,0 +1,306 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.passcombine.set.dao.SYDeliveryDAO">
+
+
+	<select id="selectDelivery" parameterType="SYDeliveryVo" resultType="SYDeliveryVo">
+		SELECT 
+			delivery_num, delivery_menge, DATE_FORMAT(delivery_date, '%Y-%m-%d') as delivery_date,
+			item_code, item_nm, del_yn,		
+			IFNULL((
+				SELECT member_nm 
+				FROM sy_member_master
+				WHERE member_id = d.creator
+			),'') as creator_nm,
+			
+			( 
+				SELECT SUM( ifnull(warehousing_qty,0) ) 
+				FROM warehouse_tbl
+				WHERE 1 = 1
+				AND (business_code = 'MD1243' OR business_code = 'MD1282')
+				AND item_code = d.item_code
+				GROUP BY item_code		
+			) as stock_menge,
+
+			creator, updater, date_created, date_updated
+		FROM delivery_tbl as d
+		
+		WHERE 1 = 1
+		AND del_yn = 'N'
+		<if test="delivery_num != null and !''.equals( delivery_num ) ">
+			AND delivery_num = #{delivery_num}
+		</if>
+		<if test="delivery_date != null and !''.equals( delivery_date ) ">
+			AND date_format(delivery_date, '%Y-%m-%d') BETWEEN left(#{delivery_date}, 10) AND right(#{delivery_date}, 10)
+		</if>
+		
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND item_code = #{item_code}
+		</if>
+		
+		<if test="item_nm != null and !''.equals( item_nm ) ">
+			AND item_nm = #{item_nm}
+		</if>
+		ORDER BY delivery_num, date_created ASC
+	</select>
+
+	<insert id="saveDelivery" parameterType="SYDeliveryVo">
+ 		INSERT INTO delivery_tbl (
+ 			delivery_num, delivery_menge, delivery_date,
+			item_code, item_nm, del_yn,
+		 	creator, updater, date_created, date_updated)
+		SELECT *
+		  FROM (
+		  		SELECT  
+				#{delivery_num} as delivery_num, #{delivery_menge} as delivery_menge, #{delivery_date} as delivery_date, 
+		  		#{item_code} as item_code, #{item_nm} as item_nm, 'N' as del_yn, 
+				#{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated
+		  ) s
+		  ON DUPLICATE KEY
+		UPDATE
+			delivery_num = s.delivery_num,
+			delivery_menge = s.delivery_menge + ifnull((select delivery_menge from delivery_tbl where del_yn = 'N' and delivery_num = #{delivery_num} and delivery_date = #{delivery_date} and item_code = #{item_code}),0)  ,
+ 			delivery_date = s.delivery_date,	
+			item_code = s.item_code,
+			item_nm = s.item_nm,									
+			del_yn = s.del_yn,
+			updater = s.updater,
+			date_updated = s.date_updated
+	</insert>
+	
+	<insert id="saveDeliveryMulti" parameterType="SYDeliveryVo">
+ 		INSERT INTO delivery_tbl (
+ 			delivery_num, delivery_menge, delivery_date,
+			item_code, item_nm, del_yn,
+		 	creator, updater, date_created, date_updated)
+		SELECT *
+		  FROM (
+		  		SELECT  
+		  
+				#{delivery_num} as delivery_num, #{delivery_menge} as delivery_menge, #{delivery_date} as delivery_date, 
+		  		#{item_code} as item_code, #{item_nm} as item_nm, 'N' as del_yn, 
+				#{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated
+		  ) s
+		  ON DUPLICATE KEY
+		UPDATE
+			delivery_num = s.delivery_num,
+			delivery_menge = s.delivery_menge + ifnull((select delivery_menge from delivery_tbl where del_yn = 'N' and delivery_num = #{delivery_num} and delivery_date = #{delivery_date} and item_code = #{item_code}),0) ,
+			delivery_date = s.delivery_date,
+								
+			item_code = s.item_code,
+			item_nm = s.item_nm,
+										
+			del_yn = s.del_yn,
+			
+			updater = s.updater,
+			date_updated = s.date_updated
+	</insert>
+	
+	<update id="deleteDelivery" parameterType="SYDeliveryVo">
+		UPDATE delivery_tbl SET del_yn='Y'
+		 WHERE delivery_num = #{delivery_num}
+		 AND item_code = #{item_code}
+		 AND delivery_date = #{delivery_date}
+	</update>
+	<!-- <delete id="deleteDelivery" parameterType="SYDeliveryVo">
+		DELETE FROM delivery_tbl
+		WHERE 1 = 1
+		<if test="delivery_num != null and !''.equals( delivery_num ) ">
+			AND delivery_num = #{delivery_num}
+		</if>
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND item_code = #{item_code}
+		</if>
+	
+
+	</delete> -->
+	
+	
+	<insert id="saveWarehouseOut" parameterType="SYWarehouseOutVo">
+			INSERT INTO warehouse_out_tbl
+			( 	
+				out_date_doc,
+				business_code, business_nm, 
+				out_type,
+				warehouse_code, warehouse_nm,
+				out_warehousing_status,
+				out_date, out_user, out_comment,
+				item_code, item_nm, item_spec, item_type_code, item_type_nm,
+
+				meins, warehousing_price, warehousing_qty, 
+
+				del_yn, 
+				creator, updater, date_created, date_updated 
+			) 
+				
+			VALUES
+			(
+			 	
+			 	fn_out_date_doc(),
+			 	#{business_code},
+			 	#{business_nm},
+			 	#{out_type},
+			 	
+			<!-- 	#{warehouse_code},
+				#{warehouse_nm}, -->
+				(
+				SELECT warehouse_code 
+				FROM warehouse_master_detail
+				WHERE del_yn = 'N'
+				AND item_type_code = 
+				(
+					SELECT item_type_code
+					FROM material_tbl
+					WHERE del_yn = 'N'
+					AND item_code = #{item_code}
+				)),
+				(
+				SELECT warehouse_nm 
+				FROM warehouse_master_detail
+				WHERE del_yn = 'N'
+				AND item_type_code = 
+				(
+					SELECT item_type_code
+					FROM material_tbl
+					WHERE del_yn = 'N'
+					AND item_code = #{item_code}
+				)),
+				#{out_warehousing_status},
+				date_format(#{out_date}, '%Y%m%d'),
+				#{out_user},
+				#{out_comment},
+				
+				#{item_code}, 
+				#{item_nm}, 
+				
+		<!-- 		#{item_spec}, 
+				#{item_type_code},
+				#{item_type_nm},
+				#{meins}, -->
+				(
+					SELECT item_spec
+					FROM material_tbl
+					WHERE item_code = #{item_code}
+				),
+				(
+					SELECT item_type_code
+					FROM material_tbl
+					WHERE item_code = #{item_code}
+				),
+				(
+					SELECT item_type_nm
+					FROM material_tbl
+					WHERE item_code = #{item_code}
+				),
+				(
+					SELECT meins
+					FROM material_tbl
+					WHERE item_code = #{item_code}
+				),
+				
+				#{warehousing_price},
+				#{warehousing_qty},
+				'N',
+			 	#{creator}, #{updater}, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
+			)
+	</insert>
+	
+	<update id="minusWarehouse" parameterType="SYWarehouseVo">
+		UPDATE warehouse_tbl 
+		SET 
+		    <if test="warehousing_qty != null and !''.equals( warehousing_qty ) ">
+				warehousing_qty = warehousing_qty - ${warehousing_qty},
+			</if>
+			updater = #{updater},	
+			date_updated = current_timestamp()
+
+		WHERE 1 = 1
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND item_code = #{item_code}
+		</if>
+		<if test="item_nm != null and !''.equals( item_nm ) ">
+			AND item_nm = #{item_nm}
+		</if>
+	</update>
+	
+	
+	<select id="selectDeliveryOrder" parameterType="SYDeliveryOrderVo" resultType="SYDeliveryOrderVo">
+		SELECT 
+			d.business_code, 
+			( 
+				SELECT code_nm
+				FROM sy_code_detail
+				WHERE detail_code = d.business_code
+				LIMIT 1			
+			) as business_nm,
+			d.delivery_num, d.delivery_order_menge, d.delivery_order_date,
+			d.order_num, d.item_code, d.item_nm, d.delivery_req_date,
+			d.customer_code, d.customer_nm, d.land,
+			d.unit_price, d.menge, d.total_price, d.success_status,
+			
+			( 
+				SELECT SUM( ifnull(warehousing_qty,0) ) 
+				FROM warehouse_tbl
+				WHERE 1 = 1
+				AND (business_code = 'MD1243' OR business_code = 'MD1282')
+				AND item_code = d.item_code
+				GROUP BY item_code		
+			) as stock_menge,
+
+			( 
+				SELECT SUM( ifnull(delivery_menge,0) ) 
+				FROM delivery_tbl
+				WHERE 1 = 1 
+				AND del_yn = 'N'
+				AND delivery_num = d.delivery_num	
+			) as delivery_menge,
+			
+			IFNULL((
+				SELECT member_nm 
+				FROM sy_member_master
+				WHERE member_id = d.creator
+			),'') as creator_nm,
+
+			creator, updater, date_created, date_updated
+		FROM delivery_order_tbl as d
+		
+		WHERE 1 = 1
+		AND del_yn = 'N'
+		<if test="order_num != null and !''.equals( order_num ) ">
+			AND d.order_num = #{order_num}
+		</if>
+		
+		<if test="delivery_order_date != null and !''.equals( delivery_order_date ) ">
+			AND date_format(d.delivery_order_date, '%Y-%m-%d') BETWEEN left(#{delivery_order_date}, 10) AND right(#{delivery_order_date}, 10)
+		</if>
+		
+		<if test="delivery_req_date != null and !''.equals( delivery_req_date ) ">
+			AND date_format(d.delivery_req_date, '%Y-%m-%d') BETWEEN left(#{delivery_req_date}, 10) AND right(#{delivery_req_date}, 10)
+		</if>
+		
+		<if test="customer_nm != null and !''.equals( customer_nm ) ">
+			AND d.customer_nm = #{customer_nm}
+		</if>
+		
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND d.item_code = #{item_code}
+		</if>
+		
+		<if test="item_nm != null and !''.equals( item_nm ) ">
+			AND d.item_nm = #{item_nm}
+		</if>
+		
+		<if test="success_status != null and !''.equals( success_status ) ">
+			AND d.success_status = #{success_status}
+		</if>
+		
+		<if test="delivery_num != null and !''.equals( delivery_num ) ">
+			AND d.delivery_num = #{delivery_num}
+		</if>
+		
+		ORDER BY d.order_num, d.delivery_order_date, d.item_code, d.date_created ASC
+	</select>
+	
+</mapper>

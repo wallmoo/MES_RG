@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xmlns:util="http://www.springframework.org/schema/util" 
+	xmlns:context="http://www.springframework.org/schema/context" 
+	xmlns:p="http://www.springframework.org/schema/p" 
+	xmlns:jdbc="http://www.springframework.org/schema/jdbc"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-3.2.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-3.2.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-3.2.xsd
+        http://www.springframework.org/schema/jdbc http://www.springframework.org/schema/jdbc/spring-jdbc-3.2.xsd">
+	 
+  <!-- // MySQL :   -->
+	<bean id="dataSource_set" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+		<qualifier value="setDataSource" />
+		<property name="driverClassName" value="${set.jdbc.driverClassName}" />
+		<property name="url" value="${set.jdbc.url}" />
+		<property name="username" value="${set.jdbc.username}" />
+		<property name="password" value="${set.jdbc.password}" />
+		<property name="initialSize" value="${set.jdbc.initialSize}" />
+		<property name="maxActive" value="${set.jdbc.maxActive}" />
+		<property name="validationQuery" value="SELECT 1 FROM DUAL" /> 
+		<property name="testOnBorrow" value="${set.jdbc.testOnBorrow}" /> 
+		<property name="defaultAutoCommit" value="${set.jdbc.defaultAutoCommit}" />
+	</bean>
+	
+</beans>

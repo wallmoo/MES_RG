@@ -1,0 +1,233 @@
+/*
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+*/
+/* 
+    Created on : Mar 16, 2015, 10:24:01 AM
+    Author     : tony
+*/
+
+.ui-jqgrid tr.jqgrow td { height: 30px;}
+.ui-jqgrid .ui-pg-input,.ui-jqgrid .ui-jqgrid-toppager .ui-pg-input { height:20px }
+.ui-state-hover
+{
+    border: .15em solid;
+	border-color: inherit;
+
+}
+.ui-jqdialog .ui-jqdialog-titlebar  {
+	height:29px;
+	border-color: inherit;
+}
+
+.ui-jqdialog-content input.FormElement {
+    padding: 0.25em;
+}
+
+.fm-button {
+    height:20px;
+}
+#nData, #pData { height:20px; width:18px; }
+
+.ui-jqgrid .ui-jqgrid-view,
+.ui-jqgrid .ui-paging-info,
+.ui-jqgrid .ui-pg-table,
+.ui-jqgrid .ui-pg-selbox {
+  font-size: 12px;
+}
+.ui-jqgrid .ui-jqgrid-title {
+  float: left;
+  margin: 8px;
+}
+.ui-jqgrid .ui-jqgrid-title-rtl {
+  float: right;
+  margin: 8px;
+}
+.ui-jqgrid-view > .ui-jqgrid-titlebar {
+  height: 40px;
+  line-height: 24px;
+  color: #FFF;
+  background: #307ecc;
+  padding: 0;
+  font-size: 15px;
+}
+.ui-jqgrid tr.jqgrow.ui-row-rtl td:last-child {
+  border-right: none;
+  border-left: 1px solid #E1E1E1;
+}
+.ui-jqgrid .ui-jqgrid-hdiv {
+  background-color: #eff3f8;
+  border: 1px solid #D3D3D3;
+  border-width: 1px 0 0 1px;
+  line-height: 14px;
+  font-weight: bold;
+  color: #777;
+  text-shadow: none;
+}
+.ui-jqgrid .ui-jqgrid-htable thead {
+  background-color: #eff3f8;
+}
+.ui-jqgrid .ui-jqgrid-htable th span.ui-jqgrid-resize {
+  height: 45px !important;
+}
+.ui-jqgrid .ui-jqgrid-htable th div {
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.ui-jqgrid-hdiv .ui-jqgrid-htable {
+  border-top: none;
+}
+.ui-jqgrid-hdiv .ui-jqgrid-htable {
+  border-top: 1px solid #E1E1E1;
+}
+.ui-jqgrid-titlebar {
+  position: relative;
+  top: 1px;
+  z-index: 1;
+}
+.ui-jqgrid tr.jqgrow,
+.ui-jqgrid tr.ui-row-ltr,
+.ui-jqgrid tr.ui-row-rtl {
+  border: none;
+}
+.ui-jqgrid tr.ui-row-ltr td,
+.ui-jqgrid tr.ui-row-rtl td {
+  border-bottom: 1px solid #E1E1E1;
+  padding: 2px 2px;
+  border-color: #E1E1E1;
+}
+.ui-jqgrid tr.ui-state-highlight.ui-row-ltr td {
+  border-right-color: #C7D3A9;
+}
+.ui-jqgrid tr.ui-state-highlight.ui-row-rtl td {
+  border-left-color: #C7D3A9;
+}
+.ui-jqgrid-btable .ui-widget-content.ui-priority-secondary {
+  background-image: none;
+  background-color: #F9F9F9;
+  opacity: 1;
+}
+.ui-jqgrid-btable .ui-widget-content.ui-state-hover {
+  background-image: none;
+  background-color: #EFF4F7;
+  opacity: 1;
+}
+.ui-jqgrid-btable .ui-widget-content.ui-state-highlight {
+  background: #ffe45c url("/res/plugins/jQueryUI/images/ui-bg_highlight-soft_75_ffe45c_1x100.png") 50% top repeat-x;
+}
+.ui-jqgrid .ui-jqgrid-pager {
+  line-height: 15px;
+  height: 55px;
+  padding-top: 3px !important;
+  padding-bottom: 5px !important;
+  background-color: #eff3f8 !important;
+  border-bottom: 1px solid #E1E1E1 !important;
+  border-top: 1px solid #E1E1E1 !important;
+}
+.ui-jqgrid .ui-pg-input {
+  font-size: inherit;
+  width: 24px;
+  height: 20px;
+  line-height: 16px;
+  -webkit-box-sizing: content-box;
+  -moz-box-sizing: content-box;
+  box-sizing: content-box;
+  text-align: center;
+  padding-top: 1px;
+  padding-bottom: 1px;
+}
+.ui-jqgrid .ui-pg-selbox {
+  display: block;
+  height: 24px;
+  width: 60px;
+  margin: 0;
+  padding: 1px;
+  line-height: normal;
+}
+.ui-jqgrid .ui-jqgrid-htable th div {
+  overflow: visible;
+}
+.ui-jqgrid .ui-pager-control {
+  height: 50px;
+  position: relative;
+  padding-left: 9px;
+  padding-right: 9px;
+}
+.ui-jqgrid .ui-jqgrid-toppager {
+  height: auto !important;
+  background-color: #eff3f8;
+  border-bottom: 1px solid #E1E1E1 !important;
+}
+.ui-jqgrid .jqgrow .editable {
+	max-width: 98%;
+  max-width: calc(97%) !important;
+/* iris */
+    height: 25px;
+    font-size: 13px;
+}
+.ui-pg-table .navtable .ui-corner-all {
+  border-radius: 0;
+}
+.ui-jqgrid .ui-pg-button:hover {
+  padding: 1px;
+}
+.ui-jqgrid .ui-pg-button .ui-separator {
+  margin-left: 4px;
+  margin-right: 4px;
+  border-color: #C9D4DB;
+}
+.ui-jqgrid .ui-jqgrid-btable {
+  border-left: 1px solid #E1E1E1;
+}
+.ui-jqgrid .ui-jqgrid-bdiv {
+  border-top: 1px solid #E1E1E1;
+}
+.ui-jqgrid .loading {
+  position: absolute;
+  top: 45%;
+  left: 45%;
+  width: auto;
+  height: auto;
+  z-index: 101;
+  padding: 6px;
+  margin: 5px;
+  text-align: center;
+  font-weight: bold;
+  font-size: 12px;
+  background-color: #FFF;
+  border: 2px solid #8EB8D1;
+  color: #E2B018;
+}
+.ui-jqgrid .ui-search-toolbar {
+  border-top: 1px solid #E1E1E1;
+}
+.ui-jqgrid .ui-jqgrid-labels {
+  border-bottom: none;
+  background: #F2F2F2;
+  background-image: -webkit-linear-gradient(top, #f8f8f8 0%, #ececec 100%);
+  background-image: -o-linear-gradient(top, #f8f8f8 0%, #ececec 100%);
+  background-image: linear-gradient(to bottom, #f8f8f8 0%, #ececec 100%);
+  background-repeat: repeat-x;
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr='#fff8f8f8', endColorstr='#ffececec', GradientType=0);
+  padding: 0 !important;
+  border-left: 1px solid #E1E1E1 !important;
+}
+.ui-jqgrid .ui-jqgrid-labels th {
+  border-right: 1px solid #E1E1E1 !important;
+  text-align: left !important;
+}
+/* checkbox container */
+.ui-jqgrid-labels th[id*="_cb"]:first-child > div {
+  padding-top: 0;
+  text-align: center !important;
+}
+.ui-jqgrid-sortable {
+  padding-left: 4px;
+  font-size: 12px;
+  color: #777;
+  font-weight: bold;
+}
+.ui-jqgrid-sortable:hover {
+  color: #547ea8;
+}
