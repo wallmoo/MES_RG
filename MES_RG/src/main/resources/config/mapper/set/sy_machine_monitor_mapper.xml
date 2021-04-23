@@ -1,0 +1,213 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.passcombine.set.dao.SYMachineMonitorDAO">
+	
+	
+	<select id="selectWaiting" parameterType="SYMachineMonitorVO" resultType="SYMachineMonitorVO">
+		SELECT 
+		m.machine_code,m.machine_nm,
+		vm.item_code, vm.item_nm, vm.product_po, vm.routing_code, vm.status,
+
+		CASE 
+		WHEN (vm.current_status = 'wait')
+		THEN 'WAIT'
+		WHEN (vm.current_status != 'wait')
+		THEN 'ING'
+		END AS current_status,
+	
+		vm.process_time , vm.un_process_time , 		
+		(process_time - un_process_time - lunch_minus) AS prod_time,
+		
+<!-- 		SEC_TO_TIME(vm.process_time) AS process_time_f,						
+		SEC_TO_TIME(process_time - un_process_time - lunch_minus) AS prod_time_f, -->
+		concat(ROUND(((process_time)/3600),1),'시간') AS process_time_f,						
+		concat(ROUND(((process_time - un_process_time - lunch_minus)/3600),1),'시간') AS prod_time_f,
+		today_start , today_end,
+		all_time,
+<!-- 		SEC_TO_TIME(all_time) AS all_time_f, -->
+		concat(ROUND(((all_time)/3600),1),'시간') AS all_time_f,	
+		(
+			SELECT prod_menge
+			FROM view_machine_menge
+			WHERE machine_code = vm.machine_code
+		) AS prod_menge,
+		(
+			SELECT prod_fail_menge
+			FROM view_machine_menge
+			WHERE machine_code = vm.machine_code
+		) AS prod_fail_menge
+		
+		FROM machine_master AS m
+		LEFT JOIN
+		(
+			SELECT 
+			
+			machine_code, machine_nm, item_code, item_nm, product_po, routing_code, STATUS, 
+			
+			ifnull((
+				SELECT STATUS 
+				FROM
+				product_operation_tbl 
+				WHERE del_yn = 'N'
+				AND machine_code = vmm.machine_code
+				AND STATUS IN ('i','us','ue')
+				AND (date_format(prod_end_time, '%Y-%m-%d') = date_format(NOW(),'%Y-%m-%d')
+				OR prod_end_time IS NULL)
+				ORDER BY prod_str_time DESC
+				LIMIT 1
+			),'wait') AS current_status,
+			
+			prod_str_time, prod_end_time,
+			prod_str_time_c, prod_end_time_c, SUM(process_time) AS process_time,
+			today_start , today_end,
+			TIME_TO_SEC(timediff(date_format(today_end,'%Y-%m-%d %H:%i:%s'), date_format(today_start,'%Y-%m-%d %H:%i:%s'))) AS all_time,
+			IFNULL(
+			(
+				SELECT SUM(process_time)  FROM view_machine_un
+				WHERE 1 = 1
+			<!-- 	AND product_po = vmm.product_po -->
+				AND machine_code = vmm.machine_code
+				AND machine_code IS NOT NULL
+				AND (date_format(unprod_end_time_c, '%Y-%m-%d') = date_format(NOW(),'%Y-%m-%d')
+				OR unprod_end_time_c IS NULL)
+
+			),0) AS un_process_time,
+			lunch_minus
+		
+			FROM 
+			view_machine_monitoring AS vmm
+			WHERE 1 = 1 
+
+	
+
+			AND date_format(prod_str_time_c, '%Y-%m-%d') = date_format(NOW(),'%Y-%m-%d')
+			GROUP BY machine_code
+		) AS vm
+		ON vm.machine_code = m.machine_code
+		
+		WHERE 1 = 1
+
+		AND (current_status IS NULL
+		OR current_status = 'wait')
+			
+	</select>
+	
+	
+	<select id="selectOperation" parameterType="SYMachineMonitorVO" resultType="SYMachineMonitorVO">
+		SELECT 
+		m.machine_code,m.machine_nm,
+		vm.item_code, vm.item_nm, vm.product_po, vm.routing_code, vm.status,
+
+		CASE 
+		WHEN (vm.current_status = 'wait')
+		THEN 'WAIT'
+		WHEN (vm.current_status != 'wait')
+		THEN 'ING'
+		END AS current_status,
+	
+		vm.process_time , vm.un_process_time , 		
+		(process_time - un_process_time - lunch_minus) AS prod_time,
+
+		concat(ROUND(((process_time)/3600),1),'시간') AS process_time_f,						
+		concat(ROUND(((process_time - un_process_time - lunch_minus)/3600),1),'시간') AS prod_time_f,
+		today_start , today_end,
+		all_time,
+		concat(ROUND(((all_time)/3600),1),'시간') AS all_time_f,	
+		(
+			SELECT prod_menge
+			FROM view_machine_menge
+			WHERE machine_code = vm.machine_code
+		) AS prod_menge,
+		(
+			SELECT prod_fail_menge
+			FROM view_machine_menge
+			WHERE machine_code = vm.machine_code
+		) AS prod_fail_menge
+			
+		FROM machine_master AS m
+		LEFT JOIN
+		(
+			SELECT 
+			
+			machine_code, machine_nm, item_code, item_nm, product_po, routing_code, STATUS, 
+			
+			ifnull((
+				SELECT STATUS 
+				FROM
+				product_operation_tbl 
+				WHERE del_yn = 'N' 
+				AND machine_code = vmm.machine_code
+				AND STATUS IN ('i','us','ue')
+				AND (date_format(prod_end_time, '%Y-%m-%d') = date_format(NOW(),'%Y-%m-%d')
+				OR prod_end_time IS NULL)
+				ORDER BY prod_str_time DESC
+				LIMIT 1
+			),'wait') AS current_status,
+			
+			prod_str_time, prod_end_time,
+			prod_str_time_c, prod_end_time_c, SUM(process_time) AS process_time,
+			today_start , today_end,
+			TIME_TO_SEC(timediff(date_format(today_end,'%Y-%m-%d %H:%i:%s'), date_format(today_start,'%Y-%m-%d %H:%i:%s'))) AS all_time,
+			IFNULL(
+			(
+				SELECT SUM(process_time)  FROM view_machine_un
+				WHERE 1 = 1
+			<!-- 	AND product_po = vmm.product_po -->
+				AND machine_code = vmm.machine_code
+				AND machine_code IS NOT NULL
+				AND (date_format(unprod_end_time_c, '%Y-%m-%d') = date_format(NOW(),'%Y-%m-%d')
+				OR unprod_end_time_c IS NULL)
+			),0) AS un_process_time,
+			lunch_minus
+			
+			FROM 
+			view_machine_monitoring AS vmm
+			WHERE 1 = 1 
+
+	
+
+			AND date_format(prod_str_time_c, '%Y-%m-%d') = date_format(NOW(),'%Y-%m-%d')
+			GROUP BY machine_code
+		) AS vm
+		ON vm.machine_code = m.machine_code
+		
+		WHERE 1 = 1
+		
+		AND  current_status != 'wait'
+
+			
+	</select>
+	
+	
+	<select id="selectInfo" parameterType="SYMachineMonitorInfoVO" resultType="SYMachineMonitorInfoVO">
+	
+		SELECT 
+		
+		machine_code, machine_nm,
+		item_code, item_nm,
+		member_nm,
+		product_po,
+		today_start,
+		today_end,
+		prod_str_time_c,
+		prod_end_time_c,
+		prod_str_time,
+		prod_end_time,
+		prod_menge,
+		prod_fail_menge,
+		CONCAT(un_process_time_f,'') as un_process_time_f
+		
+		FROM view_machine_monitoring_info
+		WHERE date_format(prod_str_time_c,'%Y-%m-%d') = DATE_FORMAT(NOW(),'%Y-%m-%d') 
+		
+		AND machine_code = #{machine_code}
+		
+		ORDER BY prod_end_time_c desc
+	
+	
+	
+	</select>
+	
+</mapper>

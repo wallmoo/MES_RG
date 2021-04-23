@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.passcombine.set.dao.SYDeliveryOrderDAO">
+
+
+	<select id="selectDeliveryNum" resultType="String">
+		
+		SELECT fn_delivery_num()
+	
+	</select>
+	<select id="selectDeliveryOrder" parameterType="SYDeliveryOrderVo" resultType="SYDeliveryOrderVo">
+		SELECT 
+			d.business_code, d.delivery_num, d.delivery_order_menge, d.delivery_order_date,
+			d.order_num, d.item_code, d.item_nm, 
+			(
+				SELECT location
+				FROM material_tbl
+				WHERE del_yn = 'N'
+				AND item_code = d.item_code
+			) as location,
+			(
+				SELECT request_num
+				FROM order_manager_tbl
+				WHERE 1 = 1
+				AND order_num = d.order_num
+				AND item_code = d.item_code
+			) as request_num,
+			d.delivery_req_date,
+			d.customer_code, d.customer_nm, d.land,
+			d.unit_price, d.menge, d.total_price, d.success_status,
+			
+			( 
+				SELECT SUM( ifnull(warehousing_qty,0) ) 
+				FROM warehouse_tbl
+				WHERE 1 = 1
+				AND (business_code = 'MD1243' OR business_code = 'MD1282')
+				AND item_code = d.item_code
+				GROUP BY item_code		
+			) as stock_menge,
+
+			( 
+				SELECT SUM( ifnull(delivery_menge,0) ) 
+				FROM delivery_tbl
+				WHERE 1 = 1 
+				AND del_yn = 'N'
+				AND delivery_num = d.delivery_num	
+			) as delivery_menge,
+			( 
+				SELECT DATE_FORMAT(delivery_date, '%Y-%m-%d')
+				FROM delivery_tbl
+				WHERE 1 = 1 
+				AND del_yn = 'N'
+				AND delivery_num = d.delivery_num	
+				AND item_code = d.item_code
+				
+				ORDER BY delivery_date desc
+				LIMIT 1
+			) as delivery_date,
+			(
+				SELECT location
+				FROM material_tbl
+				WHERE del_yn = 'N'
+				AND item_code = d.item_code
+				LIMIT 1				
+			) as location,
+			
+			IFNULL((
+				SELECT member_nm 
+				FROM sy_member_master
+				WHERE member_id = d.creator
+			),'') as creator_nm,
+			
+			creator, updater, date_created, date_updated
+		FROM delivery_order_tbl as d
+		
+		WHERE 1 = 1
+		AND del_yn = 'N'
+		
+		<if test="request_num != null and !''.equals( request_num ) ">
+			AND ( 
+			    SELECT request_num
+				FROM order_manager_tbl
+				WHERE 1 = 1
+				AND item_code = d.item_code
+				AND order_num = d.order_num
+	
+				) = #{request_num}
+		</if>
+		
+		<if test="order_num != null and !''.equals( order_num ) ">
+			AND d.order_num = #{order_num}
+		</if>
+		<if test="delivery_order_date != null and !''.equals( delivery_order_date ) ">
+			AND date_format(d.delivery_order_date, '%Y-%m-%d') BETWEEN left(#{delivery_order_date}, 10) AND right(#{delivery_order_date}, 10)
+		</if>
+		
+		<if test="delivery_req_date != null and !''.equals( delivery_req_date ) ">
+			AND date_format(d.delivery_req_date, '%Y-%m-%d') BETWEEN left(#{delivery_req_date}, 10) AND right(#{delivery_req_date}, 10)
+		</if>
+		
+		<if test="customer_nm != null and !''.equals( customer_nm ) ">
+			AND d.customer_nm = #{customer_nm}
+		</if>
+		
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND d.item_code = #{item_code}
+		</if>
+		
+		<if test="item_nm != null and !''.equals( item_nm ) ">
+			AND d.item_nm = #{item_nm}
+		</if>
+		
+		<if test="success_status != null and !''.equals( success_status ) ">
+			AND d.success_status = #{success_status}
+		</if>
+		ORDER BY d.order_num, d.delivery_order_date, d.item_code, d.date_created ASC
+	</select>
+	<update id="updateDeliveryDelete" parameterType="SYDeliveryOrderVo">
+		UPDATE delivery_order_tbl
+			SET
+			del_yn = #{del_yn}
+			
+			WHERE 
+			order_num = #{order_num}, 
+<!-- 			delivery_date = #{delivery_date}, -->
+			item_code = #{item_code},
+			request_num = #{request_num}
+			
+	</update>
+	<insert id="saveDeliveryOrder" parameterType="SYDeliveryOrderVo">
+ 		INSERT INTO delivery_order_tbl (
+ 			delivery_num, delivery_order_menge, delivery_order_date,
+			order_num, item_code, item_nm, delivery_req_date,
+			customer_code, customer_nm, land,
+			unit_price, menge, total_price, success_status,
+		 	creator, updater, date_created, date_updated)
+		SELECT *
+		  FROM (
+		  		SELECT  
+		 		<choose>
+	
+					<when test="delivery_num != null and !''.equals( delivery_num )">			
+						#{delivery_num} as delivery_num,
+					</when>
+					
+					<otherwise>			
+						fn_delivery_num() as delivery_num,				
+					</otherwise>
+				
+				</choose>
+				<!-- fn_delivery_num() as delivery_num,  -->
+				#{delivery_order_menge} as delivery_order_menge, #{delivery_order_date} as delivery_order_date, 
+		  		#{order_num} as order_num, #{item_code} as item_code, #{item_nm} as item_nm, #{delivery_req_date} as delivery_req_date, 
+		  		#{customer_code} as customer_code, #{customer_nm} as customer_nm, #{land} as land,
+				#{unit_price} as unit_price, #{menge} as menge, #{total_price} as total_price, 
+				<choose>
+	
+					<when test="success_status != null and !''.equals( success_status )">			
+						#{success_status} as success_status,
+					</when>
+					
+					<otherwise>			
+						'N' as success_status,				
+					</otherwise>
+				
+				</choose>
+				#{creator} as creator, #{updater} as updater, current_timestamp() as date_created, current_timestamp() as date_updated
+		  ) s
+		  ON DUPLICATE KEY
+		UPDATE
+			delivery_num = s.delivery_num,
+			delivery_order_menge = s.delivery_order_menge,
+			delivery_order_date = s.delivery_order_date,
+					
+			order_num = s.order_num,				
+			item_code = s.item_code,
+			item_nm = s.item_nm,
+										
+			delivery_req_date = s.delivery_req_date,
+			customer_code = s.customer_code,
+			customer_nm = s.customer_nm,
+			land = s.land,
+			
+			unit_price = s.unit_price,
+			menge = s.menge,
+			total_price = s.total_price,
+			success_status = s.success_status,
+					
+			updater = s.updater,
+			date_updated = s.date_updated
+	</insert>
+	
+	<update id="updateSuccessStatus" parameterType="SYDeliveryOrderVo">
+		UPDATE delivery_order_tbl 
+		
+			SET 
+			<if test="success_status != null and !''.equals( success_status ) ">
+				success_status =  #{success_status},
+			</if>
+			<if test="delivery_order_menge != null and !''.equals( delivery_order_menge ) ">
+				delivery_order_menge =  #{delivery_order_menge}
+			</if>
+		 WHERE delivery_num = #{delivery_num}
+	</update>
+
+	<delete id="deleteDeliveryOrder" parameterType="SYDeliveryOrderVo">
+		DELETE FROM delivery_order_tbl
+		WHERE 1 = 1
+		<if test="delivery_num != null and !''.equals( delivery_num ) ">
+			AND delivery_num = #{delivery_num}
+		</if>
+		<if test="item_code != null and !''.equals( item_code ) ">
+			AND item_code = #{item_code}
+		</if>
+	
+
+	</delete>
+	
+ 	<update id="delDeliveryOrder" parameterType="SYDeliveryOrderVo">
+		UPDATE delivery_order_tbl 
+		
+		SET del_yn = 'Y'
+			
+		WHERE delivery_num = #{delivery_num}
+	</update> 
+	
+	
+</mapper>
