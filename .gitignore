@@ -103,4 +103,8 @@ out/
 /.nb-gradle/
 
 ### VS Code ###
+<<<<<<< HEAD
 .vscode/
+=======
+.vscode/
+>>>>>>> bf7810ba2c6aadda7ca8f720682c09628bf9fc29
