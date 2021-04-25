@@ -55,6 +55,7 @@ import kr.co.passcombine.set.vo.SYProductUnOperationVO;
 import kr.co.passcombine.set.vo.SYQualityVo;
 import kr.co.passcombine.set.vo.SYRepairVo;
 import kr.co.passcombine.set.vo.SYRoutingMasterVo;
+import kr.co.passcombine.set.vo.SYVendorVo;
 import kr.co.passcombine.set.vo.SYWarehouseOutVo;
 import kr.co.passcombine.set.vo.SYWarehouseVo;
 import kr.co.passcombine.set.vo.SYWarehouse_MasterHVo;
@@ -309,6 +310,117 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
+	
+	// selectAccount
+	@ResponseBody
+	@RequestMapping(value = "/account/selectVendor", method = {
+			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String selectVendor(@ModelAttribute SYVendorVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.selectVendor is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"), "UTF-8" );
+
+			List<SYVendorVo> dataList = sYInfoService.selectVendor(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+			
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}	
+	// saveVendor
+	@ResponseBody
+	@RequestMapping(value = "/account/saveVendor", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String saveVendor(@ModelAttribute SYVendorVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.saveAccount is called.");
+
+		vo.setVDR_REG_ID(SessionUtil.getMemberId(request));
+		vo.setVDR_REG_DT(SessionUtil.getMemberId(request));
+
+		JSONObject resultData = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
+		JSONParser parser = new JSONParser();
+
+		try {
+			String VDR_IDX = "";
+			int cnt = 0;
+
+			String flag = request.getParameter("flag");
+
+			if (flag.equals("I")) {
+				//account_code = sYInfoService.accountCdGen();
+
+				// hKey
+				//vo.setAccount_code(account_code);
+				
+				cnt = sYInfoService.insertVendor(vo);
+			} else if (flag.equals("U")) {//Modify
+				VDR_IDX = request.getParameter("VDR_IDX");
+
+				// hKey
+				vo.setVDR_IDX( Integer.parseInt(VDR_IDX) );
+				
+				cnt = sYInfoService.updateVendor(vo);
+			}
+
+			System.out.println("VDR_IDX = " + VDR_IDX);
+
+			System.out.println("cnt = " + cnt);
+
+			resultData.put("status", HttpStatus.OK.value());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+
+		return resultData.toJSONString();
+	}
+	// deleteVendor
+	@ResponseBody
+	@RequestMapping(value = "/account/deleteVendor", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String deleteVendor(@ModelAttribute SYVendorVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.deleteAccount() is called.");
+
+		JSONObject resultData = new JSONObject();
+		try {
+			int result = 0;
+
+			result = sYInfoService.deleteVendor(vo);
+
+			System.out.println("result = " + result);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", 0);
+		}
+		return resultData.toJSONString();
+	}
+	
 	
 	// selectAccount
 	@ResponseBody

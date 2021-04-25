@@ -22,6 +22,7 @@ import kr.co.passcombine.set.vo.SYProductUnOperationVO;
 import kr.co.passcombine.set.vo.SYQualityVo;
 import kr.co.passcombine.set.vo.SYRepairVo;
 import kr.co.passcombine.set.vo.SYRoutingMasterVo;
+import kr.co.passcombine.set.vo.SYVendorVo;
 import kr.co.passcombine.set.vo.SYWarehouseVo;
 import kr.co.passcombine.set.vo.SYtool_repmt_hisVo;
 import kr.co.passcombine.set.vo.SYHoldVo;
@@ -37,6 +38,13 @@ public interface SYInfoDAO {
 	public int insertCustomer(SYCustomerVo vo);
 	public int updateCustomer(SYCustomerVo vo);
 	public int deleteCustomer(SYCustomerVo vo);
+	
+	//////////
+	public List<SYVendorVo> selectVendor(SYVendorVo vo);
+	public int insertVendor(SYVendorVo vo);
+	public int updateVendor(SYVendorVo vo);
+	public int deleteVendor(SYVendorVo vo);
+	
 	
 	public int checkAccount(SYAccountVo vo);
 	public List<SYAccountVo> selectAccount(SYAccountVo vo);

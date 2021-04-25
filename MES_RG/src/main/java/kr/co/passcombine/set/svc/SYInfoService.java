@@ -74,6 +74,7 @@ import kr.co.passcombine.set.vo.SYPurchaseOrderDetailVo;
 import kr.co.passcombine.set.vo.SYQualityVo;
 import kr.co.passcombine.set.vo.SYRepairVo;
 import kr.co.passcombine.set.vo.SYRoutingMasterVo;
+import kr.co.passcombine.set.vo.SYVendorVo;
 import kr.co.passcombine.set.vo.SYWarehouseVo;
 import kr.co.passcombine.set.vo.SYtool_repmt_hisVo;
 
@@ -91,8 +92,7 @@ public class SYInfoService {
 	
 	@Resource(name = "setInfoDAO")
 	private SYInfoDAO infoDAO;
-	
-
+		
 	@Resource(name = "setPurchaseOrderDAO")
 	private SYPurchaseOrderDAO poDAO;
 	
@@ -125,12 +125,27 @@ public class SYInfoService {
 		return infoDAO.deleteCustomer(vo);
 	}
 
+	
+	public List<SYVendorVo> selectVendor(SYVendorVo cVo){
+		return infoDAO.selectVendor(cVo);
+	}	
+	public int insertVendor(SYVendorVo vo) {
+		return infoDAO.insertVendor(vo);
+	}	
+	public int updateVendor(SYVendorVo vo) {
+		return infoDAO.updateVendor(vo);
+	}
+	public int deleteVendor(SYVendorVo vo) {
+		return infoDAO.deleteVendor(vo);
+	}	
+	
 	// Account
 	public int checkAccount(SYAccountVo vo) {
 		return infoDAO.checkAccount(vo);
 	}
 	
 	@Transactional
+	//////////
 	public List<SYAccountVo> selectAccount(SYAccountVo cVo){
 		return infoDAO.selectAccount(cVo);
 	}

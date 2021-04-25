@@ -367,6 +367,58 @@
 		WHERE account_code = #{account_code}
 	</select>
 
+
+	<select id="selectVendor" parameterType="SYVendorVo" resultType="SYVendorVo">
+		SELECT 
+		VDR_IDX, VDR_NM, VDR_CEO_NM, VDR_PLC, VDR_NO, VDR_ADD, VDR_TEL, VDR_FAX, 
+		VDR_ML1, VDR_ML2, VDR_ML3, VDR_HP, VDR_STATE, VDR_REG_DT, VDR_REG_ID 
+		FROM T_VDR_MST  
+		
+		where VDR_DEL_YN = 'N'
+<!-- 
+		<if test="VDR_IDX!=null and !''.equals(VDR_IDX) ">
+			AND VDR_IDX = #{VDR_IDX}
+		</if>
+ -->		
+		<if test="VDR_NM!=null and !''.equals(VDR_NM) ">
+			AND VDR_NM LIKE CONCAT('%', #{VDR_NM}, '%')
+		</if>	   
+		ORDER BY VDR_IDX DESC
+	</select>
+
+	<insert id="insertVendor" parameterType="SYVendorVo">
+		INSERT INTO T_VDR_MST
+		( VDR_NM, VDR_CEO_NM, VDR_NO, VDR_ADD, VDR_TEL, VDR_FAX, VDR_ML1, VDR_ML2, VDR_ML3, VDR_HP, VDR_REG_ID )
+		VALUES
+		(
+		#{VDR_NM}, #{VDR_CEO_NM}, #{VDR_NO},#{VDR_ADD}, #{VDR_TEL}, #{VDR_FAX}, #{VDR_ML1}, #{VDR_ML2}, #{VDR_ML3}, #{VDR_HP}, #{VDR_REG_ID}
+		)
+	</insert>
+	<update id="updateVendor" parameterType="SYVendorVo">
+		UPDATE T_VDR_MST SET
+		VDR_NM = #{VDR_NM},
+		VDR_CEO_NM = #{VDR_CEO_NM},
+		VDR_PLC = #{VDR_PLC},
+		VDR_NO = #{VDR_NO},
+		VDR_ADD = #{VDR_ADD},
+		VDR_TEL = #{VDR_TEL},
+		VDR_FAX = #{VDR_FAX},
+		VDR_ML1 = #{VDR_ML1},
+		VDR_ML2 = #{VDR_ML2},
+		VDR_ML3 = #{VDR_ML3},
+		VDR_HP = #{VDR_HP}
+		WHERE VDR_IDX = #{VDR_IDX}
+	</update>
+
+	<update id="deleteVendor" parameterType="SYVendorVo">
+		UPDATE T_VDR_MST SET
+		VDR_DEL_YN='Y'
+		WHERE VDR_IDX = #{VDR_IDX}
+	</update>
+	
+		
+	
+
 	<select id="selectAccount" parameterType="SYAccountVo"
 		resultType="SYAccountVo">
 		SELECT
