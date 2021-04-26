@@ -2,7 +2,7 @@ package kr.co.passcombine.set.vo;
 
 import java.io.Serializable;
 
-public class SYVendorVo implements Serializable{
+public class SYTVendorVo implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 

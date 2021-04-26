@@ -43,8 +43,9 @@ import kr.co.passcombine.set.dao.SYProductDAO;
 import kr.co.passcombine.set.dao.SYPurchaseOrderDAO;
 import kr.co.passcombine.set.vo.SYAccountVo;
 import kr.co.passcombine.set.vo.SYBomVo;
-import kr.co.passcombine.set.vo.SYBranchVo;
-import kr.co.passcombine.set.vo.SYClientVo;
+import kr.co.passcombine.set.vo.SYTBranchVo;
+import kr.co.passcombine.set.vo.SYTClientVo;
+import kr.co.passcombine.set.vo.SYTMaterialVo;
 //import kr.co.passcombine.changwon.vo.SYLineVo;
 //import kr.co.passcombine.changwon.vo.SYProdVo;
 //import kr.co.passcombine.changwon.vo.SYScmRawSernrVo;
@@ -76,7 +77,7 @@ import kr.co.passcombine.set.vo.SYPurchaseOrderDetailVo;
 import kr.co.passcombine.set.vo.SYQualityVo;
 import kr.co.passcombine.set.vo.SYRepairVo;
 import kr.co.passcombine.set.vo.SYRoutingMasterVo;
-import kr.co.passcombine.set.vo.SYVendorVo;
+import kr.co.passcombine.set.vo.SYTVendorVo;
 import kr.co.passcombine.set.vo.SYWarehouseVo;
 import kr.co.passcombine.set.vo.SYtool_repmt_hisVo;
 
@@ -129,58 +130,105 @@ public class SYInfoService {
 	
 	
 	// Client Start
-	public int checkClient(SYClientVo vo) {
+	public int checkClient(SYTClientVo vo) {
 		return infoDAO.checkClient(vo);
 	}		
-	public List<SYClientVo> selectClient(SYClientVo cVo){
+	public List<SYTClientVo> selectClient(SYTClientVo cVo){
 		return infoDAO.selectClient(cVo);
 	}	
-	public int insertClient(SYClientVo vo) {
+	public int insertClient(SYTClientVo vo) {
 		return infoDAO.insertClient(vo);
 	}	
-	public int updateClient(SYClientVo vo) {
+	public int updateClient(SYTClientVo vo) {
 		return infoDAO.updateClient(vo);
 	}
-	public int deleteClient(SYClientVo vo) {
+	public int deleteClient(SYTClientVo vo) {
 		return infoDAO.deleteClient(vo);
 	}	
 	// Client End
 	
 	// Vendor Start
-	public int checkVendor(SYVendorVo vo) {
+	public int checkVendor(SYTVendorVo vo) {
 		return infoDAO.checkVendor(vo);
 	}	
-	public List<SYVendorVo> selectVendor(SYVendorVo cVo){
+	public List<SYTVendorVo> selectVendor(SYTVendorVo cVo){
 		return infoDAO.selectVendor(cVo);
 	}	
-	public int insertVendor(SYVendorVo vo) {
+	public int insertVendor(SYTVendorVo vo) {
 		return infoDAO.insertVendor(vo);
 	}	
-	public int updateVendor(SYVendorVo vo) {
+	public int updateVendor(SYTVendorVo vo) {
 		return infoDAO.updateVendor(vo);
 	}
-	public int deleteVendor(SYVendorVo vo) {
+	public int deleteVendor(SYTVendorVo vo) {
 		return infoDAO.deleteVendor(vo);
 	}	
 	// Vendor End
 	
 	// Branch Start
-	public int checkBranch(SYBranchVo vo) {
+	public int checkBranch(SYTBranchVo vo) {
 		return infoDAO.checkBranch(vo);
 	}		
-	public List<SYBranchVo> selectBranch(SYBranchVo cVo){
+	public List<SYTBranchVo> selectBranch(SYTBranchVo cVo){
 		return infoDAO.selectBranch(cVo);
 	}	
-	public int insertBranch(SYBranchVo vo) {
+	public int insertBranch(SYTBranchVo vo) {
 		return infoDAO.insertBranch(vo);
 	}	
-	public int updateBranch(SYBranchVo vo) {
+	public int updateBranch(SYTBranchVo vo) {
 		return infoDAO.updateBranch(vo);
 	}
-	public int deleteBranch(SYBranchVo vo) {
+	public int deleteBranch(SYTBranchVo vo) {
 		return infoDAO.deleteBranch(vo);
 	}	
 	// Branch End	
+	
+	// Material Start
+	public int checkMaterial(SYTMaterialVo vo) {
+		return infoDAO.checkMaterial(vo);
+	}	
+	public List<SYTMaterialVo> selectMaterial(SYTMaterialVo vo) {
+		return infoDAO.selectMaterial(vo);
+	}	
+	public int insertMaterial(SYTMaterialVo vo) {
+		return infoDAO.insertMaterial(vo);
+	}
+	public int updateMaterial(SYTMaterialVo vo) {
+		return infoDAO.updateMaterial(vo);
+	}
+	public int deleteMaterial(SYTMaterialVo vo) {
+		return infoDAO.deleteMaterial(vo);
+	}	
+	public List<SYTMaterialVo> excelLoad(SYTMaterialVo vo) {
+		return infoDAO.excelLoad(vo);
+	}
+	public Integer excelMax(SYTMaterialVo vo) {
+		return infoDAO.excelMax(vo);
+	}
+	
+	
+	public List<SYMaterialVo> selectMaterial2(SYMaterialVo vo) {
+		return infoDAO.selectMaterial2(vo);
+	}	
+	public List<SYMaterialVo> selectMaterial3(SYMaterialVo vo) {
+		return infoDAO.selectMaterial3(vo);
+	}
+	public int updateMaterial2(SYMaterialVo vo) {
+		return infoDAO.updateMaterial2(vo);
+	}	
+	public List<SYMaterialVo> selectMaterial_menge(SYMaterialVo vo) {
+		return infoDAO.selectMaterial_menge(vo);
+	}
+	public List<SYMaterialVo> selectItemCode(SYMaterialVo vo) {
+		return infoDAO.selectItemCode(vo);
+	}
+	public List<SYMaterialVo> selectItemCode2(SYMaterialVo vo) {
+		return infoDAO.selectItemCode2(vo);
+	}
+	public List<SYMaterialVo> selectItemCode3(SYMaterialVo vo) {
+		return infoDAO.selectItemCode3(vo);
+	}	
+	// Material End
 	
 	// Account
 	public int checkAccount(SYAccountVo vo) {
@@ -205,29 +253,7 @@ public class SYInfoService {
 		return infoDAO.deleteAccount(vo);
 	}
 
-	// Material
-	public int checkMaterial(SYMaterialVo vo) {
-		return infoDAO.checkMaterial(vo);
-	}
-	public List<SYMaterialVo> selectMaterial(SYMaterialVo vo) {
-		return infoDAO.selectMaterial(vo);
-	}
-	public List<SYMaterialVo> selectMaterial2(SYMaterialVo vo) {
-		return infoDAO.selectMaterial2(vo);
-	}
-	
-	public List<SYMaterialVo> excelLoad(SYMaterialVo vo) {
-		return infoDAO.excelLoad(vo);
-	}
-	
-	public Integer excelMax(SYMaterialVo vo) {
-		return infoDAO.excelMax(vo);
-	}
-	
-	
-	public List<SYMaterialVo> selectMaterial3(SYMaterialVo vo) {
-		return infoDAO.selectMaterial3(vo);
-	}
+
 	// cw 
 	//partition
 	public List<SYPartitionVO> selectPartition2(SYPartitionVO vo){
@@ -1139,21 +1165,7 @@ public class SYInfoService {
 	
 	
 	
-	public int insertMaterial(SYMaterialVo vo) {
-		return infoDAO.insertMaterial(vo);
-	}
-	
-	public int updateMaterial(SYMaterialVo vo) {
-		return infoDAO.updateMaterial(vo);
-	}
-	
-	public int updateMaterial2(SYMaterialVo vo) {
-		return infoDAO.updateMaterial2(vo);
-	}
-	
-	public int deleteMaterial(SYMaterialVo vo) {
-		return infoDAO.deleteMaterial(vo);
-	}
+
 	
 	public List<SYRoutingMasterVo> selectUpdate_routing(SYRoutingMasterVo vo) {
 		return infoDAO.selectUpdate_routing(vo);
@@ -1425,18 +1437,6 @@ public class SYInfoService {
 	}
 	
 	// Material
-	public List<SYMaterialVo> selectMaterial_menge(SYMaterialVo vo) {
-		return infoDAO.selectMaterial_menge(vo);
-	}
-	public List<SYMaterialVo> selectItemCode(SYMaterialVo vo) {
-		return infoDAO.selectItemCode(vo);
-	}
-	public List<SYMaterialVo> selectItemCode2(SYMaterialVo vo) {
-		return infoDAO.selectItemCode2(vo);
-	}
-	public List<SYMaterialVo> selectItemCode3(SYMaterialVo vo) {
-		return infoDAO.selectItemCode3(vo);
-	}
 	public List<SYRoutingMasterVo> selectRou_mstG(SYRoutingMasterVo vo) {
 		return infoDAO.selectRou_mstG(vo);
 	}

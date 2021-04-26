@@ -35,8 +35,9 @@ import kr.co.passcombine.set.util.SessionUtil;
 import kr.co.passcombine.set.util.StringUtil;
 import kr.co.passcombine.set.vo.SYAccountVo;
 import kr.co.passcombine.set.vo.SYBomVo;
-import kr.co.passcombine.set.vo.SYBranchVo;
-import kr.co.passcombine.set.vo.SYClientVo;
+import kr.co.passcombine.set.vo.SYTBranchVo;
+import kr.co.passcombine.set.vo.SYTClientVo;
+import kr.co.passcombine.set.vo.SYTMaterialVo;
 import kr.co.passcombine.set.vo.SYCustomerVo;
 import kr.co.passcombine.set.vo.SYDeliveryOrderVo;
 import kr.co.passcombine.set.vo.SYGoalVo;
@@ -57,7 +58,7 @@ import kr.co.passcombine.set.vo.SYProductUnOperationVO;
 import kr.co.passcombine.set.vo.SYQualityVo;
 import kr.co.passcombine.set.vo.SYRepairVo;
 import kr.co.passcombine.set.vo.SYRoutingMasterVo;
-import kr.co.passcombine.set.vo.SYVendorVo;
+import kr.co.passcombine.set.vo.SYTVendorVo;
 import kr.co.passcombine.set.vo.SYWarehouseOutVo;
 import kr.co.passcombine.set.vo.SYWarehouseVo;
 import kr.co.passcombine.set.vo.SYWarehouse_MasterHVo;
@@ -311,7 +312,7 @@ public class InfoController {
 	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping(value = "/account/checkClient", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
-	public String checkClient(@ModelAttribute SYClientVo vo, HttpServletRequest request) {
+	public String checkClient(@ModelAttribute SYTClientVo vo, HttpServletRequest request) {
 		logger.debug("FrontendController.checkClient() is called.");
 		JSONObject resultData = new JSONObject();
 		int exist_cnt = 0;
@@ -330,7 +331,7 @@ public class InfoController {
 	@RequestMapping(value = "/account/selectClient", method = {
 			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectClient(@ModelAttribute SYClientVo vo,
+	public String selectClient(@ModelAttribute SYTClientVo vo,
 			HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.selectClient is called.");
@@ -341,7 +342,7 @@ public class InfoController {
 		try {
 			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"), "UTF-8" );
 
-			List<SYClientVo> dataList = sYInfoService.selectClient(vo);
+			List<SYTClientVo> dataList = sYInfoService.selectClient(vo);
 
 			System.out.println("dataList");
 			System.out.println(dataList);
@@ -361,7 +362,7 @@ public class InfoController {
 	@ResponseBody
 	@RequestMapping(value = "/account/saveClient", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveClient(@ModelAttribute SYClientVo vo,
+	public String saveClient(@ModelAttribute SYTClientVo vo,
 			HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.saveAccount is called.");
@@ -415,7 +416,7 @@ public class InfoController {
 	@ResponseBody
 	@RequestMapping(value = "/account/deleteClient", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteClient(@ModelAttribute SYClientVo vo,
+	public String deleteClient(@ModelAttribute SYTClientVo vo,
 			HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.deleteAccount() is called.");
@@ -456,7 +457,7 @@ public class InfoController {
 	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping(value = "/account/checkVendor", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
-	public String checkVendor(@ModelAttribute SYVendorVo vo, HttpServletRequest request) {
+	public String checkVendor(@ModelAttribute SYTVendorVo vo, HttpServletRequest request) {
 		logger.debug("FrontendController.checkVendor() is called.");
 		JSONObject resultData = new JSONObject();
 		int exist_cnt = 0;
@@ -475,7 +476,7 @@ public class InfoController {
 	@RequestMapping(value = "/account/selectVendor", method = {
 			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectVendor(@ModelAttribute SYVendorVo vo,
+	public String selectVendor(@ModelAttribute SYTVendorVo vo,
 			HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.selectVendor is called.");
@@ -486,7 +487,7 @@ public class InfoController {
 		try {
 			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"), "UTF-8" );
 
-			List<SYVendorVo> dataList = sYInfoService.selectVendor(vo);
+			List<SYTVendorVo> dataList = sYInfoService.selectVendor(vo);
 
 			System.out.println("dataList");
 			System.out.println(dataList);
@@ -506,7 +507,7 @@ public class InfoController {
 	@ResponseBody
 	@RequestMapping(value = "/account/saveVendor", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveVendor(@ModelAttribute SYVendorVo vo,
+	public String saveVendor(@ModelAttribute SYTVendorVo vo,
 			HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.saveAccount is called.");
@@ -557,7 +558,7 @@ public class InfoController {
 	@ResponseBody
 	@RequestMapping(value = "/account/deleteVendor", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteVendor(@ModelAttribute SYVendorVo vo,
+	public String deleteVendor(@ModelAttribute SYTVendorVo vo,
 			HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.deleteAccount() is called.");
@@ -597,7 +598,7 @@ public class InfoController {
 	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping(value = "/account/checkBranch", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
-	public String checkBranch(@ModelAttribute SYBranchVo vo, HttpServletRequest request) {
+	public String checkBranch(@ModelAttribute SYTBranchVo vo, HttpServletRequest request) {
 		logger.debug("FrontendController.checkBranch() is called.");
 		JSONObject resultData = new JSONObject();
 		int exist_cnt = 0;
@@ -616,7 +617,7 @@ public class InfoController {
 	@RequestMapping(value = "/account/selectBranch", method = {
 			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectBranch(@ModelAttribute SYBranchVo vo,
+	public String selectBranch(@ModelAttribute SYTBranchVo vo,
 			HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.selectBranch is called.");
@@ -627,7 +628,7 @@ public class InfoController {
 		try {
 			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"), "UTF-8" );
 
-			List<SYBranchVo> dataList = sYInfoService.selectBranch(vo);
+			List<SYTBranchVo> dataList = sYInfoService.selectBranch(vo);
 
 			System.out.println("dataList");
 			System.out.println(dataList);
@@ -647,7 +648,7 @@ public class InfoController {
 	@ResponseBody
 	@RequestMapping(value = "/account/saveBranch", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveBranch(@ModelAttribute SYBranchVo vo,
+	public String saveBranch(@ModelAttribute SYTBranchVo vo,
 			HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.saveAccount is called.");
@@ -698,7 +699,7 @@ public class InfoController {
 	@ResponseBody
 	@RequestMapping(value = "/account/deleteBranch", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteBranch(@ModelAttribute SYBranchVo vo,
+	public String deleteBranch(@ModelAttribute SYTBranchVo vo,
 			HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.deleteAccount() is called.");
@@ -720,6 +721,227 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
+	
+	/**
+	* <pre>
+	* 1. MethodName : Material
+	* 2. ClassName  : InfoController.java
+	* 3. Comment    : 관리자 > 자재관리
+	* 4. 작성자       : DEV_KIMDEUKYONG
+	* 5. 작성일       : 2021. 04. 26.
+	* </pre>
+	*
+	* @param commandMap
+	* @return
+	* @throws Exception
+	*/		
+	// checkMaterial
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/account/checkMaterial", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
+	public String checkMaterial(@ModelAttribute SYTMaterialVo vo, HttpServletRequest request) {
+		logger.debug("FrontendController.checkMaterial() is called.");
+		JSONObject resultData = new JSONObject();
+		int exist_cnt = 0;
+		try {
+			exist_cnt = sYInfoService.checkMaterial(vo);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("cnt", exist_cnt + "");
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+		return resultData.toJSONString();
+	}		
+	// selectMaterial
+	@ResponseBody
+	@RequestMapping(value = "/account/selectMaterial", method = {
+			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String selectMaterial(@ModelAttribute SYTMaterialVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.selectMaterial is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"), "UTF-8" );
+
+			List<SYTMaterialVo> dataList = sYInfoService.selectMaterial(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+						
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}	
+	// saveMaterial
+	@ResponseBody
+	@RequestMapping(value = "/account/saveMaterial", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String saveMaterial(@ModelAttribute SYTMaterialVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.saveAccount is called.");
+
+		vo.setMTL_REG_ID(SessionUtil.getMemberId(request));
+		vo.setMTL_REG_DT(SessionUtil.getMemberId(request));
+
+		JSONObject resultData = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
+		JSONParser parser = new JSONParser();
+
+		try {
+			String MTL_IDX = "";
+			int cnt = 0;
+
+			String flag = request.getParameter("flag");
+
+			if (flag.equals("I")) {
+				//account_code = sYInfoService.accountCdGen();
+
+				// hKey
+				//vo.setAccount_code(account_code);
+				
+				cnt = sYInfoService.insertMaterial(vo);
+			} else if (flag.equals("U")) {//Modify
+				MTL_IDX = request.getParameter("MTL_IDX");
+
+				// hKey
+				vo.setMTL_IDX( Integer.parseInt(MTL_IDX) );
+				
+				cnt = sYInfoService.updateMaterial(vo);
+			}
+
+			System.out.println("MTL_IDX = " + MTL_IDX);
+
+			System.out.println("cnt = " + cnt);
+
+			resultData.put("status", HttpStatus.OK.value());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+
+		return resultData.toJSONString();
+	}
+	// deleteMaterial
+	@ResponseBody
+	@RequestMapping(value = "/account/deleteMaterial", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String deleteMaterial(@ModelAttribute SYTMaterialVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.deleteAccount() is called.");
+
+		JSONObject resultData = new JSONObject();
+		try {
+			int result = 0;
+
+			result = sYInfoService.deleteMaterial(vo);
+
+			System.out.println("result = " + result);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", 0);
+		}
+		return resultData.toJSONString();
+	}
+	
+	
+	
+	
+	
+	@ResponseBody
+	@RequestMapping(value = "/material/selectMaterial2", method = {
+			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String selectMaterial2(@ModelAttribute SYMaterialVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.selectMaterial2 is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"),
+			// "UTF-8" );
+
+			List<SYMaterialVo> dataList = sYInfoService.selectMaterial2(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+			
+			String listDataJsonString = ResponseUtils.getJsonResponse(response,
+					dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}		
+	// selectMaterial
+	@ResponseBody
+	@RequestMapping(value = "/material/selectMaterial3", method = {
+			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String selectMaterial3(@ModelAttribute SYMaterialVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.selectMaterial3 is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"),
+			// "UTF-8" );
+
+			List<SYMaterialVo> dataList = sYInfoService.selectMaterial3(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+			
+			String listDataJsonString = ResponseUtils.getJsonResponse(response,
+					dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}			
+	
+	
+	
+	
+	
+	
+	
+	
 	
 	
 	// checkAccount
@@ -2275,209 +2497,6 @@ public class InfoController {
 		return resultData.toJSONString();
 	}
 	
-	// material
-	
-	// checkMaterial
-	@SuppressWarnings("unchecked")
-	@ResponseBody
-	@RequestMapping(value = "/material/checkMaterial", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
-	public String checkMaterial(@ModelAttribute SYMaterialVo vo, HttpServletRequest request) {
-		logger.debug("FrontendController.checkMaterial() is called.");
-		JSONObject resultData = new JSONObject();
-		int exist_cnt = 0;
-		try {
-			exist_cnt = sYInfoService.checkMaterial(vo);
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("cnt", exist_cnt + "");
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-		}
-		return resultData.toJSONString();
-	}
-	
-	// selectMaterial
-	@ResponseBody
-	@RequestMapping(value = "/material/selectMaterial2", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	@SuppressWarnings("unchecked")
-	public String selectMaterial2(@ModelAttribute SYMaterialVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
-		logger.debug("FrontendController.selectMaterial2 is called.");
-
-		JSONObject resultData = new JSONObject();
-		JSONArray listDataJArray = new JSONArray();
-		JSONParser jsonParser = new JSONParser();
-		try {
-			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"),
-			// "UTF-8" );
-
-			List<SYMaterialVo> dataList = sYInfoService.selectMaterial2(vo);
-
-			System.out.println("dataList");
-			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
-			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("rows", listDataJArray);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("rows", null);
-		}
-		return resultData.toJSONString();
-	}		
-	// selectMaterial
-	@ResponseBody
-	@RequestMapping(value = "/material/selectMaterial3", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	@SuppressWarnings("unchecked")
-	public String selectMaterial3(@ModelAttribute SYMaterialVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
-		logger.debug("FrontendController.selectMaterial3 is called.");
-
-		JSONObject resultData = new JSONObject();
-		JSONArray listDataJArray = new JSONArray();
-		JSONParser jsonParser = new JSONParser();
-		try {
-			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"),
-			// "UTF-8" );
-
-			List<SYMaterialVo> dataList = sYInfoService.selectMaterial3(vo);
-
-			System.out.println("dataList");
-			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
-			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("rows", listDataJArray);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("rows", null);
-		}
-		return resultData.toJSONString();
-	}		
-	// selectMaterial
-		@ResponseBody
-		@RequestMapping(value = "/material/selectMaterial", method = {
-				RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-		@SuppressWarnings("unchecked")
-		public String selectMaterial(@ModelAttribute SYMaterialVo vo,
-				HttpServletRequest request, HttpServletResponse response,
-				HttpSession session) {
-			logger.debug("FrontendController.selectMaterial is called.");
-
-			JSONObject resultData = new JSONObject();
-			JSONArray listDataJArray = new JSONArray();
-			JSONParser jsonParser = new JSONParser();
-			try {
-				// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"),
-				// "UTF-8" );
-
-				List<SYMaterialVo> dataList = sYInfoService.selectMaterial(vo);
-
-				System.out.println("dataList");
-				System.out.println(dataList);
-				
-				String listDataJsonString = ResponseUtils.getJsonResponse(response,
-						dataList);
-				listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-				resultData.put("status", HttpStatus.OK.value());
-				resultData.put("rows", listDataJArray);
-			} catch (Exception e) {
-				e.printStackTrace();
-				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-				resultData.put("rows", null);
-			}
-			return resultData.toJSONString();
-		}		
-	
-	@ResponseBody
-	@RequestMapping(value = "/material/saveMaterial", method = { RequestMethod.GET,
-			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	@SuppressWarnings("unchecked")
-	public String saveMaterial(@ModelAttribute SYMaterialVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
-		logger.debug("FrontendController.saveMaterial is called.");
-
-		vo.setCreator(SessionUtil.getMemberId(request));
-		vo.setUpdater(SessionUtil.getMemberId(request));
-
-		JSONObject resultData = new JSONObject();
-		JSONArray jsonArray = new JSONArray();
-		JSONParser parser = new JSONParser();
-
-		try {
-			String item_code = "";
-			int cnt = 0;
-
-			String flag = request.getParameter("flag");
-
-			if (flag.equals("I")) {
-//							customer_code = sYInfoService.customerCdGen();
-//
-//							// hKey
-//							vo.setCustomer_code(customer_code);
-				
-				cnt = sYInfoService.insertMaterial(vo);
-			} else if (flag.equals("U")) {
-				item_code = request.getParameter("item_code");
-
-				// hKey
-				vo.setItem_code(item_code);
-				
-				cnt = sYInfoService.updateMaterial(vo);
-			}
-
-			System.out.println("item_code = " + item_code);
-
-			System.out.println("cnt = " + cnt);
-
-			resultData.put("status", HttpStatus.OK.value());
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-		}
-
-		return resultData.toJSONString();
-	}
-			
-	// deleteMaterial
-	@ResponseBody
-	@RequestMapping(value = "/material/deleteMaterial", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	@SuppressWarnings("unchecked")
-	public String deleteMaterial(@ModelAttribute SYMaterialVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
-		logger.debug("FrontendController.deleteMaterial() is called.");
-
-		JSONObject resultData = new JSONObject();
-		try {
-			int result = 0;
-
-			result = sYInfoService.deleteMaterial(vo);
-
-			System.out.println("result = " + result);
-
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("rows", result);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("rows", 0);
-		}
-		return resultData.toJSONString();
-	}
 				
 	// process
 	// selectRouting_master
@@ -3299,7 +3318,7 @@ public class InfoController {
 		@SuppressWarnings("unchecked")
 		@ResponseBody
 		@RequestMapping(value = "/material/excelMax", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
-		public String excelMax(@ModelAttribute SYMaterialVo vo, HttpServletRequest request) {
+		public String excelMax(@ModelAttribute SYTMaterialVo vo, HttpServletRequest request) {
 			logger.debug("FrontendController.excelMax() is called.");
 			JSONObject resultData = new JSONObject();
 			int exist_cnt = 0;
@@ -3318,7 +3337,7 @@ public class InfoController {
 	@RequestMapping(value = "/material/excelLoad", method = {
 			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String excelLoad(@ModelAttribute SYMaterialVo vo,
+	public String excelLoad(@ModelAttribute SYTMaterialVo vo,
 			HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.excelLoad is called.");
@@ -3330,7 +3349,7 @@ public class InfoController {
 			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"),
 			// "UTF-8" );
 
-			List<SYMaterialVo> dataList = sYInfoService.excelLoad(vo);
+			List<SYTMaterialVo> dataList = sYInfoService.excelLoad(vo);
 
 			System.out.println("dataList");
 			System.out.println("dataList::::"+dataList);

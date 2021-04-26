@@ -84,12 +84,9 @@ String memberNm = SessionUtil.getMemberNm(request);
 												<div class="box-tools pull-right">
 												
 													<button type="button" id="btn_ins_csr" onclick="plus();"  class="btn btn-info btn-sm">행추가</button>
-<!-- 													<button type="button" id="btn_search_csr" onclick="minus();" class="btn btn-primary btn-sm" onclick="">행삭제</button> -->
+<!-- 												<button type="button" id="btn_search_csr" onclick="minus();" class="btn btn-primary btn-sm" onclick="">행삭제</button> -->
 													<button type="button" id="btn_ins_csr" onclick="deleteRoutingCom();" class="btn btn-primary btn-sm">삭제</button>
 													<button type="button" id="btn_ins_csr" onclick="saveRouting();" class="btn btn-primary btn-sm">저장</button>
-													
-													
-											
 												</div>
 											</div>
 											<div class="box-body">
@@ -222,7 +219,7 @@ function requestLeftGrid(){
  	var postData = "detail_code=" + encodeURIComponent(detail_code)
  	+ "&code_nm=" + encodeURIComponent(code_nm);
 	
-	//w2ui['grid_list'].lock('loading...', true);
+	w2ui['grid_list'].lock('loading...', true);
 	$.ajax({
 		url : page_url,
 		type : 'POST',
