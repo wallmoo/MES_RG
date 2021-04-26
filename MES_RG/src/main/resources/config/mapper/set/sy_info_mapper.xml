@@ -360,12 +360,12 @@
 
 
 	<!-- Client_tbl Start -->
-	<select id="checkClient" parameterType="SYClientVo" resultType="int">
+	<select id="checkClient" parameterType="SYTClientVo" resultType="int">
 		SELECT COUNT(*) AS cnt
 		FROM T_CST_MST
 		WHERE CST_IDX = #{CST_IDX} AND CST_DEL_YN = 'N'
 	</select>
-	<select id="selectClient" parameterType="SYClientVo" resultType="SYClientVo">
+	<select id="selectClient" parameterType="SYTClientVo" resultType="SYTClientVo">
 		SELECT 
 		CST_IDX, CST_NM, CST_CEO_NM, CST_PLC, CST_NO, CST_ADD, CST_TEL, CST_FAX, 
 		CST_ML1, CST_ML2, CST_ML3, CST_HP, CST_STATE, CST_REG_DT, CST_REG_ID 
@@ -381,7 +381,7 @@
 		</if>	   
 		ORDER BY CST_IDX DESC
 	</select>
-	<insert id="insertClient" parameterType="SYClientVo">
+	<insert id="insertClient" parameterType="SYTClientVo">
 		INSERT INTO T_CST_MST
 		( CST_NM, CST_CEO_NM, CST_PLC, CST_NO, CST_ADD, CST_TEL, CST_FAX, CST_ML1, CST_ML2, CST_ML3, CST_HP, CST_REG_ID )
 		VALUES
@@ -392,7 +392,7 @@
 	        SELECT LAST_INSERT_ID()
 	    </selectKey>		
 	</insert>
-	<update id="updateClient" parameterType="SYClientVo">
+	<update id="updateClient" parameterType="SYTClientVo">
 		UPDATE T_CST_MST SET
 		CST_NM = #{CST_NM},
 		CST_CEO_NM = #{CST_CEO_NM},
@@ -407,7 +407,7 @@
 		CST_HP = #{CST_HP}
 		WHERE CST_IDX = #{CST_IDX}
 	</update>
-	<update id="deleteClient" parameterType="SYClientVo">
+	<update id="deleteClient" parameterType="SYTClientVo">
 		UPDATE T_CST_MST SET
 		CST_DEL_YN='Y'
 		WHERE CST_IDX = #{CST_IDX}
@@ -416,12 +416,12 @@
 	
 		
 	<!-- vendor_tbl Start -->
-	<select id="checkVendor" parameterType="SYVendorVo" resultType="int">
+	<select id="checkVendor" parameterType="SYTVendorVo" resultType="int">
 		SELECT COUNT(*) AS cnt
 		FROM T_VDR_MST
 		WHERE VDR_IDX = #{VDR_IDX} AND VDR_DEL_YN = 'N'
 	</select>
-	<select id="selectVendor" parameterType="SYVendorVo" resultType="SYVendorVo">
+	<select id="selectVendor" parameterType="SYTVendorVo" resultType="SYTVendorVo">
 		SELECT 
 		VDR_IDX, VDR_NM, VDR_CEO_NM, VDR_PLC, VDR_NO, VDR_ADD, VDR_TEL, VDR_FAX, 
 		VDR_ML1, VDR_ML2, VDR_ML3, VDR_HP, VDR_STATE, VDR_REG_DT, VDR_REG_ID 
@@ -438,7 +438,7 @@
 		</if>	   
 		ORDER BY VDR_IDX DESC
 	</select>
-	<insert id="insertVendor" parameterType="SYVendorVo">
+	<insert id="insertVendor" parameterType="SYTVendorVo">
 		INSERT INTO T_VDR_MST
 		( VDR_NM, VDR_CEO_NM, VDR_NO, VDR_ADD, VDR_TEL, VDR_FAX, VDR_ML1, VDR_ML2, VDR_ML3, VDR_HP, VDR_REG_ID )
 		VALUES
@@ -446,7 +446,7 @@
 		#{VDR_NM}, #{VDR_CEO_NM}, #{VDR_NO},#{VDR_ADD}, #{VDR_TEL}, #{VDR_FAX}, #{VDR_ML1}, #{VDR_ML2}, #{VDR_ML3}, #{VDR_HP}, #{VDR_REG_ID}
 		)
 	</insert>
-	<update id="updateVendor" parameterType="SYVendorVo">
+	<update id="updateVendor" parameterType="SYTVendorVo">
 		UPDATE T_VDR_MST SET
 		VDR_NM = #{VDR_NM},
 		VDR_CEO_NM = #{VDR_CEO_NM},
@@ -461,7 +461,7 @@
 		VDR_HP = #{VDR_HP}
 		WHERE VDR_IDX = #{VDR_IDX}
 	</update>
-	<update id="deleteVendor" parameterType="SYVendorVo">
+	<update id="deleteVendor" parameterType="SYTVendorVo">
 		UPDATE T_VDR_MST SET
 		VDR_DEL_YN='Y'
 		WHERE VDR_IDX = #{VDR_IDX}
@@ -469,12 +469,12 @@
 	<!-- client_tbl End -->	
 	
 	<!-- Branch_tbl Start -->
-	<select id="checkBranch" parameterType="SYBranchVo" resultType="int">
+	<select id="checkBranch" parameterType="SYTBranchVo" resultType="int">
 		SELECT COUNT(*) AS cnt
 		FROM T_BCO_MST
 		WHERE BCO_IDX = #{BCO_IDX} AND BCO_DEL_YN = 'N'
 	</select>
-	<select id="selectBranch" parameterType="SYBranchVo" resultType="SYBranchVo">
+	<select id="selectBranch" parameterType="SYTBranchVo" resultType="SYTBranchVo">
 		SELECT 
 		BCO_IDX, BCO_NM, BCO_CEO_NM, BCO_PLC, BCO_NO, BCO_ADD, BCO_TEL, BCO_FAX, 
 		BCO_ML1, BCO_ML2, BCO_ML3, BCO_HP, BCO_STATE, BCO_REG_DT, BCO_REG_ID 
@@ -493,7 +493,7 @@
 		</if>			 
 		ORDER BY BCO_IDX DESC
 	</select>
-	<insert id="insertBranch" parameterType="SYBranchVo">
+	<insert id="insertBranch" parameterType="SYTBranchVo">
 		INSERT INTO T_BCO_MST
 		( BCO_NM, BCO_CEO_NM, BCO_PLC, BCO_NO, BCO_ADD, BCO_TEL, BCO_FAX, BCO_ML1, BCO_ML2, BCO_ML3, BCO_HP, BCO_REG_ID )
 		VALUES
@@ -501,7 +501,7 @@
 		#{BCO_NM}, #{BCO_CEO_NM}, #{BCO_PLC}, #{BCO_NO},#{BCO_ADD}, #{BCO_TEL}, #{BCO_FAX}, #{BCO_ML1}, #{BCO_ML2}, #{BCO_ML3}, #{BCO_HP}, #{BCO_REG_ID}
 		)
 	</insert>
-	<update id="updateBranch" parameterType="SYBranchVo">
+	<update id="updateBranch" parameterType="SYTBranchVo">
 		UPDATE T_BCO_MST SET
 		BCO_NM = #{BCO_NM},
 		BCO_CEO_NM = #{BCO_CEO_NM},
@@ -516,13 +516,87 @@
 		BCO_HP = #{BCO_HP}
 		WHERE BCO_IDX = #{BCO_IDX}
 	</update>
-	<update id="deleteBranch" parameterType="SYBranchVo">
+	<update id="deleteBranch" parameterType="SYTBranchVo">
 		UPDATE T_BCO_MST SET
 		BCO_DEL_YN='Y'
 		WHERE BCO_IDX = #{BCO_IDX}
 	</update>
 	<!-- Branch_tbl End -->		
 	
+	<!-- Material_tbl Start -->		
+	<select id="checkMaterial" parameterType="SYTMaterialVo" resultType="int">
+		SELECT COUNT(*) AS cnt
+		FROM material_tbl
+		WHERE item_code = #{item_code}
+	</select>
+	<select id="selectMaterial" parameterType="SYTMaterialVo" resultType="SYTMaterialVo">
+		SELECT
+			MTL_IDX, CMM_FLE_IDX, MTL_CATE, MTL_NM, MTL_MKR_CD, MTL_MKR_NO, MTL_STD,
+			MTL_PRICE, MTL_UNT, MTL_QTY, MTL_DS_URL, MTL_BG, MTL_REG_DT, MTL_REG_ID
+		FROM T_MTL_MST
+		WHERE MTL_DEL_YN = 'N'
+		<if test="MTL_MKR_CD!=null and !''.equals(MTL_MKR_CD) ">
+			AND MTL_MKR_CD LIKE CONCAT('%', #{MTL_MKR_CD}, '%')
+		</if>
+		<if test="MTL_CATE!=null and !''.equals(MTL_CATE) ">
+			AND MTL_CATE LIKE CONCAT('%', #{MTL_CATE}, '%')
+		</if>
+		<if test="MTL_NM!=null and !''.equals(MTL_NM) ">
+			AND MTL_NM LIKE CONCAT('%', #{MTL_NM}, '%')
+		</if>
+		<if test="MTL_MKR_NO!=null and !''.equals(MTL_MKR_NO) ">
+			AND MTL_MKR_NO LIKE CONCAT('%', #{MTL_MKR_NO}, '%')
+		</if>						
+	</select>	
+	<insert id="insertMaterial" parameterType="SYTMaterialVo">
+		INSERT INTO T_MTL_MST
+		( CMM_FLE_IDX, MTL_CATE, MTL_NM, MTL_MKR_CD, MTL_MKR_NO, MTL_STD, MTL_PRICE, MTL_UNT, MTL_DS_URL, MTL_BG, MTL_REG_ID )
+		VALUES
+		(
+		#{CMM_FLE_IDX}, #{MTL_CATE}, #{MTL_NM}, #{MTL_MKR_CD}, #{MTL_MKR_NO}, #{MTL_STD}, #{MTL_PRICE}, #{MTL_UNT}, #{MTL_DS_URL}, #{MTL_BG}, #{MTL_REG_ID}
+		)
+		<!-- CONCAT('CT', LPAD(fn_common_seq('account'),4,'0')) -->
+	</insert>
+	<update id="updateMaterial" parameterType="SYMaterialVo">
+		UPDATE T_MTL_MST SET
+		CMM_FLE_IDX = #{CMM_FLE_IDX},
+		MTL_CATE 	= #{MTL_CATE},
+		MTL_NM 		= #{MTL_NM},
+		MTL_MKR_CD 	= #{MTL_MKR_CD},
+		MTL_MKR_NO 	= #{MTL_MKR_NO},
+		MTL_STD 	= #{MTL_STD},
+		MTL_PRICE 	= #{MTL_PRICE},
+		MTL_UNT 	= #{MTL_UNT},
+		MTL_DS_URL 	= #{MTL_DS_URL},
+		MTL_BG 		= #{MTL_BG}
+		WHERE MTL_IDX = #{MTL_IDX}
+	</update>	
+	<update id="deleteMaterial" parameterType="SYMaterialVo">
+		UPDATE T_MTL_MST SET
+		MTL_DEL_YN='Y'
+		WHERE MTL_IDX = #{MTL_IDX}
+	</update>	
+	<select id="excelLoad" parameterType="SYMaterialVo" resultType="SYMaterialVo">
+		SELECT	
+			m.item_code AS item_code, m.item_nm AS item_nm, 
+			GROUP_CONCAT(rm.routing_nm,'(', rm.routing_code ,')' ORDER BY rm.routing_seq*1 , rm.routing_code ASC) AS routing_nm 
+		
+		FROM material_tbl AS m
+		LEFT OUTER JOIN routing_master  AS rm
+		ON m.item_code = rm.item_code
+
+		WHERE m.del_yn = 'N'		
+		AND rm.use_yn = 'Y'
+		GROUP BY m.item_code
+		ORDER BY m.item_code
+	</select>
+	<select id="excelMax" parameterType="SYMaterialVo" resultType="Integer">
+		select max(excelMax) 
+		from (SELECT COUNT(routing_nm) as excelMax from routing_master
+		WHERE use_yn = 'Y' 
+		GROUP BY item_code ) as p
+	</select>		
+	<!-- Material_tbl End -->		
 	
 	<!-- account_tbl -->
 	<select id="checkAccount" parameterType="SYAccountVo"
@@ -1698,16 +1772,10 @@
 	</select>
 
 
-	<select id="checkMaterial" parameterType="SYMaterialVo"
-		resultType="int">
-		SELECT COUNT(*) AS cnt
-		FROM material_tbl
-		WHERE item_code = #{item_code}
-	</select>
 
-	<!-- selectMaterial -->
-	<select id="selectItemCode" parameterType="SYMaterialVo"
-		resultType="SYMaterialVo">
+
+
+	<select id="selectItemCode" parameterType="SYMaterialVo" resultType="SYMaterialVo">
 		SELECT item_code, item_nm
 		FROM material_tbl
 		WHERE item_type_code
@@ -1727,37 +1795,6 @@
 		</if>
 		AND del_yn ='N'
 	</select>
-	
-	<select id="excelLoad" parameterType="SYMaterialVo" resultType="SYMaterialVo">
-	
-		SELECT	
-			m.item_code AS item_code, m.item_nm AS item_nm, 
-			GROUP_CONCAT(rm.routing_nm,'(', rm.routing_code ,')' ORDER BY rm.routing_seq*1 , rm.routing_code ASC) AS routing_nm 
-		
-		FROM material_tbl AS m
-		LEFT OUTER JOIN routing_master  AS rm
-		ON m.item_code = rm.item_code
-		
-		
-		WHERE m.del_yn = 'N'		
-		AND rm.use_yn = 'Y'
-		
-		GROUP BY m.item_code
-		
-		ORDER BY m.item_code
-		
-	</select>
-	
-	<select id="excelMax" parameterType="SYMaterialVo" resultType="Integer">
-	
-	select max(excelMax) 
-	from (SELECT COUNT(routing_nm) as excelMax from routing_master
-	WHERE use_yn = 'Y' 
-
-	GROUP BY item_code ) as p
-
-	</select>
-
 	<select id="selectItemCode2" parameterType="SYMaterialVo"
 		resultType="SYMaterialVo">
 		SELECT item_code,item_nm,item_spec, receiving_inspection_routing_yn
@@ -1787,7 +1824,6 @@
 		</if>
 		AND del_yn ='N'
 	</select>
-
 	<select id="selectItemCode3" parameterType="SYMaterialVo"
 		resultType="SYMaterialVo">
 		SELECT item_code,item_nm,item_spec, receiving_inspection_routing_yn
@@ -1929,66 +1965,6 @@
 		AND inspection_seq = #{inspection_seq}
 	</update>
 
-	<select id="selectMaterial" parameterType="SYMaterialVo"
-		resultType="SYMaterialVo">
-		SELECT
-		business_code, business_nm, item_code, item_nm, item_spec, item_type_code,
-		item_type_nm,
-		meins, warehousing_price, release_price, receiving_inspection_yn, class_yn,
-		safety_stock_yn, safety_menge, routing_yn, del_yn,
-		outsourcing_price, location, one_yn,
-		creator, updater, date_created, date_updated,
-		(
-		SELECT warehouse_nm
-		FROM warehouse_master_header
-		WHERE del_yn = 'N'
-		AND warehouse_code = m.in_ware_code
-		) as in_ware_nm,
-		in_ware_code,
-		(
-		SELECT member_nm
-		FROM sy_member_master
-		WHERE member_id = m.creator
-		) as creator_nm,
-		(
-		SELECT member_nm
-		FROM sy_member_master
-		WHERE member_id = m.updater
-		) as updater_nm
-
-		FROM material_tbl as m
-		WHERE del_yn = 'N'
-		<if test="item_code!=null and !''.equals(item_code) ">
-			AND item_code = #{item_code}
-		</if>
-		<if test="item_nm!=null and !''.equals(item_nm) ">
-			AND item_nm LIKE CONCAT('%', #{item_nm}, '%')
-		</if>
-		<!-- <if test="business_code!=null and !''.equals(business_code) "> AND 
-			business_code = #{business_code} </if> -->
-		<if test=" business_codeT == ''.toString() ">
-			AND business_code = #{business_code}
-		</if>
-		<if test="business_codeT!=null and !''.equals(business_codeT) ">
-			AND business_code IN ( #{business_code} , #{business_codeT} )
-			<!-- AND (business_code = #{business_code} OR business_code = #{business_codeT}) -->
-		</if>
-
-		<if test="class_yn!=null and !''.equals(class_yn) ">
-			AND class_yn = #{class_yn}
-		</if>
-		<if test="safety_stock_yn!=null and !''.equals(safety_stock_yn) ">
-			AND safety_stock_yn = #{safety_stock_yn}
-		</if>
-		<if test="item_type_code!=null and !''.equals(item_type_code) ">
-			AND item_type_code = #{item_type_code}
-		</if>
-
-		<if test="routing_yn!=null and !''.equals(routing_yn) ">
-			AND routing_yn = #{routing_yn}
-		</if>
-	</select>
-
 
 	<!-- selectMaterial2 -->
 	<select id="selectMaterial2" parameterType="SYMaterialVo"
@@ -2088,155 +2064,6 @@
 		</if>
 	</select>
 
-	<insert id="insertMaterial" parameterType="SYMaterialVo">
-		INSERT INTO material_tbl
-		( business_code, business_nm, item_code,
-		item_nm,
-
-		<if test="item_spec!=null and !''.equals(item_spec) ">
-			item_spec,
-		</if>
-
-		item_type_code, item_type_nm,
-
-		<if test="safety_menge!=null and !''.equals(safety_menge) ">
-			safety_menge,
-		</if>
-
-		meins,
-
-		<if test="warehousing_price!=null and !''.equals(warehousing_price) ">
-			warehousing_price,
-		</if>
-		<if test="release_price!=null and !''.equals(release_price) ">
-			release_price,
-		</if>
-		<if test="outsourcing_price!=null and !''.equals(outsourcing_price) ">
-			outsourcing_price,
-		</if>
-
-		<if test="location!=null and !''.equals(location) ">
-			location,
-		</if>
-
-		receiving_inspection_yn, class_yn, safety_stock_yn,
-
-		<if test="one_yn !=null and !''.equals( one_yn ) ">
-			one_yn,
-		</if>
-		del_yn,
-		<if test="in_ware_code !=null and !''.equals( in_ware_code ) ">
-			in_ware_code,
-		</if>
-		creator, updater, date_created, date_updated )
-		VALUES
-		(
-		#{business_code}, #{business_nm}, #{item_code}, #{item_nm},
-
-		<if test="item_spec!=null and !''.equals(item_spec) ">
-			#{item_spec},
-		</if>
-
-		#{item_type_code}, #{item_type_nm},
-
-		<if test="safety_menge!=null and !''.equals(safety_menge) ">
-			#{safety_menge} + 0 ,
-		</if>
-
-		#{meins},
-
-		<if test="warehousing_price!=null and !''.equals(warehousing_price) ">
-			#{warehousing_price},
-		</if>
-		<if test="release_price!=null and !''.equals(release_price) ">
-			#{release_price},
-		</if>
-
-		<if test="outsourcing_price!=null and !''.equals(outsourcing_price) ">
-			#{outsourcing_price},
-		</if>
-
-		<if test="location!=null and !''.equals(location) ">
-			#{location},
-		</if>
-		#{receiving_inspection_yn}, #{class_yn}, #{safety_stock_yn},
-		<if test="one_yn !=null and !''.equals( one_yn ) ">
-			#{one_yn},
-		</if>
-		'N',
-		<if test="in_ware_code !=null and !''.equals( in_ware_code ) ">
-			#{in_ware_code},
-		</if>
-		#{creator}, #{updater}, CURRENT_TIMESTAMP(), CURRENT_TIMESTAMP()
-		)
-
-		<!-- CONCAT('CT', LPAD(fn_common_seq('account'),4,'0')) -->
-	</insert>
-
-	<update id="updateMaterial" parameterType="SYMaterialVo">
-		UPDATE material_tbl SET
-		<if test="item_nm!=null and !''.equals(item_nm) ">
-			item_nm = #{item_nm},
-		</if>
-		<if test="business_code!=null and !''.equals(business_code) ">
-			business_code = #{business_code},
-		</if>
-		<if test="business_nm!=null and !''.equals(business_nm) ">
-			business_nm = #{business_nm},
-		</if>
-		<if test="item_type_code!=null and !''.equals(item_type_code) ">
-			item_type_code = #{item_type_code},
-		</if>
-		<if test="item_type_nm!=null and !''.equals(item_type_nm) ">
-			item_type_nm = #{item_type_nm},
-		</if>
-		<!-- <if test="item_spec!=null and !''.equals(item_spec) "> -->
-		item_spec = #{item_spec},
-		<!-- </if> -->
-		<if test="meins!=null and !''.equals(meins) ">
-			meins = #{meins},
-		</if>
-		<!-- <if test="warehousing_price!=null and !''.equals(warehousing_price) 
-			"> -->
-		warehousing_price = #{warehousing_price},
-		<!-- </if> -->
-		<!-- <if test="release_price!=null and !''.equals(release_price) "> -->
-		release_price = #{release_price},
-		<!-- </if> -->
-		<if
-			test="receiving_inspection_yn!=null and !''.equals(receiving_inspection_yn) ">
-			receiving_inspection_yn = #{receiving_inspection_yn},
-		</if>
-		<if test="class_yn!=null and !''.equals(class_yn) ">
-			class_yn = #{class_yn},
-		</if>
-		<if test="safety_stock_yn!=null and !''.equals(safety_stock_yn) ">
-			safety_stock_yn = #{safety_stock_yn},
-		</if>
-
-		safety_menge = #{safety_menge} + 0 ,
-
-		<if test="routing_yn!=null and !''.equals(routing_yn) ">
-			routing_yn = #{routing_yn},
-		</if>
-
-		<if test="outsourcing_price!=null and !''.equals(outsourcing_price) ">
-			outsourcing_price = #{outsourcing_price},
-		</if>
-
-		<if test="location!=null and !''.equals(location) ">
-			location = #{location},
-		</if>
-		<if test="one_yn !=null and !''.equals( one_yn ) ">
-			one_yn= #{one_yn},
-		</if>
-		<if test="in_ware_code !=null and !''.equals( in_ware_code ) ">
-			in_ware_code= #{in_ware_code},
-		</if>
-		updater = #{updater},
-		date_updated = current_timestamp()
-		WHERE item_code = #{item_code}
-	</update>
 
 	<update id="updateMaterial2" parameterType="SYMaterialVo">
 		UPDATE material_tbl SET
@@ -2298,12 +2125,6 @@
 		</if>
 		updater = #{updater},
 		date_updated = current_timestamp()
-		WHERE item_code = #{item_code}
-	</update>
-
-	<update id="deleteMaterial" parameterType="SYMaterialVo">
-		UPDATE material_tbl
-		SET del_yn='Y'
 		WHERE item_code = #{item_code}
 	</update>
 

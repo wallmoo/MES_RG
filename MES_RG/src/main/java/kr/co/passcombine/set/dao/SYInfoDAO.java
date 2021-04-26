@@ -7,8 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import kr.co.passcombine.set.vo.SYAccountVo;
 import kr.co.passcombine.set.vo.SYBomVo;
-import kr.co.passcombine.set.vo.SYBranchVo;
-import kr.co.passcombine.set.vo.SYClientVo;
+import kr.co.passcombine.set.vo.SYTBranchVo;
+import kr.co.passcombine.set.vo.SYTClientVo;
+import kr.co.passcombine.set.vo.SYTMaterialVo;
 import kr.co.passcombine.set.vo.SYCustomerVo;
 import kr.co.passcombine.set.vo.SYIncome_insp_mstVo;
 import kr.co.passcombine.set.vo.SYIncome_resultVo;
@@ -24,7 +25,7 @@ import kr.co.passcombine.set.vo.SYProductUnOperationVO;
 import kr.co.passcombine.set.vo.SYQualityVo;
 import kr.co.passcombine.set.vo.SYRepairVo;
 import kr.co.passcombine.set.vo.SYRoutingMasterVo;
-import kr.co.passcombine.set.vo.SYVendorVo;
+import kr.co.passcombine.set.vo.SYTVendorVo;
 import kr.co.passcombine.set.vo.SYWarehouseVo;
 import kr.co.passcombine.set.vo.SYtool_repmt_hisVo;
 import kr.co.passcombine.set.vo.SYHoldVo;
@@ -42,28 +43,49 @@ public interface SYInfoDAO {
 	public int deleteCustomer(SYCustomerVo vo);
 	
 	// Client Start
-	public int checkClient(SYClientVo vo);
-	public List<SYClientVo> selectClient(SYClientVo vo);
-	public int insertClient(SYClientVo vo);
-	public int updateClient(SYClientVo vo);
-	public int deleteClient(SYClientVo vo);
+	public int checkClient(SYTClientVo vo);
+	public List<SYTClientVo> selectClient(SYTClientVo vo);
+	public int insertClient(SYTClientVo vo);
+	public int updateClient(SYTClientVo vo);
+	public int deleteClient(SYTClientVo vo);
 	// Client End
 	
 	// Vendor Start
-	public int checkVendor(SYVendorVo vo);
-	public List<SYVendorVo> selectVendor(SYVendorVo vo);
-	public int insertVendor(SYVendorVo vo);
-	public int updateVendor(SYVendorVo vo);
-	public int deleteVendor(SYVendorVo vo);
+	public int checkVendor(SYTVendorVo vo);
+	public List<SYTVendorVo> selectVendor(SYTVendorVo vo);
+	public int insertVendor(SYTVendorVo vo);
+	public int updateVendor(SYTVendorVo vo);
+	public int deleteVendor(SYTVendorVo vo);
 	// Vendor End
 	
 	// Branch Start
-	public int checkBranch(SYBranchVo vo);
-	public List<SYBranchVo> selectBranch(SYBranchVo vo);
-	public int insertBranch(SYBranchVo vo);
-	public int updateBranch(SYBranchVo vo);
-	public int deleteBranch(SYBranchVo vo);
+	public int checkBranch(SYTBranchVo vo);
+	public List<SYTBranchVo> selectBranch(SYTBranchVo vo);
+	public int insertBranch(SYTBranchVo vo);
+	public int updateBranch(SYTBranchVo vo);
+	public int deleteBranch(SYTBranchVo vo);
 	// Branch End
+	
+	// Material Start
+	public int checkMaterial(SYTMaterialVo vo);
+	public List<SYTMaterialVo> selectMaterial(SYTMaterialVo vo);
+	public int insertMaterial(SYTMaterialVo vo);
+	public int updateMaterial(SYTMaterialVo vo);
+	public int deleteMaterial(SYTMaterialVo vo);
+	public List<SYTMaterialVo> excelLoad(SYTMaterialVo vo);
+	public Integer excelMax(SYTMaterialVo vo);	
+	
+	
+	public int updateMaterial2(SYMaterialVo vo);
+	public List<SYMaterialVo> selectMaterial_menge(SYMaterialVo vo);
+	public List<SYMaterialVo> selectMaterial2(SYMaterialVo vo);
+	public List<SYMaterialVo> selectMaterial3(SYMaterialVo vo);
+	public List<SYMaterialVo> selectItemCode(SYMaterialVo vo);
+	public List<SYMaterialVo> selectItemCode2(SYMaterialVo vo);
+	public List<SYMaterialVo> selectItemCode3(SYMaterialVo vo);	
+	
+	public int updateMaterial(SYMaterialVo vo);//기존 코드 에러 방지
+	// Material End
 	
 	public int checkAccount(SYAccountVo vo);
 	public List<SYAccountVo> selectAccount(SYAccountVo vo);
@@ -137,15 +159,6 @@ public interface SYInfoDAO {
 	//yb
 	
 	/// ssss 
-	public int checkMaterial(SYMaterialVo vo);
-	public List<SYMaterialVo> selectMaterial(SYMaterialVo vo);
-	public List<SYMaterialVo> excelLoad(SYMaterialVo vo);
-	public Integer excelMax(SYMaterialVo vo);
-	public int insertMaterial(SYMaterialVo vo);
-	public int updateMaterial(SYMaterialVo vo);
-	public int updateMaterial2(SYMaterialVo vo);
-	public int deleteMaterial(SYMaterialVo vo);
-
 	public List<SYRoutingMasterVo> selectRouting_master(SYRoutingMasterVo vo);
 	
 	//성민
@@ -207,13 +220,6 @@ public interface SYInfoDAO {
 	
 	public int deleteInspect_master(SYInspectMasterVo vo);
 	
-	public List<SYMaterialVo> selectMaterial_menge(SYMaterialVo vo);
-	public List<SYMaterialVo> selectMaterial2(SYMaterialVo vo);
-	public List<SYMaterialVo> selectMaterial3(SYMaterialVo vo);
-	
-	public List<SYMaterialVo> selectItemCode(SYMaterialVo vo);
-	public List<SYMaterialVo> selectItemCode2(SYMaterialVo vo);
-	public List<SYMaterialVo> selectItemCode3(SYMaterialVo vo);
 	public List<SYRoutingMasterVo> selectRou_mstG(SYRoutingMasterVo vo);
 	public List<SYInspectionMasterVo> selectInspection_master2(SYInspectionMasterVo vo);
 	public List<SYInstrumentVo> selectInstrumentTool(SYInstrumentVo vo);
@@ -245,5 +251,6 @@ public interface SYInfoDAO {
 	public int updateTool_replacement_his(SYtool_repmt_hisVo vo);
 	public int deleteTool_replacement_his(SYtool_repmt_hisVo vo);
 	public void deleteRoutingCode(String routing_code);
+	
 	
 }
