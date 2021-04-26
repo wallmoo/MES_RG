@@ -359,15 +359,68 @@
 	</update>
 
 
-	<!-- account_tbl -->
-	<select id="checkAccount" parameterType="SYAccountVo"
-		resultType="int">
+	<!-- Client_tbl Start -->
+	<select id="checkClient" parameterType="SYClientVo" resultType="int">
 		SELECT COUNT(*) AS cnt
-		FROM account_tbl
-		WHERE account_code = #{account_code}
+		FROM T_CST_MST
+		WHERE CST_IDX = #{CST_IDX} AND CST_DEL_YN = 'N'
 	</select>
-
-
+	<select id="selectClient" parameterType="SYClientVo" resultType="SYClientVo">
+		SELECT 
+		CST_IDX, CST_NM, CST_CEO_NM, CST_PLC, CST_NO, CST_ADD, CST_TEL, CST_FAX, 
+		CST_ML1, CST_ML2, CST_ML3, CST_HP, CST_STATE, CST_REG_DT, CST_REG_ID 
+		FROM T_CST_MST  
+		WHERE CST_DEL_YN = 'N'
+		<!-- 
+		<if test="CST_IDX!=null and !''.equals(CST_IDX) ">
+			AND CST_IDX = #{CST_IDX}
+		</if>
+ 		-->		
+		<if test="CST_NM!=null and !''.equals(CST_NM) ">
+			AND CST_NM LIKE CONCAT('%', #{CST_NM}, '%')
+		</if>	   
+		ORDER BY CST_IDX DESC
+	</select>
+	<insert id="insertClient" parameterType="SYClientVo">
+		INSERT INTO T_CST_MST
+		( CST_NM, CST_CEO_NM, CST_PLC, CST_NO, CST_ADD, CST_TEL, CST_FAX, CST_ML1, CST_ML2, CST_ML3, CST_HP, CST_REG_ID )
+		VALUES
+		(
+		#{CST_NM}, #{CST_CEO_NM}, #{CST_PLC}, #{CST_NO},#{CST_ADD}, #{CST_TEL}, #{CST_FAX}, #{CST_ML1}, #{CST_ML2}, #{CST_ML3}, #{CST_HP}, #{CST_REG_ID}
+		)
+        <selectKey resultType="int" keyProperty="CST_IDX" order="AFTER">
+	        SELECT LAST_INSERT_ID()
+	    </selectKey>		
+	</insert>
+	<update id="updateClient" parameterType="SYClientVo">
+		UPDATE T_CST_MST SET
+		CST_NM = #{CST_NM},
+		CST_CEO_NM = #{CST_CEO_NM},
+		CST_PLC = #{CST_PLC},
+		CST_NO = #{CST_NO},
+		CST_ADD = #{CST_ADD},
+		CST_TEL = #{CST_TEL},
+		CST_FAX = #{CST_FAX},
+		CST_ML1 = #{CST_ML1},
+		CST_ML2 = #{CST_ML2},
+		CST_ML3 = #{CST_ML3},
+		CST_HP = #{CST_HP}
+		WHERE CST_IDX = #{CST_IDX}
+	</update>
+	<update id="deleteClient" parameterType="SYClientVo">
+		UPDATE T_CST_MST SET
+		CST_DEL_YN='Y'
+		WHERE CST_IDX = #{CST_IDX}
+	</update>
+	<!-- client_tbl End -->	
+	
+		
+	<!-- vendor_tbl Start -->
+	<select id="checkVendor" parameterType="SYVendorVo" resultType="int">
+		SELECT COUNT(*) AS cnt
+		FROM T_VDR_MST
+		WHERE VDR_IDX = #{VDR_IDX} AND VDR_DEL_YN = 'N'
+	</select>
 	<select id="selectVendor" parameterType="SYVendorVo" resultType="SYVendorVo">
 		SELECT 
 		VDR_IDX, VDR_NM, VDR_CEO_NM, VDR_PLC, VDR_NO, VDR_ADD, VDR_TEL, VDR_FAX, 
@@ -375,17 +428,16 @@
 		FROM T_VDR_MST  
 		
 		where VDR_DEL_YN = 'N'
-<!-- 
+		<!-- 
 		<if test="VDR_IDX!=null and !''.equals(VDR_IDX) ">
 			AND VDR_IDX = #{VDR_IDX}
 		</if>
- -->		
+ 		-->		
 		<if test="VDR_NM!=null and !''.equals(VDR_NM) ">
 			AND VDR_NM LIKE CONCAT('%', #{VDR_NM}, '%')
 		</if>	   
 		ORDER BY VDR_IDX DESC
 	</select>
-
 	<insert id="insertVendor" parameterType="SYVendorVo">
 		INSERT INTO T_VDR_MST
 		( VDR_NM, VDR_CEO_NM, VDR_NO, VDR_ADD, VDR_TEL, VDR_FAX, VDR_ML1, VDR_ML2, VDR_ML3, VDR_HP, VDR_REG_ID )
@@ -409,16 +461,77 @@
 		VDR_HP = #{VDR_HP}
 		WHERE VDR_IDX = #{VDR_IDX}
 	</update>
-
 	<update id="deleteVendor" parameterType="SYVendorVo">
 		UPDATE T_VDR_MST SET
 		VDR_DEL_YN='Y'
 		WHERE VDR_IDX = #{VDR_IDX}
 	</update>
+	<!-- client_tbl End -->	
 	
-		
+	<!-- Branch_tbl Start -->
+	<select id="checkBranch" parameterType="SYBranchVo" resultType="int">
+		SELECT COUNT(*) AS cnt
+		FROM T_BCO_MST
+		WHERE BCO_IDX = #{BCO_IDX} AND BCO_DEL_YN = 'N'
+	</select>
+	<select id="selectBranch" parameterType="SYBranchVo" resultType="SYBranchVo">
+		SELECT 
+		BCO_IDX, BCO_NM, BCO_CEO_NM, BCO_PLC, BCO_NO, BCO_ADD, BCO_TEL, BCO_FAX, 
+		BCO_ML1, BCO_ML2, BCO_ML3, BCO_HP, BCO_STATE, BCO_REG_DT, BCO_REG_ID 
+		FROM T_BCO_MST  
+		WHERE BCO_DEL_YN = 'N'
+		<!-- 
+		<if test="BCO_IDX!=null and !''.equals(BCO_IDX) ">
+			AND BCO_IDX = #{BCO_IDX}
+		</if>
+ 		-->		
+		<if test="BCO_NM!=null and !''.equals(BCO_NM) ">
+			AND BCO_NM LIKE CONCAT('%', #{BCO_NM}, '%')
+		</if>	  
+		<if test="BCO_PLC!=null and !''.equals(BCO_PLC) ">
+			AND BCO_PLC LIKE CONCAT('%', #{BCO_PLC}, '%')
+		</if>			 
+		ORDER BY BCO_IDX DESC
+	</select>
+	<insert id="insertBranch" parameterType="SYBranchVo">
+		INSERT INTO T_BCO_MST
+		( BCO_NM, BCO_CEO_NM, BCO_PLC, BCO_NO, BCO_ADD, BCO_TEL, BCO_FAX, BCO_ML1, BCO_ML2, BCO_ML3, BCO_HP, BCO_REG_ID )
+		VALUES
+		(
+		#{BCO_NM}, #{BCO_CEO_NM}, #{BCO_PLC}, #{BCO_NO},#{BCO_ADD}, #{BCO_TEL}, #{BCO_FAX}, #{BCO_ML1}, #{BCO_ML2}, #{BCO_ML3}, #{BCO_HP}, #{BCO_REG_ID}
+		)
+	</insert>
+	<update id="updateBranch" parameterType="SYBranchVo">
+		UPDATE T_BCO_MST SET
+		BCO_NM = #{BCO_NM},
+		BCO_CEO_NM = #{BCO_CEO_NM},
+		BCO_PLC = #{BCO_PLC},
+		BCO_NO = #{BCO_NO},
+		BCO_ADD = #{BCO_ADD},
+		BCO_TEL = #{BCO_TEL},
+		BCO_FAX = #{BCO_FAX},
+		BCO_ML1 = #{BCO_ML1},
+		BCO_ML2 = #{BCO_ML2},
+		BCO_ML3 = #{BCO_ML3},
+		BCO_HP = #{BCO_HP}
+		WHERE BCO_IDX = #{BCO_IDX}
+	</update>
+	<update id="deleteBranch" parameterType="SYBranchVo">
+		UPDATE T_BCO_MST SET
+		BCO_DEL_YN='Y'
+		WHERE BCO_IDX = #{BCO_IDX}
+	</update>
+	<!-- Branch_tbl End -->		
 	
-
+	
+	<!-- account_tbl -->
+	<select id="checkAccount" parameterType="SYAccountVo"
+		resultType="int">
+		SELECT COUNT(*) AS cnt
+		FROM account_tbl
+		WHERE account_code = #{account_code}
+	</select>
+	
 	<select id="selectAccount" parameterType="SYAccountVo"
 		resultType="SYAccountVo">
 		SELECT

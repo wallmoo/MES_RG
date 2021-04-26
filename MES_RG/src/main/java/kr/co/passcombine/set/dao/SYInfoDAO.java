@@ -7,6 +7,8 @@ import org.springframework.stereotype.Repository;
 
 import kr.co.passcombine.set.vo.SYAccountVo;
 import kr.co.passcombine.set.vo.SYBomVo;
+import kr.co.passcombine.set.vo.SYBranchVo;
+import kr.co.passcombine.set.vo.SYClientVo;
 import kr.co.passcombine.set.vo.SYCustomerVo;
 import kr.co.passcombine.set.vo.SYIncome_insp_mstVo;
 import kr.co.passcombine.set.vo.SYIncome_resultVo;
@@ -39,12 +41,29 @@ public interface SYInfoDAO {
 	public int updateCustomer(SYCustomerVo vo);
 	public int deleteCustomer(SYCustomerVo vo);
 	
-	//////////
+	// Client Start
+	public int checkClient(SYClientVo vo);
+	public List<SYClientVo> selectClient(SYClientVo vo);
+	public int insertClient(SYClientVo vo);
+	public int updateClient(SYClientVo vo);
+	public int deleteClient(SYClientVo vo);
+	// Client End
+	
+	// Vendor Start
+	public int checkVendor(SYVendorVo vo);
 	public List<SYVendorVo> selectVendor(SYVendorVo vo);
 	public int insertVendor(SYVendorVo vo);
 	public int updateVendor(SYVendorVo vo);
 	public int deleteVendor(SYVendorVo vo);
+	// Vendor End
 	
+	// Branch Start
+	public int checkBranch(SYBranchVo vo);
+	public List<SYBranchVo> selectBranch(SYBranchVo vo);
+	public int insertBranch(SYBranchVo vo);
+	public int updateBranch(SYBranchVo vo);
+	public int deleteBranch(SYBranchVo vo);
+	// Branch End
 	
 	public int checkAccount(SYAccountVo vo);
 	public List<SYAccountVo> selectAccount(SYAccountVo vo);

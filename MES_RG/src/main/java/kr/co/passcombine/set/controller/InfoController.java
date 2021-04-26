@@ -35,6 +35,8 @@ import kr.co.passcombine.set.util.SessionUtil;
 import kr.co.passcombine.set.util.StringUtil;
 import kr.co.passcombine.set.vo.SYAccountVo;
 import kr.co.passcombine.set.vo.SYBomVo;
+import kr.co.passcombine.set.vo.SYBranchVo;
+import kr.co.passcombine.set.vo.SYClientVo;
 import kr.co.passcombine.set.vo.SYCustomerVo;
 import kr.co.passcombine.set.vo.SYDeliveryOrderVo;
 import kr.co.passcombine.set.vo.SYGoalVo;
@@ -292,16 +294,29 @@ public class InfoController {
 		return resultData.toJSONString();
 	}
 	
-	// checkAccount
+	/**
+	* <pre>
+	* 1. MethodName : Client
+	* 2. ClassName  : InfoController.java
+	* 3. Comment    : 관리자 > 거래처관리
+	* 4. 작성자       : DEV_KIMDEUKYONG
+	* 5. 작성일       : 2021. 04. 26.
+	* </pre>
+	*
+	* @param commandMap
+	* @return
+	* @throws Exception
+	*/	
+	// checkClient
 	@SuppressWarnings("unchecked")
 	@ResponseBody
-	@RequestMapping(value = "/account/checkAccount", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
-	public String checkAccount(@ModelAttribute SYAccountVo vo, HttpServletRequest request) {
-		logger.debug("FrontendController.checkAccount() is called.");
+	@RequestMapping(value = "/account/checkClient", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
+	public String checkClient(@ModelAttribute SYClientVo vo, HttpServletRequest request) {
+		logger.debug("FrontendController.checkClient() is called.");
 		JSONObject resultData = new JSONObject();
 		int exist_cnt = 0;
 		try {
-			exist_cnt = sYInfoService.checkAccount(vo);
+			exist_cnt = sYInfoService.checkClient(vo);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("cnt", exist_cnt + "");
 		} catch (Exception e) {
@@ -309,9 +324,153 @@ public class InfoController {
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 		return resultData.toJSONString();
+	}		
+	// selectClient
+	@ResponseBody
+	@RequestMapping(value = "/account/selectClient", method = {
+			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String selectClient(@ModelAttribute SYClientVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.selectClient is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"), "UTF-8" );
+
+			List<SYClientVo> dataList = sYInfoService.selectClient(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+			
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}	
+	// saveClient
+	@ResponseBody
+	@RequestMapping(value = "/account/saveClient", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String saveClient(@ModelAttribute SYClientVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.saveAccount is called.");
+
+		vo.setCST_REG_ID(SessionUtil.getMemberId(request));
+		vo.setCST_REG_DT(SessionUtil.getMemberId(request));
+
+		JSONObject resultData = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
+		JSONParser parser = new JSONParser();
+
+		try {
+			String CST_IDX = "";
+			int cnt = 0;
+			int insertedIDX = 0;
+			
+			String flag = request.getParameter("flag");
+
+			if (flag.equals("I")) {
+				//account_code = sYInfoService.accountCdGen();
+
+				// hKey
+				//vo.setAccount_code(account_code);
+				
+				cnt = sYInfoService.insertClient(vo);
+				
+				insertedIDX = vo.getCST_IDX();//등록된 CST_IDX 값 가져오기
+			} else if (flag.equals("U")) {//Modify
+				CST_IDX = request.getParameter("CST_IDX");
+
+				// hKey
+				vo.setCST_IDX( Integer.parseInt(CST_IDX) );
+				
+				cnt = sYInfoService.updateClient(vo);
+			}
+
+			System.out.println("CST_IDX = " + insertedIDX);
+
+			System.out.println("cnt = " + cnt);
+
+			resultData.put("status", HttpStatus.OK.value());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+
+		return resultData.toJSONString();
+	}
+	// deleteClient
+	@ResponseBody
+	@RequestMapping(value = "/account/deleteClient", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String deleteClient(@ModelAttribute SYClientVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.deleteAccount() is called.");
+
+		JSONObject resultData = new JSONObject();
+		try {
+			int result = 0;
+
+			result = sYInfoService.deleteClient(vo);
+
+			System.out.println("result = " + result);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", 0);
+		}
+		return resultData.toJSONString();
 	}
 	
-	// selectAccount
+	
+	/**
+	* <pre>
+	* 1. MethodName : Vendor
+	* 2. ClassName  : InfoController.java
+	* 3. Comment    : 관리자 > 거래처관리
+	* 4. 작성자       : DEV_KIMDEUKYONG
+	* 5. 작성일       : 2021. 04. 25.
+	* </pre>
+	*
+	* @param commandMap
+	* @return
+	* @throws Exception
+	*/	
+	// checkVendor
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/account/checkVendor", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
+	public String checkVendor(@ModelAttribute SYVendorVo vo, HttpServletRequest request) {
+		logger.debug("FrontendController.checkVendor() is called.");
+		JSONObject resultData = new JSONObject();
+		int exist_cnt = 0;
+		try {
+			exist_cnt = sYInfoService.checkVendor(vo);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("cnt", exist_cnt + "");
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+		return resultData.toJSONString();
+	}		
+	// selectVendor
 	@ResponseBody
 	@RequestMapping(value = "/account/selectVendor", method = {
 			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
@@ -421,6 +580,166 @@ public class InfoController {
 		return resultData.toJSONString();
 	}
 	
+	/**
+	* <pre>
+	* 1. MethodName : Branch
+	* 2. ClassName  : InfoController.java
+	* 3. Comment    : 관리자 > 기업정보관리
+	* 4. 작성자       : DEV_KIMDEUKYONG
+	* 5. 작성일       : 2021. 04. 26.
+	* </pre>
+	*
+	* @param commandMap
+	* @return
+	* @throws Exception
+	*/	
+	// checkBranch
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/account/checkBranch", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
+	public String checkBranch(@ModelAttribute SYBranchVo vo, HttpServletRequest request) {
+		logger.debug("FrontendController.checkBranch() is called.");
+		JSONObject resultData = new JSONObject();
+		int exist_cnt = 0;
+		try {
+			exist_cnt = sYInfoService.checkBranch(vo);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("cnt", exist_cnt + "");
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+		return resultData.toJSONString();
+	}		
+	// selectBranch
+	@ResponseBody
+	@RequestMapping(value = "/account/selectBranch", method = {
+			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String selectBranch(@ModelAttribute SYBranchVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.selectBranch is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"), "UTF-8" );
+
+			List<SYBranchVo> dataList = sYInfoService.selectBranch(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+						
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}	
+	// saveBranch
+	@ResponseBody
+	@RequestMapping(value = "/account/saveBranch", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String saveBranch(@ModelAttribute SYBranchVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.saveAccount is called.");
+
+		vo.setBCO_REG_ID(SessionUtil.getMemberId(request));
+		vo.setBCO_REG_DT(SessionUtil.getMemberId(request));
+
+		JSONObject resultData = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
+		JSONParser parser = new JSONParser();
+
+		try {
+			String BCO_IDX = "";
+			int cnt = 0;
+
+			String flag = request.getParameter("flag");
+
+			if (flag.equals("I")) {
+				//account_code = sYInfoService.accountCdGen();
+
+				// hKey
+				//vo.setAccount_code(account_code);
+				
+				cnt = sYInfoService.insertBranch(vo);
+			} else if (flag.equals("U")) {//Modify
+				BCO_IDX = request.getParameter("BCO_IDX");
+
+				// hKey
+				vo.setBCO_IDX( Integer.parseInt(BCO_IDX) );
+				
+				cnt = sYInfoService.updateBranch(vo);
+			}
+
+			System.out.println("BCO_IDX = " + BCO_IDX);
+
+			System.out.println("cnt = " + cnt);
+
+			resultData.put("status", HttpStatus.OK.value());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+
+		return resultData.toJSONString();
+	}
+	// deleteBranch
+	@ResponseBody
+	@RequestMapping(value = "/account/deleteBranch", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String deleteBranch(@ModelAttribute SYBranchVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.deleteAccount() is called.");
+
+		JSONObject resultData = new JSONObject();
+		try {
+			int result = 0;
+
+			result = sYInfoService.deleteBranch(vo);
+
+			System.out.println("result = " + result);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", 0);
+		}
+		return resultData.toJSONString();
+	}
+	
+	
+	// checkAccount
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/account/checkAccount", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
+	public String checkAccount(@ModelAttribute SYAccountVo vo, HttpServletRequest request) {
+		logger.debug("FrontendController.checkAccount() is called.");
+		JSONObject resultData = new JSONObject();
+		int exist_cnt = 0;
+		try {
+			exist_cnt = sYInfoService.checkAccount(vo);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("cnt", exist_cnt + "");
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+		return resultData.toJSONString();
+	}	
 	
 	// selectAccount
 	@ResponseBody

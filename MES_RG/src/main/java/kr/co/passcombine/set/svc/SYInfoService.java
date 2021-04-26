@@ -43,6 +43,8 @@ import kr.co.passcombine.set.dao.SYProductDAO;
 import kr.co.passcombine.set.dao.SYPurchaseOrderDAO;
 import kr.co.passcombine.set.vo.SYAccountVo;
 import kr.co.passcombine.set.vo.SYBomVo;
+import kr.co.passcombine.set.vo.SYBranchVo;
+import kr.co.passcombine.set.vo.SYClientVo;
 //import kr.co.passcombine.changwon.vo.SYLineVo;
 //import kr.co.passcombine.changwon.vo.SYProdVo;
 //import kr.co.passcombine.changwon.vo.SYScmRawSernrVo;
@@ -124,8 +126,30 @@ public class SYInfoService {
 	public int deleteCustomer(SYCustomerVo vo) {
 		return infoDAO.deleteCustomer(vo);
 	}
-
 	
+	
+	// Client Start
+	public int checkClient(SYClientVo vo) {
+		return infoDAO.checkClient(vo);
+	}		
+	public List<SYClientVo> selectClient(SYClientVo cVo){
+		return infoDAO.selectClient(cVo);
+	}	
+	public int insertClient(SYClientVo vo) {
+		return infoDAO.insertClient(vo);
+	}	
+	public int updateClient(SYClientVo vo) {
+		return infoDAO.updateClient(vo);
+	}
+	public int deleteClient(SYClientVo vo) {
+		return infoDAO.deleteClient(vo);
+	}	
+	// Client End
+	
+	// Vendor Start
+	public int checkVendor(SYVendorVo vo) {
+		return infoDAO.checkVendor(vo);
+	}	
 	public List<SYVendorVo> selectVendor(SYVendorVo cVo){
 		return infoDAO.selectVendor(cVo);
 	}	
@@ -138,6 +162,25 @@ public class SYInfoService {
 	public int deleteVendor(SYVendorVo vo) {
 		return infoDAO.deleteVendor(vo);
 	}	
+	// Vendor End
+	
+	// Branch Start
+	public int checkBranch(SYBranchVo vo) {
+		return infoDAO.checkBranch(vo);
+	}		
+	public List<SYBranchVo> selectBranch(SYBranchVo cVo){
+		return infoDAO.selectBranch(cVo);
+	}	
+	public int insertBranch(SYBranchVo vo) {
+		return infoDAO.insertBranch(vo);
+	}	
+	public int updateBranch(SYBranchVo vo) {
+		return infoDAO.updateBranch(vo);
+	}
+	public int deleteBranch(SYBranchVo vo) {
+		return infoDAO.deleteBranch(vo);
+	}	
+	// Branch End	
 	
 	// Account
 	public int checkAccount(SYAccountVo vo) {

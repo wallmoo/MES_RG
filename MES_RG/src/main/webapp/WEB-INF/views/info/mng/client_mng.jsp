@@ -3,7 +3,7 @@
 <%
 // jsp properties
 String thema = "purple"; //SessionUtil.getProperties("mes.thema");
-String pageTitle = "SET Vendor"; //SessionUtil.getProperties("mes.company");
+String pageTitle = "SET Client"; //SessionUtil.getProperties("mes.company");
 %>
 <!DOCTYPE html>
 <html>
@@ -35,17 +35,17 @@ String pageTitle = "SET Vendor"; //SessionUtil.getProperties("mes.company");
 	<jsp:include page="/common/sidebar_menu_inc" flush="true">
 		<jsp:param name="menu_div" value="F" />
 		<jsp:param name="selected_menu_p_cd" value="1012" />
-		<jsp:param name="selected_menu_cd" value="1111" />
+		<jsp:param name="selected_menu_cd" value="1112" />
 	</jsp:include>
 
  <div class="content-wrapper">
     <section class="content-header">
       <h1>
-        거래처 관리
+        고객사 관리
         <small>기준정보관리</small>
       </h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> 기준정보관리</a></li><li class="active">거래처 관리</li>
+        <li><a href="#"><i class="fa fa-dashboard"></i> 기준정보관리</a></li><li class="active">고객사 관리</li>
       </ol>
     </section>
 
@@ -77,10 +77,10 @@ String pageTitle = "SET Vendor"; //SessionUtil.getProperties("mes.company");
 
 							<div class="col-sm-2">
 								<div class="form-group">
-									 <label>거래처명</label> 
-									  <input type="combo" id="S_VDR_NM" name="S_VDR_NM" class="form-control input-sm" placeholder="거래처명" 
+									 <label>고객사명</label> 
+									  <input type="combo" id="S_CST_NM" name="S_CST_NM" class="form-control input-sm" placeholder="고객사명" 
 												onkeypress="if(event.keyCode==13) {loadList(); return false;}" >
-<!-- 									 <input type="text" id="VDR_NM" name="VDR_NM" class="form-control input-sm" placeholder="거래처명" -->
+<!-- 									 <input type="text" id="CST_NM" name="CST_NM" class="form-control input-sm" placeholder="고객사명" -->
 <!-- 										maxlength="15" onkeypress="if(event.keyCode==13) {loadList(); return false;}" > -->
 								</div>
 							</div>
@@ -114,18 +114,18 @@ String pageTitle = "SET Vendor"; //SessionUtil.getProperties("mes.company");
 				<form id="frm_routingItnbr" name="frm_routingItnbr" class="form-horizontal">	
 					<div class="row">
 						<div class="form-group">
-							<label for="" class="col-sm-3 control-label">거래처코드</label>
+							<label for="" class="col-sm-3 control-label">고객사코드</label>
 							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm pull-right" id="VDR_IDX" maxlength="100" readonly="readonly">
+								<input type="text" class="form-control input-sm pull-right" id="CST_IDX" maxlength="100" readonly="readonly">
 							</div>
 						</div>
 					</div>
 									
 					<div class="row">
 						<div class="form-group">
-							<label for="" class="col-sm-3 control-label">거래처명</label>
+							<label for="" class="col-sm-3 control-label">고객사명</label>
 							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm pull-right" id="VDR_NM" maxlength="30">
+								<input type="text" class="form-control input-sm pull-right" id="CST_NM" maxlength="30">
 							</div>
 						</div>
 					</div>
@@ -134,16 +134,16 @@ String pageTitle = "SET Vendor"; //SessionUtil.getProperties("mes.company");
 						<div class="form-group">
 							<label for="" class="col-sm-3 control-label">사업자번호</label>
 							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm pull-right" id="VDR_NO" maxlength="20">
+								<input type="text" class="form-control input-sm pull-right" id="CST_NO" maxlength="20">
 							</div>
 						</div>
 					</div>
 
 					<div class="row">
 						<div class="form-group">
-							<label for="" class="col-sm-3 control-label">대표자</label>
+							<label for="" class="col-sm-3 control-label">사업장</label>
 							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm pull-right" id="VDR_CEO_NM" maxlength="10">
+								<input type="text" class="form-control input-sm pull-right" id="CST_PLC" maxlength="10">
 							</div>
 						</div>
 					</div>	
@@ -152,7 +152,7 @@ String pageTitle = "SET Vendor"; //SessionUtil.getProperties("mes.company");
 						<div class="form-group">
 							<label for="" class="col-sm-3 control-label">주소</label>
 							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm" id="VDR_ADD" value="" maxlength="60">
+								<input type="text" class="form-control input-sm" id="CST_ADD" value="" maxlength="60">
 							</div>
 							
 						</div>
@@ -162,7 +162,7 @@ String pageTitle = "SET Vendor"; //SessionUtil.getProperties("mes.company");
 						<div class="form-group">
 							<label for="" class="col-sm-3 control-label">전화번호</label>
 							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm" id="VDR_TEL" maxlength="14">
+								<input type="text" class="form-control input-sm" id="CST_TEL" maxlength="14">
 							</div>
 						</div>
 					</div>
@@ -171,7 +171,7 @@ String pageTitle = "SET Vendor"; //SessionUtil.getProperties("mes.company");
 						<div class="form-group">
 							<label for="" class="col-sm-3 control-label">팩스</label>
 							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm" id="VDR_FAX" maxlength="14">
+								<input type="text" class="form-control input-sm" id="CST_FAX" maxlength="14">
 							</div>
 						</div>
 					</div>
@@ -180,7 +180,7 @@ String pageTitle = "SET Vendor"; //SessionUtil.getProperties("mes.company");
 						<div class="form-group">
 							<label for="" class="col-sm-3 control-label">이메일#1</label>
 							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm" id="VDR_ML1" maxlength="60">
+								<input type="text" class="form-control input-sm" id="CST_ML1" maxlength="60">
 							</div>
 						</div>
 					</div>
@@ -189,7 +189,7 @@ String pageTitle = "SET Vendor"; //SessionUtil.getProperties("mes.company");
 						<div class="form-group">
 							<label for="" class="col-sm-3 control-label">이메일#2</label>
 							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm pull-right" id="VDR_ML2" maxlength="60">
+								<input type="text" class="form-control input-sm pull-right" id="CST_ML2" maxlength="60">
 							</div>
 						</div>
 					</div>
@@ -198,7 +198,7 @@ String pageTitle = "SET Vendor"; //SessionUtil.getProperties("mes.company");
 						<div class="form-group">
 							<label for="" class="col-sm-3 control-label">이메일#3</label>
 							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm" id="VDR_ML3" maxlength="60">
+								<input type="text" class="form-control input-sm" id="CST_ML3" maxlength="60">
 							</div>
 						</div>
 					</div>
@@ -207,7 +207,7 @@ String pageTitle = "SET Vendor"; //SessionUtil.getProperties("mes.company");
 						<div class="form-group">
 							<label for="" class="col-sm-3 control-label">URL</label>
 							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm" id="VDR_HP" maxlength="50">
+								<input type="text" class="form-control input-sm" id="CST_HP" maxlength="50">
 							</div>
 						</div>
 					</div>					
@@ -239,14 +239,14 @@ String pageTitle = "SET Vendor"; //SessionUtil.getProperties("mes.company");
 <!-- ./wrapper -->
 
 <script type="text/javascript">
-var startValue_combo = "";
-
-comboValue_nm = new Array;
-comboValue_cd = new Array;
-
-$(function($) {
-	fnLoadCompanyGrid();
-})
+	var startValue_combo = "";
+	
+	comboValue_nm = new Array;
+	comboValue_cd = new Array;
+	
+	$(function($) {
+		fnLoadCompanyGrid();
+	})
 
 	function fnLoadCompanyGrid(){
 	// 	 console.log(page_url);
@@ -261,18 +261,18 @@ $(function($) {
 	        },
 	        multiSelect: false,
 	        columns: [                
-	        	{ field:'vdr_IDX', caption:'거래처코드', size:'7%', style:'text-align:center' , sortable: true},
-	        	{ field:'vdr_NM', caption:'거래처명', size:'10%', style:'text-align:center', sortable: true},
-	        	{ field:'vdr_CEO_NM', caption:'대표자', size:'10%', style:'text-align:center' , sortable: true},
-				{ field:'vdr_ADD', caption:'주소', size:'17%', style:'text-align:center', sortable: true},
-				{ field:'vdr_TEL', caption:'전화번호', size:'8%', style:'text-align:center', sortable: true}, 
-				{ field:'vdr_FAX', caption:'팩스', size:'8%', style:'text-align:center', sortable: true}, 
-				{ field:'vdr_ML1', caption:'이메일#1', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'vdr_ML2', caption:'이메일#2', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'vdr_ML3', caption:'이메일#3', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'vdr_NO', caption:'사업자번호', size:'7%', style:'text-align:center', sortable: true}
+	        	{ field:'cst_IDX', caption:'고객사코드', size:'7%', style:'text-align:center' , sortable: true},
+	        	{ field:'cst_NM', caption:'고객사명', size:'10%', style:'text-align:center', sortable: true},
+	        	{ field:'cst_PLC', caption:'사업장', size:'10%', style:'text-align:center' , sortable: true},
+				{ field:'cst_ADD', caption:'주소', size:'17%', style:'text-align:center', sortable: true},
+				{ field:'cst_TEL', caption:'전화번호', size:'8%', style:'text-align:center', sortable: true}, 
+				{ field:'cst_FAX', caption:'팩스', size:'8%', style:'text-align:center', sortable: true}, 
+				{ field:'cst_ML1', caption:'이메일#1', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'cst_ML2', caption:'이메일#2', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'cst_ML3', caption:'이메일#3', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'cst_NO', caption:'사업자번호', size:'7%', style:'text-align:center', sortable: true}
 				], 
-			sortData: [{field: 'vdr_IDX', direction: 'DESC'}],
+			sortData: [{field: 'cst_IDX', direction: 'DESC'}],
 			records: [],	//
 			onReload: function(event) {
 				//loadList();
@@ -285,8 +285,8 @@ $(function($) {
 	function loadList() {
 		console.log("loadList()");
 		
-		var page_url = "/info/account/selectVendor";
-		var postData = "VDR_NM=" + encodeURIComponent($("#S_VDR_NM").val());
+		var page_url = "/info/account/selectClient";
+		var postData = "CST_NM=" + encodeURIComponent($("#S_CST_NM").val());
 
 		w2ui['grid_list'].lock('loading...', true);
 		$.ajax({
@@ -302,14 +302,14 @@ $(function($) {
 					$.each(rowArr, function(idx, row){
 						row.recid = idx+1;
 						if (startValue_combo == "") {
-							comboValue_nm.push(row.VDR_NM ? row.VDR_NM+'' : '');
-							comboValue_cd.push(row.VDR_IDX ? row.VDR_IDX+'' : '');
+							comboValue_nm.push(row.cst_NM ? row.cst_NM+'' : '');
+							comboValue_cd.push(row.cst_IDX ? row.cst_IDX+'' : '');
 						}
 					});
 					w2ui['grid_list'].records = rowArr;
 					if (startValue_combo == "") {
-						$('#VDR_NM').w2field('combo', { items: comboValue_nm, match : 'contains' });
-						$('#VDR_IDX').w2field('combo', { items: comboValue_cd, match : 'contains' });
+						$('#CST_NM').w2field('combo', { items: comboValue_nm, match : 'contains' });
+						$('#CST_IDX').w2field('combo', { items: comboValue_cd, match : 'contains' });
 					}
 				} else {
 					w2ui.grid_list.clear();
@@ -331,16 +331,16 @@ $(function($) {
 		// insert
 		$("#modal_code_title").text('등록');
  		
- 		$("#VDR_NM").val('');
-		$("#VDR_CEO_NM").val('');
-		$("#VDR_ADD").val('');
-		$("#VDR_TEL").val('');
-		$("#VDR_FAX").val('');
-		$("#VDR_ML1").val('');
-		$("#VDR_ML2").val('');
-		$("#VDR_ML3").val('');
-		$("#VDR_HP").val('');
-		$("#VDR_NO").val('');
+ 		$("#CST_NM").val('');
+		$("#CST_PLC").val('');
+		$("#CST_ADD").val('');
+		$("#CST_TEL").val('');
+		$("#CST_FAX").val('');
+		$("#CST_ML1").val('');
+		$("#CST_ML2").val('');
+		$("#CST_ML3").val('');
+		$("#CST_HP").val('');
+		$("#CST_NO").val('');
 
 		$("#modal_info").modal('show');
 	}
@@ -355,17 +355,17 @@ $(function($) {
 			
 			var data = w2ui.grid_list.get(key[0]);			
 			
-			$("#VDR_IDX").val(data.vdr_IDX);
-			$("#VDR_NM").val(data.vdr_NM);
-			$("#VDR_CEO_NM").val(data.vdr_CEO_NM);
-			$("#VDR_ADD").val(data.vdr_ADD);
-			$("#VDR_TEL").val(data.vdr_TEL);
-			$("#VDR_FAX").val(data.vdr_FAX);
-			$("#VDR_ML1").val(data.vdr_ML1);
-			$("#VDR_ML2").val(data.vdr_ML2);
-			$("#VDR_ML3").val(data.vdr_ML3);
-			$("#VDR_HP").val(data.vdr_HP);
-			$("#VDR_NO").val(data.vdr_NO);
+			$("#CST_IDX").val(data.cst_IDX);
+			$("#CST_NM").val(data.cst_NM);
+			$("#CST_PLC").val(data.cst_CEO_NM);
+			$("#CST_ADD").val(data.cst_ADD);
+			$("#CST_TEL").val(data.cst_TEL);
+			$("#CST_FAX").val(data.cst_FAX);
+			$("#CST_ML1").val(data.cst_ML1);
+			$("#CST_ML2").val(data.cst_ML2);
+			$("#CST_ML3").val(data.cst_ML3);
+			$("#CST_HP").val(data.cst_HP);
+			$("#CST_NO").val(data.cst_NO);
 			
 			$("#modal_info").modal('show');
 		} else {
@@ -377,63 +377,63 @@ $(function($) {
 	function saveAccount() {
 		console.log('saveAccount()');
 		
-		var VDR_IDX = $("#VDR_IDX").val();
-		var VDR_NM = $("#VDR_NM").val();
-		var VDR_CEO_NM = $("#VDR_CEO_NM").val();
-		var VDR_ADD = $("#VDR_ADD").val();
-		var VDR_TEL = $("#VDR_TEL").val();
-		var VDR_FAX = $("#VDR_FAX").val();
-		var VDR_ML1 = $("#VDR_ML1").val();
-		var VDR_ML2 = $("#VDR_ML2").val();
-		var VDR_ML3 = $("#VDR_ML3").val();
-		var VDR_HP = $("#VDR_HP").val();
-		var VDR_NO = $("#VDR_NO").val();
+		var CST_IDX = $("#CST_IDX").val();
+		var CST_NM = $("#CST_NM").val();
+		var CST_PLC = $("#CST_PLC").val();
+		var CST_ADD = $("#CST_ADD").val();
+		var CST_TEL = $("#CST_TEL").val();
+		var CST_FAX = $("#CST_FAX").val();
+		var CST_ML1 = $("#CST_ML1").val();
+		var CST_ML2 = $("#CST_ML2").val();
+		var CST_ML3 = $("#CST_ML3").val();
+		var CST_HP = $("#CST_HP").val();
+		var CST_NO = $("#CST_NO").val();
 		
 		var key = w2ui.grid_list.getSelection();
 		
 		if( key.length==0 ) {
 			flag = "I";	
-			VDR_IDX = 0;
+			CST_IDX = 0;
 		} else if (key.length == 1){
 			flag = "U";
 		}
 
-		//if(flag=="I" && !chkSubmit($("#m_account_code"), "거래처코드를")) return;
-		if(flag=="I" && !chkSubmit($("#VDR_NM"), "거래처명을")) return;
-// 		if(flag=="I" && !chkSubmit($("#VDR_CEO_NM"), "대표자 이름을")) return; 			
-// 		if(flag=="I" && !chkSubmit($("#VDR_ADD"), "주소를")) return; 	
-// 		if(flag=="I" && !chkSubmit($("#VDR_TEL"), "전화번호를")) return;
-// 		if(flag=="I" && !chkSubmit($("#VDR_FAX"), "팩스를")) return;
-// 		if(flag=="I" && !chkSubmit($("#VDR_ML1"), "이메일을")) return;
-// 		if(flag=="I" && !chkSubmit($("#VDR_NO"), "사업자번호를")) return;
+		//if(flag=="I" && !chkSubmit($("#m_account_code"), "고객사코드를")) return;
+		if(flag=="I" && !chkSubmit($("#CST_NM"), "고객사명을")) return;
+// 		if(flag=="I" && !chkSubmit($("#CST_CEO_NM"), "대표자 이름을")) return; 			
+// 		if(flag=="I" && !chkSubmit($("#CST_ADD"), "주소를")) return; 	
+// 		if(flag=="I" && !chkSubmit($("#CST_TEL"), "전화번호를")) return;
+// 		if(flag=="I" && !chkSubmit($("#CST_FAX"), "팩스를")) return;
+// 		if(flag=="I" && !chkSubmit($("#CST_ML1"), "이메일을")) return;
+// 		if(flag=="I" && !chkSubmit($("#CST_NO"), "사업자번호를")) return;
 		
 		// var flag = nullToBlank(account_code)==''?"I":"U";
 		console.log("flag = " + flag);
 		
-// 		console.log( "VDR_IDX = " + $("#VDR_IDX").val() );
-// 		console.log( "VDR_NM = " +$("#VDR_NM").val() );
-// 		console.log( "VDR_CEO_NM = " +$("#VDR_CEO_NM").val() );
-// 		console.log( "VDR_ADD = " +$("#VDR_ADD").val() );
-// 		console.log( "VDR_TEL = " +$("#VDR_TEL").val() );
-// 		console.log( "VDR_FAX = " +$("#VDR_FAX").val() );
-// 		console.log( "VDR_ML1 = " +$("#VDR_ML1").val() );
-// 		console.log( "VDR_NO = " +$("#VDR_NO").val() );
+// 		console.log( "CST_IDX = " + $("#CST_IDX").val() );
+// 		console.log( "CST_NM = " +$("#CST_NM").val() );
+// 		console.log( "CST_CEO_NM = " +$("#CST_CEO_NM").val() );
+// 		console.log( "CST_ADD = " +$("#CST_ADD").val() );
+// 		console.log( "CST_TEL = " +$("#CST_TEL").val() );
+// 		console.log( "CST_FAX = " +$("#CST_FAX").val() );
+// 		console.log( "CST_ML1 = " +$("#CST_ML1").val() );
+// 		console.log( "CST_NO = " +$("#CST_NO").val() );
 		
 		$("#modal_info").modal('hide');
 		
-		var strUrl = "/info/account/saveVendor";
+		var strUrl = "/info/account/saveClient";
 		var postData = "flag=" + flag
-				+ "&VDR_IDX=" + encodeURIComponent(VDR_IDX)
-				+ "&VDR_NM=" + encodeURIComponent(VDR_NM)
-				+ "&VDR_CEO_NM=" + encodeURIComponent(VDR_CEO_NM)
-				+ "&VDR_ADD=" + encodeURIComponent(VDR_ADD)
-				+ "&VDR_TEL=" + encodeURIComponent(VDR_TEL)
-				+ "&VDR_FAX=" + encodeURIComponent(VDR_FAX)
-				+ "&VDR_ML1=" + encodeURIComponent(VDR_ML1)
-				+ "&VDR_ML2=" + encodeURIComponent(VDR_ML2)
-				+ "&VDR_ML3=" + encodeURIComponent(VDR_ML3)
-				+ "&VDR_HP=" + encodeURIComponent(VDR_HP)
-				+ "&VDR_NO=" + encodeURIComponent(VDR_NO);
+				+ "&CST_IDX=" + encodeURIComponent(CST_IDX)
+				+ "&CST_NM=" + encodeURIComponent(CST_NM)
+				+ "&CST_PLC=" + encodeURIComponent(CST_PLC)
+				+ "&CST_ADD=" + encodeURIComponent(CST_ADD)
+				+ "&CST_TEL=" + encodeURIComponent(CST_TEL)
+				+ "&CST_FAX=" + encodeURIComponent(CST_FAX)
+				+ "&CST_ML1=" + encodeURIComponent(CST_ML1)
+				+ "&CST_ML2=" + encodeURIComponent(CST_ML2)
+				+ "&CST_ML3=" + encodeURIComponent(CST_ML3)
+				+ "&CST_HP=" + encodeURIComponent(CST_HP)
+				+ "&CST_NO=" + encodeURIComponent(CST_NO);
 				 
 		// escape(
 		
@@ -470,14 +470,14 @@ $(function($) {
 		} else {
  
 			var data = w2ui.grid_list.get(key[0]);
-			var code = data.vdr_IDX;
+			var code = data.CST_IDX;
 			
 			fnMessageModalConfirm("알림", "선택한 내용을 삭제하시겠습니까?", function(result) {
 				if(result) {
 					console.log("code = " + code);
 					
-					var strUrl = "/info/account/deleteVendor";
-					var postData = "VDR_IDX=" + code;
+					var strUrl = "/info/account/deleteClient";
+					var postData = "CST_IDX=" + code;
 					
 					$.ajax({
 						 url: strUrl,
@@ -512,9 +512,9 @@ $(function($) {
 		var gridCols = w2ui['grid_list'].columns;
 		var gridData = w2ui['grid_list'].records;
 
-		var fileName = '거래처 관리.xlsx';
-		var sheetTitle = '거래처 관리';
-		var sheetName = '거래처 관리';
+		var fileName = '고객사 관리.xlsx';
+		var sheetTitle = '고객사 관리';
+		var sheetName = '고객사 관리';
 		
 		var param_col_name = "", param_col_id="", param_col_align="", param_col_width="";
 		var is_rownum = true;
