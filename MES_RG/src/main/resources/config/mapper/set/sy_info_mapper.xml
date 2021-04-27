@@ -598,6 +598,72 @@
 	</select>		
 	<!-- Material_tbl End -->		
 	
+	<!-- Project_tbl Start -->
+	<select id="checkProject" parameterType="SYTProjectVo" resultType="int">
+		SELECT COUNT(*) AS cnt
+		FROM T_PJT_MST
+		WHERE PJT_IDX = #{PJT_IDX} AND PJT_DEL_YN = 'N'
+	</select>
+	<select id="selectProject" parameterType="SYTProjectVo" resultType="SYTProjectVo">
+		SELECT 
+		PJT_IDX, CST_IDX, PJT_GRD, PJT_NM, PJT_CD, PJT_PRD_NM, PJT_PRD_QTY, PJT_PRD_UNT, PJT_DLV_DT, PJT_REG_DT 
+		FROM T_PJT_MST  
+		WHERE PJT_DEL_YN = 'N'
+		
+		<!-- 
+		<if test="PJT_IDX!=null and !''.equals(PJT_IDX) ">
+			AND PJT_IDX = #{PJT_IDX}
+		</if>
+		 -->
+		<if test="PJT_NM!=null and !''.equals(PJT_NM) ">
+			AND PJT_NM LIKE CONCAT('%', #{PJT_NM}, '%')
+		</if>	  
+		<if test="PJT_GRD!=null and !''.equals(PJT_GRD) ">
+			AND PJT_GRD LIKE CONCAT('%', #{PJT_GRD}, '%')
+		</if>	
+					 
+		ORDER BY PJT_IDX DESC
+	</select>
+	<insert id="insertProject" parameterType="SYTProjectVo">
+		INSERT INTO T_PJT_MST
+		( CST_IDX, PJT_GRD, PJT_NM, PJT_CD, PJT_PRD_NM, PJT_PRD_QTY, PJT_PRD_UNT, 
+		
+		<if test="PJT_DLV_DT!=null and !''.equals(PJT_DLV_DT) ">
+			PJT_DLV_DT,
+		</if>		
+		
+		PJT_REG_ID )
+		VALUES
+		(
+		#{CST_IDX}, #{PJT_GRD}, #{PJT_NM}, #{PJT_CD},#{PJT_PRD_NM}, #{PJT_PRD_QTY}, #{PJT_PRD_UNT}, 
+		
+		<if test="PJT_DLV_DT!=null and !''.equals(PJT_DLV_DT) ">
+			#{PJT_DLV_DT}, 
+		</if>			
+		
+		#{PJT_REG_ID}
+		)
+	</insert>
+	<update id="updateProject" parameterType="SYTProjectVo">
+		UPDATE T_PJT_MST SET
+		CST_IDX = #{CST_IDX},
+		PJT_GRD = #{PJT_GRD},
+		PJT_NM = #{PJT_NM},
+		PJT_CD = #{PJT_CD},
+		PJT_PRD_NM = #{PJT_PRD_NM},
+		PJT_PRD_QTY = #{PJT_PRD_QTY},
+		PJT_PRD_UNT = #{PJT_PRD_UNT},
+		PJT_DLV_DT = #{PJT_DLV_DT},
+		PJT_REG_DT = #{PJT_REG_DT}
+		WHERE PJT_IDX = #{PJT_IDX}
+	</update>
+	<update id="deleteProject" parameterType="SYTProjectVo">
+		UPDATE T_PJT_MST SET
+		PJT_DEL_YN='Y'
+		WHERE PJT_IDX = #{PJT_IDX}
+	</update>
+	<!-- Project_tbl End -->			
+	
 	<!-- account_tbl -->
 	<select id="checkAccount" parameterType="SYAccountVo"
 		resultType="int">
