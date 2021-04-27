@@ -46,6 +46,7 @@ import kr.co.passcombine.set.vo.SYBomVo;
 import kr.co.passcombine.set.vo.SYTBranchVo;
 import kr.co.passcombine.set.vo.SYTClientVo;
 import kr.co.passcombine.set.vo.SYTMaterialVo;
+import kr.co.passcombine.set.vo.SYTProjectVo;
 //import kr.co.passcombine.changwon.vo.SYLineVo;
 //import kr.co.passcombine.changwon.vo.SYProdVo;
 //import kr.co.passcombine.changwon.vo.SYScmRawSernrVo;
@@ -199,14 +200,13 @@ public class SYInfoService {
 	public int deleteMaterial(SYTMaterialVo vo) {
 		return infoDAO.deleteMaterial(vo);
 	}	
-	public List<SYTMaterialVo> excelLoad(SYTMaterialVo vo) {
+	
+	public List<SYMaterialVo> excelLoad(SYMaterialVo vo) {
 		return infoDAO.excelLoad(vo);
 	}
-	public Integer excelMax(SYTMaterialVo vo) {
+	public Integer excelMax(SYMaterialVo vo) {
 		return infoDAO.excelMax(vo);
 	}
-	
-	
 	public List<SYMaterialVo> selectMaterial2(SYMaterialVo vo) {
 		return infoDAO.selectMaterial2(vo);
 	}	
@@ -229,6 +229,25 @@ public class SYInfoService {
 		return infoDAO.selectItemCode3(vo);
 	}	
 	// Material End
+	
+	// Project Start
+	public int checkProject(SYTProjectVo vo) {
+		return infoDAO.checkProject(vo);
+	}		
+	public List<SYTProjectVo> selectProject(SYTProjectVo cVo){
+		return infoDAO.selectProject(cVo);
+	}	
+	public int insertProject(SYTProjectVo vo) {
+		return infoDAO.insertProject(vo);
+	}	
+	public int updateProject(SYTProjectVo vo) {
+		return infoDAO.updateProject(vo);
+	}
+	public int deleteProject(SYTProjectVo vo) {
+		return infoDAO.deleteProject(vo);
+	}	
+	// Project End		
+	
 	
 	// Account
 	public int checkAccount(SYAccountVo vo) {

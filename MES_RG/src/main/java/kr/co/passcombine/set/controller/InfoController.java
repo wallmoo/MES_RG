@@ -38,6 +38,7 @@ import kr.co.passcombine.set.vo.SYBomVo;
 import kr.co.passcombine.set.vo.SYTBranchVo;
 import kr.co.passcombine.set.vo.SYTClientVo;
 import kr.co.passcombine.set.vo.SYTMaterialVo;
+import kr.co.passcombine.set.vo.SYTProjectVo;
 import kr.co.passcombine.set.vo.SYCustomerVo;
 import kr.co.passcombine.set.vo.SYDeliveryOrderVo;
 import kr.co.passcombine.set.vo.SYGoalVo;
@@ -862,6 +863,145 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
+
+	/**
+	* <pre>
+	* 1. MethodName : Project
+	* 2. ClassName  : InfoController.java
+	* 3. Comment    : 관리자 > 프로젝트 > 프로젝트 관리
+	* 4. 작성자       : DEV_KIMDEUKYONG
+	* 5. 작성일       : 2021. 04. 27.
+	* </pre>
+	*
+	* @param commandMap
+	* @return
+	* @throws Exception
+	*/		
+	// checkProject
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/account/checkProject", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
+	public String checkProject(@ModelAttribute SYTProjectVo vo, HttpServletRequest request) {
+		logger.debug("FrontendController.checkProject() is called.");
+		JSONObject resultData = new JSONObject();
+		int exist_cnt = 0;
+		try {
+			exist_cnt = sYInfoService.checkProject(vo);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("cnt", exist_cnt + "");
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+		return resultData.toJSONString();
+	}		
+	// selectProject
+	@ResponseBody
+	@RequestMapping(value = "/account/selectProject", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String selectProject(@ModelAttribute SYTProjectVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.selectProject is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			List<SYTProjectVo> dataList = sYInfoService.selectProject(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+						
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}	
+	// saveProject
+	@ResponseBody
+	@RequestMapping(value = "/account/saveProject", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String saveProject(@ModelAttribute SYTProjectVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.saveAccount is called.");
+
+		vo.setPJT_REG_ID(SessionUtil.getMemberId(request));
+		vo.setPJT_REG_DT(SessionUtil.getMemberId(request));
+
+		JSONObject resultData = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
+		JSONParser parser = new JSONParser();
+
+		try {
+			String PJT_IDX = "";
+			int cnt = 0;
+
+			String flag = request.getParameter("flag");
+
+			if (flag.equals("I")) {
+				//account_code = sYInfoService.accountCdGen();
+
+				// hKey
+				//vo.setAccount_code(account_code);
+				
+				cnt = sYInfoService.insertProject(vo);
+			} else if (flag.equals("U")) {//Modify
+				PJT_IDX = request.getParameter("PJT_IDX");
+
+				// hKey
+				vo.setPJT_IDX( Integer.parseInt(PJT_IDX) );
+				
+				cnt = sYInfoService.updateProject(vo);
+			}
+
+			System.out.println("PJT_IDX = " + PJT_IDX);
+
+			System.out.println("cnt = " + cnt);
+
+			resultData.put("status", HttpStatus.OK.value());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+
+		return resultData.toJSONString();
+	}
+	// deleteProject
+	@ResponseBody
+	@RequestMapping(value = "/account/deleteProject", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String deleteProject(@ModelAttribute SYTProjectVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.deleteAccount() is called.");
+
+		JSONObject resultData = new JSONObject();
+		try {
+			int result = 0;
+
+			result = sYInfoService.deleteProject(vo);
+
+			System.out.println("result = " + result);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", 0);
+		}
+		return resultData.toJSONString();
+	}
+	
 	
 	
 	
@@ -3318,7 +3458,7 @@ public class InfoController {
 		@SuppressWarnings("unchecked")
 		@ResponseBody
 		@RequestMapping(value = "/material/excelMax", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
-		public String excelMax(@ModelAttribute SYTMaterialVo vo, HttpServletRequest request) {
+		public String excelMax(@ModelAttribute SYMaterialVo vo, HttpServletRequest request) {
 			logger.debug("FrontendController.excelMax() is called.");
 			JSONObject resultData = new JSONObject();
 			int exist_cnt = 0;
@@ -3337,7 +3477,7 @@ public class InfoController {
 	@RequestMapping(value = "/material/excelLoad", method = {
 			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String excelLoad(@ModelAttribute SYTMaterialVo vo,
+	public String excelLoad(@ModelAttribute SYMaterialVo vo,
 			HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.excelLoad is called.");
@@ -3349,7 +3489,7 @@ public class InfoController {
 			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"),
 			// "UTF-8" );
 
-			List<SYTMaterialVo> dataList = sYInfoService.excelLoad(vo);
+			List<SYMaterialVo> dataList = sYInfoService.excelLoad(vo);
 
 			System.out.println("dataList");
 			System.out.println("dataList::::"+dataList);

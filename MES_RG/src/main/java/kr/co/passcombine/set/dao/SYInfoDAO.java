@@ -10,6 +10,7 @@ import kr.co.passcombine.set.vo.SYBomVo;
 import kr.co.passcombine.set.vo.SYTBranchVo;
 import kr.co.passcombine.set.vo.SYTClientVo;
 import kr.co.passcombine.set.vo.SYTMaterialVo;
+import kr.co.passcombine.set.vo.SYTProjectVo;
 import kr.co.passcombine.set.vo.SYCustomerVo;
 import kr.co.passcombine.set.vo.SYIncome_insp_mstVo;
 import kr.co.passcombine.set.vo.SYIncome_resultVo;
@@ -72,10 +73,9 @@ public interface SYInfoDAO {
 	public int insertMaterial(SYTMaterialVo vo);
 	public int updateMaterial(SYTMaterialVo vo);
 	public int deleteMaterial(SYTMaterialVo vo);
-	public List<SYTMaterialVo> excelLoad(SYTMaterialVo vo);
-	public Integer excelMax(SYTMaterialVo vo);	
 	
-	
+	public List<SYMaterialVo> excelLoad(SYMaterialVo vo);
+	public Integer excelMax(SYMaterialVo vo);	
 	public int updateMaterial2(SYMaterialVo vo);
 	public List<SYMaterialVo> selectMaterial_menge(SYMaterialVo vo);
 	public List<SYMaterialVo> selectMaterial2(SYMaterialVo vo);
@@ -86,6 +86,14 @@ public interface SYInfoDAO {
 	
 	public int updateMaterial(SYMaterialVo vo);//기존 코드 에러 방지
 	// Material End
+	
+	// Project Start
+	public int checkProject(SYTProjectVo vo);
+	public List<SYTProjectVo> selectProject(SYTProjectVo vo);
+	public int insertProject(SYTProjectVo vo);
+	public int updateProject(SYTProjectVo vo);
+	public int deleteProject(SYTProjectVo vo);
+	// Project End	
 	
 	public int checkAccount(SYAccountVo vo);
 	public List<SYAccountVo> selectAccount(SYAccountVo vo);
