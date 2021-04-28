@@ -559,20 +559,21 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 	function fnLoadCommonOption() {
 	 	console.log('fnLoadCommonOption()');
 	 	
-		 $('#PJT_DLV_DT').daterangepicker({
-				opens: 'right',
-				singleDatePicker: true,
-				locale: {
-					format : 'YYYY-DD-MM'	,
-					monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-					daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-					showMonthAfterYear : true,
-					yearSuffix : '년'
-			    },
-			    startDate : moment(minDate)
-			    
+		$('#PJT_DLV_DT').daterangepicker({
+			opens: 'right',
+			singleDatePicker: true,
+			locale: {
+				format : 'YYYY-MM-DD'	,
+				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월',
+						'7월', '8월', '9월', '10월', '11월', '12월' ],
+				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
+				showMonthAfterYear : true,
+				yearSuffix : '년'
+		    },
+		    startDate : moment(minDate)
 		}); 
 	}
+	
 	function getFormatDate(d) {
 		var month = d.getMonth() + 1;
 		var date = d.getDate();
@@ -580,7 +581,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 		date = (date < 10) ? "0" + date : date;
 		return d.getFullYear() + '-' + month + '-' + date;
 	}
-	
+
 	var minDate = getFormatDate(new Date());
 	
 	$(document).ready(function(){
@@ -588,8 +589,9 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 			language: 'kr',
 			opens: 'right',
 			locale: {
-				format: 'YYYY-DD-MM',
-				monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+				format: 'YYYYMMDD',
+				monthNames: ['1월', '2월', '3월', '4월', '5월', '6월',
+					'7월', '8월', '9월', '10월', '11월', '12월'],
 				daysOfWeek: ["일", "월", "화", "수", "목", "금", "토"],
 				showMonthAfterYear: true,
 				yearSuffix: '년'
@@ -597,7 +599,6 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 			startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
 			endDate: moment().format('YYYY-MM-DD')
 		});
-	
 	});
 
 
