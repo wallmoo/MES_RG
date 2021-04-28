@@ -18,6 +18,7 @@ public class SYTVendorVo implements Serializable{
 	private String VDR_ML2;
 	private String VDR_ML3;
 	private String VDR_HP;
+	private String ADM_ID;
 	private String VDR_STATE;
 	private String VDR_REG_DT;
 	private String VDR_REG_ID;
@@ -95,6 +96,12 @@ public class SYTVendorVo implements Serializable{
 	}
 	public void setVDR_HP(String vDR_HP) {
 		this.VDR_HP = vDR_HP;
+	}
+	public String getADM_ID() {
+		return ADM_ID;
+	}
+	public void setADM_ID(String aDM_ID) {
+		ADM_ID = aDM_ID;
 	}
 	public String getVDR_STATE() {
 		return VDR_STATE;
