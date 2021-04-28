@@ -414,7 +414,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 		$("#PJT_PRD_NM").val('');
 		$("#PJT_PRD_QTY").val('');
 		$("#PJT_PRD_UNT").val('');
-		$("#PJT_DLV_DT").val('');
+		$("#PJT_DLV_DT").val(minDate);
 
 		$("#modal_info").modal('show');
 	}
@@ -559,54 +559,47 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 	function fnLoadCommonOption() {
 	 	console.log('fnLoadCommonOption()');
 	 	
-		$('.dp_component_mo').datepicker({
-			language: 'kr',
-			autoclose:true,
-			viewMode: 'months',
-		    minViewMode: 'months',
-			format:'yyyy-mm'
-		}).on('show', function(e) {
-			$('.datepicker').css('z-index', '9999');
-		});
-		
-		$('.dp_component_d').datepicker({
-			language: 'kr',
-			autoclose:true,
-			monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-			format:'yyyy-mm-dd'
-		}).on('show', function(e) {
-			$('.datepicker').css('z-index', '9999');
-		});
-		$('.dp_component_d').datepicker('setDate', moment().format('YYYY-MM-DD'));
+		$('#PJT_DLV_DT').daterangepicker({
+			opens: 'right',
+			singleDatePicker: true,
+			locale: {
+				format : 'YYYY-MM-DD'	,
+				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월',
+						'7월', '8월', '9월', '10월', '11월', '12월' ],
+				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
+				showMonthAfterYear : true,
+				yearSuffix : '년'
+		    },
+		    startDate : moment(minDate)
+		}); 
 	}
+	
 	function getFormatDate(d) {
-			var month = d.getMonth() + 1;
-			var date = d.getDate();
-			month = (month < 10) ? "0" + month : month;
-			date = (date < 10) ? "0" + date : date;
-			return d.getFullYear() + '-' + month + '-' + date;
-		}
+		var month = d.getMonth() + 1;
+		var date = d.getDate();
+		month = (month < 10) ? "0" + month : month;
+		date = (date < 10) ? "0" + date : date;
+		return d.getFullYear() + '-' + month + '-' + date;
+	}
 
-
-
-		var minDate = getFormatDate(new Date());
-$(document).ready(function(){
-	$('#S_PJT_REG_DT, #S_PJT_DLV_DT').daterangepicker({
-		language: 'kr',
-		opens: 'right',
-		locale: {
-			format: 'YYYYMMDD',
-			monthNames: ['1월', '2월', '3월', '4월', '5월', '6월',
-				'7월', '8월', '9월', '10월', '11월', '12월'],
-			daysOfWeek: ["일", "월", "화", "수", "목", "금", "토"],
-			showMonthAfterYear: true,
-			yearSuffix: '년'
-		},
-		startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
-		endDate: moment().format('YYYY-MM-DD')
+	var minDate = getFormatDate(new Date());
+	
+	$(document).ready(function(){
+		$('#S_PJT_REG_DT, #S_PJT_DLV_DT').daterangepicker({
+			language: 'kr',
+			opens: 'right',
+			locale: {
+				format: 'YYYYMMDD',
+				monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
+				daysOfWeek: ["일", "월", "화", "수", "목", "금", "토"],
+				showMonthAfterYear: true,
+				yearSuffix: '년'
+			},
+			startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
+			endDate: moment().format('YYYY-MM-DD')
+		});
+	
 	});
-
-});
 
 
 	
