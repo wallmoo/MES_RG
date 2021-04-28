@@ -578,7 +578,37 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 			$('.datepicker').css('z-index', '9999');
 		});
 		$('.dp_component_d').datepicker('setDate', moment().format('YYYY-MM-DD'));
-	}	
+	}
+	function getFormatDate(d) {
+			var month = d.getMonth() + 1;
+			var date = d.getDate();
+			month = (month < 10) ? "0" + month : month;
+			date = (date < 10) ? "0" + date : date;
+			return d.getFullYear() + '-' + month + '-' + date;
+		}
+
+
+
+		var minDate = getFormatDate(new Date());
+$(document).ready(function(){
+	$('#S_PJT_REG_DT, #S_PJT_DLV_DT').daterangepicker({
+		language: 'kr',
+		opens: 'right',
+		locale: {
+			format: 'YYYYMMDD',
+			monthNames: ['1월', '2월', '3월', '4월', '5월', '6월',
+				'7월', '8월', '9월', '10월', '11월', '12월'],
+			daysOfWeek: ["일", "월", "화", "수", "목", "금", "토"],
+			showMonthAfterYear: true,
+			yearSuffix: '년'
+		},
+		startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
+		endDate: moment().format('YYYY-MM-DD')
+	});
+
+});
+
+
 	
 	//엑셀 1024
 	function excelFileDownload() {
