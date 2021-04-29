@@ -42,6 +42,7 @@ import kr.co.passcombine.set.vo.SYTProjectVo;
 import kr.co.passcombine.set.vo.SYCustomerVo;
 import kr.co.passcombine.set.vo.SYDeliveryOrderVo;
 import kr.co.passcombine.set.vo.SYGoalVo;
+import kr.co.passcombine.set.vo.SYTProjectVo;
 import kr.co.passcombine.set.vo.SYIncome_insp_mstVo;
 import kr.co.passcombine.set.vo.SYIncome_resultVo;
 import kr.co.passcombine.set.vo.SYInspectMasterVo;
@@ -4523,6 +4524,68 @@ public class InfoController {
 		return resultData.toJSONString();
 	}
 	
+	
+	/* 2021_04_29
+	 * 이정훈 - BOM관리
+	 * 
+	 */
+	@ResponseBody
+	@RequestMapping(value = "/info/selectBOMbyProject", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String selectBOMbyProject(@ModelAttribute SYTProjectVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.selectBOMbyProject is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			List<SYTProjectVo> dataList = sYInfoService.selectBOMbyProject(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+						
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}	
+	
+		@ResponseBody
+		@RequestMapping(value = "/info/selectBOMbyPRO", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+		@SuppressWarnings("unchecked")
+		public String selectBOMbyPRO(@ModelAttribute SYTMaterialVo vo,
+				HttpServletRequest request, HttpServletResponse response,
+				HttpSession session) {
+			logger.debug("FrontendController.selectBOMbyPRO is called.");
+
+			JSONObject resultData = new JSONObject();
+			JSONArray listDataJArray = new JSONArray();
+			JSONParser jsonParser = new JSONParser();
+			try {
+				List<SYTMaterialVo> dataList = sYInfoService.selectBOMbyPRO(vo);
+
+				System.out.println("dataList");
+				System.out.println(dataList);
+							
+				String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+				listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+				resultData.put("status", HttpStatus.OK.value());
+				resultData.put("rows", listDataJArray);
+			} catch (Exception e) {
+				e.printStackTrace();
+				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+				resultData.put("rows", null);
+			}
+			return resultData.toJSONString();
+		}	
 	
 	
 }

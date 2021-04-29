@@ -259,6 +259,8 @@ public interface SYInfoDAO {
 	public int updateTool_replacement_his(SYtool_repmt_hisVo vo);
 	public int deleteTool_replacement_his(SYtool_repmt_hisVo vo);
 	public void deleteRoutingCode(String routing_code);
+	public List<SYTMaterialVo> selectBOMbyPRO(SYTMaterialVo vo);
+	public List<SYTProjectVo> selectBOMbyProject(SYTProjectVo Vo);
 	
 	
 }

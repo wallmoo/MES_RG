@@ -57,10 +57,17 @@ public class SYMaterialVo implements Serializable{
 	private String routing_nm;
 	
 	private String excelMax;
+	private int pjt_idx;
 	
 	
 	
 	
+	public int getPjt_idx() {
+		return pjt_idx;
+	}
+	public void setPjt_idx(int pjt_idx) {
+		this.pjt_idx = pjt_idx;
+	}
 	public String getExcelMax() {
 		return excelMax;
 	}
