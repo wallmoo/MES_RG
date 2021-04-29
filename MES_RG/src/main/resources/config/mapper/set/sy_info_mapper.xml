@@ -3087,7 +3087,32 @@
 
 	</select>
 
-
+	
+	<select id="selectBOMbyPRO" parameterType="SYTMaterialVo"
+		resultType="SYTMaterialVo">
+		/* selectBOMbyPRO */
+		SELECT		TMM.MTL_IDX
+					,TMM.MTL_MKR_CD
+					,TMM.MTL_NM
+					,TMM.MTL_MKR_NO
+					,TMM.MTL_UNT
+					,TBM.PJT_ID
+					,TBM.BOM_MTL_QTY
+		 FROM		T_MTL_MST		TMM
+		 LEFT OUTER JOIN
+		 			T_BOM_MST		TBM
+		 	     ON	TMM.MTL_IDX =	TBM.MTL_IDX
+			WHERE	TBM.PJT_ID 	= 	#{pjt_IDX}
+	</select>
+	
+	<select id="selectBOMbyProject" parameterType="SYTProjectVo" resultType="SYTProjectVo">
+		SELECT 
+		PJT_IDX, CST_IDX, PJT_GRD, PJT_NM, PJT_CD, PJT_PRD_NM, PJT_PRD_QTY, PJT_PRD_UNT, PJT_DLV_DT, PJT_REG_DT 
+		FROM T_PJT_MST  
+		WHERE PJT_DEL_YN = 'N'
+					 
+		ORDER BY PJT_IDX DESC
+	</select>
 	
 
 </mapper>

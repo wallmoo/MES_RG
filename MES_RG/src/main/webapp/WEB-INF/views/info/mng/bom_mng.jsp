@@ -55,7 +55,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 										<div class="row">
 											<div class="box box-success box-solid" style="min-height: 90px; border-color: #DB8EB5;">
 												<div class="box-header with-border" style=" background-color: #DB8EB5;">
-													<h3 class="box-title">품목 정보</h3>
+													<h3 class="box-title">프로젝트 정보</h3>
 													<div class="box-tools pull-right">
 														<button type="button" id="btn_search_csr" onclick="requestLeftGrid();" class="btn btn-primary btn-sm" onclick="">조회</button>	 
 													</div>
@@ -299,20 +299,19 @@ function loadLeftGrid(){
         },
         multiSelect: false,
         columns: [
-			{ field:'business_nm', caption:'구분', style:'text-align:center', sortable: true},
-			{ field:'item_type_code', caption:'P/N', style:'text-align:center', sortable: true},
-			{ field:'item_nm', caption:'품명', style:'text-align:center', sortable: true},
-			{ field:'meins', caption:'단위', style:'text-align:center', sortable: true},
-			{ field:'item_code', caption:'아이템 코드', size:'10%', style:'text-align:center', hidden:true},
+			{ field:'pjt_IDX', caption: 'Project idx', size: '10%', style: 'text-align:center', hidden: true },
+			{ field:'pjt_DLV_DT', caption:'프로젝트등록일', style:'text-align:center', sortable: true},
+			{ field:'pjt_GRD', caption:'프로젝트등급', style:'text-align:center', sortable: true},
+			{ field:'pjt_NM', caption:'프로젝트명', style:'text-align:center', sortable: true},
 			], 
-		sortData: [{field: 'bom_code', direction: 'ASC'}],
+		sortData: [{field: 'pjt_IDX', direction: 'ASC'}],
 		records: [
 			], // rowArr
 		onSelect: function (event) {
 			event.onComplete = function () {
 				w2ui['grid_list2'].refresh();
 				// 오른쪽 그리드
-				requestItemName(this.get(event.recid).item_code);
+				requestItemName(this.get(event.recid).pjt_IDX);
 			}
 		},
 		onUnselect: function (event) {
@@ -331,8 +330,8 @@ function loadLeftGrid(){
 }
 
 function requestLeftGrid(){
-	var page_url = "/info/material/selectMaterial";
-	var postData = 'item_type_code=MD1248&business_nm=consumableparts&item_nm='+$('#Business').val();
+	var page_url = "/info/account/selectProject";
+	var postData = '';
 	
 	w2ui['grid_list'].lock('loading...', true);
 	$.ajax({
@@ -341,15 +340,18 @@ function requestLeftGrid(){
 		data : postData,
 		data_type : 'json',
 		success : function(data){
+			console.log(data);
 			if(data.status == 200 && (data.rows).length > 0){
 				rowArr = data.rows;
 				$.each(rowArr, function(idx, row){
 					row.recid = idx + 1;
-					comboValue_nm.push(row.item_nm);
+					comboValue_nm.push(row.pjt_PRD_NM+"");
+					comboValue_cd.push(row.pjt_IDX + "");
 				});
 				w2ui['grid_list'].records = rowArr;
 				if (startValue_combo == "") {
-					$('#Business').w2field('combo', { items: _.uniq(comboValue_nm,false) ,match : 'contains' });
+					$('#Business').w2field('combo', { items: comboValue_nm ,match : 'contains' });
+					$('#Business').w2field('combo', { items: comboValue_cd, match: 'contains' });
 				}
 			} else {
 				w2ui.grid_list.clear();
@@ -363,11 +365,13 @@ function requestLeftGrid(){
 			document.getElementById("Business").style.removeProperty("height");
 		}
 	});
+	
 }
 
 function requestItemName(requestItemName){
-	var page_url = "/info/selectBomlist";
-	var postData = "product_item_code=" + encodeURIComponent(requestItemName);
+	console.log(requestItemName);
+	var page_url = "/info/info/selectBOMbyPRO";
+	var postData = "pjt_IDX=" + encodeURIComponent(requestItemName);
 	w2ui['grid_list2'].lock('loading...', true);
 	w2ui['grid_list2'].clear();	
 	w2ui['grid_list2'].refresh();
@@ -377,11 +381,12 @@ function requestItemName(requestItemName){
 		data : postData,
 		data_type : 'json',
 		success : function(data){
+			console.log(data);
 			if(data.status == 200 && (data.rows).length > 0){
 				rowArr = data.rows;
 				$.each(rowArr, function(idx, row){
 					row.recid = idx + 1;
-					comboValue_cd.push(row.c_item_nm);
+					comboValue_cd.push(row.c_item_nm+"");
 				});
 				w2ui['grid_list2'].records = rowArr;
 				
@@ -431,6 +436,7 @@ function loadRightGrid(){
 	    multiSelect: false,
         
         columns: [
+			/*
         			{ field:'stufe', caption:'레벨', style:'text-align:center' , size : 20, sortable: true},
         			{ field:'c_item_nm', caption:'품명', sortable: true, style:'text-align:left' , 
         			render : function(record, index, col_index){
@@ -446,7 +452,15 @@ function loadRightGrid(){
         			{ field:'c_item_code', caption:'P/N', style:'text-align:center', sortable: true},
         			{ field:'item_type_nm', caption:'자재유형', style:'text-align:center', sortable: true},
         			{ field:'meins', caption:'단위', style:'text-align:center', size : 30, sortable: true}
-        			
+        			*/
+					{ field: 'pjt_IDX', caption: 'Project idx', size: '10%', style: 'text-align:center', hidden: true },
+					{ field: 'MTL_IDX', caption: '자재번호 IDX ', size: '10%', style: 'text-align:center', hidden: true },
+					{ field: 'mtl_QTY', caption: '제조사명', style: 'text-align:center', sortable: true },
+					{ field: 'mtl_NM', caption: '품목', style: 'text-align:center', sortable: true },
+					{ field: 'mtl_MKR_NO', caption: '제조사품번', style: 'text-align:center', sortable: true },
+					{ field: 'mtl_UNT', caption: '단위', style: 'text-align:center', sortable: true },
+					{ field: 'bom_MTL_QTY', caption: '수량', style: 'text-align:center', sortable: true },
+
                  ],
 		records: [ 
 		   ],

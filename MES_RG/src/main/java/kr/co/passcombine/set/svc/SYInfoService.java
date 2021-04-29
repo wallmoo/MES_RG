@@ -1581,5 +1581,12 @@ public class SYInfoService {
 		return infoDAO.deleteTool_replacement_his(vo);
 	}
 	
+	public List<SYTMaterialVo> selectBOMbyPRO(SYTMaterialVo vo){
+		return infoDAO.selectBOMbyPRO(vo);
+	}
+	public List<SYTProjectVo> selectBOMbyProject(SYTProjectVo Vo){
+		return infoDAO.selectBOMbyProject(Vo);
+	}	
+	
 	
 }
