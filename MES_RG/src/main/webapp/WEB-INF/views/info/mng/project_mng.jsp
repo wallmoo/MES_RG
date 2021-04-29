@@ -84,11 +84,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 							<div class="col-sm-2">
 								<div class="form-group">
 									<label>고객사</label> 
-									<select id="S_CST_IDX" class="form-control input-sm" name="S_CST_IDX" onChange = "loadList();">
-										<option value="">전체</option>
-										<option value="MD1243">Consumable Parts</option>
-										<option value="MD1244">Overhaul</option>
-									</select>
+									<select id="S_CST_IDX" name="S_CST_IDX" class="form-control" style="height: 30px;" ></select>
 								</div>
 							</div>	
 														
@@ -188,11 +184,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 						<div class="form-group">
 							<label for="" class="col-sm-3 control-label">고객사</label>
 							<div class="col-sm-8">
-								<select id="CST_IDX" class="form-control input-sm" name="CST_IDX">
-									<option value="">전체</option>
-									<option value="1243">Consumable Parts</option>
-									<option value="1244">Overhaul</option>
-								</select>
+								<select id="CST_IDX" class="form-control input-sm" name="CST_IDX"></select>
 							</div>
 						</div>
 					</div>					
@@ -219,7 +211,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 						<div class="form-group">
 							<label for="" class="col-sm-3 control-label">단위</label>
 							<div class="col-sm-8">
-								<input type="text" class="form-control input-sm pull-left" id="PJT_PRD_UNT" >
+								<select class="form-control input-sm" id="PJT_PRD_UNT" name="PJT_PRD_UNT" ></select>
 							</div>
 						</div>
 					</div>							
@@ -266,13 +258,58 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 	
 	comboValue_nm = new Array;
 	comboValue_cd = new Array;
-	
+		
 	$(function($) {
+		fnCdD('PJT_PRD_UNT', 'MC1027');//공통코드를 호출-재고 단위
+		
+		requestClient('CST_IDX');//고객사 정보를 드랍다운 형태로 만듬
+		requestClient('S_CST_IDX');
+		
 		fnLoadProjectGrid(); 
 		
 		fnLoadCommonOption();	 
 	})
-
+	function fnCdD(val, val2){//공통코드를 드랍다운 메뉴화
+		console.log("fnCdD("+val+")");
+		
+		initOptions($('#'+val)); // select 박스 초기화
+		
+		var strUrl = "/info/codeDetail/selectCdD";
+		var postData = "master_code=" + encodeURIComponent(val2);
+		
+		$.ajax({
+		    url: strUrl,
+		    type: "POST",
+		    data: postData, 
+		    dataType: 'json', 
+		    async : false, // 다 끝나고 다음 처리 해!
+		    success:function(data, textStatus, jqXHR){
+//	 	    	console.log("(data.rows).length = " + (data.rows).length);
+		    	if(data.status == "200" && (data.rows).length>0 /* 1 */ ) {
+		    		rowArr = data.rows;
+		    		
+		    		var sub = val.substr(0,2);
+		    		
+		    		//  if(valsub != "m_")
+		    		if(sub.indexOf("m_") == -1) // val
+		    			$("#"+val ).append("<option value="+'ALL'+">" + "전체" + "</option>");
+		    		
+					$.each(rowArr, function(idx, row){
+						$("#"+val ).append("<option value=" + row.detail_code + ">" + row.code_nm + "</option>");
+					});
+					
+		 			$("#"+val+" option:eq(0)").prop("selected", true);	
+		    	} 
+		    },
+		    error: function(jqXHR, textStatus, errorThrown){
+			    //fnMessageModalAlert("Notification(MES)", "정보를 처리하는데 에러가 발생하였습니다.");	
+		    },
+		    complete: function() {
+		    	
+		    }
+		});
+	}
+	
 	//고객사명,코드 자동완성
 	$("#m_customer_code").change(
 		_.debounce(function(event) 
@@ -321,7 +358,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 				{ field:'pjt_PRD_UNT', caption:'단위', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'pjt_DLV_DT', caption:'납품 요청일', size:'8%', style:'text-align:center', sortable: true}
 				], 
-			sortData: [{field: 'pjt_ID', direction: 'DESC'}],
+			sortData: [{field: 'pjt_IDX', direction: 'DESC'}],
 			records: [],	//
 			onReload: function(event) {
 				//loadList();
@@ -430,13 +467,16 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 			var data = w2ui.grid_list.get(key[0]);			
 			
 			$("#PJT_IDX").val(data.pjt_IDX);
-			$("#CST_IDX").val(data.cst_IDX);
+			//$("#CST_IDX").val(data.cst_IDX);
+			$("#CST_IDX").val("data.cst_IDX").prop("selected", true);
 			$("#PJT_GRD").val(data.pjt_GRD);
 			$("#PJT_NM").val(data.pjt_NM);
 			$("#PJT_CD").val(data.pjt_CD);
 			$("#PJT_PRD_NM").val(data.pjt_PRD_NM);
 			$("#PJT_PRD_QTY").val(data.pjt_PRD_QTY);
-			$("#PJT_PRD_UNT").val(data.pjt_PRD_UNT);
+			//$("#PJT_PRD_UNT").val(data.pjt_PRD_UNT);
+			$("#PJT_PRD_UNT").val("data.pjt_PRD_UNT").prop("selected", true);
+			console.log(data.pjt_PRD_UNT);
 			$("#PJT_DLV_DT").val(data.pjt_DLV_DT);
 
 			$("#modal_info").modal('show');
@@ -448,7 +488,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 	function saveProject() {
 		console.log('saveProject()');
 		
-		var PJT_ID = $("#PJT_IDX").val();
+		var PJT_IDX = $("#PJT_IDX").val();
 		var CST_IDX = $("#CST_IDX").val();
 		var PJT_GRD = $("#PJT_GRD").val();
 		var PJT_NM = $("#PJT_NM").val();
@@ -478,7 +518,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 
 		var strUrl = "/info/account/saveProject";
 		var postData = "flag=" + flag
-				+ "&PJT_ID=" + encodeURIComponent(PJT_ID)
+				+ "&PJT_IDX=" + encodeURIComponent(PJT_IDX)
 				+ "&CST_IDX=" + encodeURIComponent(CST_IDX)
 				+ "&PJT_GRD=" + encodeURIComponent(PJT_GRD)
 				+ "&PJT_NM=" + encodeURIComponent(PJT_NM)
@@ -564,8 +604,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 			singleDatePicker: true,
 			locale: {
 				format : 'YYYY-MM-DD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월',
-						'7월', '8월', '9월', '10월', '11월', '12월' ],
+				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
 				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
 				showMonthAfterYear : true,
 				yearSuffix : '년'
@@ -590,8 +629,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 			opens: 'right',
 			locale: {
 				format: 'YYYYMMDD',
-				monthNames: ['1월', '2월', '3월', '4월', '5월', '6월',
-					'7월', '8월', '9월', '10월', '11월', '12월'],
+				monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
 				daysOfWeek: ["일", "월", "화", "수", "목", "금", "토"],
 				showMonthAfterYear: true,
 				yearSuffix: '년'
@@ -600,8 +638,49 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 			endDate: moment().format('YYYY-MM-DD')
 		});
 	});
+	// 고객사 가져오기
+	function requestClient(val){
+		console.log("requestClient");
+		
+		initOptions($('#'+val)); // select 박스 초기화
+		
+		var strUrl = "/info/account/selectClient";
+		var postData = "";
+		
+		//w2ui['grid_list'].lock('loading...', true);
+		$.ajax({
+		    url: strUrl,
+		    type: "POST",
+		    data: postData, 
+		    async : false, // 다 끝나고 다음 처리 해!
+		    dataType: 'json', 
+		    success:function(data, textStatus, jqXHR){
+//	 	    	console.log("(data.rows).length = " + (data.rows).length);
+		    	if(data.status == "200" && (data.rows).length > 0) {
+		    		rowArr = data.rows;
+		    		
+		    		/* 검색어 입력시 */
+		    		var sub = val.substr(0,2);
 
-
+		    		if(sub.indexOf("m_") == -1) // val
+		    			$("#"+val ).append("<option value="+'ALL'+">" + "전체" + "</option>");
+		    		
+					$.each(rowArr, function(idx, row){
+						$("#"+val ).append("<option value=" + row.cst_IDX + ">" + row.cst_NM + "</option>");
+					});
+					
+		 			$("#"+val+" option:eq(0)").prop("selected", true);	
+		    	} 
+		    },
+		    error: function(jqXHR, textStatus, errorThrown){
+			    //fnMessageModalAlert("Notification(MES)", "정보를 처리하는데 에러가 발생하였습니다.");	
+		    },
+		    complete: function() {
+	    	
+		    }
+		});
+	}
+	
 	
 	//엑셀 1024
 	function excelFileDownload() {

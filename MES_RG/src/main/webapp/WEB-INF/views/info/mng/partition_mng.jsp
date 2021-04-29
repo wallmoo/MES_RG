@@ -467,7 +467,7 @@ function loadList1(){
 			document.getElementById("item_code").style.removeProperty("height");
 		}
 	});
-}1
+}
 
 // 원자재 분할 그리드 select
 function loadList2(itemCD){

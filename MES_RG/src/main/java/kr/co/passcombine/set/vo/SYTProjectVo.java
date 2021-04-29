@@ -7,7 +7,7 @@ public class SYTProjectVo implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	private int PJT_IDX;
-	private int CST_IDX;
+	private String CST_IDX;
 	private String PJT_GRD;
 	private String PJT_NM;
 	private String PJT_CD;
@@ -26,10 +26,10 @@ public class SYTProjectVo implements Serializable{
 	public void setPJT_IDX(int pJT_IDX) {
 		this.PJT_IDX = pJT_IDX;
 	}
-	public int getCST_IDX() {
+	public String getCST_IDX() {
 		return CST_IDX;
 	}
-	public void setCST_IDX(int cST_IDX) {
+	public void setCST_IDX(String cST_IDX) {
 		this.CST_IDX = cST_IDX;
 	}
 	public String getPJT_GRD() {
