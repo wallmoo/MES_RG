@@ -606,8 +606,10 @@
 	</select>
 	<select id="selectProject" parameterType="SYTProjectVo" resultType="SYTProjectVo">
 		SELECT 
-		PJT_IDX, CST_IDX, PJT_GRD, PJT_NM, PJT_CD, PJT_PRD_NM, PJT_PRD_QTY, PJT_PRD_UNT, PJT_DLV_DT, PJT_REG_DT 
-		FROM T_PJT_MST  
+		PJT_IDX, C.CST_NM AS CST_IDX, PJT_GRD, PJT_NM, PJT_CD, PJT_PRD_NM, PJT_PRD_QTY, D.code_nm AS PJT_PRD_UNT, PJT_DLV_DT, PJT_REG_DT
+		FROM T_PJT_MST P
+		LEFT JOIN T_CST_MST C ON P.CST_IDX = C.CST_IDX
+		LEFT JOIN sy_code_detail D ON P.PJT_PRD_UNT = D.detail_code
 		WHERE PJT_DEL_YN = 'N'
 		
 		<!-- 
@@ -646,15 +648,14 @@
 	</insert>
 	<update id="updateProject" parameterType="SYTProjectVo">
 		UPDATE T_PJT_MST SET
-		CST_IDX = #{CST_IDX},
-		PJT_GRD = #{PJT_GRD},
-		PJT_NM = #{PJT_NM},
-		PJT_CD = #{PJT_CD},
-		PJT_PRD_NM = #{PJT_PRD_NM},
-		PJT_PRD_QTY = #{PJT_PRD_QTY},
-		PJT_PRD_UNT = #{PJT_PRD_UNT},
-		PJT_DLV_DT = #{PJT_DLV_DT},
-		PJT_REG_DT = #{PJT_REG_DT}
+			CST_IDX = #{CST_IDX},
+			PJT_GRD = #{PJT_GRD},
+			PJT_NM = #{PJT_NM},
+			PJT_CD = #{PJT_CD},
+			PJT_PRD_NM = #{PJT_PRD_NM},
+			PJT_PRD_QTY = #{PJT_PRD_QTY},
+			PJT_PRD_UNT = #{PJT_PRD_UNT},
+			PJT_DLV_DT = #{PJT_DLV_DT}
 		WHERE PJT_IDX = #{PJT_IDX}
 	</update>
 	<update id="deleteProject" parameterType="SYTProjectVo">
