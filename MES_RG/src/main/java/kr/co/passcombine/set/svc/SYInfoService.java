@@ -1,5 +1,6 @@
 package kr.co.passcombine.set.svc;
 
+import java.util.ArrayList;
 //import java.lang.reflect.Field;
 //import java.util.ArrayList;
 //import java.util.ArrayList;
@@ -1587,6 +1588,14 @@ public class SYInfoService {
 	public List<SYTProjectVo> selectBOMbyProject(SYTProjectVo Vo){
 		return infoDAO.selectBOMbyProject(Vo);
 	}	
+	
+	public List<SYTMaterialVo> selectMaterialsBOM(SYTMaterialVo vo){
+		return infoDAO.selectMaterialsBOM(vo);
+	}
+	
+	public int InsertMaterialsBOM(List<Map<String,Object>> vo) {
+		return infoDAO.InsertMaterialsBOM(vo);
+	}
 	
 	
 }

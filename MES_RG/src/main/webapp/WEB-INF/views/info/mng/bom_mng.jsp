@@ -82,7 +82,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 												<div class="box-tools pull-right">
 													<button type="button" id="btn_ins_csr" onclick="excelFileDownload();" class="btn btn-info btn-sm" onclick="">엑셀다운로드</button>
 													<button type="button" id="btn_search_csr" onclick="requestRightGrid('grid_list2');" class="btn btn-primary btn-sm" onclick="">조회</button>
-													<button type="button" id="btn_ins_csr" onclick="insItem();" class="btn btn-primary btn-sm" onclick="">등록/수정</button>
+													<button type="button" id="btn_ins_csr" onclick="ItemInsUp();" class="btn btn-primary btn-sm" onclick="">등록/수정</button>
 													<%-- <button type="button" id="btn_del_csr" onclick="delItem();" class="btn btn-primary btn-sm" onclick="">수정</button> --%>
 												</div>
 											</div>
@@ -137,62 +137,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 							<div class="col-sm-2" style="padding-left: 0px;padding-right: 0px">
 								<input type="combo" class="form-control input-sm pull-right clear_val" id="g3_item_type_code" maxlength="100">
 							</div>
-							<div class="col-sm-1">
-								<button type="button" class="btn btn-default btn-sm" onclick="requestGrid3()">조회</button>
+								<div class="col-sm-2">
+									<button type="button" class="btn btn-default btn-sm" onclick="requestGrid3()">조회</button>
+									<button type="button" class="btn btn-success btn-sm" onclick="addlev1()">등록</button>
 							</div>
 						</div>
 						<div class="col-sm-12">
 							<div id="grid_list3" class="w2g-h200" style="margin-top: 10px;"></div>
-						</div>
-					</div>
-				</form>
-				<form id="bom_lvl1" name="bom_lvl1" class="form-horizontal" style="margin-top: 10px">
-					<div class="row">
-						<div class="form-group">
-							<div class="col-sm-2" style="padding-left: 30px;padding-right: 0px">
-								<input type="text" class="form-control input-sm pull-right" value="원자재(1LEV)" disabled="disabled">
-							</div>
-							<label for="" class="col-sm-1 control-label" style="padding-left: 0px">반제품명</label>
-							<div class="col-sm-2" style="padding-left: 0px;padding-right: 0px">
-								<input type="combo" class="form-control input-sm pull-right clear_val" id="g4_item_nm" maxlength="100">
-							</div>
-							<label for="" class="col-sm-2 control-label">반제품코드</label>
-							<div class="col-sm-2" style="padding-left: 0px;padding-right: 0px">
-								<input type="combo" class="form-control input-sm pull-right clear_val" id="g4_item_type_code" maxlength="100">
-							</div>
-							<div class="col-sm-3">
-								<button type="button" class="btn btn-default btn-sm" onclick="requestGrid4()">조회</button>
-								<button type="button" class="btn btn-success btn-sm" onclick="addlev1()">등록</button>
-								<button type="button" class="btn btn-danger btn-sm" onclick="dellev1()">삭제</button>
-							</div>
-						</div>
-						<div class="col-sm-12">
-							<div id="grid_list4" class="w2g-h200" style="margin-top: 10px;"></div>
-						</div>
-					</div>
-				</form>
-				<form id="bom_lvl2" name="bom_lvl2" class="form-horizontal" style="margin-top: 10px">
-					<div class="row">
-						<div class="form-group">
-							<div class="col-sm-2" style="padding-left: 30px;padding-right: 0px">
-								<input type="text" class="form-control input-sm pull-right" value="부자재(2LEV)" disabled="disabled">
-							</div>
-							<label for="" class="col-sm-1 control-label" style="padding-left: 0px">품명</label>
-							<div class="col-sm-2" style="padding-left: 0px;padding-right: 0px">
-								<input type="combo" class="form-control input-sm pull-right clear_val" id="g5_item_nm" maxlength="100">
-							</div>
-							<label for="" class="col-sm-2 control-label">P/N</label>
-							<div class="col-sm-2" style="padding-left: 0px;padding-right: 0px">
-								<input type="combo" class="form-control input-sm pull-right clear_val" id="g5_item_type_code" maxlength="100">
-							</div>
-							<div class="col-sm-3">
-								<button type="button" class="btn btn-default btn-sm" onclick="requestGrid5()">조회</button>
-								<button type="button" class="btn btn-success btn-sm" onclick="addlev2()">등록</button>
-								<button type="button" class="btn btn-danger btn-sm" onclick="dellev2()">삭제</button>
-							</div>
-						</div>
-						<div class="col-sm-12">
-							<div id="grid_list5" class="w2g-h200" style="margin-top: 10px;"></div>
 						</div>
 					</div>
 				</form>
@@ -258,6 +209,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		<jsp:param name="page_title" value="0" />
 	</jsp:include>
 </div>
+<input type ="hidden" id="hiddenIdx" name="hiddenIdx"/>
+<input type="hidden" id="rightIDX" name="rightIdx" />
 <!-- ./wrapper -->
 
 
@@ -282,9 +235,11 @@ $(function($) {
  	loadLeftGrid();
  	loadRightGrid();
  	loadGrid3();
- 	loadGrid4();
+ 	/*
+	loadGrid4();
  	loadGrid5();
  	loadGrid6();
+	 */
 })
 
 // loadLeftGrid
@@ -372,6 +327,7 @@ function requestItemName(requestItemName){
 	console.log(requestItemName);
 	var page_url = "/info/info/selectBOMbyPRO";
 	var postData = "pjt_IDX=" + encodeURIComponent(requestItemName);
+	$("#hiddenIdx").val(requestItemName);
 	w2ui['grid_list2'].lock('loading...', true);
 	w2ui['grid_list2'].clear();	
 	w2ui['grid_list2'].refresh();
@@ -408,6 +364,7 @@ function requestItemName(requestItemName){
 }
 
 function requestRightGrid(gridname){
+	$("#rightIDX").val(gridname);
 	var cnm = $('#r_mt_name').val();
 	if(cnm == '' || cnm == null){
 		return;
@@ -453,13 +410,14 @@ function loadRightGrid(){
         			{ field:'item_type_nm', caption:'자재유형', style:'text-align:center', sortable: true},
         			{ field:'meins', caption:'단위', style:'text-align:center', size : 30, sortable: true}
         			*/
+					{ field: 'BOM_IDX', caption: 'Bom idx', size: '10%', style: 'text-align:center', hidden: true },
 					{ field: 'pjt_IDX', caption: 'Project idx', size: '10%', style: 'text-align:center', hidden: true },
 					{ field: 'MTL_IDX', caption: '자재번호 IDX ', size: '10%', style: 'text-align:center', hidden: true },
-					{ field: 'mtl_QTY', caption: '제조사명', style: 'text-align:center', sortable: true },
+					{ field: 'mtl_QTY', caption: '제조사명', style: 'text-align:center', sortable: true,},
 					{ field: 'mtl_NM', caption: '품목', style: 'text-align:center', sortable: true },
 					{ field: 'mtl_MKR_NO', caption: '제조사품번', style: 'text-align:center', sortable: true },
 					{ field: 'mtl_UNT', caption: '단위', style: 'text-align:center', sortable: true },
-					{ field: 'bom_MTL_QTY', caption: '수량', style: 'text-align:center', sortable: true },
+					{ field: 'bom_MTL_QTY', caption: '수량', style: 'text-align:center', sortable: true, editable: { type: 'int' } },
 
                  ],
 		records: [ 
@@ -469,34 +427,66 @@ function loadRightGrid(){
 		onReload: function(event) {},
 
 		onClick: function (event) {
-		
+			console.log(this.get(event.recid));
 		}, 
 		onDblClick: function(event) {
 			
-		},onChange: function(event){
-		}, 
+		}, onChange: function (event) {
+			event.onComplete = function () {
+				console.log("onChange");
+
+				// # 20200922 콤보에 떠도 , 다 입력하고 엔터쳤을 때 문제 생김
+
+				var eventColumn = event.column;
+				console.log(event);
+				console.log('event.value : ' + event.value);
+				w2ui.grid_list2.save();
+			}
+		}
 		
 		
     }); 
 }
 
-function insItem() {
-	$(".clear_val").val('');
+function ItemInsUp(){
+	console.log(w2ui.grid_list2.get("pjt_IDX"));
+	var key = w2ui.grid_list2.getSelection();
 
-	$("#modal_info").modal('show');
-	 setTimeout(function(){
-		w2ui['grid_list3'].resize();
-		w2ui['grid_list3'].refresh();
-		w2ui['grid_list4'].resize();
-		w2ui['grid_list4'].refresh();
-		w2ui['grid_list5'].resize();
-		w2ui['grid_list5'].refresh();
-	}, 200);
-	requestGrid3();
-	w2ui["grid_list4"].clear()
-	w2ui["grid_list5"].clear()
-	$('#hiddenProduct_code').val('');
-	$('#hiddenM_item_code').val('');
+	if (key.length == 0) {
+		insItem();
+	} else if (key.length == 1) {
+		updateItem();
+	}
+	
+}
+
+function insItem() {
+	var keys = w2ui.grid_list.getSelection();
+	if(keys==null || keys==""){
+		alert("먼저 프로젝트를 선택하여주십시오");
+	}else{
+		$(".clear_val").val('');
+
+		$("#modal_info").modal('show');
+		setTimeout(function () {
+			w2ui['grid_list3'].resize();
+			w2ui['grid_list3'].refresh();
+			/*
+			w2ui['grid_list4'].resize();
+			w2ui['grid_list4'].refresh();
+			w2ui['grid_list5'].resize();
+			w2ui['grid_list5'].refresh();
+			*/
+		}, 200);
+		requestGrid3();
+		/*
+		w2ui["grid_list4"].clear()
+		w2ui["grid_list5"].clear()
+		*/
+		$('#hiddenProduct_code').val('');
+		$('#hiddenM_item_code').val('');
+	}
+	
 };
 function loadGrid3(){
 	var rowArr = [];
@@ -505,14 +495,14 @@ function loadGrid3(){
 		name : 'grid_list3',
 		 show: {
 				lineNumbers : true,
-	            selectColumn : true
+	            selectColumn : true,
+				toolbarSave: true
 	        },
-	    multiSelect: false,
-		
+	    multiSelect: true,
         columns: [
-        			{ field:'recid', caption:'recid', style:'text-align:center', hidden:true},
-        			{ field:'item_nm', caption:'품명', style:'text-align:center'},
-        			{ field:'item_code', caption:'P/N', style:'text-align:center'}
+        			{ field:'1060', caption:'MTL_IDX', style:'text-align:center', hidden:true},
+        			{ field:'mtl_NM', caption:'품명', style:'text-align:center'},
+        			{ field:'mtl_PRICE', caption:'가격', style:'text-align:center'},
                  ],
 		records: [ 
 		   ],
@@ -522,13 +512,13 @@ function loadGrid3(){
 
 		onSelect: function (event) {
 			event.onComplete = function () {
+				/*
 				w2ui['grid_list4'].refresh();
 				w2ui['grid_list5'].refresh();
-				var item_code = this.get(event.recid).item_code;
+				*/
+				var item_code = this.get(event.recid).mtl_IDX;
 				// 오른쪽 그리드
 				$('#hiddenProduct_code').val(item_code);
-				requestGrid4();
-				requestGrid5();
 				grid_material_data = this.get(event.recid);
 			}
 		},
@@ -539,20 +529,21 @@ function loadGrid3(){
 				comboValue_nm5 = new Array;
 				comboValue_cd5 = new Array;
 				$('#hiddenProduct_code').val('');
+				/*
 				w2ui['grid_list4'].clear();		
 				w2ui['grid_list4'].refresh();
 				w2ui['grid_list5'].clear();		
 				w2ui['grid_list5'].refresh();
+				*/
 			}
 		}
     }); 
 }
 function requestGrid3(){
-	var page_url = "/info/material/selectMaterial";
-	var postData = 'item_type_code=MD1248';
-	postData = postData + '&item_nm='+$('#g3_item_nm').val();
-	postData = postData + '&item_code='+$('#g3_item_type_code').val();
-	
+	var keys = $("#hiddenIdx").val();
+	var page_url = "/info/info/selectMaterialsBOM";
+	var postData = 'pjt_IDX='+keys;
+
 	w2ui['grid_list3'].lock('loading...', true);
 	w2ui['grid_list3'].clear();	
 	w2ui['grid_list3'].refresh();
@@ -562,18 +553,19 @@ function requestGrid3(){
 		data : postData,
 		data_type : 'json',
 		success : function(data){
+			console.log(data);
 			if(data.status == 200 && (data.rows).length > 0){
 				rowArr = data.rows;
 				$.each(rowArr, function(idx, row){
 					row.recid = idx + 1;
-					comboValue_nm3.push(row.item_nm);
-					comboValue_cd3.push(row.item_code);
+					comboValue_nm3.push(row.mtl_NM+"");
+					comboValue_cd3.push(row.mtl_IDX+"");
 				});
 				w2ui['grid_list3'].records = rowArr;
 				$('#g3_item_nm').w2field('combo', { items: _.uniq(comboValue_nm3,false) ,match : 'contains' });
 				$('#g3_item_type_code').w2field('combo', { items: _.uniq(comboValue_cd3,false) ,match : 'contains' });
 			} else {
-				//w2ui.grid_list.clear();
+				w2ui.grid_list.clear();
 			}
 			w2ui['grid_list3'].refresh();
 			w2ui['grid_list3'].unlock();
@@ -581,8 +573,11 @@ function requestGrid3(){
 			document.getElementById("g3_item_nm").style.removeProperty("height");
 			document.getElementById("g3_item_type_code").style.removeProperty("height");
 		}
+		
+
+
 	});
-}
+}/*
 function loadGrid4(){
 	var rowArr = [];
 	
@@ -606,6 +601,8 @@ function loadGrid4(){
 		onSelect: function (event) {
 			event.onComplete = function () {
 				w2ui['grid_list5'].refresh();
+				console.log(this.get(event.recid));
+				console.log(this.get(event.recid).item_type_code);
 				var item_code = this.get(event.recid).c_item_code;
 				$('#hiddenM_item_code').val(item_code);
 				comboValue_nm5 = new Array;
@@ -748,8 +745,9 @@ function loadGrid6(){
 			grid_add_data = this.get(event.recid);
 		}, 
     }); 
-}
+}*/
 function addlev1(){
+	/*
 	if($('#hiddenProduct_code').val() == '' || $('#hiddenProduct_code').val() == null){
 		fnMessageModalAlert("알림", "제품(0LEV)을 1개 선택하셔야 합니다.");
 	}else{
@@ -763,6 +761,46 @@ function addlev1(){
 		}, 200);
 		selmaterial();
 	}
+	*/
+	var BomInputDatas = w2ui.grid_list3.getSelection();
+	var DataList =[];
+	var insertPJT = $("#hiddenIdx").val();
+	for(var i=0; i<BomInputDatas.length; i++){
+		var Data={
+			pjt_IDX : encodeURIComponent(insertPJT),
+			mtl_IDX : w2ui.grid_list3.records[i].mtl_IDX,
+			bom_MTL_QTY : w2ui.grid_list3.records[i].bom_MTL_QTY,
+			mtl_REG_DT  : w2ui.grid_list3.records[i].mtl_REG_DT
+		};
+		DataList.push(Data);
+	}
+
+	if(confirm("등록하시겠습니까?")){
+		var page_url = "/info/info/InsertMaterialsBOM";
+		console.log(DataList);
+		var jsonData = JSON.stringify(DataList);
+		console.log(jsonData);
+		jQuery.ajaxSettings.traditional=true;
+		$.ajax({
+			url: page_url,
+			type: 'POST',
+			data: {"jsonData" : jsonData},
+			data_type: 'json',
+			success: function (data) {
+					if(data!=0){
+					alert("추가되었습니다");
+					requestItemName($("#hiddenIdx").val());
+					requestGrid3();
+					}else{
+						alert("오류가 발생하였습니다");
+					}
+			}, complete: function () {
+				document.getElementById("add_nm").style.removeProperty("height");
+				document.getElementById("add_code").style.removeProperty("height");
+			}
+		});
+	}
+
 }
 function addlev2(){
 	if($('#hiddenProduct_code').val() == '' || $('#hiddenProduct_code').val() == null){
@@ -783,19 +821,21 @@ function addlev2(){
 	}
 }
 function selmaterial(){
+	/*
 	grid_add_data = '';
 	var lvl = 'MD1246';
 	if($("#modal_add_title").text() == 'Bom 1lev 등록'){
 		lvl = 'MD1245';
 	}
+	*/
 	var page_url = "/info/material/selectMaterial";
 	var postData = 'item_type_code=' + lvl;
 	postData = postData + '&item_nm='+$('#add_nm').val();
 	postData = postData + '&item_code='+$('#add_code').val();
 	
-	w2ui['grid_list6'].lock('loading...', true);
-	w2ui['grid_list6'].clear();	
-	w2ui['grid_list6'].refresh();
+	w2ui['grid_list3'].lock('loading...', true);
+	w2ui['grid_list3'].clear();	
+	w2ui['grid_list3'].refresh();
 	comboValue_nm6 = new Array;
 	comboValue_cd6 = new Array;
 	$.ajax({
@@ -817,8 +857,6 @@ function selmaterial(){
 			} else {
 				//w2ui.grid_list.clear();
 			}
-			w2ui['grid_list6'].refresh();
-			w2ui['grid_list6'].unlock();
 		}, complete : function() {
 			document.getElementById("add_nm").style.removeProperty("height");
 			document.getElementById("add_code").style.removeProperty("height");

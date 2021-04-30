@@ -1,5 +1,6 @@
 package kr.co.passcombine.set.controller;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -24,8 +25,12 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.ModelAndView;
+
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 import kr.co.passcombine.set.svc.SYGoalService;
 import kr.co.passcombine.set.svc.SYInfoService;
@@ -4526,10 +4531,20 @@ public class InfoController {
 	}
 	
 	
-	/* 2021_04_29
-	 * 이정훈 - BOM관리
-	 * 
-	 */
+	/**
+	* <pre>
+	* 1. MethodName : Project
+	* 2. ClassName  : InfoController.java
+	* 3. Comment    : 관리자 > BOM관리
+	* 4. 작성자       : LEEJUNGHOON
+	* 5. 작성일       : 2021. 04. 29.
+	* </pre>
+	*
+	* @param commandMap
+	* @return
+	* @throws Exception
+	*/	
+	// selectBOMbyProject
 	@ResponseBody
 	@RequestMapping(value = "/info/selectBOMbyProject", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
@@ -4586,6 +4601,71 @@ public class InfoController {
 				resultData.put("rows", null);
 			}
 			return resultData.toJSONString();
+		}	
+		
+		@ResponseBody
+		@RequestMapping(value = "/info/selectMaterialsBOM", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+		@SuppressWarnings("unchecked")
+		public String selectMaterialsBOM(@ModelAttribute SYTMaterialVo vo,
+				HttpServletRequest request, HttpServletResponse response,
+				HttpSession session) {
+			logger.debug("FrontendController.selectMaterialsBOM is called.");
+
+			JSONObject resultData = new JSONObject();
+			JSONArray listDataJArray = new JSONArray();
+			JSONParser jsonParser = new JSONParser();
+			try {
+				List<SYTMaterialVo> dataList = sYInfoService.selectMaterialsBOM(vo);
+
+				System.out.println("dataList");
+				System.out.println(dataList);
+							
+				String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+				listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+				resultData.put("status", HttpStatus.OK.value());
+				resultData.put("rows", listDataJArray);
+			} catch (Exception e) {
+				e.printStackTrace();
+				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+				resultData.put("rows", null);
+			}
+			return resultData.toJSONString();
+		}	
+		
+		@ResponseBody
+		@RequestMapping(value = "/info/InsertMaterialsBOM", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+		@SuppressWarnings("unchecked")
+		public int InsertMaterialsBOM(HttpServletRequest request, @RequestParam String jsonData) {
+			List<Map<String,Object>> vo = null;
+			logger.debug("FrontendController.InsertMaterialsBOM is called.");
+			
+			  String REG_ID = SessionUtil.getMemberId(request);
+			  ObjectMapper mapper = new ObjectMapper();
+		       TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>(){};
+		       try {
+				vo = mapper.readValue(jsonData,typeRef);
+				System.out.println("Dd");
+			} catch (IOException e1) {
+				// TODO Auto-generated catch block
+				System.out.println(e1);
+				e1.printStackTrace();
+			}
+		       for(int i=0; i<vo.size(); i++) {
+		    	   vo.get(i).put("REG_ID", REG_ID);
+		       }
+			
+			int result = 0;
+			JSONObject resultData = new JSONObject();
+			JSONArray listDataJArray = new JSONArray();
+			JSONParser jsonParser = new JSONParser();
+			try {
+				result = sYInfoService.InsertMaterialsBOM(vo);
+			} catch (Exception e) {
+				e.printStackTrace();
+				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+				resultData.put("rows", null);
+			}
+			return result;
 		}	
 	
 	

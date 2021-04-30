@@ -3103,6 +3103,7 @@
 					,TMM.MTL_UNT
 					,TBM.PJT_ID
 					,TBM.BOM_MTL_QTY
+					,TBM.BOM_IDX
 		 FROM		T_MTL_MST		TMM
 		 LEFT OUTER JOIN
 		 			T_BOM_MST		TBM
@@ -3111,13 +3112,59 @@
 	</select>
 	
 	<select id="selectBOMbyProject" parameterType="SYTProjectVo" resultType="SYTProjectVo">
-		SELECT 
-		PJT_IDX, CST_IDX, PJT_GRD, PJT_NM, PJT_CD, PJT_PRD_NM, PJT_PRD_QTY, PJT_PRD_UNT, PJT_DLV_DT, PJT_REG_DT 
+		SELECT  PJT_IDX, 
+				CST_IDX, 
+				PJT_GRD, 
+				PJT_NM, 
+				PJT_CD, PJT_PRD_NM, PJT_PRD_QTY, PJT_PRD_UNT, PJT_DLV_DT, PJT_REG_DT 
 		FROM T_PJT_MST  
 		WHERE PJT_DEL_YN = 'N'
-					 
 		ORDER BY PJT_IDX DESC
 	</select>
 	
-
+	<select id="selectMaterialsBOM" parameterType="SYTMaterialVo" resultType="SYTMaterialVo">
+		SELECT 	 #{pjt_IDX} AS pjt_IDX
+				,MTL_IDX 
+				,MTL_CATE
+				,MTL_NM
+				,MTL_MKR_CD
+				,MTL_MKR_NO
+				,MTL_STD
+				,MTL_PRICE
+				,MTL_UNT
+				,MTL_QTY
+				,MTL_DS_URL
+				,MTL_BG
+				,MTL_REG_DT
+				,MTL_REG_ID
+				,MTL_DEL_YN
+		 FROM	T_MTL_MST
+		WHERE	MTL_DEL_YN='N'
+		  AND	MTL_IDX NOT IN 
+		  (
+		  	SELECT B.MTL_IDX
+		  	  FROM T_BOM_MST B
+		  	 WHERE B.PJT_ID = #{pjt_IDX}
+		  )
+	</select>
+	<insert id="InsertMaterialsBOM" parameterType="java.util.List">
+		INSERT INTO T_BOM_MST
+		(
+			MTL_IDX,
+			PJT_ID,
+			BOM_MTL_QTY,
+			BOM_DEL_YN,
+			BOM_REG_DT,
+			BOM_REG_ID
+		) VALUES
+		<foreach  collection="list" item="item"  separator=" , ">
+		(
+			#{item.mtl_IDX},#{item.pjt_IDX}
+			<choose><when test="item.bom_MTL_QTY!=null and item.bom_MTL_QTY!=''">,#{item.bom_MTL_QTY}
+			</when><otherwise>,'0'</otherwise></choose>
+			,'Y'
+			,#{item.mtl_REG_DT},#{item.REG_ID}
+		)
+		</foreach>
+	</insert>
 </mapper>
