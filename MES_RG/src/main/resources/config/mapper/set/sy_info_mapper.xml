@@ -606,24 +606,28 @@
 	</select>
 	<select id="selectProject" parameterType="SYTProjectVo" resultType="SYTProjectVo">
 		SELECT 
-		PJT_IDX, C.CST_NM AS CST_IDX, PJT_GRD, PJT_NM, PJT_CD, PJT_PRD_NM, PJT_PRD_QTY, D.code_nm AS PJT_PRD_UNT, PJT_DLV_DT, PJT_REG_DT
+		PJT_IDX, P.CST_IDX, C.CST_NM, PJT_GRD, PJT_NM, PJT_CD, PJT_PRD_NM, PJT_PRD_QTY, PJT_PRD_UNT, D.code_nm AS PJT_PRD_UNT_NM, PJT_DLV_DT, PJT_REG_DT
 		FROM T_PJT_MST P
 		LEFT JOIN T_CST_MST C ON P.CST_IDX = C.CST_IDX
 		LEFT JOIN sy_code_detail D ON P.PJT_PRD_UNT = D.detail_code
 		WHERE PJT_DEL_YN = 'N'
-		
-		<!-- 
-		<if test="PJT_IDX!=null and !''.equals(PJT_IDX) ">
-			AND PJT_IDX = #{PJT_IDX}
-		</if>
-		 -->
-		<if test="PJT_NM!=null and !''.equals(PJT_NM) ">
+
+		<if test="PJT_NM != null and !''.equals(PJT_NM) ">
 			AND PJT_NM LIKE CONCAT('%', #{PJT_NM}, '%')
 		</if>	  
-		<if test="PJT_GRD!=null and !''.equals(PJT_GRD) ">
+		<if test="PJT_GRD != null and !''.equals(PJT_GRD) ">
 			AND PJT_GRD LIKE CONCAT('%', #{PJT_GRD}, '%')
 		</if>	
-					 
+		<if test="CST_IDX != null and CST_IDX !='' and CST_IDX !='ALL'">
+			AND P.CST_IDX = #{CST_IDX}
+		</if>
+		<if test="PJT_DLV_DT != null and !''.equals( PJT_DLV_DT ) ">
+			AND date_format(PJT_DLV_DT, '%Y%m%d') BETWEEN left(#{PJT_DLV_DT}, 8) AND right(#{PJT_DLV_DT}, 8)
+		</if>
+		<if test="PJT_REG_DT != null and !''.equals( PJT_REG_DT ) ">
+			AND date_format(PJT_REG_DT, '%Y%m%d') BETWEEN left(#{PJT_REG_DT}, 8) AND right(#{PJT_REG_DT}, 8)
+		</if>
+											 
 		ORDER BY PJT_IDX DESC
 	</select>
 	<insert id="insertProject" parameterType="SYTProjectVo">
