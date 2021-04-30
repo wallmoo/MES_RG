@@ -26,8 +26,15 @@ public class SYTMaterialVo implements Serializable{
 	private int PJT_ID;
 	private String BOM_MTL_QTY;
 	private int pjt_IDX;
+	private int BOM_IDX;
 	
 	
+	public int getBOM_IDX() {
+		return BOM_IDX;
+	}
+	public void setBOM_IDX(int bOM_IDX) {
+		BOM_IDX = bOM_IDX;
+	}
 	public int getMTL_IDX() {
 		return MTL_IDX;
 	}

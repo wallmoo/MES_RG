@@ -1,5 +1,6 @@
 package kr.co.passcombine.set.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -261,6 +262,7 @@ public interface SYInfoDAO {
 	public void deleteRoutingCode(String routing_code);
 	public List<SYTMaterialVo> selectBOMbyPRO(SYTMaterialVo vo);
 	public List<SYTProjectVo> selectBOMbyProject(SYTProjectVo Vo);
-	
+	public List<SYTMaterialVo> selectMaterialsBOM(SYTMaterialVo Vo);
+	public int InsertMaterialsBOM(List<Map<String,Object>> vo);
 	
 }
