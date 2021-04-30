@@ -60,8 +60,8 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 						<div class="box-tools pull-right">
 						 	<!-- <button type="button" id="btn_create" class="btn btn-success btn-sm" onclick="fileComment();">완료</button> -->
 					     	<button type="button" id="btn_create" class="btn btn-primary btn-sm" onclick="requestIU_modal();">등록/수정</button>
-					     	<button type="button" id="btn_delete" class="btn btn-danger btn-sm" onclick="deleteItem();">삭제</button>
-							<button type="button" id="btn_search_csr" onclick="loadList();" class="btn btn-warning btn-sm">조회</button><!-- loadList(); -->	 
+					     	<button type="button" id="btn_delete" class="btn btn-danger btn-sm" onclick="deleteProject()();">삭제</button>
+							<button type="button" id="btn_search_csr" onclick="loadList();" class="btn btn-warning btn-sm">조회</button> 
 							
 						</div>
 					</div>
@@ -100,7 +100,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 								<label>납품 요청일</label>
 									<div class="input-group">
 										<input type="text" 
-											class="form-control pull-right input-sm" style="" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd" onchange="loadList();">
+											class="form-control pull-right input-sm" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd">
 										<div class="input-group-addon">
 											<i class="fa fa-calendar"></i>	
 										</div>
@@ -113,7 +113,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 								<label>프로젝트 등록일</label>
 									<div class="input-group">
 										<input type="text" 
-											class="form-control pull-right input-sm" style="" id="S_PJT_REG_DT" placeholder="yyyymmdd~yyyymmdd" onchange="loadList();">
+											class="form-control pull-right input-sm" id="S_PJT_REG_DT" placeholder="yyyymmdd~yyyymmdd">
 										<div class="input-group-addon">
 											<i class="fa fa-calendar"></i>	
 										</div>
@@ -255,6 +255,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 
 <script type="text/javascript">
 	var startValue_combo = "";
+	var minDate = getFormatDate(new Date());
 	
 	comboValue_nm = new Array;
 	comboValue_cd = new Array;
@@ -264,10 +265,11 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 		
 		requestClient('CST_IDX');//고객사 정보를 드랍다운 형태로 만듬
 		requestClient('S_CST_IDX');
-		
+	
 		fnLoadProjectGrid(); 
-		
-		fnLoadCommonOption();	 
+		fnLoadCommonOption();//등록폼 달력
+		fnLoadDeliveryOption();//검색폼 달력			
+
 	})
 	function fnCdD(val, val2){//공통코드를 드랍다운 메뉴화
 		console.log("fnCdD("+val+")");
@@ -309,31 +311,6 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 		    }
 		});
 	}
-	
-	//고객사명,코드 자동완성
-	$("#m_customer_code").change(
-		_.debounce(function(event) 
-		{
-			var customer_code = $("#m_customer_code").val();
-			$(this).val(function(index, value) {
-				console.log('m_customer_code key_up : '+ value);
-				
-				getcustomerInfo('cd',value);
-				return value
-			});
-	},400));
-
-	$("#m_customer_nm").change(
-			_.debounce(function(event) 
-			{
-				var customer_nm = $("#m_customer_nm").val();
-				$(this).val(function(index, value) {
-					console.log('m_customer_nm key_up : '+ value);
-					
-					getcustomerInfo('nm',value);
-					return value
-				});
-	},400));  
 
 	function fnLoadProjectGrid() {
 	// 	 console.log(page_url);
@@ -352,16 +329,16 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 	        	{ field:'pjt_GRD', caption:'프로젝트 등급', size:'10%', style:'text-align:center', sortable: true},
 	        	{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'pjt_CD', caption:'프로젝트 코드', size:'17%', style:'text-align:center', sortable: true},
-				{ field:'cst_IDX', caption:'고객사', size:'8%', style:'text-align:center', sortable: true}, 
+				{ field:'cst_NM', caption:'고객사', size:'8%', style:'text-align:center', sortable: true}, 
 				{ field:'pjt_PRD_NM', caption:'제품명', size:'8%', style:'text-align:center', sortable: true}, 
 				{ field:'pjt_PRD_QTY', caption:'발주수량', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'pjt_PRD_UNT', caption:'단위', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'pjt_PRD_UNT_NM', caption:'단위', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'pjt_DLV_DT', caption:'납품 요청일', size:'8%', style:'text-align:center', sortable: true}
 				], 
 			sortData: [{field: 'pjt_IDX', direction: 'DESC'}],
 			records: [],	//
 			onReload: function(event) {
-				//loadList();
+
 			},
 			onClick: function (event) {}
 		});
@@ -370,25 +347,17 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 	
 	function loadList() {
 		console.log("loadList()");
+		
+		var PJT_DLV_DT_DATA = $("#PJT_DLV_DT").val();
+		PJT_DLV_DT_DATA = PJT_DLV_DT_DATA.replace(/-/gi, "");		
 
 		var page_url = "/info/account/selectProject";
-		//var postData = "PJT_GRD=" + encodeURIComponent($("#S_PJT_GRD").val())
-					  //+ "&PJT_NM=" + encodeURIComponent($("#S_PJT_NM").val())
-					  //+ "&CST_IDX="   + encodeURIComponent($("#S_CST_IDX").val())
-					  //+ "&PJT_PRD_NM="   + encodeURIComponent($("#S_PJT_PRD_NM").val())
-					  //+ "&PJT_DLV_DT="   + encodeURIComponent($("#S_PJT_DLV_DT").val())
-					//+ "&PJT_DLV_DT_ED="   + encodeURIComponent($("#S_PJT_DLV_DT_ED").val())
-					//+ "&PJT_REG_DT_SD="   + encodeURIComponent($("#S_PJT_REG_DT_SD").val())
-					  //+ "&PJT_REG_DT="+ encodeURIComponent($("#S_PJT_REG_DT").val());
 		var postData = "PJT_GRD=" + encodeURIComponent($("#S_PJT_GRD").val()) 
 					+ "&PJT_NM=" + encodeURIComponent($("#S_PJT_NM").val()) 
+					+ "&CST_IDX="   + encodeURIComponent($("#S_CST_IDX").val())
 					+ "&PJT_PRD_NM="   + encodeURIComponent($("#S_PJT_PRD_NM").val()) 
 					+ "&PJT_DLV_DT="   + encodeURIComponent($("#S_PJT_DLV_DT").val()) 
-					//+ "&PJT_DLV_DT_ED="   + encodeURIComponent($("#S_PJT_DLV_DT_ED").val()) 
-					//+ "&PJT_REG_DT_SD="   + encodeURIComponent($("#S_PJT_REG_DT_SD").val()) 
 					+ "&PJT_REG_DT="   + encodeURIComponent($("#S_PJT_REG_DT").val());
-		
-					//+ "&CST_IDX=" + encodeURIComponent($("#S_CST_IDX").val());
 
 		w2ui['grid_list'].lock('loading...', true);
 		$.ajax({
@@ -468,14 +437,14 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 			
 			$("#PJT_IDX").val(data.pjt_IDX);
 			//$("#CST_IDX").val(data.cst_IDX);
-			$("#CST_IDX").val("data.cst_IDX").prop("selected", true);
+			$("#CST_IDX").val(data.cst_IDX).prop("selected", true);
 			$("#PJT_GRD").val(data.pjt_GRD);
 			$("#PJT_NM").val(data.pjt_NM);
 			$("#PJT_CD").val(data.pjt_CD);
 			$("#PJT_PRD_NM").val(data.pjt_PRD_NM);
 			$("#PJT_PRD_QTY").val(data.pjt_PRD_QTY);
 			//$("#PJT_PRD_UNT").val(data.pjt_PRD_UNT);
-			$("#PJT_PRD_UNT").val("data.pjt_PRD_UNT").prop("selected", true);
+			$("#PJT_PRD_UNT").val(data.pjt_PRD_UNT).prop("selected", true);
 			console.log(data.pjt_PRD_UNT);
 			$("#PJT_DLV_DT").val(data.pjt_DLV_DT);
 
@@ -512,11 +481,13 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 // 		var flag = nullToBlank(Project_code)==''?"I":"U";
 		console.log("flag = " + flag);
  		console.log( "PJT_NM = " + $("#PJT_NM").val() );
+ 		console.log( "PJT_DLV_DT = " + $("#PJT_DLV_DT").val() );
 
 		
 		$("#modal_info").modal('hide');
 
 		var strUrl = "/info/account/saveProject";
+		if(flag=="U") {		
 		var postData = "flag=" + flag
 				+ "&PJT_IDX=" + encodeURIComponent(PJT_IDX)
 				+ "&CST_IDX=" + encodeURIComponent(CST_IDX)
@@ -527,6 +498,17 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 				+ "&PJT_PRD_QTY=" + encodeURIComponent(PJT_PRD_QTY)
 				+ "&PJT_PRD_UNT=" + encodeURIComponent(PJT_PRD_UNT)
 				+ "&PJT_DLV_DT=" + encodeURIComponent(PJT_DLV_DT);
+		} else {
+			var postData = "flag=" + flag
+				+ "&CST_IDX=" + encodeURIComponent(CST_IDX)
+				+ "&PJT_GRD=" + encodeURIComponent(PJT_GRD)
+				+ "&PJT_NM=" + encodeURIComponent(PJT_NM)
+				+ "&PJT_CD=" + encodeURIComponent(PJT_CD)
+				+ "&PJT_PRD_NM=" + encodeURIComponent(PJT_PRD_NM)
+				+ "&PJT_PRD_QTY=" + encodeURIComponent(PJT_PRD_QTY)
+				+ "&PJT_PRD_UNT=" + encodeURIComponent(PJT_PRD_UNT);		
+				+ "&PJT_DLV_DT=" + encodeURIComponent(PJT_DLV_DT);
+		}				
 		
 		$.ajax({
 		    url : strUrl,
@@ -538,7 +520,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 			    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
 			    	startValue_combo = "";
 			    	loadList();
-		    	}
+		    	}.2
 		    },
 		    error: function(jqXHR, textStatus, errorThrown){
 			    	fnMessageModalAlert("결과", "정보를 처리하는데 에러가 발생하였습니다.");	// Notification(MES)
@@ -560,14 +542,14 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 		} else {
  
 			var data = w2ui.grid_list.get(key[0]);
-			var code = data.mtl_IDX;
+			var code = data.pjt_IDX;
 			
 			fnMessageModalConfirm("알림", "선택한 내용을 삭제하시겠습니까?", function(result) {
 				if(result) {
 					console.log("code = " + code);
 					
 					var strUrl = "/info/account/deleteProject";
-					var postData = "MTL_IDX=" + code;
+					var postData = "PJT_IDX=" + code;
 					
 					$.ajax({
 						 url: strUrl,
@@ -610,9 +592,31 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 				yearSuffix : '년'
 		    },
 		    startDate : moment(minDate)
+		})
+		.on("change", function() {
+		    loadList();
 		}); 
 	}
-	
+	function fnLoadDeliveryOption() {
+	 	console.log('fnLoadCommonOption()');
+	 	
+		$('#S_PJT_REG_DT, #S_PJT_DLV_DT').daterangepicker({
+			opens: 'left',
+			locale: {
+				format : 'YYYYMMDD'	,
+				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
+				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
+				showMonthAfterYear : true,
+				yearSuffix : '년'
+		    },
+ 			startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
+			endDate: moment().format('YYYY-MM-DD'),
+		}); 
+		
+		$('#S_PJT_REG_DT').val("");
+		$('#S_PJT_DLV_DT').val("");
+		
+	}	
 	function getFormatDate(d) {
 		var month = d.getMonth() + 1;
 		var date = d.getDate();
@@ -621,23 +625,6 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 		return d.getFullYear() + '-' + month + '-' + date;
 	}
 
-	var minDate = getFormatDate(new Date());
-	
-	$(document).ready(function(){
-		$('#S_PJT_REG_DT, #S_PJT_DLV_DT').daterangepicker({
-			language: 'kr',
-			opens: 'right',
-			locale: {
-				format: 'YYYYMMDD',
-				monthNames: ['1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월'],
-				daysOfWeek: ["일", "월", "화", "수", "목", "금", "토"],
-				showMonthAfterYear: true,
-				yearSuffix: '년'
-			},
-			startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
-			endDate: moment().format('YYYY-MM-DD')
-		});
-	});
 	// 고객사 가져오기
 	function requestClient(val){
 		console.log("requestClient");
@@ -662,7 +649,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 		    		/* 검색어 입력시 */
 		    		var sub = val.substr(0,2);
 
-		    		if(sub.indexOf("m_") == -1) // val
+		    		if(sub.indexOf("S_") != -1) // val
 		    			$("#"+val ).append("<option value="+'ALL'+">" + "전체" + "</option>");
 		    		
 					$.each(rowArr, function(idx, row){

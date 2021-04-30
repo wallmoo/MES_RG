@@ -8,12 +8,14 @@ public class SYTProjectVo implements Serializable{
 
 	private int PJT_IDX;
 	private String CST_IDX;
+	private String CST_NM;
 	private String PJT_GRD;
 	private String PJT_NM;
 	private String PJT_CD;
 	private String PJT_PRD_NM;
 	private String PJT_PRD_QTY;
 	private String PJT_PRD_UNT;
+	private String PJT_PRD_UNT_NM;
 	private String PJT_DLV_DT;
 	private String PJT_REG_DT;
 	private String PJT_REG_ID;
@@ -91,6 +93,18 @@ public class SYTProjectVo implements Serializable{
 	}
 	public void setPJT_DEL_YN(String pJT_DEL_YN) {
 		this.PJT_DEL_YN = pJT_DEL_YN;
+	}
+	public String getCST_NM() {
+		return CST_NM;
+	}
+	public void setCST_NM(String cST_NM) {
+		this.CST_NM = cST_NM;
+	}
+	public String getPJT_PRD_UNT_NM() {
+		return PJT_PRD_UNT_NM;
+	}
+	public void setPJT_PRD_UNT_NM(String pJT_PRD_UNT_NM) {
+		this.PJT_PRD_UNT_NM = pJT_PRD_UNT_NM;
 	}
 	
 }

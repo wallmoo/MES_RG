@@ -951,6 +951,7 @@ public class InfoController {
 			int cnt = 0;
 
 			String flag = request.getParameter("flag");
+			//String delivery_date = URLDecoder.decode(request.getParameter("delivery_date"), "UTF-8" );
 
 			if (flag.equals("I")) {
 				//account_code = sYInfoService.accountCdGen();
