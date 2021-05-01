@@ -153,7 +153,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					<div class="row">
 						<div class="col-sm-12">
 							<div class="form-group">
-								<label for="" class="col-sm-3 control-label">고객사</label>
+								<label for="" class="col-sm-3 control-label">고객사..</label>
 								<div class="col-sm-5">
 									<input type="combo" id="m_customer_nm" name="m_customer_nm" class="form-control input-sm" placeholder="고객사명" 
 												onkeypress="if(event.keyCode==13) {requestCustomer_code(); return false;}" >

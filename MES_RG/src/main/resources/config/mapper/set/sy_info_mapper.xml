@@ -659,7 +659,10 @@
 			PJT_PRD_NM = #{PJT_PRD_NM},
 			PJT_PRD_QTY = #{PJT_PRD_QTY},
 			PJT_PRD_UNT = #{PJT_PRD_UNT},
+		<if test="PJT_DLV_DT != null and !''.equals( PJT_DLV_DT ) ">
 			PJT_DLV_DT = #{PJT_DLV_DT}
+		</if>			
+
 		WHERE PJT_IDX = #{PJT_IDX}
 	</update>
 	<update id="deleteProject" parameterType="SYTProjectVo">
@@ -3159,11 +3162,12 @@
 		) VALUES
 		<foreach  collection="list" item="item"  separator=" , ">
 		(
-			#{item.mtl_IDX},#{item.pjt_IDX}
-			<choose><when test="item.bom_MTL_QTY!=null and item.bom_MTL_QTY!=''">,#{item.bom_MTL_QTY}
-			</when><otherwise>,'0'</otherwise></choose>
-			,'Y'
-			,#{item.mtl_REG_DT},#{item.REG_ID}
+			#{item.mtl_IDX},
+			#{item.pjt_IDX}
+			<choose><when test="item.bom_MTL_QTY!=null and item.bom_MTL_QTY!=''">,#{item.bom_MTL_QTY}</when><otherwise>,'0'</otherwise></choose>,
+			'Y',
+			#{item.mtl_REG_DT},
+			#{item.REG_ID}
 		)
 		</foreach>
 	</insert>

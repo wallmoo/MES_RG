@@ -4574,99 +4574,97 @@ public class InfoController {
 		return resultData.toJSONString();
 	}	
 	
-		@ResponseBody
-		@RequestMapping(value = "/info/selectBOMbyPRO", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-		@SuppressWarnings("unchecked")
-		public String selectBOMbyPRO(@ModelAttribute SYTMaterialVo vo,
-				HttpServletRequest request, HttpServletResponse response,
-				HttpSession session) {
-			logger.debug("FrontendController.selectBOMbyPRO is called.");
+	@ResponseBody
+	@RequestMapping(value = "/info/selectBOMbyPRO", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String selectBOMbyPRO(@ModelAttribute SYTMaterialVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.selectBOMbyPRO is called.");
 
-			JSONObject resultData = new JSONObject();
-			JSONArray listDataJArray = new JSONArray();
-			JSONParser jsonParser = new JSONParser();
-			try {
-				List<SYTMaterialVo> dataList = sYInfoService.selectBOMbyPRO(vo);
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			List<SYTMaterialVo> dataList = sYInfoService.selectBOMbyPRO(vo);
 
-				System.out.println("dataList");
-				System.out.println(dataList);
-							
-				String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
-				listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-				resultData.put("status", HttpStatus.OK.value());
-				resultData.put("rows", listDataJArray);
-			} catch (Exception e) {
-				e.printStackTrace();
-				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-				resultData.put("rows", null);
-			}
-			return resultData.toJSONString();
-		}	
+			System.out.println("dataList");
+			System.out.println(dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}	
 		
-		@ResponseBody
-		@RequestMapping(value = "/info/selectMaterialsBOM", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-		@SuppressWarnings("unchecked")
-		public String selectMaterialsBOM(@ModelAttribute SYTMaterialVo vo,
-				HttpServletRequest request, HttpServletResponse response,
-				HttpSession session) {
-			logger.debug("FrontendController.selectMaterialsBOM is called.");
+	@ResponseBody
+	@RequestMapping(value = "/info/selectMaterialsBOM", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String selectMaterialsBOM(@ModelAttribute SYTMaterialVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.selectMaterialsBOM is called.");
 
-			JSONObject resultData = new JSONObject();
-			JSONArray listDataJArray = new JSONArray();
-			JSONParser jsonParser = new JSONParser();
-			try {
-				List<SYTMaterialVo> dataList = sYInfoService.selectMaterialsBOM(vo);
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			List<SYTMaterialVo> dataList = sYInfoService.selectMaterialsBOM(vo);
 
-				System.out.println("dataList");
-				System.out.println(dataList);
-							
-				String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
-				listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-				resultData.put("status", HttpStatus.OK.value());
-				resultData.put("rows", listDataJArray);
-			} catch (Exception e) {
-				e.printStackTrace();
-				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-				resultData.put("rows", null);
-			}
-			return resultData.toJSONString();
-		}	
+			System.out.println("dataList");
+			System.out.println(dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}
 		
-		@ResponseBody
-		@RequestMapping(value = "/info/InsertMaterialsBOM", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-		@SuppressWarnings("unchecked")
-		public int InsertMaterialsBOM(HttpServletRequest request, @RequestParam String jsonData) {
-			List<Map<String,Object>> vo = null;
-			logger.debug("FrontendController.InsertMaterialsBOM is called.");
-			
-			  String REG_ID = SessionUtil.getMemberId(request);
-			  ObjectMapper mapper = new ObjectMapper();
-		       TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>(){};
-		       try {
-				vo = mapper.readValue(jsonData,typeRef);
-				System.out.println("Dd");
-			} catch (IOException e1) {
-				// TODO Auto-generated catch block
-				System.out.println(e1);
-				e1.printStackTrace();
-			}
-		       for(int i=0; i<vo.size(); i++) {
-		    	   vo.get(i).put("REG_ID", REG_ID);
-		       }
-			
-			int result = 0;
-			JSONObject resultData = new JSONObject();
-			JSONArray listDataJArray = new JSONArray();
-			JSONParser jsonParser = new JSONParser();
-			try {
-				result = sYInfoService.InsertMaterialsBOM(vo);
-			} catch (Exception e) {
-				e.printStackTrace();
-				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-				resultData.put("rows", null);
-			}
-			return result;
-		}	
-	
-	
+	@ResponseBody
+	@RequestMapping(value = "/info/InsertMaterialsBOM", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public int InsertMaterialsBOM(HttpServletRequest request, @RequestParam String jsonData) {
+		List<Map<String, Object>> vo = null;
+		logger.debug("FrontendController.InsertMaterialsBOM is called.");
+
+		String REG_ID = SessionUtil.getMemberId(request);
+		ObjectMapper mapper = new ObjectMapper();
+		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() {};
+		try {
+			vo = mapper.readValue(jsonData, typeRef);
+			System.out.println("Dd");
+		} catch (IOException e1) {
+			// TODO Auto-generated catch block
+			System.out.println(e1);
+			e1.printStackTrace();
+		}
+		for (int i = 0; i < vo.size(); i++) {
+			vo.get(i).put("REG_ID", REG_ID);
+		}
+
+		int result = 0;
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			result = sYInfoService.InsertMaterialsBOM(vo);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return result;
+	}
 }

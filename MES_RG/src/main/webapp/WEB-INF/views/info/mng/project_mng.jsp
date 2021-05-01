@@ -366,8 +366,8 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 			data : postData, 
 			dataType : 'json',
 			success : function( data ) {
-				comboValue_cd = new Array;
-				comboValue_nm = new Array;
+				console.log(data);
+				
 				if(data.status == 200 && (data.rows).length>0 ) {
 					rowArr = data.rows;
 					$.each(rowArr, function(idx, row){
