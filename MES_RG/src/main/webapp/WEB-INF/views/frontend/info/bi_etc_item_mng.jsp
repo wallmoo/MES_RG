@@ -80,7 +80,7 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 							</div>
 							<div class="col-sm-2">
 								<div class="form-group" style="margin-bottom: 0px;">
-									<label>자재유형</label>
+									<label>자재유형..</label>
 									<div class="form-group" style="margin-bottom: 0px;">
 										<select id="item_type_code" class="form-control select2 input-sm" data-placeholder="" style="width: 100%;" onChange = "loadList();">
 											

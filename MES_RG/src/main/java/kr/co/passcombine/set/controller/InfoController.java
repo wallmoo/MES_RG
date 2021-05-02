@@ -4637,16 +4637,17 @@ public class InfoController {
 	@SuppressWarnings("unchecked")
 	public int InsertMaterialsBOM(HttpServletRequest request, @RequestParam String jsonData) {
 		List<Map<String, Object>> vo = null;
+		
 		logger.debug("FrontendController.InsertMaterialsBOM is called.");
 
 		String REG_ID = SessionUtil.getMemberId(request);
+		
 		ObjectMapper mapper = new ObjectMapper();
 		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() {};
 		try {
 			vo = mapper.readValue(jsonData, typeRef);
 			System.out.println("Dd");
 		} catch (IOException e1) {
-			// TODO Auto-generated catch block
 			System.out.println(e1);
 			e1.printStackTrace();
 		}

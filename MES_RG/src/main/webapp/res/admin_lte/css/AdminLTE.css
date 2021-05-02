@@ -295,7 +295,7 @@ a:focus {
   height: 50px;
   font-size: 20px;
   line-height: 50px;
-  text-align: center;
+  /* text-align: center; */
   width: 230px;
   font-family: VWMweb, "Noto Sans SC", NanumBarunGothic, Dotum, 'Source Sans Pro', sans-serif;
   padding: 0 15px;

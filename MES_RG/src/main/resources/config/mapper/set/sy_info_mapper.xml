@@ -3107,9 +3107,9 @@
 					,TBM.PJT_ID
 					,TBM.BOM_MTL_QTY
 					,TBM.BOM_IDX
-		 FROM		T_MTL_MST		TMM
+		 FROM		T_MTL_MST TMM
 		 LEFT OUTER JOIN
-		 			T_BOM_MST		TBM
+		 			T_BOM_MST TBM
 		 	     ON	TMM.MTL_IDX =	TBM.MTL_IDX
 			WHERE	TBM.PJT_ID 	= 	#{pjt_IDX}
 	</select>
@@ -3171,4 +3171,9 @@
 		)
 		</foreach>
 	</insert>
+	<update id="updateBomQty" parameterType="SYTBomVo">
+		UPDATE T_BOM_MST SET
+		BOM_MTL_QTY = #{BOM_MTL_QTY}
+		WHERE PJT_ID = #{PJT_ID} AND MTL_IDX = #{MTL_IDX}
+	</update>		
 </mapper>

@@ -3,7 +3,7 @@
 <%
 // jsp properties
 String thema = "purple"; //SessionUtil.getProperties("mes.thema");
-String pageTitle = "SET Material"; //SessionUtil.getProperties("mes.company");
+String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 %>
 <!DOCTYPE html>
 <html>
