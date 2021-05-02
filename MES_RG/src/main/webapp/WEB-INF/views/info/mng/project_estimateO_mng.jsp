@@ -61,6 +61,9 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 													<div class="box-header with-border" style="background-color: #DB8EB5;">
 														<h3 class="box-title">프로젝트 정보</h3>
 														<div class="box-tools pull-right">
+															<button type="button" id="btn_excel_csr" onclick="bomNewOrder();" class="btn btn-success btn-sm">구매 발주 등록</button>
+															<button type="button" id="btn_dlv_csr" onclick="bomNewOrder();" class="btn btn-info btn-sm">구매 발주 등록</button>
+															<button type="button" id="btn_ins_csr" onclick="bomOrder();" class="btn btn-primary btn-sm">등록/수정</button>
 															<button type="button" id="btn_search_csr" onclick="loadLeftGrid();" class="btn btn-primary btn-sm" onclick="">조회</button>
 														</div>
 													</div>
