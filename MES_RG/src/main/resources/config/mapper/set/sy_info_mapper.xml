@@ -3199,7 +3199,7 @@
 		<if test="PJT_IDX != null and !''.equals(PJT_IDX) and !'undefined'.equals(PJT_IDX) and (PJT_IDX) > 0">
 			AND R.PJT_IDX = #{PJT_IDX}
 		</if>		  
-		<if test="MTL_MKR_NO != null and !''.equals(MTL_MKR_NO) ">
+		<if test="MTL_MKR_NO != null and !''.equals(MTL_MKR_NO) and !'undefined'.equals(MTL_MKR_NO)">
 			AND M.MTL_MKR_NO LIKE CONCAT('%', #{MTL_MKR_NO}, '%')
 		</if>		
 		ORDER BY MTL_REQ_MST DESC
