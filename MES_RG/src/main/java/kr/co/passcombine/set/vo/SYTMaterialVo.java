@@ -25,7 +25,6 @@ public class SYTMaterialVo implements Serializable{
 	/*여기부턴 추가VO*/
 	private int PJT_IDX;
 	private String BOM_MTL_QTY;
-	private int pjt_IDX;
 	private int BOM_IDX;
 	
 	
@@ -136,12 +135,6 @@ public class SYTMaterialVo implements Serializable{
 	}
 	public void setBOM_MTL_QTY(String bOM_MTL_QTY) {
 		BOM_MTL_QTY = bOM_MTL_QTY;
-	}
-	public int getPjt_IDX() {
-		return pjt_IDX;
-	}
-	public void setPjt_IDX(int pjt_IDX) {
-		this.pjt_IDX = pjt_IDX;
 	}
 	
 }

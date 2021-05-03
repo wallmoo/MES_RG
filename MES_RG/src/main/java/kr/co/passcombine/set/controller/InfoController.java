@@ -4732,19 +4732,24 @@ public class InfoController {
 	// selectMaterialRequest
 	@SuppressWarnings("unchecked")		
 	@ResponseBody
-	@RequestMapping(value = "/account/selectMaterialRequest", method = {
+	@RequestMapping(value = "/info/selectMaterialRequest", method = {
 			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	public String selectMaterialRequest(@ModelAttribute SYTMaterialRequestVo vo,
 			HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
-		logger.debug("FrontendController.selectClient is called.");
+		logger.debug("FrontendController.selectMaterialRequest is called.");
 
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
 		try {
 			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"), "UTF-8" );
-
+			
+			/*
+			 * String PJT_IDX = ""; PJT_IDX = request.getParameter("PJT_IDX");
+			 * vo.setPJT_IDX( Integer.parseInt(PJT_IDX) );
+			 */
+			
 			List<SYTMaterialRequestVo> dataList = sYInfoService.selectMaterialRequest(vo);
 
 			System.out.println("dataList");

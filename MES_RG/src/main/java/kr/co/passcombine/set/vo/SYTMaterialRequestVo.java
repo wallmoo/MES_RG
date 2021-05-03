@@ -18,6 +18,16 @@ public class SYTMaterialRequestVo implements Serializable{
 	private String MTL_REQ_REG_ID;	
 	private String MTL_REQ_DEL_YN;
 	
+	/*여기부턴 추가VO*/
+	private String PJT_NM;
+	private String MTL_NM;
+	private String MTL_MKR_CD;
+	private String MTL_MKR_NO;
+	private String MTL_STD;
+	private String MTL_UNT;
+	private String MTL_QTY;
+
+	
 	public int getMTL_REQ_MST() {
 		return MTL_REQ_MST;
 	}
@@ -84,5 +94,48 @@ public class SYTMaterialRequestVo implements Serializable{
 	public void setMTL_REQ_DEL_YN(String mTL_REQ_DEL_YN) {
 		this.MTL_REQ_DEL_YN = mTL_REQ_DEL_YN;
 	}
+	public String getPJT_NM() {
+		return PJT_NM;
+	}
+	public void setPJT_NM(String pJT_NM) {
+		this.PJT_NM = pJT_NM;
+	}
+	public String getMTL_NM() {
+		return MTL_NM;
+	}
+	public void setMTL_NM(String mTL_NM) {
+		this.MTL_NM = mTL_NM;
+	}
+	public String getMTL_MKR_CD() {
+		return MTL_MKR_CD;
+	}
+	public void setMTL_MKR_CD(String mTL_MKR_CD) {
+		this.MTL_MKR_CD = mTL_MKR_CD;
+	}
+	public String getMTL_MKR_NO() {
+		return MTL_MKR_NO;
+	}
+	public void setMTL_MKR_NO(String mTL_MKR_NO) {
+		this.MTL_MKR_NO = mTL_MKR_NO;
+	}
+	public String getMTL_STD() {
+		return MTL_STD;
+	}
+	public void setMTL_STD(String mTL_STD) {
+		this.MTL_STD = mTL_STD;
+	}
+	public String getMTL_UNT() {
+		return MTL_UNT;
+	}
+	public void setMTL_UNT(String mTL_UNT) {
+		this.MTL_UNT = mTL_UNT;
+	}
+	public String getMTL_QTY() {
+		return MTL_QTY;
+	}
+	public void setMTL_QTY(String mTL_QTY) {
+		this.MTL_QTY = mTL_QTY;
+	}
+
 
 }

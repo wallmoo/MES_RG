@@ -3189,6 +3189,9 @@
 		LEFT JOIN T_MTL_MST M on R.MTL_IDX = M.MTL_IDX   
 		WHERE R.MTL_REQ_DEL_YN = 'N'
 		<!-- 
+		<if test="PJT_IDX!=null and !''.equals(PJT_IDX) and !'undefined'.equals(PJT_IDX) ">
+			AND R.PJT_IDX = #{PJT_IDX}
+		</if>			
 		<if test="CST_IDX!=null and !''.equals(CST_IDX) ">
 			AND CST_IDX = #{CST_IDX}
 		</if>

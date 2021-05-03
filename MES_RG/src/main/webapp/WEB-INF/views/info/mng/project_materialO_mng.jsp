@@ -327,12 +327,12 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	function loadLeftGrid() {//grid_list Data Arr
 		console.log("loadLeftGrid()");
 		
-		var page_url = "/info/account/selectMaterialRequest";
+		var page_url = "/info/info/selectMaterialRequest";
 		var postData = "MTL_REQ_TYPE=" + encodeURIComponent($("#S_MTL_REQ_TYPE").val()) 
-						+ "&MTL_REQ_REG_DT=" + encodeURIComponent($("#S_MTL_REQ_REG_DT").val())
-						+ "&MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val())
-						+ "&MTL_NM=" + encodeURIComponent($("#S_MTL_NM").val())
-						+ "&MTL_MKR_NO=" + encodeURIComponent($("#S_MTL_MKR_NO").val());
+					+ "&MTL_REQ_REG_DT=" + encodeURIComponent($("#S_MTL_REQ_REG_DT").val())
+					+ "&MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val())
+					+ "&MTL_NM=" + encodeURIComponent($("#S_MTL_NM").val())
+					+ "&MTL_MKR_NO=" + encodeURIComponent($("#S_MTL_MKR_NO").val());
 		
 		w2ui['grid_list'].lock('loading...', true);
 		$.ajax({
