@@ -8,7 +8,7 @@ public class SYTBomVo implements Serializable{
 	
 	private int BOM_IDX;
 	private int MTL_IDX;
-	private int PJT_ID;
+	private int PJT_IDX;
 	private String BOM_MTL_QTY;
 	private String BOM_REG_DT;
 	private String BOM_REG_ID;
@@ -26,11 +26,11 @@ public class SYTBomVo implements Serializable{
 	public void setMTL_IDX(int mTL_IDX) {
 		this.MTL_IDX = mTL_IDX;
 	}
-	public int getPJT_ID() {
-		return PJT_ID;
+	public int getPJT_IDX() {
+		return PJT_IDX;
 	}
-	public void setPJT_ID(int pJT_ID) {
-		this.PJT_ID = pJT_ID;
+	public void setPJT_IDX(int pJT_IDX) {
+		this.PJT_IDX = pJT_IDX;
 	}
 	public String getBOM_MTL_QTY() {
 		return BOM_MTL_QTY;

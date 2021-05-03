@@ -3104,14 +3104,14 @@
 					,TMM.MTL_NM
 					,TMM.MTL_MKR_NO
 					,TMM.MTL_UNT
-					,TBM.PJT_ID
+					,TBM.PJT_IDX
 					,TBM.BOM_MTL_QTY
 					,TBM.BOM_IDX
 		 FROM		T_MTL_MST TMM
 		 LEFT OUTER JOIN
 		 			T_BOM_MST TBM
 		 	     ON	TMM.MTL_IDX =	TBM.MTL_IDX
-			WHERE	TBM.PJT_ID 	= 	#{pjt_IDX}
+			WHERE	TBM.PJT_IDX 	= 	#{pjt_IDX}
 	</select>
 	
 	<select id="selectBOMbyProject" parameterType="SYTProjectVo" resultType="SYTProjectVo">
@@ -3147,14 +3147,14 @@
 		  (
 		  	SELECT B.MTL_IDX
 		  	  FROM T_BOM_MST B
-		  	 WHERE B.PJT_ID = #{pjt_IDX}
+		  	 WHERE B.PJT_IDX = #{pjt_IDX}
 		  )
 	</select>
 	<insert id="InsertMaterialsBOM" parameterType="java.util.List">
 		INSERT INTO T_BOM_MST
 		(
 			MTL_IDX,
-			PJT_ID,
+			PJT_IDX,
 			BOM_MTL_QTY,
 			BOM_DEL_YN,
 			BOM_REG_DT,
@@ -3174,16 +3174,20 @@
 	<update id="updateBomQuantity" parameterType="SYTBomVo">
 		UPDATE T_BOM_MST SET
 		BOM_MTL_QTY = #{BOM_MTL_QTY}
-		WHERE PJT_ID = #{PJT_ID} AND MTL_IDX = #{MTL_IDX}
+		WHERE PJT_IDX = #{PJT_IDX} AND MTL_IDX = #{MTL_IDX}
 	</update>	
 	
 	
 	<!-- T_MTL_REQ_MST Start -->
 	<select id="selectMaterialRequest" parameterType="SYTMaterialRequestVo" resultType="SYTMaterialRequestVo">
 		SELECT 
-		MTL_REQ_MST,BOM_IDX,MTL_IDX,PJT_IDX,MTL_REQ_TYPE,MTL_REQ_QTY,MTL_DLV_QTY,MTL_REQ_STATE,MTL_REQ_REG_DT,MTL_REQ_REG_ID
-		FROM T_MTL_REQ_MST  
-		WHERE MTL_REQ_DEL_YN = 'N'
+		R.MTL_REQ_MST,R.BOM_IDX,R.MTL_IDX,R.PJT_IDX,R.MTL_REQ_TYPE,R.MTL_REQ_QTY,
+		R.MTL_DLV_QTY,R.MTL_REQ_STATE,R.MTL_REQ_REG_DT,R.MTL_REQ_REG_ID,
+		P.PJT_NM,M.MTL_MKR_CD,M.MTL_NM,M.MTL_MKR_NO,M.MTL_STD,M.MTL_UNT,M.MTL_QTY
+		FROM T_MTL_REQ_MST R
+		LEFT JOIN T_PJT_MST P on R.PJT_IDX = P.PJT_IDX
+		LEFT JOIN T_MTL_MST M on R.MTL_IDX = M.MTL_IDX   
+		WHERE R.MTL_REQ_DEL_YN = 'N'
 		<!-- 
 		<if test="CST_IDX!=null and !''.equals(CST_IDX) ">
 			AND CST_IDX = #{CST_IDX}

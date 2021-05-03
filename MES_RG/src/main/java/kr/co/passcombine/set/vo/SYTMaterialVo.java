@@ -23,7 +23,7 @@ public class SYTMaterialVo implements Serializable{
 	private String MTL_DEL_YN;
 	
 	/*여기부턴 추가VO*/
-	private int PJT_ID;
+	private int PJT_IDX;
 	private String BOM_MTL_QTY;
 	private int pjt_IDX;
 	private int BOM_IDX;
@@ -125,11 +125,11 @@ public class SYTMaterialVo implements Serializable{
 	public void setMTL_DEL_YN(String mTL_DEL_YN) {
 		this.MTL_DEL_YN = mTL_DEL_YN;
 	}
-	public int getPJT_ID() {
-		return PJT_ID;
+	public int getPJT_IDX() {
+		return PJT_IDX;
 	}
-	public void setPJT_ID(int pJT_ID) {
-		PJT_ID = pJT_ID;
+	public void setPJT_IDX(int pJT_IDX) {
+		PJT_IDX = pJT_IDX;
 	}
 	public String getBOM_MTL_QTY() {
 		return BOM_MTL_QTY;

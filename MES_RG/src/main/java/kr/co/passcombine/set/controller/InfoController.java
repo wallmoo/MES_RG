@@ -4698,7 +4698,7 @@ public class InfoController {
 			BOM_MTL_QTY = request.getParameter("BOM_MTL_QTY");
 
 			// hKey
-			vo.setPJT_ID( Integer.parseInt(PJT_IDX) );
+			vo.setPJT_IDX( Integer.parseInt(PJT_IDX) );
 			vo.setMTL_IDX( Integer.parseInt(MTL_IDX) );
 			
 			cnt = sYInfoService.updateBomQuantity(vo);

@@ -7,7 +7,7 @@ public class SYTMaterialOrderVo implements Serializable{
 	private static final long serialVersionUID = 1L;
 
 	private String ORD_IDX;
-	private String PJT_ID;
+	private String PJT_IDX;
 	private String VDR_IDX;
 	private String MTL_ORD_TYPE;
 	private String MTL_ORD_PLC;
@@ -27,11 +27,11 @@ public class SYTMaterialOrderVo implements Serializable{
 	public void setORD_IDX(String oRD_IDX) {
 		this.ORD_IDX = oRD_IDX;
 	}
-	public String getPJT_ID() {
-		return PJT_ID;
+	public String getPJT_IDX() {
+		return PJT_IDX;
 	}
-	public void setPJT_ID(String pJT_ID) {
-		this.PJT_ID = pJT_ID;
+	public void setPJT_IDX(String pJT_IDX) {
+		this.PJT_IDX = pJT_IDX;
 	}
 	public String getVDR_IDX() {
 		return VDR_IDX;

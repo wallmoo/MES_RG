@@ -7,7 +7,7 @@ public class SYTEstimateVo implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
 	private int EST_IDX;
-	private int PJT_ID;
+	private int PJT_IDX;
 	private int MTL_IDX;
 	private int VDR_IDX;
 	private String MTL_REQ_QTY;
@@ -27,11 +27,11 @@ public class SYTEstimateVo implements Serializable{
 	public void setEST_IDX(int eST_IDX) {
 		this.EST_IDX = eST_IDX;
 	}
-	public int getPJT_ID() {
-		return PJT_ID;
+	public int getPJT_IDX() {
+		return PJT_IDX;
 	}
-	public void setPJT_ID(int pJT_ID) {
-		this.PJT_ID = pJT_ID;
+	public void setPJT_IDX(int pJT_IDX) {
+		this.PJT_IDX = pJT_IDX;
 	}
 	public int getMTL_IDX() {
 		return MTL_IDX;

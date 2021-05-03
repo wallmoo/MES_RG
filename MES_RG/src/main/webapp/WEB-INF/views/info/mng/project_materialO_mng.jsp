@@ -252,14 +252,6 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	comboValue_nm3 = new Array;
 	comboValue_cd3 = new Array;
 	
-	comboValue_nm4 = new Array;
-	comboValue_cd4 = new Array;
-	
-	comboValue_nm5 = new Array;
-	comboValue_cd5 = new Array;
-	
-	comboValue_nm6 = new Array;
-	comboValue_cd6 = new Array;
 	
 	$(function($) {
 		fnCdD('S_PJT_PRD_UNT', 'MC1027');//공통코드를 호출-재고 단위
@@ -269,9 +261,6 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		fnLoadDeliveryOption();//검색폼 달력
 		
 		fnLoadLeftGrid();
-		fnLoadRightGrid();
-		loadGrid3();
-		loadGrid4();
 	})
 
 
@@ -287,19 +276,28 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			},
 			multiSelect : false,
 			columns : [ 
-				{ field:'pjt_IDX', caption:'프로젝트 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
-				{ field:'pjt_REG_DT', caption:'프로젝트 등록일', size:'7%', style:'text-align:center', sortable: true},
-	        	{ field:'pjt_GRD', caption:'프로젝트 등급', size:'10%', style:'text-align:center', sortable: true},
-	        	{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
-				{ field:'pjt_CD', caption:'프로젝트 코드', size:'17%', style:'text-align:center', sortable: true},
-				{ field:'cst_NM', caption:'고객사', size:'8%', style:'text-align:center', sortable: true}, 
-				{ field:'pjt_PRD_NM', caption:'제품명', size:'8%', style:'text-align:center', sortable: true}, 
-				{ field:'pjt_PRD_QTY', caption:'발주수량', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'pjt_PRD_UNT_NM', caption:'단위', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'pjt_DLV_DT', caption:'납품 요청일', size:'8%', style:'text-align:center', sortable: true}
+				{ field:'pjt_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'pjt_REG_DT', caption:'요청 유형', size:'7%', style:'text-align:center', sortable: true},
+	        	{ field:'pjt_GRD', caption:'자재 요청일', size:'10%', style:'text-align:center', sortable: true},
+	        	{ field:'pjt_NM', caption:'요청자', size:'10%', style:'text-align:center', sortable: true},
+				{ field:'pjt_CD', caption:'프로젝트코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
+				{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_NM', caption:'품목', size:'10%', style:'text-align:center' , sortable: true},
+				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'17%', style:'text-align:center', sortable: true},
+				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true},
+				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_QTY', caption:'재고수량', size:'10%', style:'text-align:center', sortable: true},
+				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_DLV_QTY', caption:'불출수량', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_REQ_STATE', caption:'견적요청여부', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_REQ_STATE', caption:'Status', size:'8%', style:'text-align:center', sortable: true}
+				
+				
 			],
 			sortData : [ {
-				field : 'pjt_IDX',
+				field : 'mtl_REQ_MST',
 				direction : 'DESC'
 			} 
 			],
@@ -329,14 +327,13 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	function loadLeftGrid() {//grid_list Data Arr
 		console.log("loadLeftGrid()");
 		
-		var page_url = "/info/account/selectProject";
-		var postData = "PJT_GRD=" + encodeURIComponent($("#S_PJT_GRD").val()) 
-				+ "&PJT_NM=" + encodeURIComponent($("#S_PJT_NM").val()) 
-				+ "&CST_IDX="   + encodeURIComponent($("#S_CST_IDX").val())
-				+ "&PJT_PRD_NM="   + encodeURIComponent($("#S_PJT_PRD_NM").val()) 
-				+ "&PJT_DLV_DT="   + encodeURIComponent($("#S_PJT_DLV_DT").val()) 
-				+ "&PJT_REG_DT="   + encodeURIComponent($("#S_PJT_REG_DT").val());
-
+		var page_url = "/info/account/selectMaterialRequest";
+		var postData = "MTL_REQ_TYPE=" + encodeURIComponent($("#S_MTL_REQ_TYPE").val()) 
+						+ "&MTL_REQ_REG_DT=" + encodeURIComponent($("#S_MTL_REQ_REG_DT").val())
+						+ "&MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val())
+						+ "&MTL_NM=" + encodeURIComponent($("#S_MTL_NM").val())
+						+ "&MTL_MKR_NO=" + encodeURIComponent($("#S_MTL_MKR_NO").val());
+		
 		w2ui['grid_list'].lock('loading...', true);
 		$.ajax({
 			url : page_url,
@@ -372,9 +369,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 
 			},
 			complete : function() {
-				startValue_combo = ":)";
 
-				//document.getElementById("Business").style.removeProperty("height");
 			}
 		});
 	}
