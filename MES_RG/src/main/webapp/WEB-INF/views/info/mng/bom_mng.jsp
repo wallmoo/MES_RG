@@ -828,9 +828,9 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			for (var i = 0; i < BomInputDatas.length; i++) {
 				var Data = {
 					PJT_IDX : encodeURIComponent(insertPJT),
-					mtl_IDX : w2ui.grid_list3.records[i].mtl_IDX,
-					bom_MTL_QTY : w2ui.grid_list3.records[i].bom_MTL_QTY,
-					mtl_REG_DT : w2ui.grid_list3.records[i].mtl_REG_DT
+					mtl_IDX : w2ui.grid_list3.records[BomInputDatas[i]-1].mtl_IDX,
+					bom_MTL_QTY : w2ui.grid_list3.records[BomInputDatas[i]-1].bom_MTL_QTY,
+					mtl_REG_DT : w2ui.grid_list3.records[BomInputDatas[i]-1].mtl_REG_DT
 				};
 				DataList.push(Data);
 			}
