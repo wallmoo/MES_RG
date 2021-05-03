@@ -452,19 +452,44 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 				console.log(this.get(event.recid));
 			},
 			onDblClick : function(event) { },
-			onChange : function(event) {
-				event.onComplete = function() {
+			onChange : function(event) {//갯수 수정
+				event.onComplete = function() {//onSave
 					console.log("onChange");
 
-					// # 20200922 콤보에 떠도 , 다 입력하고 엔터쳤을 때 문제 생김
+					//alert("수정된 값:" + w2ui['grid1'].getChanges());//바뀐것만 json형태.
 
 					var eventColumn = event.column;
 					console.log(event);
 					console.log('event.value : ' + event.value);
 					
 					w2ui.grid_list2.save();
+					
+					var updateContent = JSON.stringify(w2ui['grid_list2'].getChanges());//stringify(배열을 문자열json으로 바꿔줌.)!!
+					
+					var keys = $("#hiddenIdx").val();//프로젝트 번호
+					var Bom_MTL_IDX = this.get(event.recid).mtl_IDX;//자재번호
+					var Bom_MTL_QTY = this.get(event.recid).bom_MTL_QTY;//자재 수량
+
+					var page_url = "/info/info/updateBomQuantity";		
+					var postData = 'PJT_IDX=' + keys 
+								+ "&MTL_IDX="+ Bom_MTL_IDX
+								+ "&BOM_MTL_QTY="+ Bom_MTL_QTY;
+					$.ajax({
+						url : page_url,
+						type : "POST",
+						data : postData,
+						data_type : 'json',
+						cache : false,
+						success : function(response) {
+							alert('수량이 수정되었습니다.');
+							loadRightGrid(keys);
+						},
+						error : function() {
+							alert('Error while request...');
+						}
+					})					
 				}
-			}
+			}			
 		});
 	}	
 	function loadRightGrid(pjtIDX) {
@@ -691,7 +716,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			columns : [
 				{ field: 'BOM_IDX', caption: 'Bom idx', size: '10%', style: 'text-align:center', hidden: true },
 				{ field: 'pjt_IDX', caption: 'Project idx', size: '10%', style: 'text-align:center', hidden: true },
-				{ field: 'MTL_IDX', caption: '자재번호 IDX ', size: '10%', style: 'text-align:center', hidden: true },
+				{ field: 'mtl_IDX', caption: '자재번호 IDX ', size: '10%', style: 'text-align:center', hidden: true },
 				{ field: 'mtl_QTY', caption: '제조사명', style: 'text-align:center', sortable: true,},
 				{ field: 'mtl_NM', caption: '품목', style: 'text-align:center', sortable: true },
 				{ field: 'mtl_MKR_NO', caption: '제조사품번', style: 'text-align:center', sortable: true },
@@ -722,12 +747,13 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 					
 					var updateContent = JSON.stringify(w2ui['grid_list4'].getChanges());//stringify(배열을 문자열json으로 바꿔줌.)!!
 					
-					var keys = $("#hiddenIdx").val();
-					var Bom_MTL_QTY = this.get(event.recid).bom_MTL_QTY;
-					
-					var page_url = "/info/info/selectMaterialsBOM";		
-					var postData = 'pjt_IDX=' + keys 
-								+ "&MTL_IDX="+ Bom_MTL_QTY
+					var keys = $("#hiddenIdx").val();//프로젝트 번호
+					var Bom_MTL_IDX = this.get(event.recid).mtl_IDX;//자재번호
+					var Bom_MTL_QTY = this.get(event.recid).bom_MTL_QTY;//자재 수량
+
+					var page_url = "/info/info/updateBomQuantity";		
+					var postData = 'PJT_IDX=' + keys 
+								+ "&MTL_IDX="+ Bom_MTL_IDX
 								+ "&BOM_MTL_QTY="+ Bom_MTL_QTY;
 					$.ajax({
 						url : page_url,
@@ -736,7 +762,8 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 						data_type : 'json',
 						cache : false,
 						success : function(response) {
-							alert('수정되었습니다.');
+							alert('수량이 수정되었습니다.');
+							loadRightGrid(keys);
 						},
 						error : function() {
 							alert('Error while request...');

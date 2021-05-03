@@ -27,6 +27,7 @@ import kr.co.passcombine.set.vo.SYProductUnOperationVO;
 import kr.co.passcombine.set.vo.SYQualityVo;
 import kr.co.passcombine.set.vo.SYRepairVo;
 import kr.co.passcombine.set.vo.SYRoutingMasterVo;
+import kr.co.passcombine.set.vo.SYTBomVo;
 import kr.co.passcombine.set.vo.SYTVendorVo;
 import kr.co.passcombine.set.vo.SYWarehouseVo;
 import kr.co.passcombine.set.vo.SYtool_repmt_hisVo;
@@ -265,4 +266,5 @@ public interface SYInfoDAO {
 	public List<SYTMaterialVo> selectMaterialsBOM(SYTMaterialVo Vo);
 	public int InsertMaterialsBOM(List<Map<String,Object>> vo);
 	
+	public int updateBomQuantity(SYTBomVo vo);
 }

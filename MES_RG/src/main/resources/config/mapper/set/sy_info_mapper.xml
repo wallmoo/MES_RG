@@ -3171,7 +3171,7 @@
 		)
 		</foreach>
 	</insert>
-	<update id="updateBomQty" parameterType="SYTBomVo">
+	<update id="updateBomQuantity" parameterType="SYTBomVo">
 		UPDATE T_BOM_MST SET
 		BOM_MTL_QTY = #{BOM_MTL_QTY}
 		WHERE PJT_ID = #{PJT_ID} AND MTL_IDX = #{MTL_IDX}

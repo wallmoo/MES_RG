@@ -65,6 +65,7 @@ import kr.co.passcombine.set.vo.SYProductUnOperationVO;
 import kr.co.passcombine.set.vo.SYQualityVo;
 import kr.co.passcombine.set.vo.SYRepairVo;
 import kr.co.passcombine.set.vo.SYRoutingMasterVo;
+import kr.co.passcombine.set.vo.SYTBomVo;
 import kr.co.passcombine.set.vo.SYTVendorVo;
 import kr.co.passcombine.set.vo.SYWarehouseOutVo;
 import kr.co.passcombine.set.vo.SYWarehouseVo;
@@ -4668,4 +4669,50 @@ public class InfoController {
 		}
 		return result;
 	}
+	//change BOM Material Quantity 
+	@ResponseBody
+	@RequestMapping(value = "/info/updateBomQuantity", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String updateBomQuantity(@ModelAttribute SYTBomVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.changeBOMQuantity is called.");
+
+		vo.setBOM_REG_ID(SessionUtil.getMemberId(request));
+		vo.setBOM_REG_DT(SessionUtil.getMemberId(request));
+
+		JSONObject resultData = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
+		JSONParser parser = new JSONParser();
+
+		try {
+			String PJT_IDX = "";
+			String MTL_IDX = "";
+			String BOM_MTL_QTY = "";
+			
+			int cnt = 0;
+			
+			PJT_IDX = request.getParameter("PJT_IDX");
+			MTL_IDX = request.getParameter("MTL_IDX");
+			BOM_MTL_QTY = request.getParameter("BOM_MTL_QTY");
+
+			// hKey
+			vo.setPJT_ID( Integer.parseInt(PJT_IDX) );
+			vo.setMTL_IDX( Integer.parseInt(MTL_IDX) );
+			
+			cnt = sYInfoService.updateBomQuantity(vo);
+			
+			System.out.println("BCO_IDX = " + PJT_IDX);
+			System.out.println("cnt = " + cnt);
+
+			resultData.put("status", HttpStatus.OK.value());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+
+		return resultData.toJSONString();
+	}
+	
 }
