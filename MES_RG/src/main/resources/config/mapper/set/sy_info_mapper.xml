@@ -3111,7 +3111,7 @@
 		 LEFT OUTER JOIN
 		 			T_BOM_MST TBM
 		 	     ON	TMM.MTL_IDX =	TBM.MTL_IDX
-			WHERE	TBM.PJT_IDX 	= 	#{pjt_IDX}
+			WHERE	TBM.PJT_IDX 	= 	#{PJT_IDX}
 	</select>
 	
 	<select id="selectBOMbyProject" parameterType="SYTProjectVo" resultType="SYTProjectVo">
@@ -3126,7 +3126,7 @@
 	</select>
 	
 	<select id="selectMaterialsBOM" parameterType="SYTMaterialVo" resultType="SYTMaterialVo">
-		SELECT 	 #{pjt_IDX} AS pjt_IDX
+		SELECT 	 #{PJT_IDX}
 				,MTL_IDX 
 				,MTL_CATE
 				,MTL_NM
@@ -3147,7 +3147,7 @@
 		  (
 		  	SELECT B.MTL_IDX
 		  	  FROM T_BOM_MST B
-		  	 WHERE B.PJT_IDX = #{pjt_IDX}
+		  	 WHERE B.PJT_IDX = #{PJT_IDX}
 		  )
 	</select>
 	<insert id="InsertMaterialsBOM" parameterType="java.util.List">
@@ -3163,7 +3163,7 @@
 		<foreach  collection="list" item="item"  separator=" , ">
 		(
 			#{item.mtl_IDX},
-			#{item.pjt_IDX}
+			#{item.PJT_IDX}
 			<choose><when test="item.bom_MTL_QTY!=null and item.bom_MTL_QTY!=''">,#{item.bom_MTL_QTY}</when><otherwise>,'0'</otherwise></choose>,
 			'Y',
 			#{item.mtl_REG_DT},
@@ -3219,7 +3219,7 @@
 		(
 			#{item.bom_IDX},
 			#{item.mtl_IDX},
-			#{item.pjt_IDX},
+			#{item.PJT_IDX},
 			#{item.mtl_REQ_TYPE},
 			IFNULL(#{item.mtl_REQ_QTY}, 0),
 			IFNULL(#{item.mtl_DLV_QTY}, 0),
