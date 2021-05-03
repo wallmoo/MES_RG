@@ -3188,17 +3188,20 @@
 		LEFT JOIN T_PJT_MST P on R.PJT_IDX = P.PJT_IDX
 		LEFT JOIN T_MTL_MST M on R.MTL_IDX = M.MTL_IDX   
 		WHERE R.MTL_REQ_DEL_YN = 'N'
-		<!-- 
-		<if test="PJT_IDX!=null and !''.equals(PJT_IDX) and !'undefined'.equals(PJT_IDX) ">
-			AND R.PJT_IDX = #{PJT_IDX}
-		</if>			
+		<!-- 			
 		<if test="CST_IDX!=null and !''.equals(CST_IDX) ">
 			AND CST_IDX = #{CST_IDX}
 		</if>
 		<if test="CST_NM!=null and !''.equals(CST_NM) ">
 			AND CST_NM LIKE CONCAT('%', #{CST_NM}, '%')
 		</if>
-		-->	   
+		-->	 
+		<if test="PJT_IDX != null and !''.equals(PJT_IDX) and !'undefined'.equals(PJT_IDX) and (PJT_IDX) > 0">
+			AND R.PJT_IDX = #{PJT_IDX}
+		</if>		  
+		<if test="MTL_MKR_NO != null and !''.equals(MTL_MKR_NO) ">
+			AND M.MTL_MKR_NO LIKE CONCAT('%', #{MTL_MKR_NO}, '%')
+		</if>		
 		ORDER BY MTL_REQ_MST DESC
 	</select>
 	<insert id="insertMaterialRequest" parameterType="java.util.List">

@@ -4746,7 +4746,8 @@ public class InfoController {
 			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"), "UTF-8" );
 			
 			/*
-			 * String PJT_IDX = ""; PJT_IDX = request.getParameter("PJT_IDX");
+			 * String PJT_IDX = ""; 
+			 * PJT_IDX = request.getParameter("PJT_IDX");
 			 * vo.setPJT_IDX( Integer.parseInt(PJT_IDX) );
 			 */
 			

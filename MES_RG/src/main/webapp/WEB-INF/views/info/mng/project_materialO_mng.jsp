@@ -71,30 +71,30 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 															<div class="form-group">																
 																<div class="col-sm-2">
 																	<label>자재 요청일</label> 
-																	<input type="text" id="S_PJT_GRD" name="S_PJT_GRD" placeholder="ex) 프로젝트 등급"
-																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadLeftGridData(); return false;}"/>
+																	<div class="input-group">
+																		<input type="text" class="form-control pull-right input-sm" id="S_MTL_REQ_REG_DT" placeholder="yyyymmdd~yyyymmdd">
+																		<div class="input-group-addon">
+																			<i class="fa fa-calendar"></i>	
+																		</div>
+																	</div>																	
 																</div>
 																
 																<div class="col-sm-2">
 																	<label>제조사</label> 
-																	<select id="S_CST_IDX" name="S_CST_IDX" class="form-control" style="height: 30px;" ></select>
+																	<input type="text" id="S_MTL_MKR_CD" name="S_MTL_MKR_CD" placeholder="ex) 제조사"
+																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadLeftGridData(); return false;}"/>
 																</div>	
 																				
 																<div class="col-sm-2">
-																	<label>품목</label> 
-																	<input type="text" id="S_PJT_NM" name="S_PJT_NM" placeholder="ex) 프로젝트명"
+																	<label>품번</label> 
+																	<input type="text" id="S_MTL_MD_NO" name="S_MTL_MD_NO" placeholder="ex) 품번"
 																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadLeftGridData(); return false;}"/>
-																</div>
-																																							
-																<div class="col-sm-2">
-																	<label>제조사 Model No</label> 
-																	<input type="text" id="S_PJT_PRD_NM" name="S_PJT_PRD_NM" placeholder="ex) 품명"
-																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {loadLeftGridData(); return false;}"/>
 																</div>
 
 																<div class="col-sm-2">
 																	<label>요청 유형</label>
-																	<select id="S_CST_IDX2" name="S_CST_IDX2" class="form-control" style="height: 30px;" ></select>
+																	<input type="text" id="S_MTL_REQ_TYPE" name="S_MTL_REQ_TYPE" placeholder="ex) 요청 유형"
+																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadLeftGridData(); return false;}"/>
 																</div>															
 															</div>
 														</div>
@@ -255,7 +255,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	
 	$(function($) {
 		fnCdD('S_PJT_PRD_UNT', 'MC1027');//공통코드를 호출-재고 단위
-		requestClient('S_CST_IDX');//고객사 정보를 검색폼 드랍다운 형태로 만듬
+		requestVendor('S_VDR_IDX');//고객사 정보를 검색폼 드랍다운 형태로 만듬
 	
 		fnLoadCommonOption();//등록폼 달력
 		fnLoadDeliveryOption();//검색폼 달력
@@ -330,8 +330,8 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		var page_url = "/info/info/selectMaterialRequest";
 		var postData = "MTL_REQ_TYPE=" + encodeURIComponent($("#S_MTL_REQ_TYPE").val()) 
 					+ "&MTL_REQ_REG_DT=" + encodeURIComponent($("#S_MTL_REQ_REG_DT").val())
-					+ "&MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val())
 					+ "&MTL_NM=" + encodeURIComponent($("#S_MTL_NM").val())
+					+ "&MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val())
 					+ "&MTL_MKR_NO=" + encodeURIComponent($("#S_MTL_MKR_NO").val());
 		
 		w2ui['grid_list'].lock('loading...', true);
@@ -1023,7 +1023,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	function fnLoadDeliveryOption() {
 	 	console.log('fnLoadCommonOption()');
 	 	
-		$('#S_PJT_REG_DT, #S_PJT_DLV_DT').daterangepicker({
+		$('#S_MTL_REQ_REG_DT, #S_PJT_DLV_DT').daterangepicker({
 			opens: 'left',
 			locale: {
 				format : 'YYYYMMDD'	,
@@ -1036,7 +1036,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			endDate: moment().format('YYYY-MM-DD'),
 		}); 
 		
-		$('#S_PJT_REG_DT').val("");
+		$('#S_MTL_REQ_REG_DT').val("");
 		$('#S_PJT_DLV_DT').val("");
 		
 	}	
@@ -1048,13 +1048,13 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		return d.getFullYear() + '-' + month + '-' + date;
 	}
 
-	// 고객사 가져오기
-	function requestClient(val){
-		console.log("requestClient");
+	// 제조사 가져오기
+	function requestVendor(val){
+		console.log("requestVendor");
 		
 		initOptions($('#'+val)); // select 박스 초기화
 		
-		var strUrl = "/info/account/selectClient";
+		var strUrl = "/info/account/selectVendor";
 		var postData = "";
 		
 		//w2ui['grid_list'].lock('loading...', true);
