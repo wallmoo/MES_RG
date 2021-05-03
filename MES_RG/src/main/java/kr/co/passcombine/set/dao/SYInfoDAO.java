@@ -277,4 +277,5 @@ public interface SYInfoDAO {
 	// Material Request End	
 	
 	
+	public List<SYTMaterialVo> selectMaterialD(List<Map<String, Object>> vo);
 }
