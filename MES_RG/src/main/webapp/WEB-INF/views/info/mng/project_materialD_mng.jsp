@@ -228,11 +228,11 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 										
 									<div class="col-sm-2">
 										<button type="button" class="btn btn-default btn-sm" onclick="loadFootGridData()">조회</button>
-										<button type="button" class="btn btn-success btn-sm" onclick="addBOM()">등록</button>
+										<button type="button" class="btn btn-success btn-sm" onclick="addTRM()">등록</button>
 									</div>	
 								</div>
 								<div class="col-sm-12">
-									<div id="grid_list4" class="w2g-h200" style="margin-top: 10px;"></div>
+									<div id="grid_list5" name="grid_list5" class="w2g-h200" style="margin-top: 10px;"></div>
 								</div>
 							</div>
 						</form>					
@@ -426,7 +426,8 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		fnLoadLeftGrid();
 		fnLoadRightGrid();
 		fnloadFootGrid();
-		fnloadModalGrid();
+		fnLoadModalGrid();
+		
 	})
 
 
@@ -649,29 +650,126 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		var key = w2ui.grid_list2.getSelection();
 
 		if (key.length == 0) {
-			insertBom();
-		} else if (key.length == 1) {
+			alert("요청하실 자재를 선택하여주세요");
+			//insertBom();
+		} else if (key.length > 1) {
 			updateBom();
 		}
 
 	}
-	function bomNewOrder() {//신규자재요청
-		console.log(w2ui.grid_list2.get("pjt_IDX"));
+
+	function updateBom() {
+		$("#modal_info").modal('show');
+		var page_url = "/info/info/selectMaterialD";
+		var BomInputDatas = w2ui.grid_list2.getSelection();
+		var DataList = [];
+		var insertPJT = $("#hiddenIdx").val();//PJT_IDX
+		for (var i = 0; i < BomInputDatas.length; i++) {
+			var Data = {
+				PJT_IDX: encodeURIComponent(insertPJT),
+				mtl_IDX: w2ui.grid_list2.records[i].mtl_IDX,
+				bom_MTL_QTY: w2ui.grid_list2.records[i].bom_MTL_QTY,
+				mtl_REG_DT: w2ui.grid_list2.records[i].mtl_REG_DT
+			};
+			DataList.push(Data);
+		}
+		console.log(DataList);
+		var jsonData = JSON.stringify(DataList);
+		console.log(jsonData);
+		jQuery.ajaxSettings.traditional = true;
+		$.ajax({
+			url: page_url,
+			type: 'POST',
+			data: {
+				"jsonData": jsonData
+			},
+			data_type: 'json',
+			success: function (data) {
+				console.log(data);
+				if (data.status == 200 && (data.rows).length > 0) {
+					rowArr = data.rows;
+					$.each(rowArr, function (idx, row) {
+						row.recid = idx + 1;
+						comboValue_nm4.push(row.mtl_NM + "");
+						comboValue_cd4.push(row.mtl_IDX + "");
+					});
+					w2ui['grid_list5'].records = rowArr;
+					$('#g4_item_nm').w2field('combo', {
+						items: _.uniq(comboValue_nm4, false),
+						match: 'contains'
+					});
+					$('#g4_item_type_code').w2field('combo', {
+						items: _.uniq(comboValue_cd4, false),
+						match: 'contains'
+					});
+				} else {
+					w2ui.grid_list.clear();
+				}
+				w2ui['grid_list5'].refresh();
+				w2ui['grid_list5'].unlock();
+			},
+			complete: function () {
+
+			}
+		});
 		
-		var keys = w2ui.grid_list.getSelection();
-		
-		if (keys == null || keys == "") {
-			alert("먼저 프로젝트를 선택하여주십시오");
-		} else {
-			$("#modal_add").modal('show');
-		}		
 	}
-	function insertBom() {
+	
+
+	function addTRM() {//자재요청 확정 
 		var keys = w2ui.grid_list.getSelection();
 		
 		if (keys == null || keys == "") {
 			alert("먼저 프로젝트를 선택하여주십시오");
 		} else {
+			var key2 = w2ui.grid_list5.getSelection();
+			if(key2 == null || key2 == ""){
+			fnMessageModalAlert("알림", "제품을 1개 이상 선택하셔야 합니다.");
+		} else {
+			var BomInputDatas = w2ui.grid_list5.getSelection();
+			var DataList = [];
+			var insertPJT = $("#hiddenIdx").val();//PJT_IDX
+			for (var i = 0; i < BomInputDatas.length; i++) {
+				var Data = {
+					PJT_IDX : encodeURIComponent(insertPJT),
+					mtl_IDX : w2ui.grid_list4.records[i].mtl_IDX,
+					bom_MTL_QTY : w2ui.grid_list4.records[i].bom_MTL_QTY,
+					mtl_REG_DT : w2ui.grid_list4.records[i].mtl_REG_DT
+				};
+				DataList.push(Data);
+			}
+
+			if (confirm("등록하시겠습니까?")) {
+				var page_url = "/info/info/InsertTRMBOM";
+				console.log(DataList);
+				var jsonData = JSON.stringify(DataList);
+				console.log(jsonData);
+				jQuery.ajaxSettings.traditional = true;
+				$.ajax({
+					url : page_url,
+					type : 'POST',
+					data : {
+						"jsonData" : jsonData
+					},
+					data_type : 'json',
+					success : function(data) {
+						if (data != 0) {
+							alert("추가되었습니다");
+							loadRightGridData($("#hiddenIdx").val());
+							loadFootGridData();
+						} else {
+							alert("오류가 발생하였습니다");
+						}
+					},
+					complete : function() {
+						document.getElementById("add_nm").style.removeProperty("height");
+						document.getElementById("add_code").style.removeProperty("height");
+						
+						//requestGrid4();
+					}
+				});
+			}			
+		}			
 			$(".clear_val").val('');
 
 			$("#modal_info").modal('show');
@@ -738,10 +836,10 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 					comboValue_nm5 = new Array;
 					comboValue_cd5 = new Array;
 					$('#hiddenProduct_code').val('');
-					
+					/*
 					w2ui['grid_list4'].clear();		
 					w2ui['grid_list4'].refresh();					
-					/*
+					
 					w2ui['grid_list5'].clear();		
 					w2ui['grid_list5'].refresh();
 					 */
@@ -799,86 +897,50 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	}
 
 	function fnLoadModalGrid() {
-		var rowArr = [];
+			var rowArr = [];
 
-		$('#grid_list4').w2grid({
-			name : 'grid_list4',
-			show : {
-				lineNumbers : true,
-				footer : true,
-				selectColumn : true
-			},
-			multiSelect : true,
+			$('#grid_list5').w2grid({
+				name: 'grid_list5',
+				show: {
+					lineNumbers: true,
+					footer: true,
+					selectColumn: true
+				},
+				multiSelect: true,
 
-			columns : [
-				{ field: 'BOM_IDX', caption: 'Bom idx', size: '10%', style: 'text-align:center', hidden: true },
-				{ field: 'pjt_IDX', caption: 'Project idx', size: '10%', style: 'text-align:center', hidden: true },
-				{ field: 'MTL_IDX', caption: '자재번호 IDX ', size: '10%', style: 'text-align:center', hidden: true },
-				{ field: 'mtl_QTY', caption: '제조사명', style: 'text-align:center', sortable: true,},
-				{ field: 'mtl_NM', caption: '품목', style: 'text-align:center', sortable: true },
-				{ field: 'mtl_MKR_NO', caption: '제조사품번', style: 'text-align:center', sortable: true },
-				{ field: 'mtl_UNT', caption: '단위', style: 'text-align:center', sortable: true },
-				{ field: 'bom_MTL_QTY', caption: '수량', style: 'text-align:center', sortable: true, editable: { type: 'int' } },
-			],
-			records : [],
-			total : 0,
-			recordHeight : 30,
-			onReload : function(event) { 
-				
-			},
-			onClick : function(event) {
-				console.log(this.get(event.recid));
-			},
-			onDblClick : function(event) { },
-			onChange : function(event) {
-				event.onComplete = function() {
-					console.log("onChange");
+				columns: [
+					{ field: 'BOM_IDX', caption: 'Bom idx', size: '10%', style: 'text-align:center', hidden: true },
+					{ field: 'pjt_IDX', caption: 'Project idx', size: '10%', style: 'text-align:center', hidden: true },
+					{ field: 'MTL_IDX', caption: '자재번호 IDX ', size: '10%', style: 'text-align:center', hidden: true },
+					{ field: 'mtl_QTY', caption: '제조사명', style: 'text-align:center', sortable: true, },
+					{ field: 'mtl_NM', caption: '품목', style: 'text-align:center', sortable: true },
+					{ field: 'mtl_MKR_NO', caption: '제조사품번', style: 'text-align:center', sortable: true },
+					{ field: 'mtl_UNT', caption: '단위', style: 'text-align:center', sortable: true },
+					{ field: 'bom_MTL_QTY', caption: '수량', style: 'text-align:center', sortable: true, editable: { type: 'int' } },
+				],
+				records: [],
+				total: 0,
+				recordHeight: 30,
+				onReload: function (event) {
+
+				},
+				onClick: function (event) {
+					console.log(this.get(event.recid));
+				},
+				onDblClick: function (event) { },
+				onChange: function (event) {
+					event.onComplete = function () {
+						console.log("onChange");
+						w2ui.grid_list5.save();
+					}
+					
 				}
-			}
-		});
-		
-		loadModalGridData();
-	}	
-	function loadModalGridData() {
-		console.log(loadRightGridData);
-		
-		var page_url = "/info/info/selectBOMbyPRO";
-		//var postData = "PJT_IDX=" + encodeURIComponent(pjtIDX);
-		var postData = "PJT_IDX=" + encodeURIComponent();
-		
-		//$("#hiddenIdx").val(pjtIDX);
-		
-		w2ui['grid_list4'].lock('loading...', true);
-		w2ui['grid_list4'].clear();
-		w2ui['grid_list4'].refresh();
-		
-		$.ajax({
-			url : page_url,
-			type : 'POST',
-			data : postData,
-			data_type : 'json',
-			success : function(data) {
-				console.log(data);
-				if (data.status == 200 && (data.rows).length > 0) {
-					rowArr = data.rows;
-					$.each(rowArr, function(idx, row) {
-						row.recid = idx + 1;
-						comboValue_cd.push(row.c_item_nm + "");
-					});
-					w2ui['grid_list4'].records = rowArr;
-				} else {
-					//w2ui.grid_list.clear();
-				}
-				w2ui['grid_list4'].refresh();
-				w2ui['grid_list4'].unlock();
 
-				requestRightGrid('grid_list4');
-			},
-			complete : function() {
+			});
 
-			}
-		});
-	}
+		}
+
+
 	
 	function addBOM() {		
 		if($('#hiddenProduct_code').val() == '' || $('#hiddenProduct_code').val() == null){
@@ -1055,7 +1117,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		}
 		$('#hiddenM_item_code').val('');
 	}
-
+/*
 	function dellev1() {
 		if (w2ui.grid_list4.getSelection().length == 0) {
 			fnMessageModalAlert("에러", "삭제하실 정보를 선택해주세요!");
@@ -1076,6 +1138,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			}
 		});
 	}
+	*/
 	function dellev2() {
 		if (w2ui.grid_list5.getSelection().length == 0) {
 			fnMessageModalAlert("에러", "삭제하실 정보를 선택해주세요!");
