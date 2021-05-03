@@ -3175,5 +3175,64 @@
 		UPDATE T_BOM_MST SET
 		BOM_MTL_QTY = #{BOM_MTL_QTY}
 		WHERE PJT_ID = #{PJT_ID} AND MTL_IDX = #{MTL_IDX}
-	</update>		
+	</update>	
+	
+	
+	<!-- T_MTL_REQ_MST Start -->
+	<select id="selectMaterialRequest" parameterType="SYTMaterialRequestVo" resultType="SYTMaterialRequestVo">
+		SELECT 
+		MTL_REQ_MST,BOM_IDX,MTL_IDX,PJT_IDX,MTL_REQ_TYPE,MTL_REQ_QTY,MTL_DLV_QTY,MTL_REQ_STATE,MTL_REQ_REG_DT,MTL_REQ_REG_ID
+		FROM T_MTL_REQ_MST  
+		WHERE MTL_REQ_DEL_YN = 'N'
+		<!-- 
+		<if test="CST_IDX!=null and !''.equals(CST_IDX) ">
+			AND CST_IDX = #{CST_IDX}
+		</if>
+		<if test="CST_NM!=null and !''.equals(CST_NM) ">
+			AND CST_NM LIKE CONCAT('%', #{CST_NM}, '%')
+		</if>
+		-->	   
+		ORDER BY MTL_REQ_MST DESC
+	</select>
+	<insert id="insertMaterialRequest" parameterType="java.util.List">
+		INSERT INTO T_MTL_REQ_MST
+		(
+			BOM_IDX,
+			MTL_IDX,
+			PJT_IDX,
+			MTL_REQ_TYPE,
+			MTL_REQ_QTY,
+			MTL_DLV_QTY,
+			MTL_REQ_REG_ID
+		) VALUES
+		<foreach  collection="list" item="item"  separator=" , ">
+		(
+			#{item.bom_IDX},
+			#{item.mtl_IDX},
+			#{item.pjt_IDX},
+			#{item.mtl_REQ_TYPE},
+			IFNULL(#{item.mtl_REQ_QTY}, 0),
+			IFNULL(#{item.mtl_DLV_QTY}, 0),
+			#{item.REG_ID}
+		)
+		</foreach>
+	</insert>
+	<update id="updateMaterialRequest" parameterType="SYTMaterialRequestVo">
+		UPDATE T_MTL_REQ_MST SET
+			MTL_REQ_TYPE = #{item.mtl_REQ_TYPE},
+			MTL_REQ_QTY = IFNULL(#{item.mtl_REQ_QTY}, 0),
+			MTL_DLV_QTY =  IFNULL(#{item.mtl_DLV_QTY}, 0)
+		WHERE MTL_REQ_MST = #{MTL_REQ_MST}
+	</update>
+	<update id="deleteMaterialRequest" parameterType="SYTMaterialRequestVo">
+		UPDATE T_MTL_REQ_MST SET
+			CST_DEL_YN='Y'
+		WHERE MTL_REQ_MST = #{MTL_REQ_MST}
+	</update>
+	<!-- T_MTL_REQ_MST End -->		
+	
+	
+	
+	
+		
 </mapper>

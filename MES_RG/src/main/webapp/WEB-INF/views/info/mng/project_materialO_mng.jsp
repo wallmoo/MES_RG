@@ -133,12 +133,6 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 										<input type="combo" id="S_MTL_MKR_CD" name="S_MTL_MKR_CD" class="form-control input-sm pull-right" placeholder="제조사" 
 													onkeypress="if(event.keyCode==13) {requestGrid3(); return false;}" >
 									</div>		
-																	
-<!--  									<label class="col-sm-2 control-label" style="padding-left: 0px">자재분류</label>
-									<div class="col-sm-2" style="padding-left: 0px; padding-right: 0px">
-										<input type="combo" id="S_MTL_CATE" name="S_MTL_CATE" class="form-control input-sm pull-right" placeholder="자재분류" 
-													onkeypress="if(event.keyCode==13) {requestGrid3(); return false;}" >
-									</div> -->
 									
 									<label class="col-sm-1 control-label" style="padding-left: 0px">품목</label>
 									<div class="col-sm-2" style="padding-left: 0px; padding-right: 0px">

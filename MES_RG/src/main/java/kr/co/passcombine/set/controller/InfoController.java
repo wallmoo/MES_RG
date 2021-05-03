@@ -42,6 +42,7 @@ import kr.co.passcombine.set.vo.SYAccountVo;
 import kr.co.passcombine.set.vo.SYBomVo;
 import kr.co.passcombine.set.vo.SYTBranchVo;
 import kr.co.passcombine.set.vo.SYTClientVo;
+import kr.co.passcombine.set.vo.SYTMaterialRequestVo;
 import kr.co.passcombine.set.vo.SYTMaterialVo;
 import kr.co.passcombine.set.vo.SYTProjectVo;
 import kr.co.passcombine.set.vo.SYCustomerVo;
@@ -4714,5 +4715,116 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}
+	
+	/**
+	* <pre>
+	* 1. MethodName : Material Request
+	* 2. ClassName  : InfoController.java
+	* 3. Comment    : 관리자 > 구매/자재 관리 > 자재 요청 관리
+	* 4. 작성자       : DEV_LEEJUNGHUN
+	* 5. 작성일       : 2021. 05. 03.
+	* </pre>
+	*
+	* @param commandMap
+	* @return
+	* @throws Exception
+	*/	
+	// selectMaterialRequest
+	@SuppressWarnings("unchecked")		
+	@ResponseBody
+	@RequestMapping(value = "/account/selectMaterialRequest", method = {
+			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectMaterialRequest(@ModelAttribute SYTMaterialRequestVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.selectClient is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"), "UTF-8" );
+
+			List<SYTMaterialRequestVo> dataList = sYInfoService.selectMaterialRequest(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+			
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}	
+	// insertMaterialRequest
+	@ResponseBody
+	@RequestMapping(value = "/info/insertMaterialRequest", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public int insertMaterialRequest(HttpServletRequest request, @RequestParam String jsonData) {
+		List<Map<String, Object>> vo = null;
+		
+		logger.debug("FrontendController.InsertMaterialsBOM is called.");
+
+		String REG_ID = SessionUtil.getMemberId(request);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() {};
+		try {
+			vo = mapper.readValue(jsonData, typeRef);
+			System.out.println("Dd");
+		} catch (IOException e1) {
+			System.out.println(e1);
+			e1.printStackTrace();
+		}
+		for (int i = 0; i < vo.size(); i++) {
+			vo.get(i).put("REG_ID", REG_ID);
+		}
+
+		int result = 0;
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			result = sYInfoService.InsertMaterialsBOM(vo);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return result;
+	}
+	// deleteMaterialRequest
+	@ResponseBody
+	@RequestMapping(value = "/account/deleteMaterialRequest", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String deleteClient(@ModelAttribute SYTMaterialRequestVo vo,
+			HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.deleteAccount() is called.");
+
+		JSONObject resultData = new JSONObject();
+		try {
+			int result = 0;
+
+			result = sYInfoService.deleteMaterialRequest(vo);
+
+			System.out.println("result = " + result);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", 0);
+		}
+		return resultData.toJSONString();
+	}	
+	
+	
 	
 }

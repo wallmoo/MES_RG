@@ -10,6 +10,7 @@ import kr.co.passcombine.set.vo.SYAccountVo;
 import kr.co.passcombine.set.vo.SYBomVo;
 import kr.co.passcombine.set.vo.SYTBranchVo;
 import kr.co.passcombine.set.vo.SYTClientVo;
+import kr.co.passcombine.set.vo.SYTMaterialRequestVo;
 import kr.co.passcombine.set.vo.SYTMaterialVo;
 import kr.co.passcombine.set.vo.SYTProjectVo;
 import kr.co.passcombine.set.vo.SYCustomerVo;
@@ -267,4 +268,13 @@ public interface SYInfoDAO {
 	public int InsertMaterialsBOM(List<Map<String,Object>> vo);
 	
 	public int updateBomQuantity(SYTBomVo vo);
+	
+	// Material Request Start	
+	public List<SYTMaterialRequestVo> selectMaterialRequest(SYTMaterialRequestVo vo);
+	public int insertMaterialRequest(SYTMaterialRequestVo vo);
+	public int updateMaterialRequest(SYTMaterialRequestVo vo);
+	public int deleteMaterialRequest(SYTMaterialRequestVo vo);
+	// Material Request End	
+	
+	
 }
