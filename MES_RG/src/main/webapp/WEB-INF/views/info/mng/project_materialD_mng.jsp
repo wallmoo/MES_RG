@@ -454,7 +454,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 				{ field:'pjt_DLV_DT', caption:'납품 요청일', size:'8%', style:'text-align:center', sortable: true}
 			],
 			sortData : [ {
-				field : 'pjt_IDX',
+				field : 'PJT_IDX',
 				direction : 'DESC'
 			} 
 			],
@@ -585,7 +585,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		console.log(loadRightGridData);
 		
 		var page_url = "/info/info/selectBOMbyPRO";
-		var postData = "pjt_IDX=" + encodeURIComponent(pjtIDX);
+		var postData = "PJT_IDX=" + encodeURIComponent(pjtIDX);
 		
 		$("#hiddenIdx").val(pjtIDX);
 		w2ui['grid_list2'].lock('loading...', true);
@@ -644,7 +644,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	}
 
 	function bomOrder() {//자재요청
-		console.log(w2ui.grid_list2.get("pjt_IDX"));
+		console.log(w2ui.grid_list2.get("PJT_IDX"));
 		
 		var key = w2ui.grid_list2.getSelection();
 
@@ -758,7 +758,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		
 		var keys = $("#hiddenIdx").val();
 		var page_url = "/info/info/selectMaterialsBOM";
-		var postData = 'pjt_IDX=' + keys;
+		var postData = 'PJT_IDX=' + keys;
 
 		w2ui['grid_list3'].lock('loading...', true);
 		w2ui['grid_list3'].clear();
@@ -843,8 +843,8 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		console.log(loadRightGridData);
 		
 		var page_url = "/info/info/selectBOMbyPRO";
-		//var postData = "pjt_IDX=" + encodeURIComponent(pjtIDX);
-		var postData = "pjt_IDX=" + encodeURIComponent();
+		//var postData = "PJT_IDX=" + encodeURIComponent(pjtIDX);
+		var postData = "PJT_IDX=" + encodeURIComponent();
 		
 		//$("#hiddenIdx").val(pjtIDX);
 		
@@ -889,7 +889,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			var insertPJT = $("#hiddenIdx").val();//PJT_IDX
 			for (var i = 0; i < BomInputDatas.length; i++) {
 				var Data = {
-					pjt_IDX : encodeURIComponent(insertPJT),
+					PJT_IDX : encodeURIComponent(insertPJT),
 					mtl_IDX : w2ui.grid_list3.records[i].mtl_IDX,
 					bom_MTL_QTY : w2ui.grid_list3.records[i].bom_MTL_QTY,
 					mtl_REG_DT : w2ui.grid_list3.records[i].mtl_REG_DT
