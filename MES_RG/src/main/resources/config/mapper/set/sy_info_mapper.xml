@@ -3099,19 +3099,18 @@
 	<select id="selectBOMbyPRO" parameterType="SYTMaterialVo"
 		resultType="SYTMaterialVo">
 		/* selectBOMbyPRO */
-		SELECT		TMM.MTL_IDX
-					,TMM.MTL_MKR_CD
-					,TMM.MTL_NM
-					,TMM.MTL_MKR_NO
-					,TMM.MTL_UNT
-					,TBM.PJT_IDX
-					,TBM.BOM_MTL_QTY
-					,TBM.BOM_IDX
-		 FROM		T_MTL_MST TMM
-		 LEFT OUTER JOIN
-		 			T_BOM_MST TBM
-		 	     ON	TMM.MTL_IDX =	TBM.MTL_IDX
-			WHERE	TBM.PJT_IDX 	= 	#{PJT_IDX}
+		SELECT	TMM.MTL_IDX
+				,TMM.MTL_MKR_CD
+				,TMM.MTL_NM
+				,TMM.MTL_MKR_NO
+				,TMM.MTL_STD
+				,TMM.MTL_UNT
+				,TBM.PJT_IDX
+				,TBM.BOM_MTL_QTY
+				,TBM.BOM_IDX
+		 FROM T_MTL_MST TMM
+		 LEFT OUTER JOIN T_BOM_MST TBM ON TMM.MTL_IDX = TBM.MTL_IDX
+		 WHERE TBM.PJT_IDX = #{PJT_IDX}
 	</select>
 	
 	<select id="selectBOMbyProject" parameterType="SYTProjectVo" resultType="SYTProjectVo">
@@ -3195,7 +3194,7 @@
 			AND CST_NM LIKE CONCAT('%', #{CST_NM}, '%')
 		</if>
 		-->	 
-		<if test="PJT_IDX != null and !''.equals(PJT_IDX) and !'undefined'.equals(PJT_IDX) and (PJT_IDX) > 0">
+		<if test="PJT_IDX != null and !''.equals(PJT_IDX) and !'undefined'.equals(PJT_IDX) and PJT_IDX > 0">
 			AND R.PJT_IDX = #{PJT_IDX}
 		</if>		  
 		<if test="MTL_MKR_NO != null and !''.equals(MTL_MKR_NO) and !'undefined'.equals(MTL_MKR_NO)">
@@ -3234,20 +3233,34 @@
 			PJT_IDX,
 			MTL_REQ_TYPE,
 			MTL_REQ_QTY,
-			MTL_DLV_QTY,
+			MTL_REQ_REG_DT,
 			MTL_REQ_REG_ID
 		) VALUES
 		<foreach  collection="list" item="item"  separator=" , ">
 		(
-			#{item.bom_IDX},
-			#{item.mtl_IDX},
+			#{item.BOM_IDX},
+			#{item.MTL_IDX},
 			#{item.PJT_IDX},
-			#{item.mtl_REQ_TYPE},
-			IFNULL(#{item.mtl_REQ_QTY}, 0),
-			IFNULL(#{item.mtl_DLV_QTY}, 0),
+			#{item.MTL_REQ_TYPE},
+			IFNULL(#{item.MTL_REQ_QTY}, 0),
+			#{item.MTL_REQ_REG_DT},
 			#{item.REG_ID}
 		)
 		</foreach>
+		
+<!-- 	<foreach collection="list" item="item" separator=";"> 
+		INSERT INTO T_MTL_REQ_MST(BOM_IDX, MTL_IDX, PJT_IDX)
+		SELECT #{item.BOM_IDX}, #{item.MTL_IDX}, #{item.PJT_IDX} FROM DUAL
+		WHERE NOT EXISTS (SELECT BOM_IDX, MTL_IDX, PJT_IDX FROM T_MTL_REQ_MST WHERE PJT_IDX = #{item.PJT_IDX} AND BOM_IDX = #{item.BOM_IDX} AND MTL_IDX = #{item.MTL_IDX})
+	</foreach> -->
+		
+<!-- 		INSERT INTO T_MTL_REQ_MST(BOM_IDX, MTL_IDX, PJT_IDX, MTL_REQ_TYPE, MTL_REQ_QTY, MTL_REQ_REG_DT, MTL_REQ_REG_ID)
+		SELECT #{BOM_IDX}, #{MTL_IDX}, #{PJT_IDX}, #{MTL_REQ_TYPE}, IFNULL(#{MTL_REQ_QTY}, 0), #{MTL_REQ_REG_DT}, #{REG_ID} FROM DUAL
+		WHERE NOT EXISTS (SELECT * FROM T_MTL_REQ_MST WHERE PJT_IDX = #{PJT_IDX} AND BOM_IDX = #{BOM_IDX} AND MTL_IDX = #{MTL_IDX})	 -->
+		
+<!--     INSERT INTO T_MTL_REQ_MST(BOM_IDX, MTL_IDX, PJT_IDX, MTL_REQ_TYPE, MTL_REQ_QTY)
+    SELECT 1, 1224, 1, 'TYPE', 10 FROM DUAL
+    WHERE NOT EXISTS (SELECT * FROM T_MTL_REQ_MST WHERE PJT_IDX = 1 and BOM_IDX =1 and MTL_IDX =1224)	 -->			
 	</insert>
 	<update id="updateMaterialRequest" parameterType="SYTMaterialRequestVo">
 		UPDATE T_MTL_REQ_MST SET

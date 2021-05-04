@@ -271,7 +271,7 @@ public interface SYInfoDAO {
 	
 	// Material Request Start	
 	public List<SYTMaterialRequestVo> selectMaterialRequest(SYTMaterialRequestVo vo);
-	public int insertMaterialRequest(SYTMaterialRequestVo vo);
+	public int insertMaterialRequest(List<Map<String,Object>> vo);
 	public int updateMaterialRequest(SYTMaterialRequestVo vo);
 	public int deleteMaterialRequest(SYTMaterialRequestVo vo);
 	// Material Request End	

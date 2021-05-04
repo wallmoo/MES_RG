@@ -146,10 +146,10 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 									<label class="col-sm-1 control-label" style="padding-left: 0px">거래처#4</label>
 									<div class="col-sm-2" style="padding-left: 0px; padding-right: 0px">
 										<select id="S_VDR_IDX4" name="S_VDR_IDX4" class="form-control" style="height: 30px;" ></select>
-									</div>
+									</div>									
 								</div>
-								<div class="col-md-4 text-center">
-									<label class="col-sm-2 control-label" style="padding-left: 0px">견적요청일자</label>
+								<div class="col-md-5 text-left" style="margin-top:5px;">
+									<label class="col-sm-3 control-label" style="padding-left: 0px">견적요청일자</label>
 									<div class="input-group">
 										<input type="text" class="form-control pull-right input-sm" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd">
 										<div class="input-group-addon">
@@ -297,11 +297,10 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 				{ field:'mtl_REQ_STATE', caption:'견적요청여부', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_REQ_STATE', caption:'Status', size:'8%', style:'text-align:center', sortable: true}
 			],
-			sortData : [{
-				field : 'MTL_REQ_MST',
-				direction : 'DESC'
-			}],
+			sortData: [{field: 'MTL_REQ_MST', direction: 'DESC'}],		
 			records : [], // rowArr
+			total : 0,
+			recordHeight : 30,			
 			onSelect : function(event) {
 				event.onComplete = function() {
 
@@ -372,19 +371,47 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		console.log(w2ui.grid_list.get("pjt_IDX"));
 		
 		var keys = w2ui.grid_list.getSelection();
+		var ModalDataList = [];
 		
 		if (keys == null || keys == "") {
 			alert("견적을 요청할 항목을 선택하여주십시오");
 		} else {
-			$(".clear_val").val('');
+			$(".clear_val").val('');//검색어 초기화
 
+			var insertPJT = $("#hiddenIdx").val();//PJT_IDX
+			for (var i = 0; i < keys.length; i++) {
+				var Data = {
+					PJT_IDX : encodeURIComponent(insertPJT),
+					pjt_IDX : w2ui.grid_list.records[keys[i]-1].pjt_IDX,
+					pjt_REG_DT : w2ui.grid_list.records[keys[i]-1].pjt_REG_DT,
+					pjt_GRD : w2ui.grid_list.records[keys[i]-1].pjt_GRD,
+					pjt_NM : w2ui.grid_list.records[keys[i]-1].pjt_NM,
+					pjt_CD : w2ui.grid_list.records[keys[i]-1].pjt_CD,
+					pjt_NM : w2ui.grid_list.records[keys[i]-1].pjt_NM,
+					mtl_MKR_CD : w2ui.grid_list.records[keys[i]-1].mtl_MKR_CD,
+					mtl_NM : w2ui.grid_list.records[keys[i]-1].mtl_NM,
+					mtl_MKR_NO : w2ui.grid_list.records[keys[i]-1].mtl_MKR_NO,
+					mtl_STD : w2ui.grid_list.records[keys[i]-1].mtl_STD,
+					mtl_IDX : w2ui.grid_list.records[keys[i]-1].mtl_IDX,
+					mtl_UNT : w2ui.grid_list.records[keys[i]-1].mtl_UNT,
+					mtl_QTY : w2ui.grid_list.records[keys[i]-1].mtl_QTY,
+					mtl_REQ_QTY : w2ui.grid_list.records[keys[i]-1].mtl_REQ_QTY,
+					mtl_DLV_QTY : w2ui.grid_list.records[keys[i]-1].mtl_DLV_QTY,
+					mtl_REQ_STATE : w2ui.grid_list.records[keys[i]-1].mtl_REQ_STATE
+				};
+				ModalDataList.push(Data);
+			}
+			
+			console.log(ModalDataList);
+			
 			$("#modal_requestForm").modal('show');
+			
 			setTimeout(function() {
 				w2ui['grid_list2'].resize();
 				w2ui['grid_list2'].refresh();				
 			}, 200);
 			
-			requestGrid3();
+			loadModalGridData(ModalDataList);
 
 			$('#hiddenProduct_code').val('');
 			$('#hiddenM_item_code').val('');
@@ -398,24 +425,24 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			show : {
 				lineNumbers : true,
 				footer : true,
-				selectColumn : true
+				selectColumn : false
 			},
 			multiSelect : false,
 
 			columns : [
-				{ field:'pjt_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'pjt_IDX', caption:'요청번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'pjt_REG_DT', caption:'요청 유형', size:'7%', style:'text-align:center', sortable: true},
-	        	{ field:'pjt_GRD', caption:'자재 요청일', size:'10%', style:'text-align:center', sortable: true},
+	        	{ field:'pjt_GRD', caption:'요청일', size:'10%', style:'text-align:center', sortable: true},
 	        	{ field:'pjt_NM', caption:'요청자', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'pjt_CD', caption:'프로젝트코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_NM', caption:'품목', size:'10%', style:'text-align:center' , sortable: true},
-				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'17%', style:'text-align:center', sortable: true},
+				{ field:'mtl_MKR_NO', caption:'품번', size:'17%', style:'text-align:center', sortable: true},
 				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true},
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_REQ_QTY', caption:'발주수량', size:'8%', style:'text-align:center', sortable: true}
+				{ field:'mtl_REQ_QTY', caption:'발주수량', size:'8%', style:'text-align:center', sortable: true, editable: { type: 'int' } }
 			],
 			records : [],
 			total : 0,
@@ -464,19 +491,20 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			}			
 		});
 	}	
-	function loadModalGridData(pjtIDX) {//선택된 값을 배열로 전달한다.
-		console.log(loadModalGrid);
-		
-		var page_url = "/info/info/selectBOMbyPRO";
-		var postData = "PJT_IDX=" + encodeURIComponent(pjtIDX);
-		
-		$("#hiddenIdx").val(pjtIDX);
+	function loadModalGridData(rowArr) {//선택된 값을 배열로 전달한다.
+		console.log(rowArr);
 		
 		w2ui['grid_list2'].lock('loading...', true);
 		w2ui['grid_list2'].clear();
 		w2ui['grid_list2'].refresh();
 		
+		$.each(rowArr, function(idx, row) {
+			row.recid = idx + 1;
+			comboValue_cd.push(row.c_item_nm + "");
+		});		
+		
 		w2ui['grid_list2'].records = rowArr;
+		w2ui['grid_list2'].unlock();
 	}	
 	
 	

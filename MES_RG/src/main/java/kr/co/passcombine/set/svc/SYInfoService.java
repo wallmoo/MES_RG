@@ -1606,7 +1606,7 @@ public class SYInfoService {
 	public List<SYTMaterialRequestVo> selectMaterialRequest(SYTMaterialRequestVo Vo){//자재 요청 조회
 		return infoDAO.selectMaterialRequest(Vo);
 	}	
-	public int insertMaterialRequest(SYTMaterialRequestVo vo) {//자재 요청
+	public int insertMaterialRequest(List<Map<String,Object>> vo) {//자재 요청
 		return infoDAO.insertMaterialRequest(vo);
 	}	
 	public int updateMaterialRequest(SYTMaterialRequestVo vo) {//자재 요청 수정

@@ -10,6 +10,7 @@ public class SYTEstimateVo implements Serializable{
 	private int PJT_IDX;
 	private int MTL_IDX;
 	private int VDR_IDX;
+	private int MTL_REQ_IDX;
 	private String MTL_REQ_QTY;
 	private String MTL_EST_MOQ;
 	private String MTL_EST_PRICE;
@@ -44,6 +45,12 @@ public class SYTEstimateVo implements Serializable{
 	}
 	public void setVDR_IDX(int vDR_IDX) {
 		this.VDR_IDX = vDR_IDX;
+	}
+	public int getMTL_REQ_IDX() {
+		return MTL_REQ_IDX;
+	}
+	public void setMTL_REQ_IDX(int mTL_REQ_IDX) {
+		MTL_REQ_IDX = mTL_REQ_IDX;
 	}
 	public String getMTL_REQ_QTY() {
 		return MTL_REQ_QTY;
