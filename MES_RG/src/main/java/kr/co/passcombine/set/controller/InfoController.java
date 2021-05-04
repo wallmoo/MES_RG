@@ -1,6 +1,9 @@
 package kr.co.passcombine.set.controller;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -27,6 +30,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -38,6 +43,7 @@ import kr.co.passcombine.set.svc.SYProductService;
 import kr.co.passcombine.set.util.ResponseUtils;
 import kr.co.passcombine.set.util.SessionUtil;
 import kr.co.passcombine.set.util.StringUtil;
+import kr.co.passcombine.set.util.fileUpload;
 import kr.co.passcombine.set.vo.SYAccountVo;
 import kr.co.passcombine.set.vo.SYBomVo;
 import kr.co.passcombine.set.vo.SYTBranchVo;
@@ -73,7 +79,6 @@ import kr.co.passcombine.set.vo.SYWarehouseVo;
 import kr.co.passcombine.set.vo.SYWarehouse_MasterHVo;
 import kr.co.passcombine.set.vo.SYtool_repmt_hisVo;
 import kr.co.passcombine.set.vo.SYHoldVo;
- 
 
 //
 
@@ -387,24 +392,24 @@ public class InfoController {
 			String CST_IDX = "";
 			int cnt = 0;
 			int insertedIDX = 0;
-			
+
 			String flag = request.getParameter("flag");
 
 			if (flag.equals("I")) {
-				//account_code = sYInfoService.accountCdGen();
+				// account_code = sYInfoService.accountCdGen();
 
 				// hKey
-				//vo.setAccount_code(account_code);
-				
+				// vo.setAccount_code(account_code);
+
 				cnt = sYInfoService.insertClient(vo);
-				
-				insertedIDX = vo.getCST_IDX();//등록된 CST_IDX 값 가져오기
-			} else if (flag.equals("U")) {//Modify
+
+				insertedIDX = vo.getCST_IDX();// 등록된 CST_IDX 값 가져오기
+			} else if (flag.equals("U")) {// Modify
 				CST_IDX = request.getParameter("CST_IDX");
 
 				// hKey
-				vo.setCST_IDX( Integer.parseInt(CST_IDX) );
-				
+				vo.setCST_IDX(Integer.parseInt(CST_IDX));
+
 				cnt = sYInfoService.updateClient(vo);
 			}
 
@@ -423,10 +428,10 @@ public class InfoController {
 	}
 	// deleteClient
 	@ResponseBody
-	@RequestMapping(value = "/account/deleteClient", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/deleteClient", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteClient(@ModelAttribute SYTClientVo vo,
-			HttpServletRequest request, HttpServletResponse response,
+	public String deleteClient(@ModelAttribute SYTClientVo vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.deleteAccount() is called.");
 
@@ -447,25 +452,25 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	
+
 	/**
-	* <pre>
+	 * <pre>
 	* 1. MethodName : Vendor
 	* 2. ClassName  : InfoController.java
 	* 3. Comment    : 관리자 > 거래처관리
 	* 4. 작성자       : DEV_KIMDEUKYONG
 	* 5. 작성일       : 2021. 04. 25.
-	* </pre>
-	*
-	* @param commandMap
-	* @return
-	* @throws Exception
-	*/	
+	 * </pre>
+	 *
+	 * @param commandMap
+	 * @return
+	 * @throws Exception
+	 */
 	// checkVendor
 	@SuppressWarnings("unchecked")
 	@ResponseBody
-	@RequestMapping(value = "/account/checkVendor", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
+	@RequestMapping(value = "/account/checkVendor", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json; charset=utf-8")
 	public String checkVendor(@ModelAttribute SYTVendorVo vo, HttpServletRequest request) {
 		logger.debug("FrontendController.checkVendor() is called.");
 		JSONObject resultData = new JSONObject();
@@ -479,14 +484,14 @@ public class InfoController {
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 		return resultData.toJSONString();
-	}		
+	}
+
 	// selectVendor
 	@ResponseBody
-	@RequestMapping(value = "/account/selectVendor", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/selectVendor", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectVendor(@ModelAttribute SYTVendorVo vo,
-			HttpServletRequest request, HttpServletResponse response,
+	public String selectVendor(@ModelAttribute SYTVendorVo vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.selectVendor is called.");
 
@@ -500,7 +505,7 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
+
 			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
@@ -511,13 +516,14 @@ public class InfoController {
 			resultData.put("rows", null);
 		}
 		return resultData.toJSONString();
-	}	
+	}
+
 	// saveVendor
 	@ResponseBody
-	@RequestMapping(value = "/account/saveVendor", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/saveVendor", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveVendor(@ModelAttribute SYTVendorVo vo,
-			HttpServletRequest request, HttpServletResponse response,
+	public String saveVendor(@ModelAttribute SYTVendorVo vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.saveAccount is called.");
 
@@ -535,18 +541,18 @@ public class InfoController {
 			String flag = request.getParameter("flag");
 
 			if (flag.equals("I")) {
-				//account_code = sYInfoService.accountCdGen();
+				// account_code = sYInfoService.accountCdGen();
 
 				// hKey
-				//vo.setAccount_code(account_code);
-				
+				// vo.setAccount_code(account_code);
+
 				cnt = sYInfoService.insertVendor(vo);
-			} else if (flag.equals("U")) {//Modify
+			} else if (flag.equals("U")) {// Modify
 				VDR_IDX = request.getParameter("VDR_IDX");
 
 				// hKey
-				vo.setVDR_IDX( Integer.parseInt(VDR_IDX) );
-				
+				vo.setVDR_IDX(Integer.parseInt(VDR_IDX));
+
 				cnt = sYInfoService.updateVendor(vo);
 			}
 
@@ -563,12 +569,13 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}
+
 	// deleteVendor
 	@ResponseBody
-	@RequestMapping(value = "/account/deleteVendor", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/deleteVendor", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteVendor(@ModelAttribute SYTVendorVo vo,
-			HttpServletRequest request, HttpServletResponse response,
+	public String deleteVendor(@ModelAttribute SYTVendorVo vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.deleteAccount() is called.");
 
@@ -589,24 +596,25 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	/**
-	* <pre>
+	 * <pre>
 	* 1. MethodName : Branch
 	* 2. ClassName  : InfoController.java
 	* 3. Comment    : 관리자 > 기업정보관리
 	* 4. 작성자       : DEV_KIMDEUKYONG
 	* 5. 작성일       : 2021. 04. 26.
-	* </pre>
-	*
-	* @param commandMap
-	* @return
-	* @throws Exception
-	*/	
+	 * </pre>
+	 *
+	 * @param commandMap
+	 * @return
+	 * @throws Exception
+	 */
 	// checkBranch
 	@SuppressWarnings("unchecked")
 	@ResponseBody
-	@RequestMapping(value = "/account/checkBranch", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
+	@RequestMapping(value = "/account/checkBranch", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json; charset=utf-8")
 	public String checkBranch(@ModelAttribute SYTBranchVo vo, HttpServletRequest request) {
 		logger.debug("FrontendController.checkBranch() is called.");
 		JSONObject resultData = new JSONObject();
@@ -620,14 +628,14 @@ public class InfoController {
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 		return resultData.toJSONString();
-	}		
+	}
+
 	// selectBranch
 	@ResponseBody
-	@RequestMapping(value = "/account/selectBranch", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/selectBranch", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectBranch(@ModelAttribute SYTBranchVo vo,
-			HttpServletRequest request, HttpServletResponse response,
+	public String selectBranch(@ModelAttribute SYTBranchVo vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.selectBranch is called.");
 
@@ -641,7 +649,7 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-						
+
 			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
@@ -652,13 +660,14 @@ public class InfoController {
 			resultData.put("rows", null);
 		}
 		return resultData.toJSONString();
-	}	
+	}
+
 	// saveBranch
 	@ResponseBody
-	@RequestMapping(value = "/account/saveBranch", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/saveBranch", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveBranch(@ModelAttribute SYTBranchVo vo,
-			HttpServletRequest request, HttpServletResponse response,
+	public String saveBranch(@ModelAttribute SYTBranchVo vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.saveAccount is called.");
 
@@ -676,18 +685,18 @@ public class InfoController {
 			String flag = request.getParameter("flag");
 
 			if (flag.equals("I")) {
-				//account_code = sYInfoService.accountCdGen();
+				// account_code = sYInfoService.accountCdGen();
 
 				// hKey
-				//vo.setAccount_code(account_code);
-				
+				// vo.setAccount_code(account_code);
+
 				cnt = sYInfoService.insertBranch(vo);
-			} else if (flag.equals("U")) {//Modify
+			} else if (flag.equals("U")) {// Modify
 				BCO_IDX = request.getParameter("BCO_IDX");
 
 				// hKey
-				vo.setBCO_IDX( Integer.parseInt(BCO_IDX) );
-				
+				vo.setBCO_IDX(Integer.parseInt(BCO_IDX));
+
 				cnt = sYInfoService.updateBranch(vo);
 			}
 
@@ -704,12 +713,13 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}
+
 	// deleteBranch
 	@ResponseBody
-	@RequestMapping(value = "/account/deleteBranch", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/deleteBranch", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteBranch(@ModelAttribute SYTBranchVo vo,
-			HttpServletRequest request, HttpServletResponse response,
+	public String deleteBranch(@ModelAttribute SYTBranchVo vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.deleteAccount() is called.");
 
@@ -730,24 +740,25 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	/**
-	* <pre>
+	 * <pre>
 	* 1. MethodName : Material
 	* 2. ClassName  : InfoController.java
 	* 3. Comment    : 관리자 > 자재관리
 	* 4. 작성자       : DEV_KIMDEUKYONG
 	* 5. 작성일       : 2021. 04. 26.
-	* </pre>
-	*
-	* @param commandMap
-	* @return
-	* @throws Exception
-	*/		
+	 * </pre>
+	 *
+	 * @param commandMap
+	 * @return
+	 * @throws Exception
+	 */
 	// checkMaterial
 	@SuppressWarnings("unchecked")
 	@ResponseBody
-	@RequestMapping(value = "/account/checkMaterial", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
+	@RequestMapping(value = "/account/checkMaterial", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json; charset=utf-8")
 	public String checkMaterial(@ModelAttribute SYTMaterialVo vo, HttpServletRequest request) {
 		logger.debug("FrontendController.checkMaterial() is called.");
 		JSONObject resultData = new JSONObject();
@@ -761,15 +772,15 @@ public class InfoController {
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 		return resultData.toJSONString();
-	}		
+	}
+
 	// selectMaterial
 	@ResponseBody
-	@RequestMapping(value = "/account/selectMaterial", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/selectMaterial", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectMaterial(@ModelAttribute SYTMaterialVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectMaterial(@ModelAttribute SYTMaterialVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectMaterial is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -782,7 +793,7 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-						
+
 			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
@@ -793,18 +804,32 @@ public class InfoController {
 			resultData.put("rows", null);
 		}
 		return resultData.toJSONString();
-	}	
+	}
+
 	// saveMaterial
 	@ResponseBody
-	@RequestMapping(value = "/account/saveMaterial", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/saveMaterial", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveMaterial(@ModelAttribute SYTMaterialVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String saveMaterial(MultipartHttpServletRequest request, HttpServletResponse response,
+	@RequestParam Map<String, Object> vo) {
 		logger.debug("FrontendController.saveAccount is called.");
-
-		vo.setMTL_REG_ID(SessionUtil.getMemberId(request));
-		vo.setMTL_REG_DT(SessionUtil.getMemberId(request));
+		
+		//파일 업로드를 위한 준비
+		OutputStream out = null;
+		PrintWriter printWriter = null;
+		MultipartFile fileList = request.getFile("file[]");
+		String basePath="/upload";
+		System.out.println("패스는 "+basePath+"\n\n\n\n");
+		
+		Map<String, Object> file = fileUpload.saveFile(fileList, basePath, request);
+		if(!file.isEmpty()) {
+		file.put("CMM_FLE_TB_TYPE","A");//파일 종류를 넣는곳인데 뭔지모르겠으므로 보류
+		file.put("CMM_FLE_REG_ID",SessionUtil.getMemberId(request));
+		}
+		
+		//기본DAO셋팅
+		vo.put("MTL_REG_ID",SessionUtil.getMemberId(request));
 
 		JSONObject resultData = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
@@ -814,22 +839,27 @@ public class InfoController {
 			String MTL_IDX = "";
 			int cnt = 0;
 
-			String flag = request.getParameter("flag");
+			String flag = (String)vo.get("flag");
+			request.setAttribute("flag", flag);
 
 			if (flag.equals("I")) {
-				//account_code = sYInfoService.accountCdGen();
+				// account_code = sYInfoService.accountCdGen();
 
 				// hKey
-				//vo.setAccount_code(account_code);
-				
-				cnt = sYInfoService.insertMaterial(vo);
-			} else if (flag.equals("U")) {//Modify
+				// vo.setAccount_code(account_code);
+
+				cnt = sYInfoService.insertMaterial(vo,file);
+			} else if (flag.equals("U")) {// Modify
 				MTL_IDX = request.getParameter("MTL_IDX");
-
-				// hKey
-				vo.setMTL_IDX( Integer.parseInt(MTL_IDX) );
 				
-				cnt = sYInfoService.updateMaterial(vo);
+				// hKey
+				vo.put("MTL_IDX",(Integer.parseInt(MTL_IDX)));
+				Map<String,Object> result = sYInfoService.selectFiles(vo);
+				if(result!=null) {
+					if(result.get("CMM_FLE_SYS_NM")!=null)
+					fileUpload.delFile(request,result);
+				}
+				cnt = sYInfoService.updateMaterial(vo,file);
 			}
 
 			System.out.println("MTL_IDX = " + MTL_IDX);
@@ -845,13 +875,14 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}
+
 	// deleteMaterial
 	@ResponseBody
-	@RequestMapping(value = "/account/deleteMaterial", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/deleteMaterial", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteMaterial(@ModelAttribute SYTMaterialVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String deleteMaterial(@ModelAttribute SYTMaterialVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.deleteAccount() is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -873,22 +904,23 @@ public class InfoController {
 	}
 
 	/**
-	* <pre>
+	 * <pre>
 	* 1. MethodName : Project
 	* 2. ClassName  : InfoController.java
 	* 3. Comment    : 관리자 > 프로젝트 > 프로젝트 관리
 	* 4. 작성자       : DEV_KIMDEUKYONG
 	* 5. 작성일       : 2021. 04. 27.
-	* </pre>
-	*
-	* @param commandMap
-	* @return
-	* @throws Exception
-	*/		
+	 * </pre>
+	 *
+	 * @param commandMap
+	 * @return
+	 * @throws Exception
+	 */
 	// checkProject
 	@SuppressWarnings("unchecked")
 	@ResponseBody
-	@RequestMapping(value = "/account/checkProject", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
+	@RequestMapping(value = "/account/checkProject", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json; charset=utf-8")
 	public String checkProject(@ModelAttribute SYTProjectVo vo, HttpServletRequest request) {
 		logger.debug("FrontendController.checkProject() is called.");
 		JSONObject resultData = new JSONObject();
@@ -902,14 +934,15 @@ public class InfoController {
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 		return resultData.toJSONString();
-	}		
+	}
+
 	// selectProject
 	@ResponseBody
-	@RequestMapping(value = "/account/selectProject", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/selectProject", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectProject(@ModelAttribute SYTProjectVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectProject(@ModelAttribute SYTProjectVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectProject is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -920,7 +953,7 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-						
+
 			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
@@ -931,13 +964,14 @@ public class InfoController {
 			resultData.put("rows", null);
 		}
 		return resultData.toJSONString();
-	}	
+	}
+
 	// saveProject
 	@ResponseBody
-	@RequestMapping(value = "/account/saveProject", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/saveProject", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveProject(@ModelAttribute SYTProjectVo vo,
-			HttpServletRequest request, HttpServletResponse response,
+	public String saveProject(@ModelAttribute SYTProjectVo vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.saveAccount is called.");
 
@@ -953,21 +987,22 @@ public class InfoController {
 			int cnt = 0;
 
 			String flag = request.getParameter("flag");
-			//String delivery_date = URLDecoder.decode(request.getParameter("delivery_date"), "UTF-8" );
+			// String delivery_date =
+			// URLDecoder.decode(request.getParameter("delivery_date"), "UTF-8" );
 
 			if (flag.equals("I")) {
-				//account_code = sYInfoService.accountCdGen();
+				// account_code = sYInfoService.accountCdGen();
 
 				// hKey
-				//vo.setAccount_code(account_code);
-				
+				// vo.setAccount_code(account_code);
+
 				cnt = sYInfoService.insertProject(vo);
-			} else if (flag.equals("U")) {//Modify
+			} else if (flag.equals("U")) {// Modify
 				PJT_IDX = request.getParameter("PJT_IDX");
 
 				// hKey
-				vo.setPJT_IDX( Integer.parseInt(PJT_IDX) );
-				
+				vo.setPJT_IDX(Integer.parseInt(PJT_IDX));
+
 				cnt = sYInfoService.updateProject(vo);
 			}
 
@@ -984,13 +1019,14 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}
+
 	// deleteProject
 	@ResponseBody
-	@RequestMapping(value = "/account/deleteProject", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/deleteProject", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteProject(@ModelAttribute SYTProjectVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String deleteProject(@ModelAttribute SYTProjectVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.deleteAccount() is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -1010,19 +1046,13 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	
-	
-	
-	
-	
+
 	@ResponseBody
-	@RequestMapping(value = "/material/selectMaterial2", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/material/selectMaterial2", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectMaterial2(@ModelAttribute SYMaterialVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectMaterial2(@ModelAttribute SYMaterialVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectMaterial2 is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -1036,9 +1066,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -1048,15 +1077,15 @@ public class InfoController {
 			resultData.put("rows", null);
 		}
 		return resultData.toJSONString();
-	}		
+	}
+
 	// selectMaterial
 	@ResponseBody
-	@RequestMapping(value = "/material/selectMaterial3", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/material/selectMaterial3", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectMaterial3(@ModelAttribute SYMaterialVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectMaterial3(@ModelAttribute SYMaterialVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectMaterial3 is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -1070,9 +1099,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -1082,21 +1110,13 @@ public class InfoController {
 			resultData.put("rows", null);
 		}
 		return resultData.toJSONString();
-	}			
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+	}
+
 	// checkAccount
 	@SuppressWarnings("unchecked")
 	@ResponseBody
-	@RequestMapping(value = "/account/checkAccount", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
+	@RequestMapping(value = "/account/checkAccount", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json; charset=utf-8")
 	public String checkAccount(@ModelAttribute SYAccountVo vo, HttpServletRequest request) {
 		logger.debug("FrontendController.checkAccount() is called.");
 		JSONObject resultData = new JSONObject();
@@ -1110,16 +1130,15 @@ public class InfoController {
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 		}
 		return resultData.toJSONString();
-	}	
-	
+	}
+
 	// selectAccount
 	@ResponseBody
-	@RequestMapping(value = "/account/selectAccount", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/selectAccount", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectAccount(@ModelAttribute SYAccountVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectAccount(@ModelAttribute SYAccountVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectAccount is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -1133,9 +1152,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -1146,15 +1164,13 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-			
-			
+
 	// saveAccount
 	@ResponseBody
 	@RequestMapping(value = "/account/saveAccount", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveAccount(@ModelAttribute SYAccountVo vo,
-			HttpServletRequest request, HttpServletResponse response,
+	public String saveAccount(@ModelAttribute SYAccountVo vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.saveAccount is called.");
 
@@ -1176,14 +1192,14 @@ public class InfoController {
 //
 //									// hKey
 //									vo.setAccount_code(account_code);
-				
+
 				cnt = sYInfoService.insertAccount(vo);
 			} else if (flag.equals("U")) {
 				account_code = request.getParameter("account_code");
 
 				// hKey
 				vo.setAccount_code(account_code);
-				
+
 				cnt = sYInfoService.updateAccount(vo);
 			}
 
@@ -1200,15 +1216,14 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}
-					
+
 	// deleteAccount
 	@ResponseBody
-	@RequestMapping(value = "/account/deleteAccount", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/deleteAccount", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteAccount(@ModelAttribute SYAccountVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String deleteAccount(@ModelAttribute SYAccountVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.deleteAccount() is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -1228,15 +1243,15 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	
+
 	// cw
 	@ResponseBody
-	@RequestMapping(value="/partition/selectPartition2" , method = { RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
-	public String selectPartition2 (@ModelAttribute SYPartitionVO vo, HttpServletRequest request, HttpServletResponse response , HttpSession session) {
+	@RequestMapping(value = "/partition/selectPartition2", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectPartition2(@ModelAttribute SYPartitionVO vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("InfoController.selectPartition2() is called.");
-		
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
@@ -1244,8 +1259,7 @@ public class InfoController {
 
 			List<SYPartitionVO> dataList = sYInfoService.selectPartition2(vo);
 
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -1255,37 +1269,40 @@ public class InfoController {
 			resultData.put("rows", null);
 		}
 		return resultData.toJSONString();
-		
+
 	}
 	////////
-	
+
 	// jyp
 	@ResponseBody
-	@RequestMapping(value="/partition/selectPartition" , method = { RequestMethod.GET, RequestMethod.POST}, produces = "application/json;charset=UTF-8")
-	public ResponseEntity<String> selectPartition (@ModelAttribute SYPartitionVO vo, HttpServletRequest request, HttpServletResponse response , HttpSession session) {
+	@RequestMapping(value = "/partition/selectPartition", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public ResponseEntity<String> selectPartition(@ModelAttribute SYPartitionVO vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("InfoController.selectPartition() is called.");
-		
+
 		ResponseEntity<String> result = null;
-		
+
 		try {
 			List<SYPartitionVO> dataList = sYInfoService.selectPartition(vo);
-			
+
 			result = ResponseUtils.getJSONResponse("success", dataList, HttpStatus.OK);
-			
-		} catch(Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			result = ResponseUtils.getSimpleFailResponse();
 		}
-		
+
 		return result;
-		
+
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value="/partition/insPartition", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
-	public ResponseEntity<String> insPartition(@ModelAttribute SYPartitionVO vo, HttpServletRequest request, HttpServletResponse response, HttpSession session){
+	@RequestMapping(value = "/partition/insPartition", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public ResponseEntity<String> insPartition(@ModelAttribute SYPartitionVO vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("InfoController.insPartition() is called.");
-		
+
 		ResponseEntity<String> result = null;
 		int cnt = 0;
 		try {
@@ -1293,78 +1310,82 @@ public class InfoController {
 			vo.setUpdater(SessionUtil.getMemberId(request));
 			cnt = sYInfoService.insPartition(vo);
 			result = ResponseUtils.getJSONResponse("success", cnt, HttpStatus.OK);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			logger.debug("error");
 			e.printStackTrace();
 			result = ResponseUtils.getSimpleFailResponse();
 		}
-		
+
 		return result;
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value="/partition/updPartition", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
-	public ResponseEntity<String> updPartition(@ModelAttribute SYPartitionVO vo, HttpServletRequest request, HttpServletResponse response, HttpSession session){
+	@RequestMapping(value = "/partition/updPartition", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public ResponseEntity<String> updPartition(@ModelAttribute SYPartitionVO vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("InfoController.updPartition() is called.");
-		
+
 		ResponseEntity<String> result = null;
 		int cnt = 0;
 		try {
 			vo.setUpdater(SessionUtil.getMemberId(request));
 			cnt = sYInfoService.updPartition(vo);
 			result = ResponseUtils.getJSONResponse("success", cnt, HttpStatus.OK);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			result = ResponseUtils.getSimpleFailResponse();
 		}
-		
+
 		return result;
 	}
-	
-	@ResponseBody
-	@RequestMapping(value="/partition/delPartition", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
-	public ResponseEntity<String> delPartition (@ModelAttribute SYPartitionVO vo , HttpServletRequest request, HttpServletResponse response, HttpSession session){
-		logger.debug("InfoController.delPartition() is called.");
-		ResponseEntity<String> result= null;
-		int cnt = 0;
-		try {
-			vo.setUpdater(SessionUtil.getMemberId(request));
-			cnt =  sYInfoService.updPartition(vo);
-			result = ResponseUtils.getJSONResponse("success", cnt, HttpStatus.OK);
-		} catch(Exception e) {
-			e.printStackTrace();
-			result = ResponseUtils.getSimpleFailResponse();
-		}
-		
-		return result;
-		
-	}
-	
 
 	@ResponseBody
-	@RequestMapping(value="/partition/delPartitionAll", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
-	public ResponseEntity<String> delPartitionAll (@ModelAttribute SYPartitionVO vo , HttpServletRequest request, HttpServletResponse response, HttpSession session){
-		logger.debug("InfoController.delPartitionAll() is called.");
-		ResponseEntity<String> result= null;
+	@RequestMapping(value = "/partition/delPartition", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public ResponseEntity<String> delPartition(@ModelAttribute SYPartitionVO vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("InfoController.delPartition() is called.");
+		ResponseEntity<String> result = null;
 		int cnt = 0;
 		try {
 			vo.setUpdater(SessionUtil.getMemberId(request));
-			cnt =  sYInfoService.delPartitionAll(vo);
+			cnt = sYInfoService.updPartition(vo);
 			result = ResponseUtils.getJSONResponse("success", cnt, HttpStatus.OK);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			result = ResponseUtils.getSimpleFailResponse();
 		}
-		
+
 		return result;
-		
+
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value="/partition/selectPartitionList", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
-	public String selectPartitonList(@ModelAttribute SYPartitionVO vo, HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value = "/partition/delPartitionAll", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public ResponseEntity<String> delPartitionAll(@ModelAttribute SYPartitionVO vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("InfoController.delPartitionAll() is called.");
+		ResponseEntity<String> result = null;
+		int cnt = 0;
+		try {
+			vo.setUpdater(SessionUtil.getMemberId(request));
+			cnt = sYInfoService.delPartitionAll(vo);
+			result = ResponseUtils.getJSONResponse("success", cnt, HttpStatus.OK);
+		} catch (Exception e) {
+			e.printStackTrace();
+			result = ResponseUtils.getSimpleFailResponse();
+		}
+
+		return result;
+
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/partition/selectPartitionList", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectPartitonList(@ModelAttribute SYPartitionVO vo, HttpServletRequest request,
+			HttpServletResponse response) {
 		logger.debug("InfoController.selectPartitionList() is called.");
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
@@ -1372,8 +1393,7 @@ public class InfoController {
 
 			List<SYPartitionVO> dataList = sYInfoService.selectPartitionList(vo);
 
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -1384,12 +1404,14 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value="/partition/selectPartitionDetail", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
-	public String selectPartitonDetail(@ModelAttribute SYPartitionVO vo, HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value = "/partition/selectPartitionDetail", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectPartitonDetail(@ModelAttribute SYPartitionVO vo, HttpServletRequest request,
+			HttpServletResponse response) {
 		logger.debug("InfoController.selectPartitonDetail() is called.");
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
@@ -1397,8 +1419,7 @@ public class InfoController {
 
 			List<SYPartitionVO> dataList = sYInfoService.selectPartitionDetail(vo);
 
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -1409,64 +1430,63 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value="/partition/insPartitionDetail", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
+	@RequestMapping(value = "/partition/insPartitionDetail", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	public String insPartitionDetail(HttpServletRequest request, HttpServletResponse response) {
 		logger.debug("InfoController.insPartitionDetail is called.");
-		
+
 		Map<String, Object> params = new HashMap<>();
 		params.put("creator", SessionUtil.getMemberId(request));
 		params.put("updater", SessionUtil.getMemberId(request));
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
 		JSONParser parser = new JSONParser();
 		SYPartitionVO p = null;
 		String methodNm = "";
 		try {
-			
+
 			String paramStr = request.getParameter("param");
 			logger.debug(paramStr);
-			jsonArray = (JSONArray) parser.parse(paramStr); 
+			jsonArray = (JSONArray) parser.parse(paramStr);
 
-			Object[] keyArr = ((JSONObject)jsonArray.get(0)).keySet().toArray();
+			Object[] keyArr = ((JSONObject) jsonArray.get(0)).keySet().toArray();
 			List<SYPartitionVO> lvo = new ArrayList<>();
-			
-			for(int i=0; i<jsonArray.size(); i++) {
-			   JSONObject jObj = (JSONObject)jsonArray.get(i);
-			   p = new SYPartitionVO();
-			   Method[] m = p.getClass().getDeclaredMethods();
-			   for(Object key : keyArr) { 
-				   
-			      String nKey = key.toString();
-			      String nValue = "";
-			      
-			      if( jObj.get(nKey)==null ) 
-			         continue;
-			      else 
-			         nValue = jObj.get(nKey).toString();
-			      
-			      
-			      methodNm = "set".concat(nKey.substring(0,1).toUpperCase()).concat(nKey.substring(1));
-			      
-			      
-			      for(Method mt : m) {
-			    	  if(mt.getName().equals(methodNm)) {
-			    		  mt.invoke(p, nValue);
-			    		  break;
-			    	  }
-			      }
-			      
-			   }
-			   lvo.add(p);
+
+			for (int i = 0; i < jsonArray.size(); i++) {
+				JSONObject jObj = (JSONObject) jsonArray.get(i);
+				p = new SYPartitionVO();
+				Method[] m = p.getClass().getDeclaredMethods();
+				for (Object key : keyArr) {
+
+					String nKey = key.toString();
+					String nValue = "";
+
+					if (jObj.get(nKey) == null)
+						continue;
+					else
+						nValue = jObj.get(nKey).toString();
+
+					methodNm = "set".concat(nKey.substring(0, 1).toUpperCase()).concat(nKey.substring(1));
+
+					for (Method mt : m) {
+						if (mt.getName().equals(methodNm)) {
+							mt.invoke(p, nValue);
+							break;
+						}
+					}
+
+				}
+				lvo.add(p);
 			}
-			
+
 			params.put("listParam", lvo);
 			int cnt = 0;
 
-			 cnt = sYInfoService.insPartitionDetail(params);
-			
+			cnt = sYInfoService.insPartitionDetail(params);
+
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("data", cnt);
 
@@ -1477,14 +1497,13 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value = "/partition/delPartitionDetail", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/partition/delPartitionDetail", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String delPartitionDetail(@ModelAttribute SYPartitionVO vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String delPartitionDetail(@ModelAttribute SYPartitionVO vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("InfoController.delPartitionDetail() is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -1502,11 +1521,11 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	
+
 	@SuppressWarnings("unchecked")
 	@ResponseBody
-	@RequestMapping(value = "/machine/checkMachine", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
+	@RequestMapping(value = "/machine/checkMachine", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json; charset=utf-8")
 	public String checkMachine(@ModelAttribute SYMachineVO vo, HttpServletRequest request) {
 		logger.debug("FrontendController.checkMachine() is called.");
 		JSONObject resultData = new JSONObject();
@@ -1521,12 +1540,14 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value="/machine/selectMachine", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
-	public String selectMachine(@ModelAttribute SYMachineVO vo, HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value = "/machine/selectMachine", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectMachine(@ModelAttribute SYMachineVO vo, HttpServletRequest request,
+			HttpServletResponse response) {
 		logger.debug("InfoController.selectMachine() is called.");
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
@@ -1534,8 +1555,7 @@ public class InfoController {
 
 			List<SYMachineVO> dataList = sYInfoService.selectMachine(vo);
 
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -1546,10 +1566,10 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value="/machine/insMachine", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
-	public String insMachine(@ModelAttribute SYMachineVO vo, HttpServletRequest request, HttpServletResponse response){
+	@RequestMapping(value = "/machine/insMachine", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public String insMachine(@ModelAttribute SYMachineVO vo, HttpServletRequest request, HttpServletResponse response) {
 		logger.debug("InfoController.insMachine() is called.");
 		vo.setCreator(SessionUtil.getMemberId(request));
 		vo.setUpdater(SessionUtil.getMemberId(request));
@@ -1571,10 +1591,10 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value="/machine/updMachine", method = RequestMethod.POST, produces="application/json;charset=UTF-8")
-	public String updMachine(@ModelAttribute SYMachineVO vo, HttpServletRequest request, HttpServletResponse response){
+	@RequestMapping(value = "/machine/updMachine", method = RequestMethod.POST, produces = "application/json;charset=UTF-8")
+	public String updMachine(@ModelAttribute SYMachineVO vo, HttpServletRequest request, HttpServletResponse response) {
 		logger.debug("InfoController.updMachine() is called. / " + vo.getMachine_code());
 		vo.setUpdater(SessionUtil.getMemberId(request));
 
@@ -1595,15 +1615,16 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value="/machine/delMachine", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
+	@RequestMapping(value = "/machine/delMachine", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	public String delMachine(HttpServletRequest request, HttpServletResponse response) {
 		logger.debug("InfoController.delMachine is called.");
-		
+
 		SYMachineVO vo = new SYMachineVO();
 		Map<String, Object> params = new HashMap<>();
-		String[] keyCols = {"machine_code", "machine_nm"};
+		String[] keyCols = { "machine_code", "machine_nm" };
 		JSONObject resultData = new JSONObject();
 		int cnt = 0;
 		try {
@@ -1611,9 +1632,9 @@ public class InfoController {
 			params.put("creator", SessionUtil.getMemberId(request));
 			params.put("updater", SessionUtil.getMemberId(request));
 			cnt = sYInfoService.delMachine(params);
-			
+
 			resultData.put("status", HttpStatus.OK.value());
-			
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -1621,13 +1642,14 @@ public class InfoController {
 		logger.debug(resultData.toJSONString());
 		return resultData.toJSONString();
 	}
-	
-	
+
 	@ResponseBody
-	@RequestMapping(value="/machine/selectMachine_waiting", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
-	public String selectMachine_waiting(@ModelAttribute SYMachineVO vo, HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value = "/machine/selectMachine_waiting", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectMachine_waiting(@ModelAttribute SYMachineVO vo, HttpServletRequest request,
+			HttpServletResponse response) {
 		logger.debug("InfoController.selectMachine_waiting() is called.");
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
@@ -1635,8 +1657,7 @@ public class InfoController {
 
 			List<SYMachineVO> dataList = sYInfoService.selectMachine_waiting(vo);
 
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -1647,16 +1668,14 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	
+
 	// selectMachine_class
 	@ResponseBody
-	@RequestMapping(value = "/machine/selectMachine_class", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/machine/selectMachine_class", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectMachine_class(@ModelAttribute SYMachineVO vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectMachine_class(@ModelAttribute SYMachineVO vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectMachine_class is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -1670,9 +1689,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -1683,29 +1701,25 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	
-	
-	
-	
-	
-	//1113
-	//machine_이름제거
+
+	// 1113
+	// machine_이름제거
 	@ResponseBody
-	@RequestMapping(value="/machine/selectMachine_nm", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
+	@RequestMapping(value = "/machine/selectMachine_nm", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectMachine_nm(@ModelAttribute SYMachineVO vo, HttpServletRequest request, HttpServletResponse response) {
+	public String selectMachine_nm(@ModelAttribute SYMachineVO vo, HttpServletRequest request,
+			HttpServletResponse response) {
 		logger.debug("InfoController.selectMachine_nm() is called.");
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
 		JSONParser parser = new JSONParser();
-		
+
 		try {
 			List<SYMachineVO> dataList = sYInfoService.selectMachine_nm(vo);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			jsonArray = (JSONArray) parser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", jsonArray);
@@ -1716,14 +1730,13 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	// saveHold_Y hold_yn상태변경
 	@ResponseBody
-	@RequestMapping(value = "/machine/saveHold_Y", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/machine/saveHold_Y", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveHold_Y(@ModelAttribute SYMachineVO vo,
-			HttpServletRequest request, HttpServletResponse response,
+	public String saveHold_Y(@ModelAttribute SYMachineVO vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.saveHold_Y() is called.");
 
@@ -1744,21 +1757,20 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	// saveHold_N hold_yn상태변경
 	@ResponseBody
-	@RequestMapping(value = "/machine/saveHold_N", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/machine/saveHold_N", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveHold_N(@ModelAttribute SYMachineVO vo,
-			HttpServletRequest request, HttpServletResponse response,
+	public String saveHold_N(@ModelAttribute SYMachineVO vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.saveHold_N() is called.");
 
 		JSONObject resultData = new JSONObject();
 		try {
 			int result = 0;
-			
+
 			vo.setUpdater(SessionUtil.getMemberId(request));
 			vo.setCreator(SessionUtil.getMemberId(request));
 
@@ -1775,36 +1787,34 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	// saveHold_N hold_yn상태변경
 	@ResponseBody
-	@RequestMapping(value = "/machine/updateHoldWaitingEnd", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/machine/updateHoldWaitingEnd", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String updateHoldWaitingEnd(@ModelAttribute SYProductUnOperationVO vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String updateHoldWaitingEnd(@ModelAttribute SYProductUnOperationVO vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.updateHoldWaitingEnd() is called.");
 
 		JSONObject resultData = new JSONObject();
 		try {
 			int result = 0;
-			
+
 			vo.setUpdater(SessionUtil.getMemberId(request));
 			vo.setMachine_nm(SessionUtil.getMemberId(request));
 			result = sYInfoService.updateHoldWaitingEnd(vo);
 
 			System.out.println("result = " + result);
 
-			if(result == 999)
-			{
+			if (result == 999) {
 				resultData.put("status", 777);
 				resultData.put("rows", null);
-			}else{
+			} else {
 				resultData.put("status", HttpStatus.OK.value());
 				resultData.put("rows", result);
 			}
-		
+
 		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -1812,15 +1822,13 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	
+
 	// saveHold_ALL_Y hold_yn상태변경
 	@ResponseBody
-	@RequestMapping(value = "/machine/saveHold_ALL_Y", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/machine/saveHold_ALL_Y", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveHold_ALL_Y(@ModelAttribute SYHoldVo vo,
-			HttpServletRequest request, HttpServletResponse response,
+	public String saveHold_ALL_Y(@ModelAttribute SYHoldVo vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.saveHold_ALL_Y() is called.");
 
@@ -1841,15 +1849,13 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	
+
 	// saveHold_ALL_N hold_yn상태변경
 	@ResponseBody
-	@RequestMapping(value = "/machine/saveHold_ALL_N", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/machine/saveHold_ALL_N", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveHold_ALL_N(@ModelAttribute SYHoldVo vo,
-			HttpServletRequest request, HttpServletResponse response,
+	public String saveHold_ALL_N(@ModelAttribute SYHoldVo vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.saveHold_ALL_N() is called.");
 
@@ -1870,16 +1876,16 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	
-	
+
 	// jyp
-	
+
 	// yb
 	@ResponseBody
-	@RequestMapping(value="/selectBomlist" , method = { RequestMethod.GET, RequestMethod.POST}, produces = "applicattion/json;charset=UTF-8")
-	@SuppressWarnings({ "unchecked"})
-	public String selectBomlist (@ModelAttribute SYBomVo vo, HttpServletRequest request, HttpServletResponse response , HttpSession session) {
+	@RequestMapping(value = "/selectBomlist", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "applicattion/json;charset=UTF-8")
+	@SuppressWarnings({ "unchecked" })
+	public String selectBomlist(@ModelAttribute SYBomVo vo, HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
 		logger.debug("InfoController.selectBomlist() is called.");
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
@@ -1888,213 +1894,116 @@ public class InfoController {
 			int num = 0;
 			List<SYBomVo> dataList = sYInfoService.selectBomlist(vo);
 			List<SYBomVo> dataList2 = new ArrayList<SYBomVo>();
-			for(int i = 0; dataList.size() > i ; i++) {
-				if(dataList.get(i).getStufe() != 0) {
-					if(dataList.get(i).getStufe() == 1) {
+			for (int i = 0; dataList.size() > i; i++) {
+				if (dataList.get(i).getStufe() != 0) {
+					if (dataList.get(i).getStufe() == 1) {
 						num++;
 						dataList2.add(dataList.get(i));
-						for(int j = 0; dataList.size() > j ; j++) {
-							if(dataList.get(j).getM_item_code().equals(dataList.get(i).getC_item_code())) {
+						for (int j = 0; dataList.size() > j; j++) {
+							if (dataList.get(j).getM_item_code().equals(dataList.get(i).getC_item_code())) {
 								dataList2.add(dataList.get(j));
 							}
 						}
 					}
-				}else {
+				} else {
 					dataList2.add(dataList.get(i));
 				}
 			}
-			if(num == 0) {
+			if (num == 0) {
 				dataList2 = dataList;
 			}
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,dataList2);
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList2);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			resultData.put("rows", null);
 		}
 		return resultData.toJSONString();
 	}
+
 	@ResponseBody
-	@RequestMapping(value="/insertBomlist" , method = { RequestMethod.GET, RequestMethod.POST}, produces = "applicattion/json;charset=UTF-8")
-	@SuppressWarnings({ "unchecked"})
-	public String insertBomlist (@ModelAttribute SYBomVo vo, HttpServletRequest request, HttpServletResponse response , HttpSession session) {
+	@RequestMapping(value = "/insertBomlist", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "applicattion/json;charset=UTF-8")
+	@SuppressWarnings({ "unchecked" })
+	public String insertBomlist(@ModelAttribute SYBomVo vo, HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
 		logger.debug("InfoController.insertBomlist() is called.");
 		vo.setCreator(SessionUtil.getMemberId(request));
 		vo.setUpdater(SessionUtil.getMemberId(request));
 		JSONObject resultData = new JSONObject();
 		try {
 			List<SYBomVo> dataList = sYInfoService.selectBomlist(vo);
-			if(dataList.size() != 0) {
+			if (dataList.size() != 0) {
 				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 				resultData.put("msg", "fall");
-			}else {
+			} else {
 				int cnt = sYInfoService.insertBomlist(vo);
-				if(cnt == 1) {
+				if (cnt == 1) {
 					resultData.put("status", HttpStatus.OK.value());
 					resultData.put("msg", "success");
-				}else {
+				} else {
 					resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 					resultData.put("msg", "whatfall");
 				}
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			resultData.put("msg", "fall");
 		}
 		return resultData.toJSONString();
 	}
+
 	@ResponseBody
-	@RequestMapping(value="/deleteBomlist" , method = { RequestMethod.GET, RequestMethod.POST}, produces = "applicattion/json;charset=UTF-8")
-	@SuppressWarnings({ "unchecked"})
-	public String deleteBomlist (@ModelAttribute SYBomVo vo, HttpServletRequest request, HttpServletResponse response , HttpSession session) {
+	@RequestMapping(value = "/deleteBomlist", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "applicattion/json;charset=UTF-8")
+	@SuppressWarnings({ "unchecked" })
+	public String deleteBomlist(@ModelAttribute SYBomVo vo, HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
 		logger.debug("InfoController.deleteBomlist() is called.");
 		vo.setCreator(SessionUtil.getMemberId(request));
 		vo.setUpdater(SessionUtil.getMemberId(request));
 		JSONObject resultData = new JSONObject();
 		try {
 			int cnt = 0;
-			if(vo.getStufe() == 1) {
+			if (vo.getStufe() == 1) {
 				SYBomVo vo2 = new SYBomVo();
 				vo2.setProduct_item_code(vo.getProduct_item_code());
 				vo2.setM_item_code(vo.getC_item_code());
 				vo2.setBusiness_code(vo.getBusiness_code());
 				cnt = sYInfoService.deleteBomlist(vo2);
 			}
-			if(cnt >= 0) {
+			if (cnt >= 0) {
 				cnt = sYInfoService.deleteBomlist(vo);
 			}
-			if(cnt == 1) {
+			if (cnt == 1) {
 				resultData.put("status", HttpStatus.OK.value());
 				resultData.put("msg", "success");
-			}else {
+			} else {
 				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 				resultData.put("msg", "fall");
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			resultData.put("msg", "fall");
 		}
 		return resultData.toJSONString();
 	}
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
+
 	// yb
-	
-	///// sssss 
-	
+
+	///// sssss
+
 	// 20200925
 	@ResponseBody
-	@RequestMapping(value = "/print/selectPrintFI", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/print/selectPrintFI", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectPrintFI(@ModelAttribute SYPrintVO vo,
-			HttpServletRequest request, HttpServletResponse response,
+	public String selectPrintFI(@ModelAttribute SYPrintVO vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.selectPrintFI is called.");
 
@@ -2103,12 +2012,11 @@ public class InfoController {
 		JSONParser jsonParser = new JSONParser();
 		try {
 			List<SYPrintVO> dataList = sYInfoService.selectPrintFI(vo);
-			
+
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -2119,16 +2027,14 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	
-	// 20200922 
+
+	// 20200922
 	@ResponseBody
-	@RequestMapping(value = "/product/selectS_product2", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/product/selectS_product2", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectS_product2(@ModelAttribute SYProduct2Vo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectS_product2(@ModelAttribute SYProduct2Vo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectS_product2 is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -2136,19 +2042,18 @@ public class InfoController {
 		JSONParser jsonParser = new JSONParser();
 		try {
 			String gb = request.getParameter("gb");
-			 
+
 			List<SYProduct2Vo> dataList = new ArrayList<SYProduct2Vo>();
 			if (gb.equals("i")) {
 				dataList = sYInfoService.selectS_product2u(vo);
 			} else if (gb.equals("u")) {
 				dataList = sYInfoService.selectS_product2(vo);
 			}
-			
+
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -2159,14 +2064,13 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value = "/product/selectS_product", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/product/selectS_product", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectS_product(@ModelAttribute SYProduct2Vo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectS_product(@ModelAttribute SYProduct2Vo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectS_product is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -2176,23 +2080,20 @@ public class InfoController {
 			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"),
 			// "UTF-8" );
 
-			
 			String gb = request.getParameter("gb");
-			 System.out.println("gb="+gb);
+			System.out.println("gb=" + gb);
 			List<SYProduct2Vo> dataList = new ArrayList<SYProduct2Vo>();
-			
+
 			if (gb.equals("i")) {
 				dataList = sYInfoService.selectS_product(vo);
 			} else if (gb.equals("u")) {
 				dataList = sYInfoService.selectS_productu(vo);
 			}
-			
-			
+
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -2203,14 +2104,13 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value = "/product/selectS_product_fail", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/product/selectS_product_fail", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectS_product_fail(@ModelAttribute SYProduct2Vo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectS_product_fail(@ModelAttribute SYProduct2Vo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectS_product_fail is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -2220,23 +2120,20 @@ public class InfoController {
 			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"),
 			// "UTF-8" );
 
-			
 			String gb = request.getParameter("gb");
-			 System.out.println("gb="+gb);
+			System.out.println("gb=" + gb);
 			List<SYProduct2Vo> dataList = new ArrayList<SYProduct2Vo>();
-			
+
 			if (gb.equals("i")) {
 				dataList = sYInfoService.selectS_product_fail(vo);
 			} else if (gb.equals("u")) {
 				dataList = sYInfoService.selectS_productu_fail(vo);
 			}
-			
-			
+
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -2248,16 +2145,15 @@ public class InfoController {
 		return resultData.toJSONString();
 	}
 	// 20200922
-	
+
 	// jsjsjsjsjsjjs new 20200919
 	// selectItemCode
 	@ResponseBody
-	@RequestMapping(value = "/material/selectItemCode", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/material/selectItemCode", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectItemCode(@ModelAttribute SYMaterialVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectItemCode(@ModelAttribute SYMaterialVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectItemCode is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -2271,9 +2167,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -2284,14 +2179,13 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value = "/material/selectItemCode2", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/material/selectItemCode2", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectItemCode2(@ModelAttribute SYMaterialVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectItemCode2(@ModelAttribute SYMaterialVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectItemCode2 is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -2305,9 +2199,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -2318,14 +2211,13 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value = "/material/selectItemCode3", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/material/selectItemCode3", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectItemCode3(@ModelAttribute SYMaterialVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectItemCode3(@ModelAttribute SYMaterialVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectItemCode3 is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -2339,9 +2231,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -2352,50 +2243,47 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	// selectInspect_master2
-		@ResponseBody
-		@RequestMapping(value = "/process/selectInspection_master2", method = {
-				RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-		@SuppressWarnings("unchecked")
-		public String selectInspection_master2(@ModelAttribute SYInspectionMasterVo vo,
-				HttpServletRequest request, HttpServletResponse response,
-				HttpSession session) {
-			logger.debug("FrontendController.selectInspection_master2 is called.");
+	@ResponseBody
+	@RequestMapping(value = "/process/selectInspection_master2", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String selectInspection_master2(@ModelAttribute SYInspectionMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.selectInspection_master2 is called.");
 
-			JSONObject resultData = new JSONObject();
-			JSONArray listDataJArray = new JSONArray();
-			JSONParser jsonParser = new JSONParser();
-			try {
-				// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"),
-				// "UTF-8" );
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"),
+			// "UTF-8" );
 
-				List<SYInspectionMasterVo> dataList = sYInfoService.selectInspection_master2(vo);
+			List<SYInspectionMasterVo> dataList = sYInfoService.selectInspection_master2(vo);
 
-				System.out.println("dataList");
-				System.out.println(dataList);
-				
-				String listDataJsonString = ResponseUtils.getJsonResponse(response,
-						dataList);
-				listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-				resultData.put("status", HttpStatus.OK.value());
-				resultData.put("rows", listDataJArray);
-			} catch (Exception e) {
-				e.printStackTrace();
-				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-				resultData.put("rows", null);
-			}
-			return resultData.toJSONString();
+			System.out.println("dataList");
+			System.out.println(dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
 		}
-	
+		return resultData.toJSONString();
+	}
+
 	// selectInstrumentTool
 	@ResponseBody
-	@RequestMapping(value = "/instrument/selectInstrumentTool", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/instrument/selectInstrumentTool", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectInstrumentTool(@ModelAttribute SYInstrumentVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectInstrumentTool(@ModelAttribute SYInstrumentVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectInstrumentTool is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -2409,9 +2297,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -2422,165 +2309,172 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	// instrument/insertInspection
 	@ResponseBody
-	@RequestMapping(value="/instrument/insertInspection" , method = { RequestMethod.GET, RequestMethod.POST}, produces = "applicattion/json;charset=UTF-8")
-	@SuppressWarnings({ "unchecked"})
-	public String insertInspection (@ModelAttribute SYInspectionMasterVo vo, HttpServletRequest request, HttpServletResponse response , HttpSession session) {
+	@RequestMapping(value = "/instrument/insertInspection", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "applicattion/json;charset=UTF-8")
+	@SuppressWarnings({ "unchecked" })
+	public String insertInspection(@ModelAttribute SYInspectionMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("InfoController.insertInspection() is called.");
 		vo.setCreator(SessionUtil.getMemberId(request));
 		vo.setUpdater(SessionUtil.getMemberId(request));
 		JSONObject resultData = new JSONObject();
 		try {
 			int cnt = sYInfoService.insertInspection(vo);
-			
+
 			System.out.println("cnt = " + cnt);
 
 			// routing_master
-			if ( cnt > 0 ) {
+			if (cnt > 0) {
 				vo.setQc_yn("Y");
-				 cnt = sYInfoService.upRouting_mstQc_yn(vo);
+				cnt = sYInfoService.upRouting_mstQc_yn(vo);
 			}
-			
+
 			System.out.println("22 cnt = " + cnt);
-			
+
 			resultData.put("status", HttpStatus.OK.value());
-			
-		} catch(Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			resultData.put("msg", "fall");
 		}
 		return resultData.toJSONString();
 	}
-	
-	
-	
+
 	// insertInspection2
-		@ResponseBody
-		@RequestMapping(value = "/instrument/insertInspection2", method = { RequestMethod.GET,
-				RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-		@SuppressWarnings("unchecked")
-		public String insertInspection2(@ModelAttribute SYInspectionMasterVo vo, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-			logger.debug("InfoController.insertInspection2() is called.");
+	@ResponseBody
+	@RequestMapping(value = "/instrument/insertInspection2", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String insertInspection2(@ModelAttribute SYInspectionMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("InfoController.insertInspection2() is called.");
 
-			JSONArray jsonArray = new JSONArray();
-			JSONParser parser = new JSONParser();
-			JSONObject resultData = new JSONObject();
-			
-			try {
+		JSONArray jsonArray = new JSONArray();
+		JSONParser parser = new JSONParser();
+		JSONObject resultData = new JSONObject();
 
-				
-				String gridData = request.getParameter("gridData");
-			
-				String item_code = URLDecoder.decode(request.getParameter("item_code"), "UTF-8" );
-				String routing_code = URLDecoder.decode(request.getParameter("routing_code"), "UTF-8" );
-				
-				vo.setCreator(SessionUtil.getMemberId(request));
-				vo.setUpdater(SessionUtil.getMemberId(request));
-				
-				vo.setItem_code(item_code);
-				vo.setRouting_code(routing_code);
-				
-				
-				 System.out.println("gridDatagridDatagridDatagridDatagridData");
-				 System.out.println(gridData);
+		try {
 
-				
-				jsonArray = (JSONArray) parser.parse(gridData); // json 형변환 문자 > json
-	            Object[] keyArr = ((JSONObject)jsonArray.get(0)).keySet().toArray(); // 첫번재 row인 얘 가져와서 key값 추출. ex gen_key, gen_name 배열타입
-	            List<SYInspectionMasterVo> list = new ArrayList<SYInspectionMasterVo>(); 
+			String gridData = request.getParameter("gridData");
 
-				for(int i=0; i<jsonArray.size(); i++) {
-					JSONObject jObj = (JSONObject)jsonArray.get(i);
-					SYInspectionMasterVo dVo = new SYInspectionMasterVo();
-					dVo.setCreator(SessionUtil.getMemberId(request));
-					dVo.setUpdater(SessionUtil.getMemberId(request));
+			String item_code = URLDecoder.decode(request.getParameter("item_code"), "UTF-8");
+			String routing_code = URLDecoder.decode(request.getParameter("routing_code"), "UTF-8");
+
+			vo.setCreator(SessionUtil.getMemberId(request));
+			vo.setUpdater(SessionUtil.getMemberId(request));
+
+			vo.setItem_code(item_code);
+			vo.setRouting_code(routing_code);
+
+			System.out.println("gridDatagridDatagridDatagridDatagridData");
+			System.out.println(gridData);
+
+			jsonArray = (JSONArray) parser.parse(gridData); // json 형변환 문자 > json
+			Object[] keyArr = ((JSONObject) jsonArray.get(0)).keySet().toArray(); // 첫번재 row인 얘 가져와서 key값 추출. ex
+																					// gen_key, gen_name 배열타입
+			List<SYInspectionMasterVo> list = new ArrayList<SYInspectionMasterVo>();
+
+			for (int i = 0; i < jsonArray.size(); i++) {
+				JSONObject jObj = (JSONObject) jsonArray.get(i);
+				SYInspectionMasterVo dVo = new SYInspectionMasterVo();
+				dVo.setCreator(SessionUtil.getMemberId(request));
+				dVo.setUpdater(SessionUtil.getMemberId(request));
 //						String old_rcC = "";
-					
-					for(Object key : keyArr) { 
-						String nKey = key.toString();
-						String nValue = "";
-						
-						if( jObj.get(nKey)==null || jObj.get(nKey)=="") 
-							continue;
-						else 
-							nValue = jObj.get(nKey).toString();
-						
-						if( "inspection_item".equals(nKey) ) dVo.setInspection_item(nValue);
-						else if( "inspection_tool".equals(nKey) ) dVo.setInspection_tool(nValue);
-						else if( "spec".equals(nKey) ) dVo.setSpec(nValue);
-						else if( "min_spec".equals(nKey) ) dVo.setMin_spec(nValue);
-						else if( "max_spec".equals(nKey) ) dVo.setMax_spec(nValue);
-						
-						else if( "inspection_gubun".equals(nKey) ) dVo.setInspection_gubun(nValue);
-						else if( "inspection_gubun_nm".equals(nKey) ) dVo.setInspection_gubun_nm(nValue);
-						
-						else if( "inspection_method".equals(nKey) ) dVo.setInspection_method(nValue);
-						else if( "inspection_method_nm".equals(nKey) ) dVo.setInspection_method_nm(nValue);
-						}
-					
-					
-					list.add(dVo);
-				}
-				
-				vo.setUpdater(SessionUtil.getMemberId(request));
-				int dCnt = sYInfoService.insertInspection2(list, vo);
-				
-				int result = 0;
-				
-				if ( dCnt > 0 ) {
-					vo.setQc_yn("Y");
-					dCnt = sYInfoService.upRouting_mstQc_yn(vo);
+
+				for (Object key : keyArr) {
+					String nKey = key.toString();
+					String nValue = "";
+
+					if (jObj.get(nKey) == null || jObj.get(nKey) == "")
+						continue;
+					else
+						nValue = jObj.get(nKey).toString();
+
+					if ("inspection_item".equals(nKey))
+						dVo.setInspection_item(nValue);
+					else if ("inspection_tool".equals(nKey))
+						dVo.setInspection_tool(nValue);
+					else if ("spec".equals(nKey))
+						dVo.setSpec(nValue);
+					else if ("min_spec".equals(nKey))
+						dVo.setMin_spec(nValue);
+					else if ("max_spec".equals(nKey))
+						dVo.setMax_spec(nValue);
+
+					else if ("inspection_gubun".equals(nKey))
+						dVo.setInspection_gubun(nValue);
+					else if ("inspection_gubun_nm".equals(nKey))
+						dVo.setInspection_gubun_nm(nValue);
+
+					else if ("inspection_method".equals(nKey))
+						dVo.setInspection_method(nValue);
+					else if ("inspection_method_nm".equals(nKey))
+						dVo.setInspection_method_nm(nValue);
 				}
 
-				System.out.println("dCnt = " + dCnt);
-				System.out.println("result = " + result);
-
-				resultData.put("status", HttpStatus.OK.value());
-				resultData.put("rows", result);
-			} catch(Exception e){
-				e.printStackTrace();
-				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-				resultData.put("rows", 0);
+				list.add(dVo);
 			}
-			return resultData.toJSONString();
+
+			vo.setUpdater(SessionUtil.getMemberId(request));
+			int dCnt = sYInfoService.insertInspection2(list, vo);
+
+			int result = 0;
+
+			if (dCnt > 0) {
+				vo.setQc_yn("Y");
+				dCnt = sYInfoService.upRouting_mstQc_yn(vo);
+			}
+
+			System.out.println("dCnt = " + dCnt);
+			System.out.println("result = " + result);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", 0);
 		}
-		
-	
+		return resultData.toJSONString();
+	}
+
 	// updateInspection
 	@ResponseBody
-	@RequestMapping(value="/instrument/updateInspection" , method = { RequestMethod.GET, RequestMethod.POST}, produces = "applicattion/json;charset=UTF-8")
-	@SuppressWarnings({ "unchecked"})
-	public String updateInspection (@ModelAttribute SYInspectionMasterVo vo, HttpServletRequest request, HttpServletResponse response , HttpSession session) {
+	@RequestMapping(value = "/instrument/updateInspection", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "applicattion/json;charset=UTF-8")
+	@SuppressWarnings({ "unchecked" })
+	public String updateInspection(@ModelAttribute SYInspectionMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("InfoController.updateInspection() is called.");
 		vo.setCreator(SessionUtil.getMemberId(request));
 		vo.setUpdater(SessionUtil.getMemberId(request));
 		JSONObject resultData = new JSONObject();
 		try {
 			int cnt = sYInfoService.updateInspection(vo);
-			
+
 			System.out.println("cnt = " + cnt);
 
 			resultData.put("status", HttpStatus.OK.value());
-			
-		} catch(Exception e) {
+
+		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			resultData.put("msg", "fall");
 		}
 		return resultData.toJSONString();
-	}	
-		
+	}
+
 	// instrument/deleteInspection
 	@ResponseBody
-	@RequestMapping(value = "/instrument/deleteInspection", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/instrument/deleteInspection", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteInspection(@ModelAttribute SYInspectionMasterVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String deleteInspection(@ModelAttribute SYInspectionMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.deleteInspection() is called.");
 		vo.setUpdater(SessionUtil.getMemberId(request));
 		JSONObject resultData = new JSONObject();
@@ -2590,16 +2484,15 @@ public class InfoController {
 			result = sYInfoService.deleteInspection(vo);
 
 			System.out.println("result = " + result);
-			
+
 			List<SYInspectionMasterVo> dataLists = sYInfoService.selectInspection_master2(vo);
 			System.out.println("dataLists.size() = " + dataLists.size());
-			if ( dataLists.size() == 0 ) {
+			if (dataLists.size() == 0) {
 				vo.setQc_yn("N");
 				result = sYInfoService.upRouting_mstQc_yn(vo);
-				
+
 				System.out.println("22 result = " + result);
 			}
-			
 
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", result);
@@ -2613,12 +2506,11 @@ public class InfoController {
 
 	// selectRou_mstG
 	@ResponseBody
-	@RequestMapping(value = "/process/selectRou_mstG", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/process/selectRou_mstG", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectRou_mstG(@ModelAttribute SYRoutingMasterVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectRou_mstG(@ModelAttribute SYRoutingMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectRou_mstG is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -2632,9 +2524,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -2645,17 +2536,15 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-				
+
 	// process
 	// selectRouting_master
 	@ResponseBody
-	@RequestMapping(value = "/process/selectRouting_master", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/process/selectRouting_master", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectRouting_master(@ModelAttribute SYRoutingMasterVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectRouting_master(@ModelAttribute SYRoutingMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectRouting_master is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -2669,9 +2558,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -2682,14 +2570,14 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	
-	
+
 	@ResponseBody
-	@RequestMapping(value="/selectUpdate_routing", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
-	public String selectUpdate_routing(@ModelAttribute SYRoutingMasterVo vo, HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value = "/selectUpdate_routing", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectUpdate_routing(@ModelAttribute SYRoutingMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response) {
 		logger.debug("InfoController.selectUpdate_routing() is called.");
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
@@ -2697,8 +2585,7 @@ public class InfoController {
 
 			List<SYRoutingMasterVo> dataList = sYInfoService.selectUpdate_routing(vo);
 
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -2709,41 +2596,39 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	
-		// 성민
+
+	// 성민
 	// deleteCustomer
-		@ResponseBody
-		@RequestMapping(value = "/deleteWarehouse", method = {
-				RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-		@SuppressWarnings("unchecked")
-		public String deleteCustomer(@ModelAttribute SYWarehouseVo vo,
-				HttpServletRequest request, HttpServletResponse response,
-				HttpSession session) {
-			logger.debug("FrontendController.deleteWarehouse() is called.");
+	@ResponseBody
+	@RequestMapping(value = "/deleteWarehouse", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String deleteCustomer(@ModelAttribute SYWarehouseVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.deleteWarehouse() is called.");
 
-			JSONObject resultData = new JSONObject();
-			try {
-				int result = 0;
+		JSONObject resultData = new JSONObject();
+		try {
+			int result = 0;
 
-				result = sYInfoService.deleteWarehouse(vo);
+			result = sYInfoService.deleteWarehouse(vo);
 
-				System.out.println("result = " + result);
+			System.out.println("result = " + result);
 
-				resultData.put("status", HttpStatus.OK.value());
-				resultData.put("rows", result);
-			} catch (Exception e) {
-				e.printStackTrace();
-				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-				resultData.put("rows", 0);
-			}
-			return resultData.toJSONString();
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", 0);
 		}
-		
-		
+		return resultData.toJSONString();
+	}
+
 	@SuppressWarnings("unchecked")
 	@ResponseBody
-	@RequestMapping(value = "/checkWarehouse", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
+	@RequestMapping(value = "/checkWarehouse", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json; charset=utf-8")
 	public String checkWarehouse(@ModelAttribute SYWarehouseVo vo, HttpServletRequest request) {
 		logger.debug("FrontendController.checkWarehouse() is called.");
 		JSONObject resultData = new JSONObject();
@@ -2758,15 +2643,13 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	
+
 	@ResponseBody
 	@RequestMapping(value = "/save_wh_mng", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String save_wh_mng(@ModelAttribute SYWarehouseVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String save_wh_mng(@ModelAttribute SYWarehouseVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.save_wh_mng is called.");
 
 		vo.setCreator(SessionUtil.getMemberId(request));
@@ -2789,7 +2672,7 @@ public class InfoController {
 
 				// hKey
 				vo.setWarehouse_code(warehouse_code);
-				
+
 				cnt = sYInfoService.updateWarehouse(vo);
 			}
 
@@ -2806,15 +2689,13 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}
-	
-   
+
 	@ResponseBody
-	@RequestMapping(value = "/select_wh_mng", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/select_wh_mng", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String select_wh_mng(@ModelAttribute SYWarehouseVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String select_wh_mng(@ModelAttribute SYWarehouseVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.select_wh_mng is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -2828,9 +2709,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -2842,88 +2722,84 @@ public class InfoController {
 		return resultData.toJSONString();
 
 	}
-	
-	
-		// selectRouting_master
-		@ResponseBody
-		@RequestMapping(value = "/selectRouting_com_master", method = {
-				RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-		@SuppressWarnings("unchecked")
-		public String selectRouting_com_master(@ModelAttribute SYRoutingMasterVo vo,
-				HttpServletRequest request, HttpServletResponse response,
-				HttpSession session) {
-			logger.debug("FrontendController.selectRouting_master is called.");
 
-			JSONObject resultData = new JSONObject();
-			JSONArray listDataJArray = new JSONArray();
-			JSONParser jsonParser = new JSONParser();
-			try {
-				// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"),
-				// "UTF-8" );
+	// selectRouting_master
+	@ResponseBody
+	@RequestMapping(value = "/selectRouting_com_master", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String selectRouting_com_master(@ModelAttribute SYRoutingMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.selectRouting_master is called.");
 
-				List<SYRoutingMasterVo> dataList = sYInfoService.selectRouting_com_master(vo);
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"),
+			// "UTF-8" );
 
-				System.out.println("dataList");
-				System.out.println(dataList);
-				
-				String listDataJsonString = ResponseUtils.getJsonResponse(response,
-						dataList);
-				listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-				resultData.put("status", HttpStatus.OK.value());
-				resultData.put("rows", listDataJArray);
-			} catch (Exception e) {
-				e.printStackTrace();
-				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-				resultData.put("rows", null);
-			}
-			return resultData.toJSONString();
+			List<SYRoutingMasterVo> dataList = sYInfoService.selectRouting_com_master(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
 		}
-		
-		@ResponseBody
-		@RequestMapping(value = "/selectRouting_com_master_2", method = {
-				RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-		@SuppressWarnings("unchecked")
-		public String selectRouting_com_master_2(@ModelAttribute SYRoutingMasterVo vo,
-				HttpServletRequest request, HttpServletResponse response,
-				HttpSession session) {
-			logger.debug("FrontendController.selectRouting_com_master_2 is called.");
+		return resultData.toJSONString();
+	}
 
-			JSONObject resultData = new JSONObject();
-			JSONArray listDataJArray = new JSONArray();
-			JSONParser jsonParser = new JSONParser();
-			try {
-				// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"),
-				// "UTF-8" );
+	@ResponseBody
+	@RequestMapping(value = "/selectRouting_com_master_2", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String selectRouting_com_master_2(@ModelAttribute SYRoutingMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.selectRouting_com_master_2 is called.");
 
-				List<SYRoutingMasterVo> dataList = sYInfoService.selectRouting_com_master_2(vo);
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"),
+			// "UTF-8" );
 
-				System.out.println("dataList");
-				System.out.println(dataList);
-				
-				String listDataJsonString = ResponseUtils.getJsonResponse(response,
-						dataList);
-				listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-				resultData.put("status", HttpStatus.OK.value());
-				resultData.put("rows", listDataJArray);
-			} catch (Exception e) {
-				e.printStackTrace();
-				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-				resultData.put("rows", null);
-			}
-			return resultData.toJSONString();
+			List<SYRoutingMasterVo> dataList = sYInfoService.selectRouting_com_master_2(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
 		}
-		//라우팅공통저장
-		@ResponseBody
-		@RequestMapping(value = "/saveRouting", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-		@SuppressWarnings("unchecked")
-		public String saveRouting(@ModelAttribute SYRoutingMasterVo vo,
-				HttpServletRequest request, HttpServletResponse response,
-				HttpSession session) {
-			logger.debug("InfoController.saveRouting() is called.");
-			JSONArray jsonArray = new JSONArray();
-			JSONParser parser = new JSONParser();
-			JSONObject resultData = new JSONObject();
-			try {
+		return resultData.toJSONString();
+	}
+
+	// 라우팅공통저장
+	@ResponseBody
+	@RequestMapping(value = "/saveRouting", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String saveRouting(@ModelAttribute SYRoutingMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("InfoController.saveRouting() is called.");
+		JSONArray jsonArray = new JSONArray();
+		JSONParser parser = new JSONParser();
+		JSONObject resultData = new JSONObject();
+		try {
 //		
 //				String routing_code = URLDecoder.decode(request.getParameter("routing_code"), "UTF-8" );
 //				String update_routing = URLDecoder.decode(request.getParameter("update_routing"), "UTF-8" );
@@ -2934,175 +2810,180 @@ public class InfoController {
 //				vo.setUpdate_routing(update_routing);
 //				vo.setUpdate_date(update_date);
 //				vo.setUpdater(SessionUtil.getMemberId(request));
-				
 
-				String gridData = request.getParameter("gridData");
-			
-				
-				vo.setUpdater(SessionUtil.getMemberId(request));
-				
-				System.out.println("gridDatagridDatagridDatagridDatagridData");
-				System.out.println(gridData);
+			String gridData = request.getParameter("gridData");
 
-				jsonArray = (JSONArray) parser.parse(gridData); // json 형변환 문자 > json
-	            Object[] keyArr = ((JSONObject)jsonArray.get(0)).keySet().toArray(); 
-	            List<SYRoutingMasterVo> list = new ArrayList<SYRoutingMasterVo>(); 
+			vo.setUpdater(SessionUtil.getMemberId(request));
 
-				for(int i=0; i<jsonArray.size(); i++) {
-					JSONObject jObj = (JSONObject)jsonArray.get(i);
-					SYRoutingMasterVo dVo = new SYRoutingMasterVo();
-					dVo.setUpdater(SessionUtil.getMemberNm(request));
-		
-					for(Object key : keyArr) { 
-						String nKey = key.toString();
-						String nValue = "";
-						
-						if( jObj.get(nKey)==null || jObj.get(nKey)=="") 
-							continue;
-						else 
-							nValue = jObj.get(nKey).toString();
-						
-						if( "detail_code".equals(nKey) ) dVo.setDetail_code(nValue);
-						else if( "code_nm".equals(nKey) ) dVo.setCode_nm(nValue);
-						else if( "update_routing".equals(nKey) ) dVo.setUpdate_routing(nValue);
-						else if( "update_routing_code".equals(nKey) ) dVo.setUpdate_routing_code(nValue);
-						else if( "update_date".equals(nKey) ) dVo.setUpdate_date(nValue);
-						}
-					
-					
-					list.add(dVo);
+			System.out.println("gridDatagridDatagridDatagridDatagridData");
+			System.out.println(gridData);
+
+			jsonArray = (JSONArray) parser.parse(gridData); // json 형변환 문자 > json
+			Object[] keyArr = ((JSONObject) jsonArray.get(0)).keySet().toArray();
+			List<SYRoutingMasterVo> list = new ArrayList<SYRoutingMasterVo>();
+
+			for (int i = 0; i < jsonArray.size(); i++) {
+				JSONObject jObj = (JSONObject) jsonArray.get(i);
+				SYRoutingMasterVo dVo = new SYRoutingMasterVo();
+				dVo.setUpdater(SessionUtil.getMemberNm(request));
+
+				for (Object key : keyArr) {
+					String nKey = key.toString();
+					String nValue = "";
+
+					if (jObj.get(nKey) == null || jObj.get(nKey) == "")
+						continue;
+					else
+						nValue = jObj.get(nKey).toString();
+
+					if ("detail_code".equals(nKey))
+						dVo.setDetail_code(nValue);
+					else if ("code_nm".equals(nKey))
+						dVo.setCode_nm(nValue);
+					else if ("update_routing".equals(nKey))
+						dVo.setUpdate_routing(nValue);
+					else if ("update_routing_code".equals(nKey))
+						dVo.setUpdate_routing_code(nValue);
+					else if ("update_date".equals(nKey))
+						dVo.setUpdate_date(nValue);
 				}
-				
-				int dCnt = sYInfoService.saveRouting(list);
-				
-				int result = 0;
-		
-				resultData.put("status", HttpStatus.OK.value());
-				resultData.put("rows", result);
-			} catch (Exception e) {
-				e.printStackTrace();
-				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-				resultData.put("rows", null);
+
+				list.add(dVo);
 			}
-			return resultData.toJSONString();
+
+			int dCnt = sYInfoService.saveRouting(list);
+
+			int result = 0;
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
 		}
-		//라우팅공통 삭제
-		@ResponseBody
-		@RequestMapping(value = "/deleteRoutingCom", method = {
-				RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-		@SuppressWarnings("unchecked")
-		public String deleteRoutingCom(@ModelAttribute SYRoutingMasterVo vo,
-				HttpServletRequest request, HttpServletResponse response,
-				HttpSession session) {
-			logger.debug("FrontendController.deleteRoutingCom() is called.");
+		return resultData.toJSONString();
+	}
 
-			JSONObject resultData = new JSONObject();
-			try {
-				int result = 0;
+	// 라우팅공통 삭제
+	@ResponseBody
+	@RequestMapping(value = "/deleteRoutingCom", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String deleteRoutingCom(@ModelAttribute SYRoutingMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.deleteRoutingCom() is called.");
 
-				result = sYInfoService.deleteRoutingCom(vo);
+		JSONObject resultData = new JSONObject();
+		try {
+			int result = 0;
 
-				System.out.println("result = " + result);
+			result = sYInfoService.deleteRoutingCom(vo);
 
-				resultData.put("status", HttpStatus.OK.value());
-				resultData.put("rows", result);
-			} catch (Exception e) {
-				e.printStackTrace();
-				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-				resultData.put("rows", 0);
-			}
-			return resultData.toJSONString();
+			System.out.println("result = " + result);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", 0);
 		}
-	
+		return resultData.toJSONString();
+	}
+
 	// saveRouting_master
 	@ResponseBody
 	@RequestMapping(value = "/process/saveRouting_master", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveRouting_master(@ModelAttribute SYMaterialVo vo, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public String saveRouting_master(@ModelAttribute SYMaterialVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.saveRouting_master() is called.");
 
 		JSONArray jsonArray = new JSONArray();
 		JSONParser parser = new JSONParser();
 		JSONObject resultData = new JSONObject();
-		
+
 //		vo.setCreator(SessionUtil.getMemberId(request));
 //		vo.setUpdater(SessionUtil.getMemberId(request));
 		try {
-			/*int q = 1;
-			int p = 1;
-			int s = 1;*/
-			
+			/*
+			 * int q = 1; int p = 1; int s = 1;
+			 */
+
 			String gridData = request.getParameter("gridData");
 			String itCd = request.getParameter("itCd");
-			jsonArray = (JSONArray) parser.parse(gridData); 
-			Object[] keyArr = ((JSONObject)jsonArray.get(0)).keySet().toArray(); 
-			List<SYRoutingMasterVo> list = new ArrayList<SYRoutingMasterVo>(); 
+			jsonArray = (JSONArray) parser.parse(gridData);
+			Object[] keyArr = ((JSONObject) jsonArray.get(0)).keySet().toArray();
+			List<SYRoutingMasterVo> list = new ArrayList<SYRoutingMasterVo>();
 
-			for(int i=0; i<jsonArray.size(); i++) {
-				JSONObject jObj = (JSONObject)jsonArray.get(i);
+			for (int i = 0; i < jsonArray.size(); i++) {
+				JSONObject jObj = (JSONObject) jsonArray.get(i);
 				SYRoutingMasterVo dVo = new SYRoutingMasterVo();
 				dVo.setCreator(SessionUtil.getMemberId(request));
 				dVo.setUpdater(SessionUtil.getMemberId(request));
 //				String old_rcC = "";
-				
-				for(Object key : keyArr) { 
+
+				for (Object key : keyArr) {
 					String nKey = key.toString();
 					String nValue = "";
-					
-					if( jObj.get(nKey)==null || jObj.get(nKey)=="") 
+
+					if (jObj.get(nKey) == null || jObj.get(nKey) == "")
 						continue;
-					else 
+					else
 						nValue = jObj.get(nKey).toString();
-					
-					if( "routing_seq".equals(nKey) ) dVo.setRouting_seq(nValue);
-					else if( "routing_gubun".equals(nKey) ) dVo.setRouting_gubun(nValue);
-					else if( "routing_code".equals(nKey) ) dVo.setRouting_code(nValue);
-					else if( "old_routing_code".equals(nKey) ) dVo.setOld_routing_code(nValue);
-					/*{
-						System.out.println("old_routing_code = " + nValue);
-						old_rcC = nValue;
-					}*/
-					else if( "routing_nm".equals(nKey) ) dVo.setRouting_nm(nValue);
-					else if( "warehouse_gubun".equals(nKey) ) dVo.setWarehouse_gubun(nValue);
-					else if ("outsourcing_gubun".equals(nKey) ) dVo.setOutsourcing_gubun(nValue); 
-					else if ("machine_gubun".equals(nKey) ) dVo.setMachine_gubun(nValue);
+
+					if ("routing_seq".equals(nKey))
+						dVo.setRouting_seq(nValue);
+					else if ("routing_gubun".equals(nKey))
+						dVo.setRouting_gubun(nValue);
+					else if ("routing_code".equals(nKey))
+						dVo.setRouting_code(nValue);
+					else if ("old_routing_code".equals(nKey))
+						dVo.setOld_routing_code(nValue);
+					/*
+					 * { System.out.println("old_routing_code = " + nValue); old_rcC = nValue; }
+					 */
+					else if ("routing_nm".equals(nKey))
+						dVo.setRouting_nm(nValue);
+					else if ("warehouse_gubun".equals(nKey))
+						dVo.setWarehouse_gubun(nValue);
+					else if ("outsourcing_gubun".equals(nKey))
+						dVo.setOutsourcing_gubun(nValue);
+					else if ("machine_gubun".equals(nKey))
+						dVo.setMachine_gubun(nValue);
 				}
-				
-				if(dVo.getWarehouse_gubun().equals("공정창고포인트")) { //.equals("c-032-1"))
+
+				if (dVo.getWarehouse_gubun().equals("공정창고포인트")) { // .equals("c-032-1"))
 					dVo.setWarehouse_gubun("a");
-				} else if(dVo.getWarehouse_gubun().equals("제품창고포인트")) {
+				} else if (dVo.getWarehouse_gubun().equals("제품창고포인트")) {
 					dVo.setWarehouse_gubun("b");
 				}
-				
+
 				// old가 p인데 구분이 같은 p이면 old_routing_code가 있다면 수정이니... 기존 값 가져오기.
-				/*if(!old_rcC.equals("")) {
-					System.out.println("old_rcC.substring(0, 1) = " + old_rcC.substring(0, 1));
-					if(old_rcC.substring(0, 1).equals(dVo.getRouting_code())) { // 같으면
-						dVo.setRouting_code(old_rcC);
-					}
-				}*/
-				
-				/*if(dVo.getRouting_code() == "q") {
-					dVo.setRouting_code("q"+q);
-					q = q+1;
-				} else if(dVo.getRouting_code() == "p") {
-					dVo.setRouting_code("p"+p);
-					p = p+1;
-				} else if(dVo.getRouting_code() == "s") {
-					dVo.setRouting_code("s"+s);
-					s = s+1;
-				}*/
-				
+				/*
+				 * if(!old_rcC.equals("")) { System.out.println("old_rcC.substring(0, 1) = " +
+				 * old_rcC.substring(0, 1)); if(old_rcC.substring(0,
+				 * 1).equals(dVo.getRouting_code())) { // 같으면 dVo.setRouting_code(old_rcC); } }
+				 */
+
+				/*
+				 * if(dVo.getRouting_code() == "q") { dVo.setRouting_code("q"+q); q = q+1; }
+				 * else if(dVo.getRouting_code() == "p") { dVo.setRouting_code("p"+p); p = p+1;
+				 * } else if(dVo.getRouting_code() == "s") { dVo.setRouting_code("s"+s); s =
+				 * s+1; }
+				 */
+
 				dVo.setItem_code(itCd);
-				
+
 				list.add(dVo);
 			}
 			vo.setRouting_yn("Y"); // 저장되면 이거 갑니다?
 			vo.setItem_code(itCd);
 			vo.setUpdater(SessionUtil.getMemberId(request));
 			int dCnt = sYInfoService.saveRouting_master(list, vo);
-			
+
 			int result = 0;
 
 			System.out.println("dCnt = " + dCnt);
@@ -3110,40 +2991,41 @@ public class InfoController {
 
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", result);
-		} catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			resultData.put("rows", 0);
 		}
 		return resultData.toJSONString();
 	}
-	 
+
 	// delRouting_master
 	@ResponseBody
 	@RequestMapping(value = "/process/delRouting_master", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String delRouting_master(@ModelAttribute SYMaterialVo vo, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public String delRouting_master(@ModelAttribute SYMaterialVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.delRouting_master() is called.");
 
 		JSONObject resultData = new JSONObject();
-		
+
 //		vo.setCreator(SessionUtil.getMemberId(request));
 //		vo.setUpdater(SessionUtil.getMemberId(request));
 		try {
-			
+
 			String itCd = request.getParameter("itCd");
 			String recordsLength = request.getParameter("recordsLength");
 			System.out.println("recordsLength = " + recordsLength);
-			
+
 			vo.setItem_code(itCd);
 			vo.setUpdater(SessionUtil.getMemberId(request));
-			
+
 			int dCnt = 0;
-			
+
 			vo.setRouting_yn("N"); // 전체 삭제
 			dCnt = sYInfoService.delRouting_master(vo);
-			
+
 			int result = 0;
 
 			System.out.println("dCnt = " + dCnt);
@@ -3151,20 +3033,22 @@ public class InfoController {
 
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", result);
-		} catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			resultData.put("rows", 0);
 		}
 		return resultData.toJSONString();
 	}
-	
-	//210108
+
+	// 210108
 	@ResponseBody
-	@RequestMapping(value="/selectUpdate_routing_code", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
-	public String selectUpdate_routing_code(@ModelAttribute SYRoutingMasterVo vo, HttpServletRequest request, HttpServletResponse response) {
+	@RequestMapping(value = "/selectUpdate_routing_code", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectUpdate_routing_code(@ModelAttribute SYRoutingMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response) {
 		logger.debug("InfoController.selectUpdate_routing_code() is called.");
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
@@ -3172,8 +3056,7 @@ public class InfoController {
 
 			List<SYRoutingMasterVo> dataList = sYInfoService.selectUpdate_routing_code(vo);
 
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -3184,106 +3067,84 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	
-	/*@ResponseBody
-	@RequestMapping(value = "/process/saveRouting_master", method = { RequestMethod.GET,
-			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	@SuppressWarnings("unchecked")
-	public String saveRouting_master(@ModelAttribute SYMaterialVo vo, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
-		logger.debug("FrontendController.saveRouting_master() is called.");
 
-		JSONArray jsonArray = new JSONArray();
-		JSONParser parser = new JSONParser();
-		JSONObject resultData = new JSONObject();
-		
-//		vo.setCreator(SessionUtil.getMemberId(request));
-//		vo.setUpdater(SessionUtil.getMemberId(request));
-		try {
-			
-			
-			String gridData = request.getParameter("gridData");
-			String itCd = request.getParameter("itCd");
-			String recordsLength = request.getParameter("recordsLength");
-			vo.setRecordsLength(recordsLength);
-			
-			jsonArray = (JSONArray) parser.parse(gridData); 
-			Object[] keyArr = ((JSONObject)jsonArray.get(0)).keySet().toArray(); 
-			List<SYRoutingMasterVo> list = new ArrayList<SYRoutingMasterVo>(); 
+	/*
+	 * @ResponseBody
+	 * 
+	 * @RequestMapping(value = "/process/saveRouting_master", method = {
+	 * RequestMethod.GET, RequestMethod.POST }, produces =
+	 * "application/json;charset=UTF-8")
+	 * 
+	 * @SuppressWarnings("unchecked") public String
+	 * saveRouting_master(@ModelAttribute SYMaterialVo vo, HttpServletRequest
+	 * request, HttpServletResponse response, HttpSession session) {
+	 * logger.debug("FrontendController.saveRouting_master() is called.");
+	 * 
+	 * JSONArray jsonArray = new JSONArray(); JSONParser parser = new JSONParser();
+	 * JSONObject resultData = new JSONObject();
+	 * 
+	 * // vo.setCreator(SessionUtil.getMemberId(request)); //
+	 * vo.setUpdater(SessionUtil.getMemberId(request)); try {
+	 * 
+	 * 
+	 * String gridData = request.getParameter("gridData"); String itCd =
+	 * request.getParameter("itCd"); String recordsLength =
+	 * request.getParameter("recordsLength"); vo.setRecordsLength(recordsLength);
+	 * 
+	 * jsonArray = (JSONArray) parser.parse(gridData); Object[] keyArr =
+	 * ((JSONObject)jsonArray.get(0)).keySet().toArray(); List<SYRoutingMasterVo>
+	 * list = new ArrayList<SYRoutingMasterVo>();
+	 * 
+	 * for(int i=0; i<jsonArray.size(); i++) { JSONObject jObj =
+	 * (JSONObject)jsonArray.get(i); SYRoutingMasterVo dVo = new
+	 * SYRoutingMasterVo(); dVo.setCreator(SessionUtil.getMemberId(request));
+	 * dVo.setUpdater(SessionUtil.getMemberId(request));
+	 * 
+	 * for(Object key : keyArr) { String nKey = key.toString(); String nValue = "";
+	 * 
+	 * if( jObj.get(nKey)==null || jObj.get(nKey)=="") continue; else nValue =
+	 * jObj.get(nKey).toString();
+	 * 
+	 * if( "routing_seq".equals(nKey) ) dVo.setRouting_seq(nValue); else if(
+	 * "routing_gubun".equals(nKey) ) dVo.setRouting_gubun(nValue); else if(
+	 * "routing_code".equals(nKey) ) dVo.setRouting_code(nValue); else if(
+	 * "old_routing_code".equals(nKey) ) dVo.setOld_routing_code(nValue); else if(
+	 * "routing_nm".equals(nKey) ) dVo.setRouting_nm(nValue); else if(
+	 * "warehouse_gubun".equals(nKey) ) dVo.setWarehouse_gubun(nValue); else if(
+	 * "recordsLength".equals(nKey) ) dVo.setRecordsLength(nValue); }
+	 * 
+	 * if(dVo.getWarehouse_gubun().equals("공정창고포인트")) { //.equals("c-032-1"))
+	 * dVo.setWarehouse_gubun("a"); } else
+	 * if(dVo.getWarehouse_gubun().equals("제품창고포인트")) { dVo.setWarehouse_gubun("b");
+	 * }
+	 * 
+	 * dVo.setItem_code(itCd);
+	 * 
+	 * list.add(dVo); }
+	 * 
+	 * vo.setItem_code(itCd); vo.setUpdater(SessionUtil.getMemberId(request)); int
+	 * dCnt = 0; if( recordsLength == "0" ) { // 레코드가 없으면 다 삭제임
+	 * vo.setRouting_yn("N"); // 전체 삭제 dCnt = sYInfoService.delRouting_master(list,
+	 * vo); } else { vo.setRouting_yn("Y"); // 저장 dCnt =
+	 * sYInfoService.saveRouting_master(list, vo); } int result = 0;
+	 * 
+	 * System.out.println("dCnt = " + dCnt); System.out.println("result = " +
+	 * result);
+	 * 
+	 * resultData.put("status", HttpStatus.OK.value()); resultData.put("rows",
+	 * result); } catch(Exception e){ e.printStackTrace(); resultData.put("status",
+	 * HttpStatus.INTERNAL_SERVER_ERROR.value()); resultData.put("rows", 0); }
+	 * return resultData.toJSONString(); }
+	 */
 
-			for(int i=0; i<jsonArray.size(); i++) {
-				JSONObject jObj = (JSONObject)jsonArray.get(i);
-				SYRoutingMasterVo dVo = new SYRoutingMasterVo();
-				dVo.setCreator(SessionUtil.getMemberId(request));
-				dVo.setUpdater(SessionUtil.getMemberId(request));
-				
-				for(Object key : keyArr) { 
-					String nKey = key.toString();
-					String nValue = "";
-					
-					if( jObj.get(nKey)==null || jObj.get(nKey)=="") 
-						continue;
-					else 
-						nValue = jObj.get(nKey).toString();
-					
-					if( "routing_seq".equals(nKey) ) dVo.setRouting_seq(nValue);
-					else if( "routing_gubun".equals(nKey) ) dVo.setRouting_gubun(nValue);
-					else if( "routing_code".equals(nKey) ) dVo.setRouting_code(nValue);
-					else if( "old_routing_code".equals(nKey) ) dVo.setOld_routing_code(nValue);
-					else if( "routing_nm".equals(nKey) ) dVo.setRouting_nm(nValue);
-					else if( "warehouse_gubun".equals(nKey) ) dVo.setWarehouse_gubun(nValue);
-					else if( "recordsLength".equals(nKey) ) dVo.setRecordsLength(nValue);
-				}
-				
-				if(dVo.getWarehouse_gubun().equals("공정창고포인트")) { //.equals("c-032-1"))
-					dVo.setWarehouse_gubun("a");
-				} else if(dVo.getWarehouse_gubun().equals("제품창고포인트")) {
-					dVo.setWarehouse_gubun("b");
-				}
-				
-				dVo.setItem_code(itCd);
-				
-				list.add(dVo);
-			}
-			
-			vo.setItem_code(itCd);
-			vo.setUpdater(SessionUtil.getMemberId(request));
-			int dCnt = 0;
-			if( recordsLength == "0" ) { // 레코드가 없으면 다 삭제임
-				vo.setRouting_yn("N"); // 전체 삭제
-				dCnt = sYInfoService.delRouting_master(list, vo);
-			} else {
-				vo.setRouting_yn("Y"); // 저장
-				dCnt = sYInfoService.saveRouting_master(list, vo);
-			}
-			int result = 0;
-
-			System.out.println("dCnt = " + dCnt);
-			System.out.println("result = " + result);
-
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("rows", result);
-		} catch(Exception e){
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("rows", 0);
-		}
-		return resultData.toJSONString();
-	}*/
-	
-	
-	
-	
-	
 	// quality
 	// selectQuality
 	@ResponseBody
-	@RequestMapping(value = "/material/selectQuality", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/material/selectQuality", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectQuality(@ModelAttribute SYQualityVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectQuality(@ModelAttribute SYQualityVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectQuality is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -3297,9 +3158,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -3309,17 +3169,15 @@ public class InfoController {
 			resultData.put("rows", null);
 		}
 		return resultData.toJSONString();
-	}		
-	
-	
+	}
+
 	// selectInspect_master
 	@ResponseBody
-	@RequestMapping(value = "/process/selectInspect_master", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/process/selectInspect_master", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectInspect_master(@ModelAttribute SYInspectMasterVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectInspect_master(@ModelAttribute SYInspectMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectInspect_master is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -3333,9 +3191,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -3346,27 +3203,27 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	// saveInspect_master
 	@ResponseBody
-	@RequestMapping(value = "/process/saveInspect_master", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/process/saveInspect_master", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveInspect_master(@ModelAttribute SYInspectMasterVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String saveInspect_master(@ModelAttribute SYInspectMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.saveInspect_master() is called.");
 
 		JSONObject resultData = new JSONObject();
 		try {
 
-			String item_code = URLDecoder.decode(request.getParameter("item_code"), "UTF-8" );
-			String routing_code = URLDecoder.decode(request.getParameter("routing_code"), "UTF-8" );
-			String inspect_code = URLDecoder.decode(request.getParameter("inspect_code"), "UTF-8" );
-			String routing_nm = URLDecoder.decode(request.getParameter("routing_nm"), "UTF-8" );
-			String routing_gubun = URLDecoder.decode(request.getParameter("routing_gubun"), "UTF-8" );
-			String inspect_nm = URLDecoder.decode(request.getParameter("inspect_nm"), "UTF-8" );
-			String inspect_spec = URLDecoder.decode(request.getParameter("inspect_spec"), "UTF-8" );
-	
+			String item_code = URLDecoder.decode(request.getParameter("item_code"), "UTF-8");
+			String routing_code = URLDecoder.decode(request.getParameter("routing_code"), "UTF-8");
+			String inspect_code = URLDecoder.decode(request.getParameter("inspect_code"), "UTF-8");
+			String routing_nm = URLDecoder.decode(request.getParameter("routing_nm"), "UTF-8");
+			String routing_gubun = URLDecoder.decode(request.getParameter("routing_gubun"), "UTF-8");
+			String inspect_nm = URLDecoder.decode(request.getParameter("inspect_nm"), "UTF-8");
+			String inspect_spec = URLDecoder.decode(request.getParameter("inspect_spec"), "UTF-8");
+
 			vo.setCreator(SessionUtil.getMemberId(request));
 			vo.setUpdater(SessionUtil.getMemberId(request));
 
@@ -3377,8 +3234,7 @@ public class InfoController {
 			vo.setRouting_gubun(routing_gubun);
 			vo.setInspect_nm(inspect_nm);
 			vo.setInspect_spec(inspect_spec);
-			
-	
+
 			int cnt = sYInfoService.saveInspect_master(vo);
 
 			resultData.put("status", HttpStatus.OK.value());
@@ -3390,15 +3246,14 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	// deleteInspect_master
 	@ResponseBody
-	@RequestMapping(value = "/process/deleteInspect_master", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/process/deleteInspect_master", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteInspect_master(@ModelAttribute SYInspectMasterVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String deleteInspect_master(@ModelAttribute SYInspectMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.deleteInspect_master() is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -3418,36 +3273,35 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	
+
 	// updateRouting_master_qc
 	@ResponseBody
 	@RequestMapping(value = "/process/updateRouting_master_qc", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String updateRouting_master_qc(@ModelAttribute SYRoutingMasterVo vo, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+	public String updateRouting_master_qc(@ModelAttribute SYRoutingMasterVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.updateRouting_master_qc() is called.");
 
 		JSONObject resultData = new JSONObject();
-		
+
 //			vo.setCreator(SessionUtil.getMemberId(request));
 //			vo.setUpdater(SessionUtil.getMemberId(request));
 		try {
-			
+
 			String item_code = request.getParameter("item_code");
 			String routing_code = request.getParameter("routing_code");
 			String qc_yn = request.getParameter("qc_yn");
 			vo.setItem_code(item_code);
 			vo.setRouting_code(routing_code);
 			vo.setQc_yn(qc_yn);
-		
+
 			vo.setUpdater(SessionUtil.getMemberId(request));
-			
+
 			int dCnt = 0;
-			
-	
+
 			dCnt = sYInfoService.updateRouting_master_qc(vo);
-			
+
 			int result = 0;
 
 			System.out.println("dCnt = " + dCnt);
@@ -3455,39 +3309,39 @@ public class InfoController {
 
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", result);
-		} catch(Exception e){
+		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			resultData.put("rows", 0);
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	// checkMaterial
-		@SuppressWarnings("unchecked")
-		@ResponseBody
-		@RequestMapping(value = "/material/excelMax", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json; charset=utf-8")
-		public String excelMax(@ModelAttribute SYMaterialVo vo, HttpServletRequest request) {
-			logger.debug("FrontendController.excelMax() is called.");
-			JSONObject resultData = new JSONObject();
-			int exist_cnt = 0;
-			try {
-				exist_cnt = sYInfoService.excelMax(vo);
-				resultData.put("status", HttpStatus.OK.value());
-				resultData.put("cnt", exist_cnt + "");
-			} catch (Exception e) {
-				e.printStackTrace();
-				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			}
-			return resultData.toJSONString();
-		}
-	
-	@ResponseBody
-	@RequestMapping(value = "/material/excelLoad", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String excelLoad(@ModelAttribute SYMaterialVo vo,
-			HttpServletRequest request, HttpServletResponse response,
+	@ResponseBody
+	@RequestMapping(value = "/material/excelMax", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json; charset=utf-8")
+	public String excelMax(@ModelAttribute SYMaterialVo vo, HttpServletRequest request) {
+		logger.debug("FrontendController.excelMax() is called.");
+		JSONObject resultData = new JSONObject();
+		int exist_cnt = 0;
+		try {
+			exist_cnt = sYInfoService.excelMax(vo);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("cnt", exist_cnt + "");
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+		return resultData.toJSONString();
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/material/excelLoad", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String excelLoad(@ModelAttribute SYMaterialVo vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.excelLoad is called.");
 
@@ -3501,12 +3355,9 @@ public class InfoController {
 			List<SYMaterialVo> dataList = sYInfoService.excelLoad(vo);
 
 			System.out.println("dataList");
-			System.out.println("dataList::::"+dataList);
-			
-			
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+			System.out.println("dataList::::" + dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -3516,17 +3367,15 @@ public class InfoController {
 			resultData.put("rows", null);
 		}
 		return resultData.toJSONString();
-	}	
-	
-	
+	}
+
 	// selectMaterial_menge
 	@ResponseBody
-	@RequestMapping(value = "/material/selectMaterial_menge", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/material/selectMaterial_menge", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectMaterial_menge(@ModelAttribute SYMaterialVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectMaterial_menge(@ModelAttribute SYMaterialVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectMaterial is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -3540,9 +3389,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -3552,16 +3400,15 @@ public class InfoController {
 			resultData.put("rows", null);
 		}
 		return resultData.toJSONString();
-	}		
-	
+	}
+
 	// selectIncome_inspect_master
 	@ResponseBody
-	@RequestMapping(value = "/income/selectIncome_inspect_master", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/income/selectIncome_inspect_master", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectIncome_inspect_master(@ModelAttribute SYIncome_insp_mstVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectIncome_inspect_master(@ModelAttribute SYIncome_insp_mstVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectIncome_inspect_master is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -3575,9 +3422,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -3588,16 +3434,15 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	// insertIncome_inspect_master
 
 	@ResponseBody
 	@RequestMapping(value = "/income/insertIncome_inspect_master", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String insertIncome_inspect_master(@ModelAttribute SYIncome_insp_mstVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String insertIncome_inspect_master(@ModelAttribute SYIncome_insp_mstVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.insertIncome_inspect_master is called.");
 
 		vo.setCreator(SessionUtil.getMemberId(request));
@@ -3609,12 +3454,12 @@ public class InfoController {
 
 		try {
 			int cnt = sYInfoService.insertIncome_inspect_master(vo);
-	
+
 			System.out.println("cnt = " + cnt);
-			
-			if ( cnt > 0 ) {
+
+			if (cnt > 0) {
 				vo.setReceiving_inspection_routing_yn("Y");
-				 cnt = sYInfoService.upReceiving_inspection_yn(vo);
+				cnt = sYInfoService.upReceiving_inspection_yn(vo);
 			}
 
 			resultData.put("status", HttpStatus.OK.value());
@@ -3627,16 +3472,13 @@ public class InfoController {
 		return resultData.toJSONString();
 	}
 
-	
-	
 	// updateIncome_inspect_master
 	@ResponseBody
 	@RequestMapping(value = "/income/updateIncome_inspect_master", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String updateIncome_inspect_master(@ModelAttribute SYIncome_insp_mstVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String updateIncome_inspect_master(@ModelAttribute SYIncome_insp_mstVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.updateIncome_inspect_master is called.");
 
 		vo.setCreator(SessionUtil.getMemberId(request));
@@ -3660,15 +3502,14 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}
-	
+
 	// deleteIncome_inspect_master
 	@ResponseBody
-	@RequestMapping(value = "/income/deleteIncome_inspect_master", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/income/deleteIncome_inspect_master", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteIncome_inspect_master(@ModelAttribute SYIncome_insp_mstVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String deleteIncome_inspect_master(@ModelAttribute SYIncome_insp_mstVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.deleteIncome_inspect_master() is called.");
 		vo.setUpdater(SessionUtil.getMemberId(request));
 		JSONObject resultData = new JSONObject();
@@ -3678,16 +3519,16 @@ public class InfoController {
 			result = sYInfoService.deleteIncome_inspect_master(vo);
 
 			System.out.println("result = " + result);
-			
+
 			List<SYIncome_insp_mstVo> dataLists = sYInfoService.selectIncome_inspect_master(vo);
 			System.out.println("dataLists.size() = " + dataLists.size());
-			if ( dataLists.size() == 0 ) {
+			if (dataLists.size() == 0) {
 				vo.setReceiving_inspection_routing_yn("N");
 				result = sYInfoService.upReceiving_inspection_yn(vo);
-				
+
 				System.out.println("22 result = " + result);
 			}
-			
+
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", result);
 		} catch (Exception e) {
@@ -3697,15 +3538,14 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	// /inspection/selectIncome_result
 	@ResponseBody
-	@RequestMapping(value = "/inspection/selectIncome_result", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/inspection/selectIncome_result", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectIncome_result(@ModelAttribute SYIncome_resultVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectIncome_result(@ModelAttribute SYIncome_resultVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectIncome_result is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -3719,9 +3559,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -3732,15 +3571,14 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	// selectIncome_result2
 	@ResponseBody
-	@RequestMapping(value = "/inspection/selectIncome_result2", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/inspection/selectIncome_result2", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectIncome_result2(@ModelAttribute SYIncome_resultVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectIncome_result2(@ModelAttribute SYIncome_resultVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectIncome_result2 is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -3754,9 +3592,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -3767,14 +3604,13 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	@ResponseBody
-	@RequestMapping(value = "/inspection/selectIncome_result3", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/inspection/selectIncome_result3", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectIncome_result3(@ModelAttribute SYIncome_resultVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectIncome_result3(@ModelAttribute SYIncome_resultVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectIncome_result3 is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -3788,9 +3624,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -3801,17 +3636,16 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	// saveIncome_result3
 	@ResponseBody
 	@RequestMapping(value = "/inspection/saveIncome_result3", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveIncome_result3(@ModelAttribute SYIncome_resultVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String saveIncome_result3(@ModelAttribute SYIncome_resultVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.saveIncome_result3 is called.");
-	
+
 		vo.setCreator(SessionUtil.getMemberId(request));
 		vo.setUpdater(SessionUtil.getMemberId(request));
 
@@ -3821,7 +3655,7 @@ public class InfoController {
 
 		try {
 			int cnt = sYInfoService.saveIncome_result3(vo);
-			
+
 			System.out.println("cnt = " + cnt);
 
 			resultData.put("status", HttpStatus.OK.value());
@@ -3833,14 +3667,13 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(value = "/inspection/saveIncome_result2", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveIncome_result2(@ModelAttribute SYIncome_resultVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String saveIncome_result2(@ModelAttribute SYIncome_resultVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.saveIncome_result2 is called.");
 
 		vo.setCreator(SessionUtil.getMemberId(request));
@@ -3852,7 +3685,7 @@ public class InfoController {
 
 		try {
 			int cnt = sYInfoService.saveIncome_result2(vo);
-			
+
 			System.out.println("cnt = " + cnt);
 
 			resultData.put("status", HttpStatus.OK.value());
@@ -3864,15 +3697,14 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}
-	
+
 	// selectTool_replacement_his
 	@ResponseBody
-	@RequestMapping(value = "/trhis/selectTool_replacement_his", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/trhis/selectTool_replacement_his", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String selectTool_replacement_his(@ModelAttribute SYtool_repmt_hisVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String selectTool_replacement_his(@ModelAttribute SYtool_repmt_hisVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectTool_replacement_his is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -3886,9 +3718,8 @@ public class InfoController {
 
 			System.out.println("dataList");
 			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
@@ -3899,14 +3730,13 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
+
 	@ResponseBody
 	@RequestMapping(value = "/trhis/saveTool_replacement_his", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveTool_replacement_his(@ModelAttribute SYtool_repmt_hisVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String saveTool_replacement_his(@ModelAttribute SYtool_repmt_hisVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.saveTool_replacement_his is called.");
 
 		vo.setCreator(SessionUtil.getMemberId(request));
@@ -3927,14 +3757,14 @@ public class InfoController {
 //
 //				// hKey
 //				vo.setReplacement_his(replacement_his);
-				
+
 				cnt = sYInfoService.insertTool_replacement_his(vo);
 			} else if (flag.equals("U")) {
 				replacement_his = request.getParameter("replacement_his");
 
 				// hKey
 				vo.setReplacement_his(replacement_his);
-				
+
 				cnt = sYInfoService.updateTool_replacement_his(vo);
 			}
 
@@ -3951,21 +3781,19 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}
-	
-	
+
 	@ResponseBody
-	@RequestMapping(value = "/trhis/deleteTool_replacement_his", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/trhis/deleteTool_replacement_his", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteTool_replacement_his(@ModelAttribute SYtool_repmt_hisVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String deleteTool_replacement_his(@ModelAttribute SYtool_repmt_hisVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.deleteTool_replacement_his() is called.");
 
 		JSONObject resultData = new JSONObject();
-		
+
 		vo.setUpdater(SessionUtil.getMemberId(request));
-		
+
 		try {
 			int result = 0;
 
@@ -3982,13 +3810,14 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-	
-	// KPI 유형 가져오기 
+
+	// KPI 유형 가져오기
 	@ResponseBody
-	@RequestMapping(value="/goal/selectItem", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
+	@RequestMapping(value = "/goal/selectItem", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	public String selectItem(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response) {
 		logger.debug("InfoController.selectItem() is called.");
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
@@ -3996,574 +3825,6 @@ public class InfoController {
 
 			List<SYGoalVo> dataList = sYGoalService.selectItem(vo);
 
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
-			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("rows", listDataJArray);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("rows", null);
-		}
-		return resultData.toJSONString();
-	}
-	
-	// KPI 월별 목표량 가져오기 
-	@ResponseBody
-	@RequestMapping(value="/goal/selectGoal", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
-	public String selectGoal(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("InfoController.selectGoal() is called.");
-		
-		JSONObject resultData = new JSONObject();
-		JSONArray listDataJArray = new JSONArray();
-		JSONParser jsonParser = new JSONParser();
-		try {
-
-			List<SYGoalVo> dataList = sYGoalService.selectGoal(vo);
-
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
-			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("rows", listDataJArray);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("rows", null);
-		}
-		return resultData.toJSONString();
-	}
-
-	// KPI 목표설정
-	@ResponseBody
-	@RequestMapping(value = "/goal/saveGoal", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	@SuppressWarnings("unchecked")
-	public String saveGoal(@ModelAttribute SYGoalVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
-		logger.debug("InfoController.saveGoal() is called.");
-	
-		JSONObject resultData = new JSONObject();
-		try {
-	
-			String code = URLDecoder.decode(request.getParameter("code"), "UTF-8" );
-			String year = URLDecoder.decode(request.getParameter("year"), "UTF-8" );
-			String month = URLDecoder.decode(request.getParameter("month"), "UTF-8" );
-			try{
-				String goal = URLDecoder.decode(request.getParameter("goal"), "UTF-8" );
-				vo.setGoal(goal);
-			}catch(Exception e1)
-			{
-	
-			}
-			vo.setCreator(SessionUtil.getMemberId(request));
-			vo.setUpdater(SessionUtil.getMemberId(request));
-	
-			vo.setCode(code);
-			vo.setYear(year);
-			vo.setMonth(month);
-	
-	
-	
-			int cnt = sYGoalService.saveGoal(vo);
-	
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("cnt", cnt);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("cnt", null);
-		}
-		return resultData.toJSONString();
-	}
-	
-	//1210 kpi설비 목표
-	
-	// KPI 월별 목표량 가져오기 
-	@ResponseBody
-	@RequestMapping(value="/goal/selectGoalMachine", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
-	public String selectGoalMachine(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("InfoController.selectGoalMachine() is called.");
-		
-		JSONObject resultData = new JSONObject();
-		JSONArray listDataJArray = new JSONArray();
-		JSONParser jsonParser = new JSONParser();
-		try {
-
-			List<SYGoalVo> dataList = sYGoalService.selectGoalMachine(vo);
-
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
-			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("rows", listDataJArray);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("rows", null);
-		}
-		return resultData.toJSONString();
-	}
-	
-	// KPI 월별 목표량 가져오기 
-		@ResponseBody
-		@RequestMapping(value="/goal/selectGoalMachineAll", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
-		public String selectGoalMachineAll(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response) {
-			logger.debug("InfoController.selectGoalMachineAll() is called.");
-			
-			JSONObject resultData = new JSONObject();
-			JSONArray listDataJArray = new JSONArray();
-			JSONParser jsonParser = new JSONParser();
-			try {
-
-				List<SYGoalVo> dataList = sYGoalService.selectGoalMachineAll(vo);
-
-				String listDataJsonString = ResponseUtils.getJsonResponse(response,
-						dataList);
-				listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-				resultData.put("status", HttpStatus.OK.value());
-				resultData.put("rows", listDataJArray);
-			} catch (Exception e) {
-				e.printStackTrace();
-				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-				resultData.put("rows", null);
-			}
-			return resultData.toJSONString();
-		}
-
-	// KPI 목표설정
-	@ResponseBody
-	@RequestMapping(value = "/goal/saveGoalMachine", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	@SuppressWarnings("unchecked")
-	public String saveGoalMachine(@ModelAttribute SYGoalVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
-		logger.debug("InfoController.saveGoalMachine() is called.");
-	
-		JSONObject resultData = new JSONObject();
-		try {
-			String master_code = URLDecoder.decode(request.getParameter("master_code"), "UTF-8" );
-			String code = URLDecoder.decode(request.getParameter("code"), "UTF-8" );
-			String year = URLDecoder.decode(request.getParameter("year"), "UTF-8" );
-			String month = URLDecoder.decode(request.getParameter("month"), "UTF-8" );
-			try{
-				String goal = URLDecoder.decode(request.getParameter("goal"), "UTF-8" );
-				vo.setGoal(goal);
-			}catch(Exception e1)
-			{
-	
-			}
-			vo.setCreator(SessionUtil.getMemberId(request));
-			vo.setUpdater(SessionUtil.getMemberId(request));
-	
-			vo.setCode(code);
-			vo.setYear(year);
-			vo.setMonth(month);
-	
-	
-	
-			int cnt = sYGoalService.saveGoalMachine(vo);
-	
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("cnt", cnt);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("cnt", null);
-		}
-		return resultData.toJSONString();
-	}
-	
-	//1210 kpi설비 목표
-	
-	// KPI 월별 목표량 가져오기 
-	@ResponseBody
-	@RequestMapping(value="/goal/selectGoalCustomer", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
-	public String selectGoalCustomer(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("InfoController.selectGoalCustomer() is called.");
-		
-		JSONObject resultData = new JSONObject();
-		JSONArray listDataJArray = new JSONArray();
-		JSONParser jsonParser = new JSONParser();
-		try {
-
-			List<SYGoalVo> dataList = sYGoalService.selectGoalCustomer(vo);
-
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
-			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("rows", listDataJArray);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("rows", null);
-		}
-		return resultData.toJSONString();
-	}
-
-	// KPI 목표설정
-	@ResponseBody
-	@RequestMapping(value = "/goal/saveGoalCustomer", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	@SuppressWarnings("unchecked")
-	public String saveGoalCustomer(@ModelAttribute SYGoalVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
-		logger.debug("InfoController.saveGoalCustomer() is called.");
-	
-		JSONObject resultData = new JSONObject();
-		try {
-	
-			String code = URLDecoder.decode(request.getParameter("code"), "UTF-8" );
-			String year = URLDecoder.decode(request.getParameter("year"), "UTF-8" );
-			String month = URLDecoder.decode(request.getParameter("month"), "UTF-8" );
-			try{
-				String goal = URLDecoder.decode(request.getParameter("goal"), "UTF-8" );
-				vo.setGoal(goal);
-			}catch(Exception e1)
-			{
-	
-			}
-			vo.setCreator(SessionUtil.getMemberId(request));
-			vo.setUpdater(SessionUtil.getMemberId(request));
-	
-			vo.setCode(code);
-			vo.setYear(year);
-			vo.setMonth(month);
-	
-	
-	
-			int cnt = sYGoalService.saveGoalCustomer(vo);
-	
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("cnt", cnt);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("cnt", null);
-		}
-		return resultData.toJSONString();
-	}
-
-	
-	//1210 kpi설비 목표
-	
-	// KPI 월별 목표량 가져오기 
-	@ResponseBody
-	@RequestMapping(value="/goal/selectGoalAccount", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
-	public String selectGoalAccount(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("InfoController.selectGoalAccount() is called.");
-		
-		JSONObject resultData = new JSONObject();
-		JSONArray listDataJArray = new JSONArray();
-		JSONParser jsonParser = new JSONParser();
-		try {
-
-			List<SYGoalVo> dataList = sYGoalService.selectGoalAccount(vo);
-
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
-			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("rows", listDataJArray);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("rows", null);
-		}
-		return resultData.toJSONString();
-	}
-
-	// KPI 목표설정
-	@ResponseBody
-	@RequestMapping(value = "/goal/saveGoalAccount", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	@SuppressWarnings("unchecked")
-	public String saveGoalAccount(@ModelAttribute SYGoalVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
-		logger.debug("InfoController.saveGoalAccount() is called.");
-	
-		JSONObject resultData = new JSONObject();
-		try {
-	
-			String code = URLDecoder.decode(request.getParameter("code"), "UTF-8" );
-			String year = URLDecoder.decode(request.getParameter("year"), "UTF-8" );
-			String month = URLDecoder.decode(request.getParameter("month"), "UTF-8" );
-			try{
-				String goal = URLDecoder.decode(request.getParameter("goal"), "UTF-8" );
-				vo.setGoal(goal);
-			}catch(Exception e1)
-			{
-	
-			}
-			vo.setCreator(SessionUtil.getMemberId(request));
-			vo.setUpdater(SessionUtil.getMemberId(request));
-	
-			vo.setCode(code);
-			vo.setYear(year);
-			vo.setMonth(month);
-	
-	
-	
-			int cnt = sYGoalService.saveGoalAccount(vo);
-	
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("cnt", cnt);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("cnt", null);
-		}
-		return resultData.toJSONString();
-	}
-
-	//1215 kpi생산 목표
-	
-	// KPI 월별 목표량 가져오기 
-	@ResponseBody
-	@RequestMapping(value="/goal/selectGoalPrdct", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
-	public String selectGoalPrdct(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("InfoController.selectGoalPrdct() is called.");
-		
-		JSONObject resultData = new JSONObject();
-		JSONArray listDataJArray = new JSONArray();
-		JSONParser jsonParser = new JSONParser();
-		try {
-
-			List<SYGoalVo> dataList = sYGoalService.selectGoalPrdct(vo);
-
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
-			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("rows", listDataJArray);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("rows", null);
-		}
-		return resultData.toJSONString();
-	}
-
-	// KPI 목표설정
-	@ResponseBody
-	@RequestMapping(value = "/goal/saveGoalPrdct", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	@SuppressWarnings("unchecked")
-	public String saveGoalPrdct(@ModelAttribute SYGoalVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
-		logger.debug("InfoController.saveGoalPrdct() is called.");
-	
-		JSONObject resultData = new JSONObject();
-		try {
-	
-			String code = URLDecoder.decode(request.getParameter("code"), "UTF-8" );
-			String year = URLDecoder.decode(request.getParameter("year"), "UTF-8" );
-			String month = URLDecoder.decode(request.getParameter("month"), "UTF-8" );
-			try{
-				String goal = URLDecoder.decode(request.getParameter("goal"), "UTF-8" );
-				vo.setGoal(goal);
-			}catch(Exception e1)
-			{
-	
-			}
-			vo.setCreator(SessionUtil.getMemberId(request));
-			vo.setUpdater(SessionUtil.getMemberId(request));
-	
-			vo.setCode(code);
-			vo.setYear(year);
-			vo.setMonth(month);
-	
-	
-	
-			int cnt = sYGoalService.saveGoalPrdct(vo);
-	
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("cnt", cnt);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("cnt", null);
-		}
-		return resultData.toJSONString();
-	}
-	
-	
-	// KPI 월별 목표량 가져오기 
-	@ResponseBody
-	@RequestMapping(value="/goal/selectGoalRpr", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
-	public String selectGoalRpr(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("InfoController.selectGoalRpr() is called.");
-		
-		JSONObject resultData = new JSONObject();
-		JSONArray listDataJArray = new JSONArray();
-		JSONParser jsonParser = new JSONParser();
-		try {
-
-			List<SYGoalVo> dataList = sYGoalService.selectGoalRpr(vo);
-
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
-			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("rows", listDataJArray);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("rows", null);
-		}
-		return resultData.toJSONString();
-	}
-
-	// KPI 목표설정
-	@ResponseBody
-	@RequestMapping(value = "/goal/saveGoalRpr", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	@SuppressWarnings("unchecked")
-	public String saveGoalRpr(@ModelAttribute SYGoalVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
-		logger.debug("InfoController.saveGoalRpr() is called.");
-	
-		JSONObject resultData = new JSONObject();
-		try {
-	
-			String code = URLDecoder.decode(request.getParameter("code"), "UTF-8" );
-			String year = URLDecoder.decode(request.getParameter("year"), "UTF-8" );
-			String month = URLDecoder.decode(request.getParameter("month"), "UTF-8" );
-			try{
-				String goal = URLDecoder.decode(request.getParameter("goal"), "UTF-8" );
-				vo.setGoal(goal);
-			}catch(Exception e1)
-			{
-	
-			}
-			vo.setCreator(SessionUtil.getMemberId(request));
-			vo.setUpdater(SessionUtil.getMemberId(request));
-	
-			vo.setCode(code);
-			vo.setYear(year);
-			vo.setMonth(month);
-	
-	
-	
-			int cnt = sYGoalService.saveGoalRpr(vo);
-	
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("cnt", cnt);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("cnt", null);
-		}
-		return resultData.toJSONString();
-	}
-	
-	
-	
-	//1217 kpi생산 목표
-	
-	// KPI 월별 목표량 가져오기 
-	@ResponseBody
-	@RequestMapping(value="/goal/selectGoalDfct", method = {RequestMethod.GET, RequestMethod.POST}, produces="application/json;charset=UTF-8")
-	public String selectGoalDfct(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response) {
-		logger.debug("InfoController.selectGoalDfct() is called.");
-		
-		JSONObject resultData = new JSONObject();
-		JSONArray listDataJArray = new JSONArray();
-		JSONParser jsonParser = new JSONParser();
-		try {
-
-			List<SYGoalVo> dataList = sYGoalService.selectGoalDfct(vo);
-
-			String listDataJsonString = ResponseUtils.getJsonResponse(response,
-					dataList);
-			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("rows", listDataJArray);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("rows", null);
-		}
-		return resultData.toJSONString();
-	}
-
-	// KPI 목표설정
-	@ResponseBody
-	@RequestMapping(value = "/goal/saveGoalDfct", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	@SuppressWarnings("unchecked")
-	public String saveGoalDfct(@ModelAttribute SYGoalVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
-		logger.debug("InfoController.saveGoalDfct() is called.");
-	
-		JSONObject resultData = new JSONObject();
-		try {
-	
-			String code = URLDecoder.decode(request.getParameter("code"), "UTF-8" );
-			String year = URLDecoder.decode(request.getParameter("year"), "UTF-8" );
-			String month = URLDecoder.decode(request.getParameter("month"), "UTF-8" );
-			try{
-				String goal = URLDecoder.decode(request.getParameter("goal"), "UTF-8" );
-				vo.setGoal(goal);
-			}catch(Exception e1)
-			{
-	
-			}
-			vo.setCreator(SessionUtil.getMemberId(request));
-			vo.setUpdater(SessionUtil.getMemberId(request));
-	
-			vo.setCode(code);
-			vo.setYear(year);
-			vo.setMonth(month);
-	
-	
-	
-			int cnt = sYGoalService.saveGoalDfct(vo);
-	
-			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("cnt", cnt);
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-			resultData.put("cnt", null);
-		}
-		return resultData.toJSONString();
-	}
-	
-	
-	/**
-	* <pre>
-	* 1. MethodName : Project
-	* 2. ClassName  : InfoController.java
-	* 3. Comment    : 관리자 > BOM관리
-	* 4. 작성자       : LEEJUNGHOON
-	* 5. 작성일       : 2021. 04. 29.
-	* </pre>
-	*
-	* @param commandMap
-	* @return
-	* @throws Exception
-	*/	
-	// selectBOMbyProject
-	@ResponseBody
-	@RequestMapping(value = "/info/selectBOMbyProject", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	@SuppressWarnings("unchecked")
-	public String selectBOMbyProject(@ModelAttribute SYTProjectVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
-		logger.debug("FrontendController.selectBOMbyProject is called.");
-
-		JSONObject resultData = new JSONObject();
-		JSONArray listDataJArray = new JSONArray();
-		JSONParser jsonParser = new JSONParser();
-		try {
-			List<SYTProjectVo> dataList = sYInfoService.selectBOMbyProject(vo);
-
-			System.out.println("dataList");
-			System.out.println(dataList);
-						
 			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
 			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
@@ -4574,8 +3835,555 @@ public class InfoController {
 			resultData.put("rows", null);
 		}
 		return resultData.toJSONString();
-	}	
-	
+	}
+
+	// KPI 월별 목표량 가져오기
+	@ResponseBody
+	@RequestMapping(value = "/goal/selectGoal", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectGoal(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("InfoController.selectGoal() is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+
+			List<SYGoalVo> dataList = sYGoalService.selectGoal(vo);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}
+
+	// KPI 목표설정
+	@ResponseBody
+	@RequestMapping(value = "/goal/saveGoal", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String saveGoal(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("InfoController.saveGoal() is called.");
+
+		JSONObject resultData = new JSONObject();
+		try {
+
+			String code = URLDecoder.decode(request.getParameter("code"), "UTF-8");
+			String year = URLDecoder.decode(request.getParameter("year"), "UTF-8");
+			String month = URLDecoder.decode(request.getParameter("month"), "UTF-8");
+			try {
+				String goal = URLDecoder.decode(request.getParameter("goal"), "UTF-8");
+				vo.setGoal(goal);
+			} catch (Exception e1) {
+
+			}
+			vo.setCreator(SessionUtil.getMemberId(request));
+			vo.setUpdater(SessionUtil.getMemberId(request));
+
+			vo.setCode(code);
+			vo.setYear(year);
+			vo.setMonth(month);
+
+			int cnt = sYGoalService.saveGoal(vo);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("cnt", cnt);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("cnt", null);
+		}
+		return resultData.toJSONString();
+	}
+
+	// 1210 kpi설비 목표
+
+	// KPI 월별 목표량 가져오기
+	@ResponseBody
+	@RequestMapping(value = "/goal/selectGoalMachine", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectGoalMachine(@ModelAttribute SYGoalVo vo, HttpServletRequest request,
+			HttpServletResponse response) {
+		logger.debug("InfoController.selectGoalMachine() is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+
+			List<SYGoalVo> dataList = sYGoalService.selectGoalMachine(vo);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}
+
+	// KPI 월별 목표량 가져오기
+	@ResponseBody
+	@RequestMapping(value = "/goal/selectGoalMachineAll", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectGoalMachineAll(@ModelAttribute SYGoalVo vo, HttpServletRequest request,
+			HttpServletResponse response) {
+		logger.debug("InfoController.selectGoalMachineAll() is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+
+			List<SYGoalVo> dataList = sYGoalService.selectGoalMachineAll(vo);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}
+
+	// KPI 목표설정
+	@ResponseBody
+	@RequestMapping(value = "/goal/saveGoalMachine", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String saveGoalMachine(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("InfoController.saveGoalMachine() is called.");
+
+		JSONObject resultData = new JSONObject();
+		try {
+			String master_code = URLDecoder.decode(request.getParameter("master_code"), "UTF-8");
+			String code = URLDecoder.decode(request.getParameter("code"), "UTF-8");
+			String year = URLDecoder.decode(request.getParameter("year"), "UTF-8");
+			String month = URLDecoder.decode(request.getParameter("month"), "UTF-8");
+			try {
+				String goal = URLDecoder.decode(request.getParameter("goal"), "UTF-8");
+				vo.setGoal(goal);
+			} catch (Exception e1) {
+
+			}
+			vo.setCreator(SessionUtil.getMemberId(request));
+			vo.setUpdater(SessionUtil.getMemberId(request));
+
+			vo.setCode(code);
+			vo.setYear(year);
+			vo.setMonth(month);
+
+			int cnt = sYGoalService.saveGoalMachine(vo);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("cnt", cnt);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("cnt", null);
+		}
+		return resultData.toJSONString();
+	}
+
+	// 1210 kpi설비 목표
+
+	// KPI 월별 목표량 가져오기
+	@ResponseBody
+	@RequestMapping(value = "/goal/selectGoalCustomer", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectGoalCustomer(@ModelAttribute SYGoalVo vo, HttpServletRequest request,
+			HttpServletResponse response) {
+		logger.debug("InfoController.selectGoalCustomer() is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+
+			List<SYGoalVo> dataList = sYGoalService.selectGoalCustomer(vo);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}
+
+	// KPI 목표설정
+	@ResponseBody
+	@RequestMapping(value = "/goal/saveGoalCustomer", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String saveGoalCustomer(@ModelAttribute SYGoalVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("InfoController.saveGoalCustomer() is called.");
+
+		JSONObject resultData = new JSONObject();
+		try {
+
+			String code = URLDecoder.decode(request.getParameter("code"), "UTF-8");
+			String year = URLDecoder.decode(request.getParameter("year"), "UTF-8");
+			String month = URLDecoder.decode(request.getParameter("month"), "UTF-8");
+			try {
+				String goal = URLDecoder.decode(request.getParameter("goal"), "UTF-8");
+				vo.setGoal(goal);
+			} catch (Exception e1) {
+
+			}
+			vo.setCreator(SessionUtil.getMemberId(request));
+			vo.setUpdater(SessionUtil.getMemberId(request));
+
+			vo.setCode(code);
+			vo.setYear(year);
+			vo.setMonth(month);
+
+			int cnt = sYGoalService.saveGoalCustomer(vo);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("cnt", cnt);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("cnt", null);
+		}
+		return resultData.toJSONString();
+	}
+
+	// 1210 kpi설비 목표
+
+	// KPI 월별 목표량 가져오기
+	@ResponseBody
+	@RequestMapping(value = "/goal/selectGoalAccount", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectGoalAccount(@ModelAttribute SYGoalVo vo, HttpServletRequest request,
+			HttpServletResponse response) {
+		logger.debug("InfoController.selectGoalAccount() is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+
+			List<SYGoalVo> dataList = sYGoalService.selectGoalAccount(vo);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}
+
+	// KPI 목표설정
+	@ResponseBody
+	@RequestMapping(value = "/goal/saveGoalAccount", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String saveGoalAccount(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("InfoController.saveGoalAccount() is called.");
+
+		JSONObject resultData = new JSONObject();
+		try {
+
+			String code = URLDecoder.decode(request.getParameter("code"), "UTF-8");
+			String year = URLDecoder.decode(request.getParameter("year"), "UTF-8");
+			String month = URLDecoder.decode(request.getParameter("month"), "UTF-8");
+			try {
+				String goal = URLDecoder.decode(request.getParameter("goal"), "UTF-8");
+				vo.setGoal(goal);
+			} catch (Exception e1) {
+
+			}
+			vo.setCreator(SessionUtil.getMemberId(request));
+			vo.setUpdater(SessionUtil.getMemberId(request));
+
+			vo.setCode(code);
+			vo.setYear(year);
+			vo.setMonth(month);
+
+			int cnt = sYGoalService.saveGoalAccount(vo);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("cnt", cnt);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("cnt", null);
+		}
+		return resultData.toJSONString();
+	}
+
+	// 1215 kpi생산 목표
+
+	// KPI 월별 목표량 가져오기
+	@ResponseBody
+	@RequestMapping(value = "/goal/selectGoalPrdct", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectGoalPrdct(@ModelAttribute SYGoalVo vo, HttpServletRequest request,
+			HttpServletResponse response) {
+		logger.debug("InfoController.selectGoalPrdct() is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+
+			List<SYGoalVo> dataList = sYGoalService.selectGoalPrdct(vo);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}
+
+	// KPI 목표설정
+	@ResponseBody
+	@RequestMapping(value = "/goal/saveGoalPrdct", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String saveGoalPrdct(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("InfoController.saveGoalPrdct() is called.");
+
+		JSONObject resultData = new JSONObject();
+		try {
+
+			String code = URLDecoder.decode(request.getParameter("code"), "UTF-8");
+			String year = URLDecoder.decode(request.getParameter("year"), "UTF-8");
+			String month = URLDecoder.decode(request.getParameter("month"), "UTF-8");
+			try {
+				String goal = URLDecoder.decode(request.getParameter("goal"), "UTF-8");
+				vo.setGoal(goal);
+			} catch (Exception e1) {
+
+			}
+			vo.setCreator(SessionUtil.getMemberId(request));
+			vo.setUpdater(SessionUtil.getMemberId(request));
+
+			vo.setCode(code);
+			vo.setYear(year);
+			vo.setMonth(month);
+
+			int cnt = sYGoalService.saveGoalPrdct(vo);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("cnt", cnt);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("cnt", null);
+		}
+		return resultData.toJSONString();
+	}
+
+	// KPI 월별 목표량 가져오기
+	@ResponseBody
+	@RequestMapping(value = "/goal/selectGoalRpr", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectGoalRpr(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response) {
+		logger.debug("InfoController.selectGoalRpr() is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+
+			List<SYGoalVo> dataList = sYGoalService.selectGoalRpr(vo);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}
+
+	// KPI 목표설정
+	@ResponseBody
+	@RequestMapping(value = "/goal/saveGoalRpr", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String saveGoalRpr(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("InfoController.saveGoalRpr() is called.");
+
+		JSONObject resultData = new JSONObject();
+		try {
+
+			String code = URLDecoder.decode(request.getParameter("code"), "UTF-8");
+			String year = URLDecoder.decode(request.getParameter("year"), "UTF-8");
+			String month = URLDecoder.decode(request.getParameter("month"), "UTF-8");
+			try {
+				String goal = URLDecoder.decode(request.getParameter("goal"), "UTF-8");
+				vo.setGoal(goal);
+			} catch (Exception e1) {
+
+			}
+			vo.setCreator(SessionUtil.getMemberId(request));
+			vo.setUpdater(SessionUtil.getMemberId(request));
+
+			vo.setCode(code);
+			vo.setYear(year);
+			vo.setMonth(month);
+
+			int cnt = sYGoalService.saveGoalRpr(vo);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("cnt", cnt);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("cnt", null);
+		}
+		return resultData.toJSONString();
+	}
+
+	// 1217 kpi생산 목표
+
+	// KPI 월별 목표량 가져오기
+	@ResponseBody
+	@RequestMapping(value = "/goal/selectGoalDfct", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectGoalDfct(@ModelAttribute SYGoalVo vo, HttpServletRequest request,
+			HttpServletResponse response) {
+		logger.debug("InfoController.selectGoalDfct() is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+
+			List<SYGoalVo> dataList = sYGoalService.selectGoalDfct(vo);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}
+
+	// KPI 목표설정
+	@ResponseBody
+	@RequestMapping(value = "/goal/saveGoalDfct", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String saveGoalDfct(@ModelAttribute SYGoalVo vo, HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("InfoController.saveGoalDfct() is called.");
+
+		JSONObject resultData = new JSONObject();
+		try {
+
+			String code = URLDecoder.decode(request.getParameter("code"), "UTF-8");
+			String year = URLDecoder.decode(request.getParameter("year"), "UTF-8");
+			String month = URLDecoder.decode(request.getParameter("month"), "UTF-8");
+			try {
+				String goal = URLDecoder.decode(request.getParameter("goal"), "UTF-8");
+				vo.setGoal(goal);
+			} catch (Exception e1) {
+
+			}
+			vo.setCreator(SessionUtil.getMemberId(request));
+			vo.setUpdater(SessionUtil.getMemberId(request));
+
+			vo.setCode(code);
+			vo.setYear(year);
+			vo.setMonth(month);
+
+			int cnt = sYGoalService.saveGoalDfct(vo);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("cnt", cnt);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("cnt", null);
+		}
+		return resultData.toJSONString();
+	}
+
+	/**
+	 * <pre>
+	* 1. MethodName : Project
+	* 2. ClassName  : InfoController.java
+	* 3. Comment    : 관리자 > BOM관리
+	* 4. 작성자       : LEEJUNGHOON
+	* 5. 작성일       : 2021. 04. 29.
+	 * </pre>
+	 *
+	 * @param commandMap
+	 * @return
+	 * @throws Exception
+	 */
+	// selectBOMbyProject
+	@ResponseBody
+	@RequestMapping(value = "/info/selectBOMbyProject", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String selectBOMbyProject(@ModelAttribute SYTProjectVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.selectBOMbyProject is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			List<SYTProjectVo> dataList = sYInfoService.selectBOMbyProject(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return resultData.toJSONString();
+	}
+
 	@ResponseBody
 	@RequestMapping(value = "/info/selectBOMbyPRO", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
@@ -4603,8 +4411,8 @@ public class InfoController {
 			resultData.put("rows", null);
 		}
 		return resultData.toJSONString();
-	}	
-		
+	}
+
 	@ResponseBody
 	@RequestMapping(value = "/info/selectMaterialsBOM", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
@@ -4633,19 +4441,21 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
-		
+
 	@ResponseBody
-	@RequestMapping(value = "/info/InsertMaterialsBOM", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/info/InsertMaterialsBOM", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
 	public int InsertMaterialsBOM(HttpServletRequest request, @RequestParam String jsonData) {
 		List<Map<String, Object>> vo = null;
-		
+
 		logger.debug("FrontendController.InsertMaterialsBOM is called.");
 
 		String REG_ID = SessionUtil.getMemberId(request);
-		
+
 		ObjectMapper mapper = new ObjectMapper();
-		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() {};
+		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() {
+		};
 		try {
 			vo = mapper.readValue(jsonData, typeRef);
 			System.out.println("Dd");
@@ -4670,13 +4480,14 @@ public class InfoController {
 		}
 		return result;
 	}
-	//change BOM Material Quantity 
+
+	// change BOM Material Quantity
 	@ResponseBody
-	@RequestMapping(value = "/info/updateBomQuantity", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/info/updateBomQuantity", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String updateBomQuantity(@ModelAttribute SYTBomVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String updateBomQuantity(@ModelAttribute SYTBomVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.changeBOMQuantity is called.");
 
 		vo.setBOM_REG_ID(SessionUtil.getMemberId(request));
@@ -4690,19 +4501,19 @@ public class InfoController {
 			String PJT_IDX = "";
 			String MTL_IDX = "";
 			String BOM_MTL_QTY = "";
-			
+
 			int cnt = 0;
-			
+
 			PJT_IDX = request.getParameter("PJT_IDX");
 			MTL_IDX = request.getParameter("MTL_IDX");
 			BOM_MTL_QTY = request.getParameter("BOM_MTL_QTY");
 
 			// hKey
-			vo.setPJT_IDX( Integer.parseInt(PJT_IDX) );
-			vo.setMTL_IDX( Integer.parseInt(MTL_IDX) );
-			
+			vo.setPJT_IDX(Integer.parseInt(PJT_IDX));
+			vo.setMTL_IDX(Integer.parseInt(MTL_IDX));
+
 			cnt = sYInfoService.updateBomQuantity(vo);
-			
+
 			System.out.println("BCO_IDX = " + PJT_IDX);
 			System.out.println("cnt = " + cnt);
 
@@ -4715,28 +4526,28 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}
-	
+
 	/**
-	* <pre>
+	 * <pre>
 	* 1. MethodName : Material Request
 	* 2. ClassName  : InfoController.java
 	* 3. Comment    : 관리자 > 구매/자재 관리 > 자재 요청 관리
 	* 4. 작성자       : DEV_LEEJUNGHUN
 	* 5. 작성일       : 2021. 05. 03.
-	* </pre>
-	*
-	* @param commandMap
-	* @return
-	* @throws Exception
-	*/	
+	 * </pre>
+	 *
+	 * @param commandMap
+	 * @return
+	 * @throws Exception
+	 */
+
 	// selectMaterialRequest
-	@SuppressWarnings("unchecked")		
+	@SuppressWarnings("unchecked")
 	@ResponseBody
-	@RequestMapping(value = "/info/selectMaterialRequest", method = {
-			RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	public String selectMaterialRequest(@ModelAttribute SYTMaterialRequestVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	@RequestMapping(value = "/info/selectMaterialRequest", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectMaterialRequest(@ModelAttribute SYTMaterialRequestVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectMaterialRequest is called.");
 
 		JSONObject resultData = new JSONObject();
@@ -4744,20 +4555,21 @@ public class InfoController {
 		JSONParser jsonParser = new JSONParser();
 		try {
 			// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"), "UTF-8" );
-			
+
 			/*
-			 * String PJT_IDX = ""; 
-			 * PJT_IDX = request.getParameter("PJT_IDX");
+			 * String PJT_IDX = ""; PJT_IDX = request.getParameter("PJT_IDX");
 			 * vo.setPJT_IDX( Integer.parseInt(PJT_IDX) );
 			 */
-			
-			List<SYTMaterialRequestVo> dataList = sYInfoService.selectMaterialRequest(vo);
 
-			System.out.println("dataList");
-			System.out.println(dataList);
-			
-			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
-			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			// List<SYTMaterialRequestVo> dataList =
+			// sYInfoService.selectMaterialRequest(vo);
+
+			// System.out.println("dataList");
+			// System.out.println(dataList);
+
+			// String listDataJsonString = ResponseUtils.getJsonResponse(response,
+			// dataList);
+			// listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
 			resultData.put("status", HttpStatus.OK.value());
 			resultData.put("rows", listDataJArray);
 		} catch (Exception e) {
@@ -4766,20 +4578,23 @@ public class InfoController {
 			resultData.put("rows", null);
 		}
 		return resultData.toJSONString();
-	}	
+	}
+
 	// insertMaterialRequest
 	@ResponseBody
-	@RequestMapping(value = "/info/insertMaterialRequest", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/info/insertMaterialRequest", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
 	public int insertMaterialRequest(HttpServletRequest request, @RequestParam String jsonData) {
 		List<Map<String, Object>> vo = null;
-		
+
 		logger.debug("FrontendController.InsertMaterialsBOM is called.");
 
 		String REG_ID = SessionUtil.getMemberId(request);
-		
+
 		ObjectMapper mapper = new ObjectMapper();
-		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() {};
+		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() {
+		};
 		try {
 			vo = mapper.readValue(jsonData, typeRef);
 			System.out.println("Dd");
@@ -4804,20 +4619,21 @@ public class InfoController {
 		}
 		return result;
 	}
+
 	// deleteMaterialRequest
 	@ResponseBody
-	@RequestMapping(value = "/account/deleteMaterialRequest", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/deleteMaterialRequest", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteClient(@ModelAttribute SYTMaterialRequestVo vo,
-			HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
+	public String deleteClient(@ModelAttribute SYTMaterialRequestVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.deleteAccount() is called.");
 
 		JSONObject resultData = new JSONObject();
 		try {
 			int result = 0;
 
-			result = sYInfoService.deleteMaterialRequest(vo);
+			// result = sYInfoService.deleteMaterialRequest(vo);
 
 			System.out.println("result = " + result);
 
@@ -4829,8 +4645,67 @@ public class InfoController {
 			resultData.put("rows", 0);
 		}
 		return resultData.toJSONString();
-	}	
-	
-	
-	
+	}
+
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/info/selectMaterialD", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectMaterialD(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(value = "jsonData") String jsonData) {
+
+		logger.debug("FrontendController.selectMaterialD is called.");
+
+		List<Map<String, Object>> vo = null;
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+
+		String REG_ID = SessionUtil.getMemberId(request);
+
+		ObjectMapper mapper = new ObjectMapper();
+		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() {
+		};
+		try {
+			vo = mapper.readValue(jsonData, typeRef);
+		} catch (IOException e1) {
+			System.out.println(e1);
+			e1.printStackTrace();
+		}
+		try {
+			List<SYTMaterialVo> dataList = sYInfoService.selectMaterialD(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+
+		return resultData.toJSONString();
+	}
+
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/account/test", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String test(MultipartHttpServletRequest request, HttpServletResponse response,
+			@RequestParam Map<String, Object> testData) {
+		//파일 업로드를 위한 준비
+				OutputStream out = null;
+				PrintWriter printWriter = null;
+				MultipartFile fileList = request.getFile("file[]");
+				String basePath=request.getRealPath("/upload");
+				System.out.println("패스는 "+basePath+"\n\n\n\n");
+				
+				Map<String, Object> filename = fileUpload.saveFile(fileList, basePath,request);
+		//int result = dao
+		return "";
+	}
 }
