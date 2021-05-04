@@ -483,6 +483,8 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
 			    	startValue_combo = "";
 			    	loadList();
+					form.reset();
+					$("#modal_info").modal('hide');
 		    	}
 		    },
 		    error: function(jqXHR, textStatus, errorThrown){
