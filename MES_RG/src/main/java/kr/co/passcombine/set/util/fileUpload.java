@@ -138,5 +138,16 @@ public class fileUpload {
 			}
 		}
 	}
+	public static void delFile(HttpServletRequest request, Map<String, Object> result) {
+		String paths = request.getRealPath((String)result.get("CMM_FLE_ATT_PATH"))+"\\"+(String)result.get("CMM_FLE_SYS_NM");
+		File file = new File(paths);
+		if(file.exists()) {
+			if(file.delete()) {
+				System.out.println("파일삭제 성공");
+			}else {
+				System.out.println("파일삭제실패");
+			}
+		}
+	}
 	 
 }

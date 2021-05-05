@@ -3316,7 +3316,17 @@
 			CMM_FLE_USE_YN='N'
 			WHERE CMM_FLE_IDX = #{CMM_FLE_IDX}
 			
-		</update>	
+	</update>	
+	
+		<insert id="InsertBOMExcel" parameterType="java.util.List">
+			INSERT INTO T_BOM_MST
+			( MTL_IDX, PJT_IDX, BOM_MTL_QTY, BOM_REG_DT, BOM_REG_ID, BOM_DEL_YN )
+			VALUES
+			<foreach collection="list" item="item" separator=",">
+			(#{item.MTL_IDX},#{item.PJT_IDX},#{item.MTL_QTY},SYSDATE(),#{item.REG_ID},'N')
+			</foreach>
+		</insert>
+	
 	
 		
 </mapper>

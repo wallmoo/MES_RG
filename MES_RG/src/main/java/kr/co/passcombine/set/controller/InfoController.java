@@ -32,6 +32,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -43,6 +44,7 @@ import kr.co.passcombine.set.svc.SYProductService;
 import kr.co.passcombine.set.util.ResponseUtils;
 import kr.co.passcombine.set.util.SessionUtil;
 import kr.co.passcombine.set.util.StringUtil;
+import kr.co.passcombine.set.util.excelUpload;
 import kr.co.passcombine.set.util.fileUpload;
 import kr.co.passcombine.set.vo.SYAccountVo;
 import kr.co.passcombine.set.vo.SYBomVo;
@@ -887,14 +889,25 @@ public class InfoController {
 
 		JSONObject resultData = new JSONObject();
 		try {
-			int result = 0;
+			Map<String, Object>vos = new HashMap<String,Object>();
+			String MTL_IDX = request.getParameter("MTL_IDX");
+			
+			// hKey
+			vos.put("MTL_IDX",(Integer.parseInt(MTL_IDX)));
+			Map<String,Object> result = sYInfoService.selectFiles(vos);
+			if(result!=null) {
+				if(result.get("CMM_FLE_SYS_NM")!=null)
+				fileUpload.delFile(request,result);
+			}
+			
+			int results = 0;
 
-			result = sYInfoService.deleteMaterial(vo);
+			results = sYInfoService.deleteMaterial(vo);
 
-			System.out.println("result = " + result);
+			System.out.println("result = " + results);
 
 			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("rows", result);
+			resultData.put("rows", results);
 		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -4691,6 +4704,49 @@ public class InfoController {
 		return resultData.toJSONString();
 	}
 
+
+	/**
+	 * <pre>
+	* 1. MethodName : insertBOMExcel
+	* 2. ClassName  : insertBOMExcel.java
+	* 3. Comment    : 관리자 > 기준정보관리 > BOM 관리 엑셀일괄업로드
+	* 4. 작성자       : LJH
+	* 5. 작성일       : 2021. 05. 05.
+	 * </pre>
+	 *
+	 * @param testData, request
+	 * @return
+	 */
+
+	@ResponseBody
+	@RequestMapping(value = "/info/insertBOMExcel", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public int insertBOMExcel(MultipartHttpServletRequest request, HttpServletResponse response,
+			@RequestParam Map<String, Object> testData) {
+			//파일 업로드를 위한 준비
+					OutputStream out = null;
+					PrintWriter printWriter = null;
+					MultipartFile file = request.getFile("excelFile");
+					String[] colmn = {
+							"MTL_IDX", "TYPE", "MTL_MKR_NO", "MTL_MKR_CD", "MTL_QTY", "DSNUM"
+					};
+					List<Map<String, Object>> vo = excelUpload.excelRead(file, colmn); //엑셀의 데이터 파싱함 (단 xlsx만가능)
+					
+					//파싱된데이터에 pjt_idx를 주입할준비
+					Object Pjt = testData.get("pjidxHidden");
+					String REG_ID = SessionUtil.getMemberId(request);
+					
+					for(int i=0; i<vo.size(); i++) {
+						vo.get(i).put("PJT_IDX", Pjt);
+						vo.get(i).put("REG_ID", REG_ID);
+					}//pjt_idx를 주입함
+					
+					int result = sYInfoService.InsertBOMExcel(vo);
+			return result;
+		
+	}
+	
 	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping(value = "/account/test", method = { RequestMethod.GET,
@@ -4700,12 +4756,27 @@ public class InfoController {
 		//파일 업로드를 위한 준비
 				OutputStream out = null;
 				PrintWriter printWriter = null;
-				MultipartFile fileList = request.getFile("file[]");
-				String basePath=request.getRealPath("/upload");
-				System.out.println("패스는 "+basePath+"\n\n\n\n");
+				MultipartFile file = request.getFile("excelFile");
+				String[] colmn = {
+						"MTL_IDX", "TYPE", "MTL_MKR_NO", "MTL_MKR_CD", "MTL_QTY", "DSNUM"
+				};
+				List<Map<String, Object>> vo = excelUpload.excelRead(file, colmn); //엑셀의 데이터 파싱함 (단 xlsx만가능)
 				
-				Map<String, Object> filename = fileUpload.saveFile(fileList, basePath,request);
-		//int result = dao
+				//파싱된데이터에 pjt_idx를 주입할준비
+				Object Pjt = testData.get("pjidxHidden");
+				String REG_ID = SessionUtil.getMemberId(request);
+				
+				for(int i=0; i<vo.size(); i++) {
+					vo.get(i).put("PJT_IDX", Pjt);
+					vo.get(i).put("REG_ID", REG_ID);
+				}//pjt_idx를 주입함
+				
+				int result = sYInfoService.InsertBOMExcel(vo);
+				
+				String a = "";
 		return "";
 	}
+	
+	
+	
 }
