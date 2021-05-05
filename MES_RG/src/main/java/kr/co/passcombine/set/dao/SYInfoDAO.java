@@ -284,4 +284,5 @@ public interface SYInfoDAO {
 	public int insertMaterialMap(Map<String, Object> vo);
 	public int updateMaterialMap(Map<String, Object> vo);
 	public Map<String, Object> selectFiles(Map<String, Object> vo);
+	public int InsertBOMExcel(List<Map<String, Object>> vo);
 }

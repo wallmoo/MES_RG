@@ -125,6 +125,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 													style="background-color: #DB8EB5;">
 													<h3 class="box-title">BOM 리스트</h3>
 													<div class="box-tools pull-right">
+														<button type="button" id="btn_ins_csr" onclick="excelFileUpload();" class="btn btn-info btn-sm" onclick="">엑셀일괄업로드</button>
 														<button type="button" id="btn_ins_csr" onclick="excelFileDownload();" class="btn btn-info btn-sm" onclick="">엑셀다운로드</button>
 														<button type="button" id="btn_search_csr" onclick="requestRightGrid('grid_list2');" class="btn btn-primary btn-sm" onclick="">조회</button>
 														<button type="button" id="btn_ins_csr" onclick="ItemInsUp();" class="btn btn-primary btn-sm" onclick="">등록/수정</button>
@@ -263,6 +264,43 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 				</div>
 			</div>
 		</div>
+		
+		<div class="modal fade" id="modal_ExcelUpload" data-backdrop="static">
+			<div class="modal-dialog modal-md">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<h4 class="modal-title" id="modal_add_title">엑셀 일괄업로드</h4>
+					</div>
+					<div class="modal-body" id="modal_code_body">
+							<div class="col-sm-9">
+								<div class="row">
+									<div class="form-group">
+										<label class="col-sm-3 control-label">파일명</label>
+										<div class="col-sm-7">
+											<form method="POST" enctype="multipart/form-data" id="excelUploadForm">
+												<input type="hidden" id="pjidxHidden" name="pjidxHidden">
+												<input type="text" class="form-control input-sm pull-right clear_val2" id="excelName" maxlength="100">
+												<input type="file"  class="fileupload file_info" id="excelFile" name="excelFile" onchange="$('#excelName').val(this.value)">
+											</form>
+										</div>
+									</div>
+								</div>
+					</div>
+					<div class="modal-footer" style="border-top-color: transparent !important;">
+						<div class="col-md-12 text-center" style="margin-top: 10px">
+							<button type="button" id="" class="btn btn-success btn-sm" onclick="UploadExcels()">등록</button>
+							<button type="button" id="" class="btn btn-danger btn-sm" data-dismiss="modal">취소</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
+		
+		
 		<!--  -->
 
 		<jsp:include page="/common/footer_inc" flush="true">
@@ -567,6 +605,18 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		}
 
 	}
+	
+	function excelFileUpload() {
+		var keys = w2ui.grid_list.getSelection();
+		
+		if (keys == null || keys == "") {
+			alert("먼저 프로젝트를 선택하여주십시오");
+		} else {
+			$("#modal_ExcelUpload").modal('show');
+		}
+
+	};
+	
 
 	function insertBom() {
 		var keys = w2ui.grid_list.getSelection();
@@ -1283,6 +1333,54 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			complete : function() {
 			}
 		});
+	}
+	
+	
+	function UploadExcels(){
+		console.log('saveAccount()');
+		
+		var key = w2ui.grid_list.getSelection();
+		console.log(key);	
+		var keys = $("#hiddenIdx").val();
+		if(confirm("업로드 하시겠습니까?")){
+			$("#pjidxHidden").val(keys*1);
+	
+			//$("#modal_ExcelUpload").modal('hide');
+	
+			var strUrl = "/info/info/insertBOMExcel";
+				//strUrl = "/info/account/test";
+					 
+			// escape(
+			var form = $("#excelUploadForm")[0];
+			
+			var data = new FormData(form);
+			console.log(data);
+			
+							
+			$.ajax({
+				type: "POST",
+				enctype: 'multipart/form-data',
+				url: strUrl,
+				data: data,
+				processData: false,
+				contentType: false,
+				cache: false,
+				timeout: 600000,
+			    success:function(data){
+				    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
+				    	startValue_combo = "";
+				    	loadRightGrid(keys);
+						form.reset();
+						$("#modal_ExcelUpload").modal('hide');
+			    	
+			    },
+			    error: function(jqXHR, textStatus, errorThrown){
+				    	fnMessageModalAlert("결과", "정보를 처리하는데 에러가 발생하였습니다.");	// Notification(MES)
+			    },
+			    complete: function() {
+			    }
+			});
+		}
 	}
 </script>
 

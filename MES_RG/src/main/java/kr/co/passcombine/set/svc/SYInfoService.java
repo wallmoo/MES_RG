@@ -1644,6 +1644,10 @@ public class SYInfoService {
 		}
 		return result;
 	}
+	public int InsertBOMExcel(List<Map<String, Object>> vo) {
+		// TODO Auto-generated method stub
+		return infoDAO.InsertBOMExcel(vo);
+	}
 
 	
 	
