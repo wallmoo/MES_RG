@@ -887,14 +887,25 @@ public class InfoController {
 
 		JSONObject resultData = new JSONObject();
 		try {
-			int result = 0;
+			Map<String, Object>vos = new HashMap<String,Object>();
+			String MTL_IDX = request.getParameter("MTL_IDX");
+			
+			// hKey
+			vos.put("MTL_IDX",(Integer.parseInt(MTL_IDX)));
+			Map<String,Object> result = sYInfoService.selectFiles(vos);
+			if(result!=null) {
+				if(result.get("CMM_FLE_SYS_NM")!=null)
+				fileUpload.delFile(request,result);
+			}
+			
+			int results = 0;
 
-			result = sYInfoService.deleteMaterial(vo);
+			results = sYInfoService.deleteMaterial(vo);
 
-			System.out.println("result = " + result);
+			System.out.println("result = " + results);
 
 			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("rows", result);
+			resultData.put("rows", results);
 		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
