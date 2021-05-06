@@ -52,42 +52,41 @@ public class MainController {
 	public String loginProcess(@ModelAttribute SYMemberVo memberVo, HttpServletRequest request, HttpServletResponse response, HttpSession session) {
 		logger.debug("MainController.loginProcess() is called.");
 		JSONObject resultData = new JSONObject();  
-    JSONObject dataObj = new JSONObject();
-    JSONParser jsonParser = new JSONParser();
-    try {
+	    JSONObject dataObj = new JSONObject();
+	    JSONParser jsonParser = new JSONParser();
+	    try {
 			SYMemberVo detailMember = syOrganService.selectMemberLoginInfo(memberVo);
 			String dataJsonString = ResponseUtils.getJsonResponse(response, detailMember);
 			dataObj = (JSONObject) jsonParser.parse(dataJsonString);
-			
-			if(detailMember != null && detailMember.getMember_id() != null) {
+	
+			if (detailMember != null && detailMember.getMember_id() != null) {
 				resultData.put("result", HttpStatus.OK.value());
-	      resultData.put("message", "로그인 되었습니다.");
-	      resultData.put("data", dataObj);
-	      
-	      session = request.getSession(false);
-	      session.setAttribute("member_id", ""+detailMember.getMember_id()+"");
-	      session.setAttribute("member_emp_no", ""+detailMember.getMember_emp_no()+"");
-	      session.setAttribute("member_nm", ""+detailMember.getMember_nm()+"");
-	      session.setAttribute("member_email", detailMember.getMember_email());
-	      session.setAttribute("company_cd", ""+detailMember.getCompany_cd()+"");
-				session.setAttribute("company_nm", ""+detailMember.getCompany_nm()+"");
-				session.setAttribute("dept_cd", ""+detailMember.getDept_cd()+"");
-				session.setAttribute("dept_nm", ""+detailMember.getDept_nm()+"");
+				resultData.put("message", "로그인 되었습니다.");
+				resultData.put("data", dataObj);
+	
+				session = request.getSession(false);
+				session.setAttribute("member_id", "" + detailMember.getMember_id() + "");
+				session.setAttribute("member_emp_no", "" + detailMember.getMember_emp_no() + "");
+				session.setAttribute("member_nm", "" + detailMember.getMember_nm() + "");
+				session.setAttribute("member_email", detailMember.getMember_email());
+				session.setAttribute("company_cd", "" + detailMember.getCompany_cd() + "");
+				session.setAttribute("company_nm", "" + detailMember.getCompany_nm() + "");
+				session.setAttribute("dept_cd", "" + detailMember.getDept_cd() + "");
+				session.setAttribute("dept_nm", "" + detailMember.getDept_nm() + "");
 				session.setAttribute("role_cd", detailMember.getRole_cd());
 				session.setAttribute("role_nm", detailMember.getRole_cd());
 				session.setAttribute("position_cd", detailMember.getPosition_cd());
 				session.setAttribute("position_nm", detailMember.getPosition_nm());
-				
 			} else {
 				resultData.put("result", HttpStatus.NO_CONTENT.value());
-	      resultData.put("message", "로그인 정보가 올바르지 않습니다.\n다시 확인하시고 로그인해 주세요.");
-	      resultData.put("data", dataObj);
+				resultData.put("message", "로그인 정보가 올바르지 않습니다.\n다시 확인하시고 로그인해 주세요.");
+				resultData.put("data", dataObj);
 			}
-		} catch(Exception e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("result", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			resultData.put("message", "로그인 프로세스의 에러가 발생했습니다. \n" + e.toString());
-      resultData.put("data", null);
+			resultData.put("data", null);
 		}
 		return resultData.toJSONString();
 	}

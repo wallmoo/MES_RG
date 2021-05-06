@@ -868,8 +868,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	}
 
 	function addBOM() {
-		if ($('#hiddenProduct_code').val() == ''
-				|| $('#hiddenProduct_code').val() == null) {
+		if ($('#hiddenProduct_code').val() == '' || $('#hiddenProduct_code').val() == null) {
 			fnMessageModalAlert("알림", "제품을 1개 이상 선택하셔야 합니다.");
 		} else {
 			var BomInputDatas = w2ui.grid_list3.getSelection();

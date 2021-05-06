@@ -3099,19 +3099,18 @@
 	<select id="selectBOMbyPRO" parameterType="SYTMaterialVo"
 		resultType="SYTMaterialVo">
 		/* selectBOMbyPRO */
-		SELECT		TMM.MTL_IDX
-					,TMM.MTL_MKR_CD
-					,TMM.MTL_NM
-					,TMM.MTL_MKR_NO
-					,TMM.MTL_UNT
-					,TBM.PJT_IDX
-					,TBM.BOM_MTL_QTY
-					,TBM.BOM_IDX
-		 FROM		T_MTL_MST TMM
-		 LEFT OUTER JOIN
-		 			T_BOM_MST TBM
-		 	     ON	TMM.MTL_IDX =	TBM.MTL_IDX
-			WHERE	TBM.PJT_IDX 	= 	#{PJT_IDX}
+		SELECT	TMM.MTL_IDX
+				,TMM.MTL_MKR_CD
+				,TMM.MTL_NM
+				,TMM.MTL_MKR_NO
+				,TMM.MTL_STD
+				,TMM.MTL_UNT
+				,TBM.PJT_IDX
+				,TBM.BOM_MTL_QTY
+				,TBM.BOM_IDX
+		 FROM T_MTL_MST TMM
+		 LEFT OUTER JOIN T_BOM_MST TBM ON TMM.MTL_IDX = TBM.MTL_IDX
+		 WHERE TBM.PJT_IDX = #{PJT_IDX}
 	</select>
 	
 	<select id="selectBOMbyProject" parameterType="SYTProjectVo" resultType="SYTProjectVo">
@@ -3180,7 +3179,7 @@
 		<!-- T_MTL_REQ_MST Start -->
 	<select id="selectMaterialRequest" parameterType="SYTMaterialRequestVo" resultType="SYTMaterialRequestVo">
 		SELECT 
-		R.MTL_REQ_MST,R.BOM_IDX,R.MTL_IDX,R.PJT_IDX,R.MTL_REQ_TYPE,R.MTL_REQ_QTY,
+		R.MTL_REQ_IDX,R.MTL_REQ_IDX,R.BOM_IDX,R.MTL_IDX,R.PJT_IDX,R.MTL_REQ_TYPE,R.MTL_REQ_QTY,
 		R.MTL_DLV_QTY,R.MTL_REQ_STATE,R.MTL_REQ_REG_DT,R.MTL_REQ_REG_ID,
 		P.PJT_NM,M.MTL_MKR_CD,M.MTL_NM,M.MTL_MKR_NO,M.MTL_STD,M.MTL_UNT,M.MTL_QTY
 		FROM T_MTL_REQ_MST R
@@ -3195,13 +3194,13 @@
 			AND CST_NM LIKE CONCAT('%', #{CST_NM}, '%')
 		</if>
 		-->	 
-		<if test="PJT_IDX != null and !''.equals(PJT_IDX) and !'undefined'.equals(PJT_IDX) and (PJT_IDX) > 0">
+		<if test="PJT_IDX != null and !''.equals(PJT_IDX) and !'undefined'.equals(PJT_IDX) and PJT_IDX > 0">
 			AND R.PJT_IDX = #{PJT_IDX}
 		</if>		  
-		<if test="MTL_MKR_NO != null and !''.equals(MTL_MKR_NO) ">
+		<if test="MTL_MKR_NO != null and !''.equals(MTL_MKR_NO) and !'undefined'.equals(MTL_MKR_NO)">
 			AND M.MTL_MKR_NO LIKE CONCAT('%', #{MTL_MKR_NO}, '%')
 		</if>		
-		ORDER BY MTL_REQ_MST DESC
+		ORDER BY MTL_REQ_IDX DESC
 	</select>
 	
 	<select id="selectMaterialD" parameterType="java.util.List" resultType="SYTMaterialVo">
@@ -3233,34 +3232,54 @@
 			MTL_IDX,
 			PJT_IDX,
 			MTL_REQ_TYPE,
-			MTL_REQ_QTY,
-			MTL_DLV_QTY,
+			MTL_REQ_QTY,	
+			MTL_REQ_REG_DT,
 			MTL_REQ_REG_ID
 		) VALUES
 		<foreach  collection="list" item="item"  separator=" , ">
 		(
-			#{item.bom_IDX},
-			#{item.mtl_IDX},
+			#{item.BOM_IDX},
+			#{item.MTL_IDX},
 			#{item.PJT_IDX},
-			#{item.mtl_REQ_TYPE},
-			IFNULL(#{item.mtl_REQ_QTY}, 0),
-			IFNULL(#{item.mtl_DLV_QTY}, 0),
+			#{item.MTL_REQ_TYPE},
+			#{item.MTL_REQ_QTY},
+			#{item.MTL_REQ_REG_DT},
 			#{item.REG_ID}
 		)
 		</foreach>
+		ON DUPLICATE KEY UPDATE BOM_IDX = values(BOM_IDX), MTL_IDX = values(MTL_IDX), PJT_IDX = values(PJT_IDX)
+				
+<!-- 	<foreach collection="list" item="item" separator=";"> 
+		INSERT INTO T_MTL_REQ_MST(BOM_IDX, MTL_IDX, PJT_IDX)
+		SELECT #{item.BOM_IDX}, #{item.MTL_IDX}, #{item.PJT_IDX} FROM DUAL
+		WHERE NOT EXISTS (SELECT BOM_IDX, MTL_IDX, PJT_IDX FROM T_MTL_REQ_MST WHERE PJT_IDX = #{item.PJT_IDX} AND BOM_IDX = #{item.BOM_IDX} AND MTL_IDX = #{item.MTL_IDX})
+	</foreach> -->
+		
+<!-- 		INSERT INTO T_MTL_REQ_MST(BOM_IDX, MTL_IDX, PJT_IDX, MTL_REQ_TYPE, MTL_REQ_QTY, MTL_REQ_REG_DT, MTL_REQ_REG_ID)
+		SELECT #{BOM_IDX}, #{MTL_IDX}, #{PJT_IDX}, #{MTL_REQ_TYPE}, IFNULL(#{MTL_REQ_QTY}, 0), #{MTL_REQ_REG_DT}, #{REG_ID} FROM DUAL
+		WHERE NOT EXISTS (SELECT * FROM T_MTL_REQ_MST WHERE PJT_IDX = #{PJT_IDX} AND BOM_IDX = #{BOM_IDX} AND MTL_IDX = #{MTL_IDX})	 -->
+		
+<!--     INSERT INTO T_MTL_REQ_MST(BOM_IDX, MTL_IDX, PJT_IDX, MTL_REQ_TYPE, MTL_REQ_QTY)
+    SELECT 1, 1224, 1, 'TYPE', 10 FROM DUAL
+    WHERE NOT EXISTS (SELECT * FROM T_MTL_REQ_MST WHERE PJT_IDX = 1 and BOM_IDX =1 and MTL_IDX =1224)	 -->			
 	</insert>
 	<update id="updateMaterialRequest" parameterType="SYTMaterialRequestVo">
 		UPDATE T_MTL_REQ_MST SET
 			MTL_REQ_TYPE = #{item.mtl_REQ_TYPE},
 			MTL_REQ_QTY = IFNULL(#{item.mtl_REQ_QTY}, 0),
 			MTL_DLV_QTY =  IFNULL(#{item.mtl_DLV_QTY}, 0)
-		WHERE MTL_REQ_MST = #{MTL_REQ_MST}
+		WHERE MTL_REQ_IDX = #{MTL_REQ_IDX}
 	</update>
 	<update id="deleteMaterialRequest" parameterType="SYTMaterialRequestVo">
 		UPDATE T_MTL_REQ_MST SET
 			CST_DEL_YN='Y'
-		WHERE MTL_REQ_MST = #{MTL_REQ_MST}
+		WHERE MTL_REQ_IDX = #{MTL_REQ_IDX}
 	</update>
+	<update id="updateReqQuantity" parameterType="SYTMaterialRequestVo">
+		UPDATE T_MTL_REQ_MST SET
+		MTL_REQ_QTY = #{MTL_REQ_QTY}
+		WHERE MTL_REQ_IDX = #{MTL_REQ_IDX}
+	</update>		
 	<!-- T_MTL_REQ_MST End -->		
 	
 	<insert id="insertFile" parameterType="java.util.HashMap" >
@@ -3326,6 +3345,93 @@
 			(#{item.MTL_IDX},#{item.PJT_IDX},#{item.MTL_QTY},SYSDATE(),#{item.REG_ID},'N')
 			</foreach>
 		</insert>
+		
+	<!-- T_EST_MST 구매견적 Start -->
+	<select id="selectEstimate" parameterType="SYTEstimateVo" resultType="SYTEstimateVo">
+		SELECT 
+		E.EST_IDX,E.MTL_EST_MOQ,E.MTL_EST_PRICE,E.MTL_EST_DLV_DT,E.MTL_EST_BG,E.MTL_EST_REG_DT,E.MTL_EST_RE_DT,E.MTL_EST_REG_ID,E.MTL_EST_DEL_YN,
+		P.PJT_IDX,P.PJt_NM,
+		M.MTL_IDX,M.MTL_NM,M.MTL_MKR_NO,M.MTL_STD,M.MTL_MKR_CD,M.MTL_UNT,
+		V.VDR_IDX,V.VDR_NM,R.MTL_REQ_QTY,R.MTL_REQ_IDX
+		FROM T_EST_MST E
+		LEFT JOIN T_PJT_MST P ON E.PJT_IDX = P.PJT_IDX
+		LEFT JOIN T_MTL_MST M ON E.MTL_IDX = M.MTL_IDX
+		LEFT JOIN T_VDR_MST V ON E.VDR_IDX = V.VDR_IDX
+		LEFT JOIN T_MTL_REQ_MST R ON E.MTL_REQ_IDX = R.MTL_REQ_IDX
+		WHERE E.MTL_EST_DEL_YN = 'N'
+		<!-- 			
+		<if test="CST_IDX!=null and !''.equals(CST_IDX) ">
+			AND CST_IDX = #{CST_IDX}
+		</if>
+		<if test="CST_NM!=null and !''.equals(CST_NM) ">
+			AND CST_NM LIKE CONCAT('%', #{CST_NM}, '%')
+		</if>
+		-->	 
+		<if test="PJT_IDX != null and !''.equals(PJT_IDX) and !'undefined'.equals(PJT_IDX) and PJT_IDX > 0">
+			AND R.PJT_IDX = #{PJT_IDX}
+		</if>		  
+		<if test="MTL_MKR_NO != null and !''.equals(MTL_MKR_NO) and !'undefined'.equals(MTL_MKR_NO)">
+			AND M.MTL_MKR_NO LIKE CONCAT('%', #{MTL_MKR_NO}, '%')
+		</if>		
+		ORDER BY E.EST_IDX DESC
+	</select>
+	<select id="selectEstimateD" parameterType="java.util.List" resultType="SYTEstimateVo">
+		SELECT 	TMM.MTL_IDX,
+				TMM.MTL_MKR_CD,
+				TMM.MTL_MKR_NO,
+				TMM.MTL_NM,
+				TMM.MTL_STD,
+				TMM.MTL_UNT,
+				TBM.BOM_MTL_QTY,
+				TBM.PJT_IDX
+		  FROM	T_MTL_MST TMM
+	 LEFT JOIN	T_BOM_MST TBM
+	 		ON	TMM.MTL_IDX = TBM.MTL_IDX 
+	 	 WHERE	TBM.PJT_IDX in
+	 	 <foreach  collection="list" item="item" open="(" close=")" separator=" , ">
+	 	 	#{item.PJT_IDX}
+	 	 </foreach>
+	 	 AND	TMM.MTL_IDX in 
+	 	 <foreach  collection="list" item="item"   open="(" close=")" separator=" , ">
+	 	   		#{item.mtl_IDX}
+	 	 </foreach>
+	</select>
+	<insert id="insertEstimate" parameterType="java.util.List">
+		INSERT INTO T_EST_MST
+		(
+			PJT_IDX,
+			MTL_IDX,
+			VDR_IDX,
+			MTL_REQ_IDX,
+			MTL_REQ_QTY,
+			MTL_EST_REG_DT,
+			MTL_EST_REG_ID
+		) VALUES
+		<foreach  collection="list" item="item"  separator=" , ">
+		(
+			#{item.PJT_IDX},
+			#{item.MTL_IDX},
+			#{item.VDR_IDX},
+			#{item.MTL_REQ_IDX},
+			#{item.MTL_REQ_QTY},
+			#{item.MTL_EST_REG_DT},
+			#{item.MTL_EST_REG_ID}
+		)
+		</foreach>
+	</insert>
+	<update id="updateEstimate" parameterType="SYTEstimateVo">
+		UPDATE T_EST_MST SET
+			MTL_REQ_TYPE = #{item.mtl_REQ_TYPE},
+			MTL_REQ_QTY = IFNULL(#{item.mtl_REQ_QTY}, 0),
+			MTL_DLV_QTY =  IFNULL(#{item.mtl_DLV_QTY}, 0)
+		WHERE MTL_REQ_IDX = #{MTL_REQ_IDX}
+	</update>
+	<update id="deleteEstimate" parameterType="SYTEstimateVo">
+		UPDATE T_EST_MST SET
+			MTL_EST_DEL_YN='Y'
+		WHERE MTL_REQ_IDX = #{MTL_REQ_IDX}
+	</update>
+	<!-- T_EST_MST 구매견적 End -->		
 	
 	
 		

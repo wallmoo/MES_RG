@@ -47,6 +47,7 @@ import kr.co.passcombine.set.vo.SYAccountVo;
 import kr.co.passcombine.set.vo.SYBomVo;
 import kr.co.passcombine.set.vo.SYTBranchVo;
 import kr.co.passcombine.set.vo.SYTClientVo;
+import kr.co.passcombine.set.vo.SYTEstimateVo;
 import kr.co.passcombine.set.vo.SYTMaterialRequestVo;
 import kr.co.passcombine.set.vo.SYTMaterialVo;
 import kr.co.passcombine.set.vo.SYTProjectVo;
@@ -1622,7 +1623,7 @@ public class SYInfoService {
 	public List<SYTMaterialRequestVo> selectMaterialRequest(SYTMaterialRequestVo Vo){//자재 요청 조회
 		return infoDAO.selectMaterialRequest(Vo);
 	}	
-	public int insertMaterialRequest(SYTMaterialRequestVo vo) {//자재 요청
+	public int insertMaterialRequest(List<Map<String,Object>> vo) {//자재 요청
 		return infoDAO.insertMaterialRequest(vo);
 	}	
 	public int updateMaterialRequest(SYTMaterialRequestVo vo) {//자재 요청 수정
@@ -1631,6 +1632,9 @@ public class SYInfoService {
 	public int deleteMaterialRequest(SYTMaterialRequestVo vo) {//자재 요청 삭제
 		return infoDAO.deleteMaterialRequest(vo);
 	}	
+	public int updateReqQuantity(SYTMaterialRequestVo vo) {
+		return infoDAO.updateReqQuantity(vo);
+	}		
 	// Material Request End	
 	public List<SYTMaterialVo> selectMaterialD(List<Map<String, Object>> vo) {
 		// TODO Auto-generated method stub
@@ -1652,7 +1656,20 @@ public class SYInfoService {
 	
 	
 	
-	
+	// Estimate Start	
+	public List<SYTEstimateVo> selectEstimate(SYTEstimateVo vo){//자재 요청 조회
+		return infoDAO.selectEstimate(vo);
+	}	
+	public int insertEstimate(List<Map<String,Object>> vo) {//자재 요청
+		return infoDAO.insertEstimate(vo);
+	}	
+	public int updateEstimate(SYTEstimateVo vo) {//자재 요청 수정
+		return infoDAO.updateEstimate(vo);
+	}
+	public int deleteEstimate(SYTEstimateVo vo) {//자재 요청 삭제
+		return infoDAO.deleteEstimate(vo);
+	}	
+	// Material End		
 	
 	
 }

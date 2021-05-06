@@ -44,7 +44,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 				</h1>
 				<ol class="breadcrumb">
 					<li><a href="#"><i class="fa fa-dashboard"></i>구매/자재 관리 </a></li>
-					<li class="active">구매 견적 관리(관리자용)</li>
+					<li class="active">구매 견적 관리(담당자용)</li>
 				</ol>
 			</section>
 
@@ -59,9 +59,9 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 											<div class="row">
 												<div class="box box-success box-solid" style="min-height: 90px; border-color: #DB8EB5;">
 													<div class="box-header with-border" style="background-color: #DB8EB5;">
-														<h3 class="box-title">프로젝트 정보</h3>
+														<h3 class="box-title">구매 견적 결과 관리</h3>
 														<div class="box-tools pull-right">
-															<button type="button" id="btn_excel_csr" onclick="bomNewOrder();" class="btn btn-success btn-sm">구매 발주 등록</button>
+															<button type="button" id="btn_excel_csr" onclick="bomNewOrder();" class="btn btn-success btn-sm">Excel Download</button>
 															<button type="button" id="btn_dlv_csr" onclick="bomNewOrder();" class="btn btn-info btn-sm">구매 발주 등록</button>
 															<button type="button" id="btn_ins_csr" onclick="bomOrder();" class="btn btn-primary btn-sm">등록/수정</button>
 															<button type="button" id="btn_search_csr" onclick="loadLeftGrid();" class="btn btn-primary btn-sm" onclick="">조회</button>
@@ -71,9 +71,8 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 														<div class="row">
 															<div class="form-group">																
 																<div class="col-sm-2">
-																	<label>프로젝트 등급</label> 
-																	<input type="text" id="S_PJT_GRD" name="S_PJT_GRD" placeholder="ex) 프로젝트 등급"
-																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadLeftGrid(); return false;}"/>
+																	<label>거래처</label> 
+																	<select id="S_CST_IDX" name="S_CST_IDX" class="form-control" style="height: 30px;" ></select>
 																</div>
 									
 																<div class="col-sm-2">
@@ -83,35 +82,31 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 																</div>
 																
 																<div class="col-sm-2">
-																	<label>고객사</label> 
-																	<select id="S_CST_IDX" name="S_CST_IDX" class="form-control" style="height: 30px;" ></select>
-																</div>	
-																							
-																<div class="col-sm-2">
-																	<label>품명</label> 
-																	<input type="text" id="S_PJT_PRD_NM" name="S_PJT_PRD_NM" placeholder="ex) 품명"
-																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {loadLeftGrid(); return false;}"/>
-																</div>
-
-																<div class="col-sm-2">
-																	<label>납품 요청일</label>
+																	<label>견적 요청일</label>
 																	<div class="input-group">
 																		<input type="text" class="form-control pull-right input-sm" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd">
 																		<div class="input-group-addon">
 																			<i class="fa fa-calendar"></i>
 																		</div>
 																	</div>
-																</div>
-
+																</div>		
+																
 																<div class="col-sm-2">
-																	<label>프로젝트 등록일</label>
-																	<div class="input-group">
-																		<input type="text" 
-																			class="form-control pull-right input-sm" id="S_PJT_REG_DT" placeholder="yyyymmdd~yyyymmdd">
-																		<div class="input-group-addon">
-																			<i class="fa fa-calendar"></i>	
-																		</div>
-																	</div>
+																	<label>품명</label> 
+																	<input type="text" id="S_PJT_PRD_NM" name="S_PJT_PRD_NM" placeholder="ex) 품명"
+																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {loadLeftGrid(); return false;}"/>
+																</div>																														
+																
+																<div class="col-sm-2">
+																	<label>제조사</label> 
+																	<input type="text" id="S_PJT_GRD" name="S_PJT_GRD" placeholder="ex) 프로젝트 등급"
+																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadLeftGrid(); return false;}"/>
+																</div>	
+																							
+																<div class="col-sm-2">
+																	<label>제조사 Model No</label> 
+																	<input type="text" id="S_PJT_PRD_NM" name="S_PJT_PRD_NM" placeholder="ex) 제조사 Model No"
+																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {loadLeftGrid(); return false;}"/>
 																</div>																
 															</div>
 														</div>
@@ -150,12 +145,6 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 										<input type="combo" id="S_MTL_MKR_CD" name="S_MTL_MKR_CD" class="form-control input-sm pull-right" placeholder="제조사" 
 													onkeypress="if(event.keyCode==13) {requestGrid3(); return false;}" >
 									</div>		
-																	
-<!--  									<label class="col-sm-2 control-label" style="padding-left: 0px">자재분류</label>
-									<div class="col-sm-2" style="padding-left: 0px; padding-right: 0px">
-										<input type="combo" id="S_MTL_CATE" name="S_MTL_CATE" class="form-control input-sm pull-right" placeholder="자재분류" 
-													onkeypress="if(event.keyCode==13) {requestGrid3(); return false;}" >
-									</div> -->
 									
 									<label class="col-sm-1 control-label" style="padding-left: 0px">품목</label>
 									<div class="col-sm-2" style="padding-left: 0px; padding-right: 0px">
@@ -254,6 +243,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			<jsp:param name="page_title" value="0" />
 		</jsp:include>
 	</div>
+	
 	<input type="hidden" id="hiddenIdx" name="hiddenIdx" />
 	<input type="hidden" id="rightIDX" name="rightIdx" />
 	<!-- ./wrapper -->
@@ -292,9 +282,9 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		fnLoadDeliveryOption();//검색폼 달력
 		
 		fnLoadLeftGrid();
-		fnLoadRightGrid();
+/* 		fnLoadRightGrid();
 		loadGrid3();
-		loadGrid4();
+		loadGrid4(); */
 	})
 
 
@@ -306,23 +296,33 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			name : 'grid_list',
 			show : {
 				lineNumbers : true,
-				footer : true
+				footer : true,
+				selectColumn : true
 			},
-			multiSelect : false,
+			multiSelect : true,
 			columns : [ 
-				{ field:'pjt_IDX', caption:'프로젝트 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
-				{ field:'pjt_REG_DT', caption:'프로젝트 등록일', size:'7%', style:'text-align:center', sortable: true},
-	        	{ field:'pjt_GRD', caption:'프로젝트 등급', size:'10%', style:'text-align:center', sortable: true},
-	        	{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
-				{ field:'pjt_CD', caption:'프로젝트 코드', size:'17%', style:'text-align:center', sortable: true},
-				{ field:'cst_NM', caption:'고객사', size:'8%', style:'text-align:center', sortable: true}, 
-				{ field:'pjt_PRD_NM', caption:'제품명', size:'8%', style:'text-align:center', sortable: true}, 
-				{ field:'pjt_PRD_QTY', caption:'발주수량', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'pjt_PRD_UNT_NM', caption:'단위', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'pjt_DLV_DT', caption:'납품 요청일', size:'8%', style:'text-align:center', sortable: true}
-			],
+				{ field:'pjt_CD', caption:'프로젝트코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'MTL_REQ_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true, hidden: true},
+				{ field:'VDR_IDX', caption:'거래처 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'vdr_NM', caption:'거래처', size:'8%', style:'text-align:center', sortable: true}, 
+				{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
+				{ field:'mtl_NM', caption:'품목', size:'10%', style:'text-align:center' , sortable: true},
+				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'17%', style:'text-align:center', sortable: true},
+				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_EST_MOQ', caption:'MOQ', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_EST_REG_DT', caption:'견적요청일', size:'10%', style:'text-align:center', sortable: true},
+				{ field:'mtl_EST_PRICE', caption:'단가', size:'7%', style:'text-align:center', sortable: true},
+	        	{ field:'mtl_TOT_PRICE', caption:'금액', size:'10%', style:'text-align:center', sortable: true},
+				{ field:'mtl_EST_DLV_DT', caption:'납기가능일', size:'10%', style:'text-align:center', sortable: true},
+				{ field:'mtl_EST_BG', caption:'비고', size:'8%', style:'text-align:center', sortable: true},
+			],			
+			
 			sortData : [ {
-				field : 'pjt_IDX',
+				field : 'EST_IDX',
 				direction : 'DESC'
 			} 
 			],
@@ -352,7 +352,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	function loadLeftGrid() {//grid_list Data Arr
 		console.log("loadLeftGrid()");
 		
-		var page_url = "/info/account/selectProject";
+		var page_url = "/info/info/selectEstimate";
 		var postData = "PJT_GRD=" + encodeURIComponent($("#S_PJT_GRD").val()) 
 				+ "&PJT_NM=" + encodeURIComponent($("#S_PJT_NM").val()) 
 				+ "&CST_IDX="   + encodeURIComponent($("#S_CST_IDX").val())

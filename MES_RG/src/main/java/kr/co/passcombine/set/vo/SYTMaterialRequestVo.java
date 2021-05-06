@@ -6,7 +6,7 @@ public class SYTMaterialRequestVo implements Serializable{
 
 	private static final long serialVersionUID = 1L;
 
-	private int MTL_REQ_MST;
+	private int MTL_REQ_IDX;
 	private int BOM_IDX;
 	private int MTL_IDX;
 	private int PJT_IDX;
@@ -28,11 +28,11 @@ public class SYTMaterialRequestVo implements Serializable{
 	private String MTL_QTY;
 
 	
-	public int getMTL_REQ_MST() {
-		return MTL_REQ_MST;
+	public int getMTL_REQ_IDX() {
+		return MTL_REQ_IDX;
 	}
-	public void setMTL_REQ_MST(int mTL_REQ_MST) {
-		this.MTL_REQ_MST = mTL_REQ_MST;
+	public void setMTL_REQ_IDX(int mTL_REQ_IDX) {
+		this.MTL_REQ_IDX = mTL_REQ_IDX;
 	}
 	public int getBOM_IDX() {
 		return BOM_IDX;
