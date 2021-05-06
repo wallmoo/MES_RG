@@ -42,6 +42,7 @@ import kr.co.passcombine.set.vo.SYAccountVo;
 import kr.co.passcombine.set.vo.SYBomVo;
 import kr.co.passcombine.set.vo.SYTBranchVo;
 import kr.co.passcombine.set.vo.SYTClientVo;
+import kr.co.passcombine.set.vo.SYTEstimateVo;
 import kr.co.passcombine.set.vo.SYTMaterialRequestVo;
 import kr.co.passcombine.set.vo.SYTMaterialVo;
 import kr.co.passcombine.set.vo.SYTProjectVo;
@@ -4613,5 +4614,156 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
+	
+	//change Request Material Quantity
+	@ResponseBody
+	@RequestMapping(value = "/info/updateReqQuantity", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String updateReqQuantity(@ModelAttribute SYTMaterialRequestVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.changeBOMQuantity is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
+		JSONParser parser = new JSONParser();
+
+		try {
+			String MTL_REQ_IDX = "0";
+			String MTL_REQ_QTY = "0";
+
+			int cnt = 0;
+
+			MTL_REQ_IDX = request.getParameter("MTL_REQ_IDX");
+			MTL_REQ_QTY = request.getParameter("MTL_REQ_QTY");
+
+			// hKey
+			vo.setMTL_REQ_IDX(Integer.parseInt(MTL_REQ_IDX));
+			vo.setMTL_REQ_QTY(MTL_REQ_QTY);
+
+			cnt = sYInfoService.updateReqQuantity(vo);
+
+			System.out.println("BCO_IDX = " + MTL_REQ_IDX);
+			System.out.println("cnt = " + cnt);
+
+			resultData.put("status", HttpStatus.OK.value());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+
+		return resultData.toJSONString();
+	}	
+	
+	/**
+	 * <pre>
+	* 1. MethodName : Estimate
+	* 2. ClassName  : InfoController.java
+	* 3. Comment    : 관리자 > 구매/자재 관리 > 구매 견적 관리
+	* 4. 작성자       : DEV_KIMDEUKYONG
+	* 5. 작성일       : 2021. 05. 05.
+	 * </pre>
+	 *
+	 * @param commandMap
+	 * @return
+	 * @throws Exception
+	 */
+	// selectMaterialRequest
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/info/selectEstimate", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectEstimate(@ModelAttribute SYTEstimateVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.selectEstimate is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			List<SYTEstimateVo> dataList = sYInfoService.selectEstimate(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		
+		return resultData.toJSONString();
+	}
+
+	// insertEstimate
+	@ResponseBody
+	@RequestMapping(value = "/info/insertEstimate", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public int insertEstimate(HttpServletRequest request, @RequestParam String jsonData) {
+		List<Map<String, Object>> vo = null;
+
+		logger.debug("FrontendController.insertEstimate is called." + request.getParameter("S_VDR_IDX1"));
+
+		String REG_ID = SessionUtil.getMemberId(request);
+
+		ObjectMapper mapper = new ObjectMapper();
+		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() { };
+		
+		
+		try {
+			vo = mapper.readValue(jsonData, typeRef);
+			System.out.println("Dd");
+		} catch (IOException e1) {
+			System.out.println(e1);
+			e1.printStackTrace();
+		}
+		for (int i = 0; i < vo.size(); i++) {
+			vo.get(i).put("REG_ID", REG_ID);
+		}
+		
+		int result = 0;
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			result = sYInfoService.insertEstimate(vo);//자재요청내역 저장
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		
+		return result;
+	}
+
+	// deleteEstimate
+	@ResponseBody
+	@RequestMapping(value = "/account/deleteEstimate", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String deleteClient(@ModelAttribute SYTEstimateVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.deleteAccount() is called.");
+
+		JSONObject resultData = new JSONObject();
+		try {
+			int result = 0;
+
+			result = sYInfoService.deleteEstimate(vo);
+
+			System.out.println("result = " + result);
+
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", result);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", 0);
+		}
+		
+		return resultData.toJSONString();
+	}	
 
 }
