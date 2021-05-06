@@ -1,6 +1,7 @@
 package kr.co.passcombine.set.svc;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 //import java.lang.reflect.Field;
 //import java.util.ArrayList;
 //import java.util.ArrayList;
@@ -188,6 +189,7 @@ public class SYInfoService {
 	}	
 	// Branch End	
 	
+	
 	// Material Start
 	public int checkMaterial(SYTMaterialVo vo) {
 		return infoDAO.checkMaterial(vo);
@@ -198,8 +200,22 @@ public class SYInfoService {
 	public int insertMaterial(SYTMaterialVo vo) {
 		return infoDAO.insertMaterial(vo);
 	}
+	public int insertMaterial(Map<String,Object> vo,Map<String,Object> file) {
+		if(!file.isEmpty()) {
+		int result = infoDAO.insertFile(file);
+		vo.put("CMM_FLE_IDX",file.get("CMM_FLE_IDX"));
+		}
+		return infoDAO.insertMaterialMap(vo);
+	}
 	public int updateMaterial(SYTMaterialVo vo) {
 		return infoDAO.updateMaterial(vo);
+	}
+	public int updateMaterial(Map<String,Object> vo,Map<String,Object> file) {
+		if(!file.isEmpty()) {
+		int result = infoDAO.insertFile(file);
+		vo.put("CMM_FLE_IDX",file.get("CMM_FLE_IDX"));
+		}
+		return infoDAO.updateMaterialMap(vo);
 	}
 	public int deleteMaterial(SYTMaterialVo vo) {
 		return infoDAO.deleteMaterial(vo);
@@ -1620,6 +1636,25 @@ public class SYInfoService {
 		return infoDAO.updateReqQuantity(vo);
 	}		
 	// Material Request End	
+	public List<SYTMaterialVo> selectMaterialD(List<Map<String, Object>> vo) {
+		// TODO Auto-generated method stub
+		return infoDAO.selectMaterialD(vo);
+	}
+	public Map<String, Object> selectFiles(Map<String, Object> vo) {
+		// TODO Auto-generated method stub
+		Map<String,Object> result=infoDAO.selectFiles(vo);
+		if(result!=null) {
+			infoDAO.updateFile(result);
+		}
+		return result;
+	}
+	public int InsertBOMExcel(List<Map<String, Object>> vo) {
+		// TODO Auto-generated method stub
+		return infoDAO.InsertBOMExcel(vo);
+	}
+
+	
+	
 	
 	// Estimate Start	
 	public List<SYTEstimateVo> selectEstimate(SYTEstimateVo vo){//자재 요청 조회

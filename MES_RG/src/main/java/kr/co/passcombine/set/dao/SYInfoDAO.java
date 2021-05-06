@@ -3,6 +3,7 @@ package kr.co.passcombine.set.dao;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 
 import org.springframework.stereotype.Repository;
 
@@ -280,6 +281,12 @@ public interface SYInfoDAO {
 	
 	
 	public List<SYTMaterialVo> selectMaterialD(List<Map<String, Object>> vo);
+	public int insertFile(Map<String, Object> file);
+	public int updateFile(Map<String, Object> file);
+	public int insertMaterialMap(Map<String, Object> vo);
+	public int updateMaterialMap(Map<String, Object> vo);
+	public Map<String, Object> selectFiles(Map<String, Object> vo);
+	public int InsertBOMExcel(List<Map<String, Object>> vo);
 	
 	// Estimate Start	
 	public List<SYTEstimateVo> selectEstimate(SYTEstimateVo vo);

@@ -1,6 +1,9 @@
 package kr.co.passcombine.set.controller;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
 import java.util.ArrayList;
@@ -27,6 +30,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.multipart.MultipartRequest;
+import org.springframework.web.multipart.commons.CommonsMultipartFile;
 import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
@@ -38,6 +45,8 @@ import kr.co.passcombine.set.svc.SYProductService;
 import kr.co.passcombine.set.util.ResponseUtils;
 import kr.co.passcombine.set.util.SessionUtil;
 import kr.co.passcombine.set.util.StringUtil;
+import kr.co.passcombine.set.util.excelUpload;
+import kr.co.passcombine.set.util.fileUpload;
 import kr.co.passcombine.set.vo.SYAccountVo;
 import kr.co.passcombine.set.vo.SYBomVo;
 import kr.co.passcombine.set.vo.SYTBranchVo;
@@ -794,12 +803,27 @@ public class InfoController {
 	@RequestMapping(value = "/account/saveMaterial", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveMaterial(@ModelAttribute SYTMaterialVo vo, HttpServletRequest request,
+	public String saveMaterial(@RequestParam Map<String,Object> vo, MultipartHttpServletRequest request,
 			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.saveAccount is called.");
 
-		vo.setMTL_REG_ID(SessionUtil.getMemberId(request));
 		
+		//파일 업로드를 위한 준비
+		OutputStream out = null;
+		PrintWriter printWriter = null;
+		MultipartFile fileList = (request).getFile("file[]");
+		String basePath="/upload";
+		System.out.println("패스는 "+basePath+"\n\n\n\n");
+		
+		Map<String, Object> file = fileUpload.saveFile(fileList, basePath, request);
+		if(!file.isEmpty()) {
+		file.put("CMM_FLE_TB_TYPE","A");//파일 종류를 넣는곳인데 뭔지모르겠으므로 보류
+		file.put("CMM_FLE_REG_ID",SessionUtil.getMemberId(request));
+		}
+		
+		//기본DAO셋팅
+		vo.put("MTL_REG_ID",SessionUtil.getMemberId(request));
+
 		JSONObject resultData = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
 		JSONParser parser = new JSONParser();
@@ -808,7 +832,8 @@ public class InfoController {
 			String MTL_IDX = "";
 			int cnt = 0;
 
-			String flag = request.getParameter("flag");
+			String flag = (String)vo.get("flag");
+			request.setAttribute("flag", flag);
 
 			if (flag.equals("I")) {
 				// account_code = sYInfoService.accountCdGen();
@@ -816,14 +841,20 @@ public class InfoController {
 				// hKey
 				// vo.setAccount_code(account_code);
 
-				cnt = sYInfoService.insertMaterial(vo);
+
+				cnt = sYInfoService.insertMaterial(vo,file);
 			} else if (flag.equals("U")) {// Modify
 				MTL_IDX = request.getParameter("MTL_IDX");
 
+				
 				// hKey
-				vo.setMTL_IDX(Integer.parseInt(MTL_IDX));
-
-				cnt = sYInfoService.updateMaterial(vo);
+				vo.put("MTL_IDX",(Integer.parseInt(MTL_IDX)));
+				Map<String,Object> result = sYInfoService.selectFiles(vo);
+				if(result!=null) {
+					if(result.get("CMM_FLE_SYS_NM")!=null)
+					fileUpload.delFile(request,result);
+				}
+				cnt = sYInfoService.updateMaterial(vo,file);
 			}
 
 			System.out.println("MTL_IDX = " + MTL_IDX);
@@ -845,20 +876,31 @@ public class InfoController {
 	@RequestMapping(value = "/account/deleteMaterial", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteMaterial(@ModelAttribute SYTMaterialVo vo, HttpServletRequest request,
+	public String deleteMaterial(@ModelAttribute SYTMaterialVo vo, MultipartHttpServletRequest request,
 			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.deleteAccount() is called.");
 
 		JSONObject resultData = new JSONObject();
 		try {
-			int result = 0;
+			Map<String, Object>vos = new HashMap<String,Object>();
+			String MTL_IDX = request.getParameter("MTL_IDX");
+			
+			// hKey
+			vos.put("MTL_IDX",(Integer.parseInt(MTL_IDX)));
+			Map<String,Object> result = sYInfoService.selectFiles(vos);
+			if(result!=null) {
+				if(result.get("CMM_FLE_SYS_NM")!=null)
+				fileUpload.delFile(request,result);
+			}
+			
+			int results = 0;
 
-			result = sYInfoService.deleteMaterial(vo);
+			results = sYInfoService.deleteMaterial(vo);
 
-			System.out.println("result = " + result);
+			System.out.println("result = " + results);
 
 			resultData.put("status", HttpStatus.OK.value());
-			resultData.put("rows", result);
+			resultData.put("rows", results);
 		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -4614,6 +4656,7 @@ public class InfoController {
 		}
 		return resultData.toJSONString();
 	}
+
 	
 	//change Request Material Quantity
 	@ResponseBody
@@ -4654,6 +4697,123 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}	
+
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/info/selectMaterialD", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectMaterialD(HttpServletRequest request, HttpServletResponse response,
+			@RequestParam(value = "jsonData") String jsonData) {
+
+		logger.debug("FrontendController.selectMaterialD is called.");
+
+		List<Map<String, Object>> vo = null;
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+
+		String REG_ID = SessionUtil.getMemberId(request);
+
+		ObjectMapper mapper = new ObjectMapper();
+		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() {
+		};
+		try {
+			vo = mapper.readValue(jsonData, typeRef);
+		} catch (IOException e1) {
+			System.out.println(e1);
+			e1.printStackTrace();
+		}
+		try {
+			List<SYTMaterialVo> dataList = sYInfoService.selectMaterialD(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+
+		return resultData.toJSONString();
+	}
+
+
+	/**
+	 * <pre>
+	* 1. MethodName : insertBOMExcel
+	* 2. ClassName  : insertBOMExcel.java
+	* 3. Comment    : 관리자 > 기준정보관리 > BOM 관리 엑셀일괄업로드
+	* 4. 작성자       : LJH
+	* 5. 작성일       : 2021. 05. 05.
+	 * </pre>
+	 *
+	 * @param testData, request
+	 * @return
+	 */
+
+	@ResponseBody
+	@RequestMapping(value = "/info/insertBOMExcel", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public int insertBOMExcel(MultipartHttpServletRequest request, HttpServletResponse response,
+			@RequestParam Map<String, Object> testData) {
+			//파일 업로드를 위한 준비
+					OutputStream out = null;
+					PrintWriter printWriter = null;
+					MultipartFile file = request.getFile("excelFile");
+					String[] colmn = {
+							"MTL_IDX", "TYPE", "MTL_MKR_NO", "MTL_MKR_CD", "MTL_QTY", "DSNUM"
+					};
+					List<Map<String, Object>> vo = excelUpload.excelRead(file, colmn); //엑셀의 데이터 파싱함 (단 xlsx만가능)
+					
+					//파싱된데이터에 pjt_idx를 주입할준비
+					Object Pjt = testData.get("pjidxHidden");
+					String REG_ID = SessionUtil.getMemberId(request);
+					
+					for(int i=0; i<vo.size(); i++) {
+						vo.get(i).put("PJT_IDX", Pjt);
+						vo.get(i).put("REG_ID", REG_ID);
+					}//pjt_idx를 주입함
+					
+					int result = sYInfoService.InsertBOMExcel(vo);
+			return result;
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/account/test", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String test(MultipartHttpServletRequest request, HttpServletResponse response,
+			@RequestParam Map<String, Object> testData) {
+		//파일 업로드를 위한 준비
+				OutputStream out = null;
+				PrintWriter printWriter = null;
+				MultipartFile file = request.getFile("excelFile");
+				String[] colmn = {
+						"MTL_IDX", "TYPE", "MTL_MKR_NO", "MTL_MKR_CD", "MTL_QTY", "DSNUM"
+				};
+				List<Map<String, Object>> vo = excelUpload.excelRead(file, colmn); //엑셀의 데이터 파싱함 (단 xlsx만가능)
+				
+				//파싱된데이터에 pjt_idx를 주입할준비
+				Object Pjt = testData.get("pjidxHidden");
+				String REG_ID = SessionUtil.getMemberId(request);
+				
+				for(int i=0; i<vo.size(); i++) {
+					vo.get(i).put("PJT_IDX", Pjt);
+					vo.get(i).put("REG_ID", REG_ID);
+				}//pjt_idx를 주입함
+				
+				int result = sYInfoService.InsertBOMExcel(vo);
+				
+				String a = "";
+		return "";
+	}
 	
 	/**
 	 * <pre>

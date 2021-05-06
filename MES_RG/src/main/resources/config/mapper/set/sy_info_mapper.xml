@@ -938,7 +938,7 @@
 
 	</select>
 
-	<insert id="insPartitionDetail" parameterType="Map">
+	<insert id="insPartitionDetail" parameterType="java.util.HashMap">
 		INSERT INTO partition_detail
 		(raw_item_code, partition_code, item_code,
 		item_nm, item_spec, creator, updater, date_created, date_updated)
@@ -1227,7 +1227,7 @@
 
 	</update>
 
-	<delete id="delMachine" parameterType="Map">
+	<delete id="delMachine" parameterType="java.util.HashMap">
 		DELETE FROM machine_master
 		WHERE
 		<foreach collection="param" item="machine_info" open="machine_code IN ("
@@ -3282,7 +3282,70 @@
 	</update>		
 	<!-- T_MTL_REQ_MST End -->		
 	
+	<insert id="insertFile" parameterType="java.util.HashMap" >
+	INSERT INTO T_CMM_FLE
+		(CMM_FLE_ATT_EXT,CMM_FLE_ORG_NM,CMM_FLE_SYS_NM,CMM_FLE_ATT_SIZE,CMM_FLE_ATT_PATH
+		,CMM_FLE_USE_YN,CMM_FLE_REG_DT,CMM_FLE_REG_ID,CMM_FLE_DEL_YN)
+	VALUES(
+		#{CMM_FLE_ATT_EXT},#{CMM_FLE_ORG_NM},#{CMM_FLE_SYS_NM},#{CMM_FLE_ATT_SIZE},#{CMM_FLE_ATT_PATH},
+		#{CMM_FLE_USE_YN},SYSDATE(),#{CMM_FLE_REG_ID},#{CMM_FLE_DEL_YN}
+		)
+	<selectKey resultType="int" keyProperty="CMM_FLE_IDX" order="AFTER">
+        SELECT LAST_INSERT_ID()
+    </selectKey>  
+	</insert>
 	
+	<insert id="insertMaterialMap" parameterType="java.util.HashMap">
+		INSERT INTO T_MTL_MST
+		( CMM_FLE_IDX, MTL_CATE, MTL_NM, MTL_MKR_CD, MTL_MKR_NO, MTL_STD, MTL_PRICE, MTL_UNT, MTL_DS_URL, MTL_BG, MTL_REG_ID )
+		VALUES
+		(
+		IFNULL(#{CMM_FLE_IDX},null), #{MTL_CATE}, #{MTL_NM}, #{MTL_MKR_CD}, #{MTL_MKR_NO}, #{MTL_STD}, #{MTL_PRICE}, #{MTL_UNT}, #{MTL_DS_URL}, #{MTL_BG}, #{MTL_REG_ID}
+		)
+	</insert>
+	<select id="selectFiles" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+		SELECT 	TCF.CMM_FLE_ATT_PATH
+				,TCF.CMM_FLE_SYS_NM
+				,TCF.CMM_FLE_IDX
+		  FROM	T_MTL_MST TMM
+	 LEFT JOIN	T_CMM_FLE TCF
+	 		ON	TMM.CMM_FLE_IDX = TCF.CMM_FLE_IDX
+	 	 WHERE	TMM.MTL_IDX = #{MTL_IDX}
+	</select>
+	<update id="updateMaterialMap" parameterType="java.util.HashMap">
+			UPDATE T_MTL_MST SET
+			<if test="CMM_FLE_IDX!=NULL and CMM_FLE_IDX!=0">
+			CMM_FLE_IDX = #{CMM_FLE_IDX},
+			</if>
+			MTL_CATE 	= #{MTL_CATE},
+			MTL_NM 		= #{MTL_NM},
+			MTL_MKR_CD 	= #{MTL_MKR_CD},
+			MTL_MKR_NO 	= #{MTL_MKR_NO},
+			MTL_STD 	= #{MTL_STD},
+			MTL_PRICE 	= #{MTL_PRICE},
+			MTL_UNT 	= #{MTL_UNT},
+			MTL_DS_URL 	= #{MTL_DS_URL},
+			MTL_BG 		= #{MTL_BG}
+			WHERE MTL_IDX = #{MTL_IDX}
+		</update>	
+	
+	<update id="updateFile" parameterType="java.util.HashMap">
+			UPDATE T_CMM_FLE SET
+			CMM_FLE_DEL_YN='Y',
+			CMM_FLE_USE_YN='N'
+			WHERE CMM_FLE_IDX = #{CMM_FLE_IDX}
+			
+	</update>	
+	
+		<insert id="InsertBOMExcel" parameterType="java.util.List">
+			INSERT INTO T_BOM_MST
+			( MTL_IDX, PJT_IDX, BOM_MTL_QTY, BOM_REG_DT, BOM_REG_ID, BOM_DEL_YN )
+			VALUES
+			<foreach collection="list" item="item" separator=",">
+			(#{item.MTL_IDX},#{item.PJT_IDX},#{item.MTL_QTY},SYSDATE(),#{item.REG_ID},'N')
+			</foreach>
+		</insert>
+		
 	<!-- T_EST_MST 구매견적 Start -->
 	<select id="selectEstimate" parameterType="SYTEstimateVo" resultType="SYTEstimateVo">
 		SELECT 
