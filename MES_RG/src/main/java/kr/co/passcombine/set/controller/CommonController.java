@@ -138,4 +138,36 @@ public class CommonController {
 
 		return modelAndView;
 	}
+	
+	@RequestMapping(value = "/jsp_test", method = {RequestMethod.GET, RequestMethod.POST})
+	public ModelAndView jsp_test(HttpServletRequest request, HttpServletResponse response, HttpSession session) {
+		// logger.debug("CommonController.pdfViewer() is called.");
+		String item_code = request.getParameter("item_code");
+		
+		SYDrwFileInfoVo dVo = new SYDrwFileInfoVo();
+
+		dVo.setItem_code(item_code);
+		List<SYDrwFileInfoVo> listCode = sYDrwFileService.selectDrwFile(dVo);
+		
+		ModelAndView modelAndView = new ModelAndView();
+		if(listCode.size() > 0)
+		{
+			String file_path = listCode.get(0).getPdf_file_path();
+			String url = StringUtil.replace(request.getRequestURL(), request.getRequestURI(), "");
+
+			System.out.println("file_path :: " + url + "/doc/" + file_path);
+
+			modelAndView.addObject("file_path", url + "/doc/" + file_path);
+			modelAndView.setViewName("common/pdf_viewer");
+
+
+		}else
+		{
+			modelAndView.addObject("file_path", "" + "/doc/" + "");
+			modelAndView.setViewName("common/pdf_viewer");
+		}
+		modelAndView.setViewName("common/pdfTemp");
+		modelAndView.addObject("item_code", item_code);
+		return modelAndView;
+	}
 }
