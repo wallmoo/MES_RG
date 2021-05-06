@@ -115,7 +115,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		<!-- /.content-wrapper -->
 
 		<!-- 모달 커팅 -->
-		<div class="modal fade" id="modal_requestForm" data-backdrop="static">
+		<div class="modal fade" id="modal_estimateForm" data-backdrop="static">
 			<div class="modal-dialog modal-md" style="width: 1000px;">
 				<div class="modal-content">
 					<div class="modal-header">
@@ -151,7 +151,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 								<div class="col-md-5 text-left" style="margin-top:5px;">
 									<label class="col-sm-3 control-label" style="padding-left: 0px">견적요청일자</label>
 									<div class="input-group">
-										<input type="text" class="form-control pull-right input-sm" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd">
+										<input type="text" class="form-control pull-right input-sm" id="MTL_EST_REG_DT" placeholder="yyyymmdd~yyyymmdd">
 										<div class="input-group-addon">
 											<i class="fa fa-calendar"></i>
 										</div>
@@ -168,57 +168,10 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 					</div>	
 					<div class="modal-footer" style="border-top-color: transparent !important;">
 						<div class="col-md-12 text-center" style="margin-top: 10px">
-							<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">저장</button>
+							<button type="button" id="" class="btn btn-success btn-sm" onclick="saveEstimate()">저장</button>
 							<button type="button" id="" class="btn btn-danger btn-sm" data-dismiss="modal">닫기</button>
 						</div>
 					</div>									
-				</div>
-			</div>
-		</div>
-
-		<div class="modal fade" id="modal_add" data-backdrop="static">
-			<div class="modal-dialog modal-md">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-						<h4 class="modal-title" id="modal_add_title">등록</h4>
-					</div>
-					<div class="modal-body" id="modal_code_body">
-						<form id="frm_routingItnbr" name="frm_routingItnbr" class="form-horizontal">
-							<div class="col-sm-9">
-								<div class="row">
-									<div class="form-group">
-										<label class="col-sm-3 control-label">품명</label>
-										<div class="col-sm-7">
-											<input type="combo" class="form-control input-sm pull-right clear_val2" id="add_nm" maxlength="100">
-										</div>
-									</div>
-								</div>
-								<div class="row">
-									<div class="form-group">
-										<label class="col-sm-3 control-label">P/N</label>
-										<div class="col-sm-7">
-											<input type="combo" class="form-control input-sm pull-right clear_val2" id="add_code" maxlength="100">
-										</div>
-									</div>
-								</div>
-							</div>
-							<div class="col-sm-3">
-								<button type="button" id="" class="btn btn-default btn-sm" onclick="selmaterial()">검색</button>
-							</div>
-							<div class="col-sm-12">
-								<div id="grid_list6" class="w2g-h200" style="margin-top: 10px;"></div>
-							</div>
-						</form>
-					</div>
-					<div class="modal-footer" style="border-top-color: transparent !important;">
-						<div class="col-md-12 text-center" style="margin-top: 10px">
-							<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">등록</button>
-							<button type="button" id="" class="btn btn-danger btn-sm" data-dismiss="modal">취소</button>
-						</div>
-					</div>
 				</div>
 			</div>
 		</div>
@@ -238,25 +191,19 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 
 
 <script type="text/javascript">
-
-	var grid_material_data;
-	var grid_add_data;
-	var grid_lev1_data;
-	var grid_lev2_data;
 	var startValue_combo = "";
 	
 	var minDate = getFormatDate(new Date());
 	
 	comboValue_nm = new Array;
 	comboValue_cd = new Array;
-	
-	comboValue_nm3 = new Array;
-	comboValue_cd3 = new Array;
-	
-	
+
 	$(function($) {
 		fnCdD('S_PJT_PRD_UNT', 'MC1027');//공통코드를 호출-재고 단위
-		requestVendor('S_VDR_IDX');//고객사 정보를 검색폼 드랍다운 형태로 만듬
+		requestVendor('S_VDR_IDX1');//고객사 정보를 검색폼 드랍다운 형태로 만듬
+		requestVendor('S_VDR_IDX2');
+		requestVendor('S_VDR_IDX3');
+		requestVendor('S_VDR_IDX4');
 	
 		fnLoadCommonOption();//등록폼 달력
 		fnLoadDeliveryOption();//검색폼 달력
@@ -279,25 +226,55 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			},
 			multiSelect : true,
 			columns : [ 
-				{ field:'pjt_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
-				{ field:'pjt_REG_DT', caption:'요청 유형', size:'7%', style:'text-align:center', sortable: true},
-	        	{ field:'pjt_GRD', caption:'자재 요청일', size:'10%', style:'text-align:center', sortable: true},
-	        	{ field:'pjt_NM', caption:'요청자', size:'10%', style:'text-align:center', sortable: true},
+				{ field:'mtl_REQ_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'pjt_IDX', caption:'프로젝트 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'bom_IDX', caption:'BOM 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'mtl_REQ_TYPE', caption:'요청 유형', size:'7%', style:'text-align:center', sortable: true},
+	        	{ field:'mtl_REQ_REG_DT', caption:'자재 요청일', size:'10%', style:'text-align:center', sortable: true},
+	        	{ field:'mtl_REQ_REG_ID', caption:'요청자', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'pjt_CD', caption:'프로젝트코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_NM', caption:'품목', size:'10%', style:'text-align:center' , sortable: true},
 				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'17%', style:'text-align:center', sortable: true},
 				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true},
+				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true, hidden: true},
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_QTY', caption:'재고수량', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_DLV_QTY', caption:'불출수량', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_REQ_STATE', caption:'견적요청여부', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_REQ_STATE', caption:'Status', size:'8%', style:'text-align:center', sortable: true}
+				{ field:'mtl_REQ_STATE', caption:'견적요청여부', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == '1') {
+							return 'X';
+						} else if(html == '2') {
+							return 'O';
+						} else {
+							return 'O';
+						}
+						return html;
+	           		} 
+				},
+				{ field:'mtl_REQ_STATE', caption:'Status', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == '1') {
+							return '요청등록';
+						} else if(html == '2') {
+							return '견적진행';
+						} else if(html == '3') {
+							return '불출대기';
+						} else if(html == '4') {
+							return '불출완료';
+						}
+						return html;
+	           		} 					
+				}
 			],
-			sortData: [{field: 'MTL_REQ_MST', direction: 'DESC'}],		
+			sortData: [{field: 'MTL_REQ_IDX', direction: 'DESC'}],		
 			records : [], // rowArr
 			total : 0,
 			recordHeight : 30,			
@@ -381,30 +358,29 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			var insertPJT = $("#hiddenIdx").val();//PJT_IDX
 			for (var i = 0; i < keys.length; i++) {
 				var Data = {
-					PJT_IDX : encodeURIComponent(insertPJT),
+					//PJT_IDX : encodeURIComponent(insertPJT),
+					mtl_REQ_IDX : w2ui.grid_list.records[keys[i]-1].mtl_REQ_IDX,
 					pjt_IDX : w2ui.grid_list.records[keys[i]-1].pjt_IDX,
-					pjt_REG_DT : w2ui.grid_list.records[keys[i]-1].pjt_REG_DT,
-					pjt_GRD : w2ui.grid_list.records[keys[i]-1].pjt_GRD,
-					pjt_NM : w2ui.grid_list.records[keys[i]-1].pjt_NM,
+					bom_IDX : w2ui.grid_list.records[keys[i]-1].bom_IDX,
 					pjt_CD : w2ui.grid_list.records[keys[i]-1].pjt_CD,
 					pjt_NM : w2ui.grid_list.records[keys[i]-1].pjt_NM,
+					mtl_IDX : w2ui.grid_list.records[keys[i]-1].mtl_IDX,
 					mtl_MKR_CD : w2ui.grid_list.records[keys[i]-1].mtl_MKR_CD,
 					mtl_NM : w2ui.grid_list.records[keys[i]-1].mtl_NM,
 					mtl_MKR_NO : w2ui.grid_list.records[keys[i]-1].mtl_MKR_NO,
 					mtl_STD : w2ui.grid_list.records[keys[i]-1].mtl_STD,
-					mtl_IDX : w2ui.grid_list.records[keys[i]-1].mtl_IDX,
 					mtl_UNT : w2ui.grid_list.records[keys[i]-1].mtl_UNT,
-					mtl_QTY : w2ui.grid_list.records[keys[i]-1].mtl_QTY,
 					mtl_REQ_QTY : w2ui.grid_list.records[keys[i]-1].mtl_REQ_QTY,
-					mtl_DLV_QTY : w2ui.grid_list.records[keys[i]-1].mtl_DLV_QTY,
-					mtl_REQ_STATE : w2ui.grid_list.records[keys[i]-1].mtl_REQ_STATE
+					mtl_REQ_TYPE : w2ui.grid_list.records[keys[i]-1].mtl_REQ_TYPE,
+					mtl_REQ_REG_DT : w2ui.grid_list.records[keys[i]-1].mtl_REQ_REG_DT,
+					mtl_REQ_REG_ID : w2ui.grid_list.records[keys[i]-1].mtl_REQ_REG_ID
 				};
 				ModalDataList.push(Data);
 			}
 			
 			console.log(ModalDataList);
 			
-			$("#modal_requestForm").modal('show');
+			$("#modal_estimateForm").modal('show');
 			
 			setTimeout(function() {
 				w2ui['grid_list2'].resize();
@@ -425,25 +401,26 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			show : {
 				lineNumbers : true,
 				footer : true,
-				selectColumn : false
+				selectColumn : true
 			},
-			multiSelect : false,
-
-			columns : [
-				{ field:'pjt_IDX', caption:'요청번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
-				{ field:'pjt_REG_DT', caption:'요청 유형', size:'7%', style:'text-align:center', sortable: true},
-	        	{ field:'pjt_GRD', caption:'요청일', size:'10%', style:'text-align:center', sortable: true},
-	        	{ field:'pjt_NM', caption:'요청자', size:'10%', style:'text-align:center', sortable: true},
+			multiSelect : true,
+			columns : [ 
+				{ field:'mtl_REQ_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'pjt_IDX', caption:'프로젝트 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'bom_IDX', caption:'BOM 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'pjt_CD', caption:'프로젝트코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true, hidden: true},
+				{ field:'mtl_REQ_TYPE', caption:'요청 유형', size:'7%', style:'text-align:center', sortable: true},
+	        	{ field:'mtl_REQ_REG_DT', caption:'자재 요청일', size:'10%', style:'text-align:center', sortable: true},
+	        	{ field:'mtl_REQ_REG_ID', caption:'요청자', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_NM', caption:'품목', size:'10%', style:'text-align:center' , sortable: true},
-				{ field:'mtl_MKR_NO', caption:'품번', size:'17%', style:'text-align:center', sortable: true},
+				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'17%', style:'text-align:center', sortable: true},
 				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true},
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_REQ_QTY', caption:'발주수량', size:'8%', style:'text-align:center', sortable: true, editable: { type: 'int' } }
-			],
+				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center', sortable: true, editable:{type: 'int'} }
+			],					
 			records : [],
 			total : 0,
 			recordHeight : 30,
@@ -466,13 +443,12 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 					var updateContent = JSON.stringify(w2ui['grid_list2'].getChanges());//stringify(배열을 문자열json으로 바꿔줌.)!!
 					
 					var keys = $("#hiddenIdx").val();//프로젝트 번호
-					var Bom_MTL_IDX = this.get(event.recid).mtl_IDX;//자재번호
-					var Bom_MTL_QTY = this.get(event.recid).bom_MTL_QTY;//자재 수량
+					var MTL_REQ_IDX = this.get(event.recid).mtl_REQ_IDX;//자재요청번호
+					var MTL_REQ_QTY = this.get(event.recid).mtl_REQ_QTY;//자재 수량
 
-					var page_url = "/info/info/updateBomQuantity";		
-					var postData = 'PJT_IDX=' + keys 
-								+ "&MTL_IDX="+ Bom_MTL_IDX
-								+ "&BOM_MTL_QTY="+ Bom_MTL_QTY;
+					var page_url = "/info/info/updateReqQuantity";		
+					var postData = 'MTL_REQ_IDX=' + MTL_REQ_IDX 
+								+ "&MTL_REQ_QTY="+ MTL_REQ_QTY;
 					$.ajax({
 						url : page_url,
 						type : "POST",
@@ -481,7 +457,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 						cache : false,
 						success : function(response) {
 							alert('수량이 수정되었습니다.');
-							loadModalGrid(keys);
+							loadRequestGridData();
 						},
 						error : function() {
 							alert('Error while request...');
@@ -502,59 +478,60 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			row.recid = idx + 1;
 			comboValue_cd.push(row.c_item_nm + "");
 		});		
-		
+
 		w2ui['grid_list2'].records = rowArr;
+		w2ui['grid_list2'].selectAll();
 		w2ui['grid_list2'].unlock();
 	}	
-	
-	
-	function insertBom() {
-		var keys = w2ui.grid_list.getSelection();
-		
+
+	function saveEstimate() {		
+		var keys = w2ui.grid_list2.getSelection();
+		var reqDataList = [];
+		var mtl_REQ_QTY_val = 0;
+		if($('#S_VDR_IDX1').val() =="ALL" && $('#S_VDR_IDX2').val() =="ALL" && $('#S_VDR_IDX3').val() =="ALL" && $('#S_VDR_IDX4').val() =="ALL") {
+			alert("거래처 정보를 선택하여주십시오");
+			return;
+		}		
 		if (keys == null || keys == "") {
-			alert("먼저 프로젝트를 선택하여주십시오");
+			alert("견적요청할 항목을 선택하여주십시오");
 		} else {
-			$(".clear_val").val('');
-
-			$("#modal_requestForm").modal('show');
-			setTimeout(function() {
-				w2ui['grid_list3'].resize();
-				w2ui['grid_list3'].refresh();
-				
-				w2ui['grid_list4'].resize();
-				w2ui['grid_list4'].refresh();				
-			}, 200);
-			
-			requestGrid3();
-			requestGrid4();
-
-			$('#hiddenProduct_code').val('');
-			$('#hiddenM_item_code').val('');
-		}
-
-	};
-	function addBOM() {		
-		if($('#hiddenProduct_code').val() == '' || $('#hiddenProduct_code').val() == null){
-			fnMessageModalAlert("알림", "제품을 1개 이상 선택하셔야 합니다.");
-		} else {
-			var BomInputDatas = w2ui.grid_list3.getSelection();
-			var DataList = [];
-			var insertPJT = $("#hiddenIdx").val();//PJT_IDX
-			for (var i = 0; i < BomInputDatas.length; i++) {
+			for (var i = 0; i < keys.length; i++) {
+				if(w2ui.grid_list2.records[keys[i]-1].mtl_REQ_QTY == null) {
+					mtl_REQ_QTY_val = 0;
+				} else {
+					mtl_REQ_QTY_val = w2ui.grid_list2.records[keys[i]-1].mtl_REQ_QTY;
+				}
 				var Data = {
-					pjt_IDX : encodeURIComponent(insertPJT),
-					mtl_IDX : w2ui.grid_list3.records[i].mtl_IDX,
-					bom_MTL_QTY : w2ui.grid_list3.records[i].bom_MTL_QTY,
-					mtl_REG_DT : w2ui.grid_list3.records[i].mtl_REG_DT
+					MTL_REQ_IDX : w2ui.grid_list.records[keys[i]-1].mtl_REQ_IDX,	
+					PJT_IDX : w2ui.grid_list2.records[keys[i]-1].pjt_IDX,
+                    BOM_IDX : w2ui.grid_list2.records[keys[i]-1].bom_IDX,
+					PJT_CD : w2ui.grid_list2.records[keys[i]-1].pjt_CD,
+					PJT_NM : w2ui.grid_list2.records[keys[i]-1].pjt_NM,
+					MTL_IDX : w2ui.grid_list2.records[keys[i]-1].mtl_IDX,
+					MTL_MKR_CD : w2ui.grid_list2.records[keys[i]-1].mtl_MKR_CD,
+					MTL_NM : w2ui.grid_list2.records[keys[i]-1].mtl_NM,
+					MTL_MKR_NO : w2ui.grid_list2.records[keys[i]-1].mtl_MKR_NO,
+					MTL_STD : w2ui.grid_list2.records[keys[i]-1].mtl_STD,
+					MTL_UNT : w2ui.grid_list2.records[keys[i]-1].mtl_UNT,
+					MTL_REQ_QTY : mtl_REQ_QTY_val,
+					MTL_REQ_TYPE : w2ui.grid_list2.records[keys[i]-1].mtl_REQ_TYPE,
+					MTL_EST_REG_DT : $('#MTL_EST_REG_DT').val(),
+					MTL_EST_REG_ID : w2ui.grid_list2.records[keys[i]-1].mtl_REQ_REG_ID,
+					VDR_IDX : $('#S_VDR_IDX1').val(),
+					S_VDR_IDX2 : $('#S_VDR_IDX2').val(),
+					S_VDR_IDX3 : $('#S_VDR_IDX3').val(),
+					S_VDR_IDX4 : $('#S_VDR_IDX4').val()
 				};
-				DataList.push(Data);
-			}
+				reqDataList.push(Data);
+			}			
 
 			if (confirm("등록하시겠습니까?")) {
-				var page_url = "/info/info/InsertMaterialsBOM";
-				console.log(DataList);
-				var jsonData = JSON.stringify(DataList);
+				console.log(reqDataList);
+
+				var page_url = "/info/info/insertEstimate";
+				var jsonData = JSON.stringify(reqDataList);
 				console.log(jsonData);
+
 				jQuery.ajaxSettings.traditional = true;
 				$.ajax({
 					url : page_url,
@@ -566,22 +543,20 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 					success : function(data) {
 						if (data != 0) {
 							alert("추가되었습니다");
-							loadRightGrid($("#hiddenIdx").val());
-							requestGrid3();
+							$("#modal_estimateForm").modal('hide');
 						} else {
 							alert("오류가 발생하였습니다");
 						}
 					},
 					complete : function() {
-						document.getElementById("add_nm").style.removeProperty("height");
-						document.getElementById("add_code").style.removeProperty("height");
-						
-						requestGrid4();
+
 					}
 				});
-			}			
-		}			
-	}
+			}				
+		}	
+	}	
+	
+
 
 
 	// ############################
@@ -629,7 +604,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	function fnLoadCommonOption() {
 	 	console.log('fnLoadCommonOption()');
 	 	
-		$('#PJT_DLV_DT').daterangepicker({
+		$('#MTL_EST_REG_DT').daterangepicker({
 			opens: 'right',
 			singleDatePicker: true,
 			locale: {
@@ -649,7 +624,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	 	console.log('fnLoadCommonOption()');
 	 	
 		$('#S_MTL_REQ_REG_DT, #S_PJT_DLV_DT').daterangepicker({
-			opens: 'left',
+			opens: 'right',
 			locale: {
 				format : 'YYYYMMDD'	,
 				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
@@ -715,7 +690,47 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		    }
 		});
 	}
-	
+	// 거래처 가져오기
+	function requestVendor(val){
+		console.log("requestVendor");
+		
+		initOptions($('#'+val)); // select 박스 초기화
+		
+		var strUrl = "/info/account/selectVendor";
+		var postData = "";
+		
+		$.ajax({
+		    url: strUrl,
+		    type: "POST",
+		    data: postData, 
+		    async : false, // 다 끝나고 다음 처리 해!
+		    dataType: 'json', 
+		    success:function(data, textStatus, jqXHR){
+//	 	    	console.log("(data.rows).length = " + (data.rows).length);
+		    	if(data.status == "200" && (data.rows).length > 0) {
+		    		rowArr = data.rows;
+		    		
+		    		/* 검색어 입력시 */
+		    		var sub = val.substr(0,2);
+
+		    		if(sub.indexOf("S_") != -1) // val
+		    			$("#"+val ).append("<option value="+'ALL'+">" + "전체" + "</option>");
+		    		
+					$.each(rowArr, function(idx, row){
+						$("#"+val ).append("<option value=" + row.vdr_IDX + ">" + row.vdr_NM + "</option>");
+					});
+					
+		 			$("#"+val+" option:eq(0)").prop("selected", true);	
+		    	} 
+		    },
+		    error: function(jqXHR, textStatus, errorThrown){
+			    
+		    },
+		    complete: function() {
+	    	
+		    }
+		});
+	}	
 	//셀렉트박스 초기화
 	function initOptions(obj) {
 	    $(obj)

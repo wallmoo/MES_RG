@@ -649,24 +649,52 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			multiSelect : false,
 	        columns: [                
 				{ field:'pjt_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
-				{ field:'pjt_REG_DT', caption:'요청 유형', size:'7%', style:'text-align:center', sortable: true},
-	        	{ field:'pjt_GRD', caption:'자재 요청일', size:'10%', style:'text-align:center', sortable: true},
-	        	{ field:'pjt_NM', caption:'요청자', size:'10%', style:'text-align:center', sortable: true},
+				{ field:'mtl_REQ_TYPE', caption:'요청 유형', size:'7%', style:'text-align:center', sortable: true},
+	        	{ field:'mtl_REQ_REG_DT', caption:'자재 요청일', size:'10%', style:'text-align:center', sortable: true},
+	        	{ field:'mtl_REQ_REG_ID', caption:'요청자', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'pjt_CD', caption:'프로젝트코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_NM', caption:'품목', size:'10%', style:'text-align:center' , sortable: true},
 				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'17%', style:'text-align:center', sortable: true},
 				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true},
+				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true, hidden: true},
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_QTY', caption:'재고수량', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_DLV_QTY', caption:'불출수량', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_REQ_STATE', caption:'견적요청여부', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_REQ_STATE', caption:'Status', size:'8%', style:'text-align:center', sortable: true}
+				{ field:'mtl_REQ_STATE', caption:'견적요청여부', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == '1') {
+							return 'X';
+						} else if(html == '2') {
+							return 'O';
+						} else {
+							return 'O';
+						}
+						return html;
+	           		} 
+				},
+				{ field:'mtl_REQ_STATE', caption:'Status', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == '1') {
+							return '요청등록';
+						} else if(html == '2') {
+							return '견적진행';
+						} else if(html == '3') {
+							return '불출대기';
+						} else if(html == '4') {
+							return '불출완료';
+						}
+						return html;
+	           		} 					
+				}
 			], 
-			sortData: [{field: 'MTL_REQ_MST', direction: 'DESC'}],			
+			sortData: [{field: 'MTL_REQ_IDX', direction: 'DESC'}],			
 			records : [],
 			total : 0,
 			recordHeight : 30,
@@ -840,11 +868,16 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	function saveBomReq() {		
 		var keys = w2ui.grid_list4.getSelection();
 		var reqDataList = [];
-		
+		var mtl_REQ_QTY_val = 0;
 		if (keys == null || keys == "") {
 			alert("자재요청할 항목을 선택하여주십시오");
 		} else {
 			for (var i = 0; i < keys.length; i++) {
+				if(w2ui.grid_list4.records[keys[i]-1].mtl_REQ_QTY == null) {
+					mtl_REQ_QTY_val = 0;
+				} else {
+					mtl_REQ_QTY_val = w2ui.grid_list4.records[keys[i]-1].mtl_REQ_QTY;
+				}
 				var Data = {
 					BOM_IDX : w2ui.grid_list4.records[keys[i]-1].bom_IDX,
 					PJT_IDX : w2ui.grid_list4.records[keys[i]-1].pjt_IDX,
@@ -855,7 +888,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 					MTL_STD : w2ui.grid_list4.records[keys[i]-1].mtl_STD,
 					MTL_UNT : w2ui.grid_list4.records[keys[i]-1].mtl_UNT,
 					BOM_MTL_QTY : w2ui.grid_list4.records[keys[i]-1].bom_MTL_QTY,
-					MTL_REQ_QTY : w2ui.grid_list4.records[keys[i]-1].mtl_REQ_QTY,
+					MTL_REQ_QTY : mtl_REQ_QTY_val,
 					MTL_REQ_REG_DT : $('#MTL_REQ_REG_DT').val()
 				};
 				reqDataList.push(Data);
