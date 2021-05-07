@@ -517,10 +517,10 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 					MTL_REQ_TYPE : w2ui.grid_list2.records[keys[i]-1].mtl_REQ_TYPE,
 					MTL_EST_REG_DT : $('#MTL_EST_REG_DT').val(),
 					MTL_EST_REG_ID : w2ui.grid_list2.records[keys[i]-1].mtl_REQ_REG_ID,
-					VDR_IDX : $('#S_VDR_IDX1').val(),
-					S_VDR_IDX2 : $('#S_VDR_IDX2').val(),
-					S_VDR_IDX3 : $('#S_VDR_IDX3').val(),
-					S_VDR_IDX4 : $('#S_VDR_IDX4').val()
+					S_VDR_IDX0 : $('#S_VDR_IDX1').val()+"",
+					S_VDR_IDX1 : $('#S_VDR_IDX2').val()+"",
+					S_VDR_IDX2 : $('#S_VDR_IDX3').val()+"",
+					S_VDR_IDX3 : $('#S_VDR_IDX4').val()+""
 				};
 				reqDataList.push(Data);
 			}			
