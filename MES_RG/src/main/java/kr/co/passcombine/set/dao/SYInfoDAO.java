@@ -12,6 +12,7 @@ import kr.co.passcombine.set.vo.SYBomVo;
 import kr.co.passcombine.set.vo.SYTBranchVo;
 import kr.co.passcombine.set.vo.SYTClientVo;
 import kr.co.passcombine.set.vo.SYTEstimateVo;
+import kr.co.passcombine.set.vo.SYTMaterialOrderVo;
 import kr.co.passcombine.set.vo.SYTMaterialRequestVo;
 import kr.co.passcombine.set.vo.SYTMaterialVo;
 import kr.co.passcombine.set.vo.SYTProjectVo;
@@ -296,5 +297,13 @@ public interface SYInfoDAO {
 	public int deleteEstimate(SYTEstimateVo vo);
 	// Estimate End	
 	public int updateEstimatExcel(List<Map<String, Object>> vo);
+	
+	// MaterialOrder Start	
+	public List<SYTMaterialOrderVo> selectMaterialOrder(SYTMaterialOrderVo vo);
+	public int insertMaterialOrderMST(Map<String,Object> vo);
+	public int insertMaterialOrder(List<Map<String,Object>> vo);
+	public int updateMaterialOrder(SYTMaterialOrderVo vo);
+	public int deleteMaterialOrder(SYTMaterialOrderVo vo);
+	// MaterialOrder End		
 	
 }

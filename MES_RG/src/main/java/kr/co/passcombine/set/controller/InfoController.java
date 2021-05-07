@@ -56,6 +56,7 @@ import kr.co.passcombine.set.vo.SYBomVo;
 import kr.co.passcombine.set.vo.SYTBranchVo;
 import kr.co.passcombine.set.vo.SYTClientVo;
 import kr.co.passcombine.set.vo.SYTEstimateVo;
+import kr.co.passcombine.set.vo.SYTMaterialOrderVo;
 import kr.co.passcombine.set.vo.SYTMaterialRequestVo;
 import kr.co.passcombine.set.vo.SYTMaterialVo;
 import kr.co.passcombine.set.vo.SYTProjectVo;
@@ -5091,4 +5092,119 @@ public class InfoController {
 		return resultData.toJSONString();
 	}	
 
+	/**
+	 * <pre>
+	* 1. MethodName : Order
+	* 2. ClassName  : InfoController.java
+	* 3. Comment    : 관리자 > 구매/자재 관리 > 구매발주 관리
+	* 4. 작성자       : DEV_KIMDEUKYONG
+	* 5. 작성일       : 2021. 05. 07.
+	 * </pre>
+	 *
+	 * @param commandMap
+	 * @return
+	 * @throws Exception
+	 */
+	// selectMaterialRequest
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/info/selectMaterialOrder", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectMaterialOrder(@ModelAttribute SYTMaterialOrderVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.selectMaterialOrder is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			List<SYTMaterialOrderVo> dataList = sYInfoService.selectMaterialOrder(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		
+		return resultData.toJSONString();
+	}
+
+	// insertMaterialOrder
+	@ResponseBody
+	@RequestMapping(value = "/info/insertMaterialOrder", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public int insertMaterialOrder(HttpServletRequest request, @RequestParam String jsonData) {
+		HashMap<String, Object> vo = null;
+
+		logger.debug("FrontendController.insertMaterialRequest is called.");
+
+		String REG_ID = SessionUtil.getMemberId(request);
+		
+		ObjectMapper mapper = new ObjectMapper();
+		TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() { };
+		try {
+			vo = mapper.readValue(jsonData, typeRef);
+			System.out.println(vo);
+		} catch (IOException e1) {
+			System.out.println(e1);
+			e1.printStackTrace();
+		}
+//		for (int i = 0; i < vo.size(); i++) {
+//			vo.get(i).put("REG_ID", REG_ID);
+//		}
+
+		int result = 0;
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		/* <insert id="insertMaterialOrderMST" parameterType="SYTMaterialOrderVo"> --> 마스터 정보 입력
+		 * <insert id="insertMaterialOrder" parameterType="java.util.List"> --> 자재 상세정보 입력
+		 *
+## Master
+ORD_IDX			발주번호, 일렬번호
+PJT_IDX			프로젝트 번호
+VDR_IDX			거래처 번호
+MTL_ORD_TYPE	주문유형
+MTL_ORD_PLC		납품 장소
+MTL_ORD_DLV_DT	납품일자
+MTL_ORD_FLE1	하자증권
+MTL_ORD_FLE2	이행증권
+MTL_ORD_FLE3	계약서
+MTL_ORD_REG_ID	등록자
+
+# Detail
+ORD_IDX			발주번호
+PJT_IDX			프로젝트 번호
+MTL_IDX			자재 번호
+ORD_DTL_PRICE	단가
+ORD_DTL_QTY		수량
+		 * */
+		
+		try {
+			Map<String, Object> mstMap = (Map<String, Object>) vo.get("mstData");
+			mstMap.put("MTL_ORD_REG_ID", REG_ID);
+			result = sYInfoService.insertMaterialOrderMST(mstMap);//발주내역 저장 return ORD_IDX
+			if(result > 0) {
+				List<Map<String, Object>> list = (List<Map<String, Object>>) vo.get("reqDataList");
+				for(Map<String, Object> map : list) {
+					map.put("ORD_IDX", mstMap.get("ORD_IDX"));
+				}
+				System.out.println(list);
+				result = sYInfoService.insertMaterialOrder(list);//발주내역 저장
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		return result;
+	}	
+	
+	
 }
