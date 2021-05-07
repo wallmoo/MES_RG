@@ -141,6 +141,9 @@ if(!SessionUtil.isLogIn(request)){
 <script type="text/javascript" src="/res/plugins/rMateGridH5/JS/jszip.min.js"></script>
 
 
+<!-- 공통 컴포넌트 -->
+<script src="/res/set/set_common_component.js"></script>
+
 <script type="text/javascript">
 function FunLoadingBarStart() {
 	var backHeight = $(document).height(); //뒷 배경의 상하 폭

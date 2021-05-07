@@ -6,7 +6,11 @@ import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.lang.reflect.Method;
 import java.net.URLDecoder;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -4678,7 +4682,7 @@ public class InfoController {
 
 			MTL_REQ_IDX = request.getParameter("MTL_REQ_IDX");
 			MTL_REQ_QTY = request.getParameter("MTL_REQ_QTY");
-
+			
 			// hKey
 			vo.setMTL_REQ_IDX(Integer.parseInt(MTL_REQ_IDX));
 			vo.setMTL_REQ_QTY(MTL_REQ_QTY);
@@ -4898,7 +4902,54 @@ public class InfoController {
 		
 		return result;
 	}
+	//change Estimate Contents
+	@ResponseBody
+	@RequestMapping(value = "/info/updateEstVendor", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String updateEstVendor(@ModelAttribute SYTEstimateVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.updateEstVendor is called.");
 
+		JSONObject resultData = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
+		JSONParser parser = new JSONParser();
+
+		try {		
+			int cnt = 0;
+
+			String EST_IDX = request.getParameter("EST_IDX");
+			String MTL_EST_MOQ = request.getParameter("MTL_EST_MOQ");
+			String MTL_EST_PRICE = request.getParameter("MTL_EST_PRICE");
+			String MTL_EST_DLV_DT = request.getParameter("MTL_EST_DLV_DT");
+			String MTL_EST_BG = request.getParameter("MTL_EST_BG");
+			
+			/* 날짜 초기화
+			 * if(MTL_EST_DLV_DT == null || MTL_EST_DLV_DT.equals("") ||
+			 * MTL_EST_DLV_DT.equals("null")) { MTL_EST_DLV_DT = new
+			 * SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime()); }
+			 */
+			
+			// hKey
+			vo.setEST_IDX(Integer.parseInt(EST_IDX));
+			vo.setMTL_EST_MOQ(MTL_EST_MOQ);
+			vo.setMTL_EST_PRICE(MTL_EST_PRICE);
+			vo.setMTL_EST_DLV_DT(MTL_EST_DLV_DT);
+			vo.setMTL_EST_BG(MTL_EST_BG);
+
+			cnt = sYInfoService.updateEstVendor(vo);
+
+			System.out.println("EST_IDX = " + EST_IDX);
+			System.out.println("cnt = " + cnt);
+
+			resultData.put("status", HttpStatus.OK.value());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+
+		return resultData.toJSONString();
+	}	
 	// deleteEstimate
 	@ResponseBody
 	@RequestMapping(value = "/account/deleteEstimate", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
