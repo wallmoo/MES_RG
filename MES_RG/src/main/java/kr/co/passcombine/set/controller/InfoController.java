@@ -4871,25 +4871,37 @@ public class InfoController {
 
 		ObjectMapper mapper = new ObjectMapper();
 		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() { };
-		
-		
+		List<Map<String,Object>> valueList = new ArrayList<Map<String,Object>>();
 		try {
 			vo = mapper.readValue(jsonData, typeRef);
+			for (int i = 0; i < vo.size(); i++) {
+				vo.get(i).put("REG_ID", REG_ID);
+			}
+			//현재 거래처는 4개이므로 4번까지돌도록함
+			for(int i=0; i<4;i++) {
+				Map<String, Object> valueMap = new HashMap();
+				//초기화하지않으면 계속 같은값이 들어감.
+				valueMap.putAll(vo.get(0));
+				//a = b로하면 메모리가 같아져서 같은값이 들어감
+				if(!"ALL".equals((String)valueMap.get("S_VDR_IDX"+i))){
+					valueMap.put("VDR_IDX",valueMap.get("S_VDR_IDX"+i));
+					valueList.add(valueMap);
+				}
+			}
+						
 			System.out.println("Dd");
 		} catch (IOException e1) {
 			System.out.println(e1);
 			e1.printStackTrace();
 		}
-		for (int i = 0; i < vo.size(); i++) {
-			vo.get(i).put("REG_ID", REG_ID);
-		}
+
 		
 		int result = 0;
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
 		try {
-			result = sYInfoService.insertEstimate(vo);//자재요청내역 저장
+			result = sYInfoService.insertEstimate(valueList);//자재요청내역 저장
 		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
