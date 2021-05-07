@@ -62,7 +62,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 														<h3 class="box-title">구매 견적 결과 관리</h3>
 														<div class="box-tools pull-right">
 															<button type="button" id="btn_excel_csr" onclick="excelFileDownload('grid_list','구매견적 관리');" class="btn btn-success btn-sm">Excel Download</button>
-															<button type="button" id="btn_dlv_csr" onclick="makeOrder();" class="btn btn-info btn-sm">구매 발주 등록</button>
+															<button type="button" id="btn_dlv_csr" onclick="showReqModal();" class="btn btn-info btn-sm">구매 발주 등록</button>
 															<button type="button" id="btn_ins_csr" onclick="saveEstimate();" class="btn btn-primary btn-sm">등록/수정</button>
 															<button type="button" id="btn_search_csr" onclick="loadLeftGrid();" class="btn btn-primary btn-sm" onclick="">조회</button>
 														</div>
@@ -150,7 +150,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 								<div class="row">
 									<div class="form-group">
 										<label class="col-sm-4 control-label">납품요청일자</label>
-										<div class="input-group col-sm-6">
+										<div class="input-group col-sm-6" style="padding-left:15px;">
 											<input type="text" class="form-control pull-right input-sm" id="MTL_ORD_DLV_DT" placeholder="yyyymmdd~yyyymmdd">
 											<div class="input-group-addon">
 												<i class="fa fa-calendar"></i>
@@ -198,7 +198,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 					</div>
 					<div class="modal-footer" style="border-top-color: transparent !important;">
 						<div class="col-md-12 text-center" style="margin-top: 10px">
-							<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">등록</button>
+							<button type="button" id="" class="btn btn-success btn-sm" onclick="makeOrder()">등록</button>
 							<button type="button" id="" class="btn btn-danger btn-sm" data-dismiss="modal">취소</button>
 						</div>
 					</div>
@@ -216,13 +216,13 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		</jsp:include>
 	</div>
 	
-	<input type="hidden" id="hiddenIdx" name="hiddenIdx" />
-	<input type="hidden" id="rightIDX" name="rightIdx" />
+	<input type="hidden" id="hiddenPjtIdx" name="hiddenPjtIdx" />
 	<!-- ./wrapper -->
 
 
 <script type="text/javascript">
 	var startValue_combo = "";
+	var reqDataList = [];
 	
 	var minDate = getFormatDate(new Date());
 	
@@ -349,7 +349,6 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 				}
 				w2ui['grid_list'].refresh();
 				w2ui['grid_list'].unlock();
-
 			},
 			complete : function() {
 
@@ -360,7 +359,6 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		console.log(w2ui.grid_list.get("pjt_IDX"));
 		
 		var keys = w2ui.grid_list.getSelection();
-		var ModalDataList = [];
 		
 		if($('#S_VDR_IDX').val() == "ALL") {
 			alert("거래처 정보를 선택하여주십시오");
@@ -370,40 +368,84 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			alert("구매발주를 등록할 항목을 선택하여주십시오");
 		} else {
 			$(".clear_val").val('');//검색어 초기화
-
-/* 			var insertPJT = $("#hiddenIdx").val();//PJT_IDX
-			for (var i = 0; i < keys.length; i++) {
-				var Data = {
-					//PJT_IDX : encodeURIComponent(insertPJT),
-					mtl_REQ_IDX : w2ui.grid_list.records[keys[i]-1].mtl_REQ_IDX,
-					pjt_IDX : w2ui.grid_list.records[keys[i]-1].pjt_IDX,
-					bom_IDX : w2ui.grid_list.records[keys[i]-1].bom_IDX,
-					pjt_CD : w2ui.grid_list.records[keys[i]-1].pjt_CD,
-					pjt_NM : w2ui.grid_list.records[keys[i]-1].pjt_NM,
-					mtl_IDX : w2ui.grid_list.records[keys[i]-1].mtl_IDX,
-					mtl_MKR_CD : w2ui.grid_list.records[keys[i]-1].mtl_MKR_CD,
-					mtl_NM : w2ui.grid_list.records[keys[i]-1].mtl_NM,
-					mtl_MKR_NO : w2ui.grid_list.records[keys[i]-1].mtl_MKR_NO,
-					mtl_STD : w2ui.grid_list.records[keys[i]-1].mtl_STD,
-					mtl_UNT : w2ui.grid_list.records[keys[i]-1].mtl_UNT,
-					mtl_REQ_QTY : w2ui.grid_list.records[keys[i]-1].mtl_REQ_QTY,
-					mtl_REQ_TYPE : w2ui.grid_list.records[keys[i]-1].mtl_REQ_TYPE,
-					mtl_REQ_REG_DT : w2ui.grid_list.records[keys[i]-1].mtl_REQ_REG_DT,
-					mtl_REQ_REG_ID : w2ui.grid_list.records[keys[i]-1].mtl_REQ_REG_ID
-				};
-				ModalDataList.push(Data);
-			} */
-			
-			console.log(ModalDataList);
-			
+		
 			$("#modal_orderForm").modal('show');
-			
-/* 			$('#hiddenProduct_code').val('');
-			$('#hiddenM_item_code').val(''); */
 		}
 	}
 	function makeOrder() {
-		showReqModal();
+		var keys = w2ui.grid_list.getSelection();
+
+		//var PJT_IDX = $("#hiddenPjtIdx").val();
+		var PJT_IDX = w2ui.grid_list.records[0].pjt_IDX;
+		var VDR_IDX = $("#S_VDR_IDX").val();
+		var MTL_ORD_PLC = $("#MTL_ORD_PLC").val();
+		var MTL_ORD_DLV_DT = $("#MTL_ORD_DLV_DT").val();
+		var MTL_ORD_FLE1 = $("#MTL_ORD_FLE1").val();
+		var MTL_ORD_FLE2 = $("#MTL_ORD_FLE2").val();
+		var MTL_ORD_FLE3 = $("#MTL_ORD_FLE3").val();
+		
+		var mstData = {
+			'PJT_IDX': PJT_IDX,
+			'VDR_IDX': VDR_IDX,
+			'MTL_ORD_PLC': MTL_ORD_PLC,
+			'MTL_ORD_DLV_DT': MTL_ORD_DLV_DT,
+			'MTL_ORD_FLE1': MTL_ORD_FLE1,
+			'MTL_ORD_FLE2': MTL_ORD_FLE2,
+			'MTL_ORD_FLE3': MTL_ORD_FLE3
+		}
+		
+ 		if(MTL_ORD_PLC == "") {
+			alert("입고요청 사업장 정보를 선택하여주십시오");
+			return;
+		} else if(MTL_ORD_DLV_DT == "") {
+			alert("납품요청 일자를 선택하여주십시오");			
+		} else {
+			for (var i = 0; i < keys.length; i++) {
+				if(i == 0) {
+					//$("#hiddenPjtIdx").val() = w2ui.grid_list.records[keys[i]-1].pjt_IDX;
+				}
+				var Data = {
+						ORD_IDX : w2ui.grid_list.records[keys[i]-1].ord_IDX,
+						PJT_IDX : w2ui.grid_list.records[keys[i]-1].pjt_IDX,
+						MTL_IDX : w2ui.grid_list.records[keys[i]-1].mtl_IDX,
+						MTL_EST_PRICE : w2ui.grid_list.records[keys[i]-1].mtl_EST_PRICE,
+						MTL_REQ_QTY : w2ui.grid_list.records[keys[i]-1].mtl_REQ_QTY
+				};				
+				reqDataList.push(Data);
+			}
+			
+
+			if (confirm("등록하시겠습니까?")) {
+				console.log(reqDataList);
+
+				var page_url = "/info/info/insertMaterialOrder";
+				var jsonData = JSON.stringify({'mstData': mstData, 'reqDataList': reqDataList})
+							+ "&MTL_ORD_PLC=" + encodeURIComponent($("#MTL_ORD_PLC").val());
+				
+				console.log(jsonData);
+
+				jQuery.ajaxSettings.traditional = true;
+				$.ajax({
+					url : page_url,
+					type : 'POST',
+					data : {
+						"jsonData" : jsonData
+					},
+					data_type : 'json',
+					success : function(data) {
+						if (data != 0) {
+							alert("추가되었습니다");
+							$("#modal_orderForm").modal('hide');
+						} else {
+							alert("오류가 발생하였습니다");
+						}
+					},
+					complete : function() {
+
+					}
+				});
+			}				
+		}
 	}
 	// ############################
 	// init component
