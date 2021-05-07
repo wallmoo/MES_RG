@@ -1525,7 +1525,13 @@ public class SYInfoService {
 		return result;
 	}
 	
-
+	
+	
+	
+	
+	
+	
+	
 	public List<SYIncome_insp_mstVo> selectIncome_inspect_master(
 			SYIncome_insp_mstVo vo) {
 		return infoDAO.selectIncome_inspect_master(vo);
