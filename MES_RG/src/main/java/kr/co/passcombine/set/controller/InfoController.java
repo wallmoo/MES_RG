@@ -493,7 +493,15 @@ public class InfoController {
 	public String selectVendor(@ModelAttribute SYTVendorVo vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.selectVendor is called.");
-
+		try{
+			if(session.getAttribute("member_vdr_idx")!=null) {
+				String mem_vdr_idx=(String)session.getAttribute("member_vdr_idx");
+				vo.setVDR_IDX(Integer.parseInt(mem_vdr_idx));
+			};
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
@@ -4925,7 +4933,15 @@ public class InfoController {
 	public String selectEstimate(@ModelAttribute SYTEstimateVo vo, HttpServletRequest request,
 			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectEstimate is called.");
-
+		try{
+			if(session.getAttribute("member_vdr_idx")!=null) {
+				String mem_vdr_idx=(String)session.getAttribute("member_vdr_idx");
+				vo.setVDR_IDX(Integer.parseInt(mem_vdr_idx));
+			};
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+		
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();

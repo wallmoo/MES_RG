@@ -56,6 +56,9 @@ public class SessionUtil {
 	public static String getMemberDivision(HttpServletRequest request) {
 		return (String) request.getSession().getAttribute("member_division");
 	}
+	public static String getMemberVdrIdx(HttpServletRequest request) {
+		return (String) request.getSession().getAttribute("member_vdr_idx");
+	}
 	
 	public static boolean isLogIn(HttpServletRequest request) {
 		String member_id = getMemberId(request);

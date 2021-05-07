@@ -65,6 +65,7 @@ public class MainController {
 				resultData.put("data", dataObj);
 	
 				session = request.getSession(false);
+			    session.setAttribute("member_vdr_idx", ""+detailMember.getVdr_idx()+"");
 				session.setAttribute("member_id", "" + detailMember.getMember_id() + "");
 				session.setAttribute("member_emp_no", "" + detailMember.getMember_emp_no() + "");
 				session.setAttribute("member_nm", "" + detailMember.getMember_nm() + "");
@@ -118,6 +119,7 @@ public class MainController {
 				}
 				
 			    session = request.getSession(false);
+			    session.setAttribute("member_vdr_idx", ""+detailMember.getVdr_idx()+"");
 			    session.setAttribute("member_id", ""+detailMember.getMember_id()+"");
 			    session.setAttribute("member_emp_no", ""+detailMember.getMember_emp_no()+"");
 			    session.setAttribute("member_nm", ""+detailMember.getMember_nm()+"");

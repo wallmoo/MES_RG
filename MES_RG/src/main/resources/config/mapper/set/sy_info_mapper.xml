@@ -428,11 +428,10 @@
 		FROM T_VDR_MST  
 		
 		where VDR_DEL_YN = 'N'
-		<!-- 
-		<if test="VDR_IDX!=null and !''.equals(VDR_IDX) ">
+		
+		<if test="VDR_IDX!=null and !''.equals(VDR_IDX) and VDR_IDX!=0">
 			AND VDR_IDX = #{VDR_IDX}
-		</if>
- 		-->		
+		</if>	
 		<if test="VDR_NM!=null and !''.equals(VDR_NM) ">
 			AND VDR_NM LIKE CONCAT('%', #{VDR_NM}, '%')
 		</if>	   
