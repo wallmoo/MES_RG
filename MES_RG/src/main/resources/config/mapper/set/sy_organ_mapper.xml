@@ -294,6 +294,7 @@ SELECT a.member_emp_no, a.member_id, a.member_email
   , d.dept_cd, d.dept_nm
   , b.role_cd, '' as role_nm
   , c.position_cd, '' as position_nm
+  , a.vdr_idx
 FROM sy_member_master a
   LEFT OUTER JOIN sy_role_member b
     ON a.member_emp_no = b.member_emp_no
@@ -331,6 +332,7 @@ SELECT a.member_emp_no, a.member_id, a.member_email
   , d.dept_cd, d.dept_nm
   , b.role_cd, '' as role_nm
   , c.position_cd, '' as position_nm
+  , a.vdr_idx
 FROM sy_member_master a
   LEFT OUTER JOIN sy_role_member b
     ON a.member_emp_no = b.member_emp_no
