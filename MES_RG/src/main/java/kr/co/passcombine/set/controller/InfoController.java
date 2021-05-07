@@ -61,6 +61,7 @@ import kr.co.passcombine.set.vo.SYTMaterialVo;
 import kr.co.passcombine.set.vo.SYTProjectVo;
 import kr.co.passcombine.set.vo.SYCustomerVo;
 import kr.co.passcombine.set.vo.SYDeliveryOrderVo;
+import kr.co.passcombine.set.vo.SYDrwFileInfoVo;
 import kr.co.passcombine.set.vo.SYGoalVo;
 import kr.co.passcombine.set.vo.SYTProjectVo;
 import kr.co.passcombine.set.vo.SYIncome_insp_mstVo;
@@ -4793,31 +4794,30 @@ public class InfoController {
 	@ResponseBody
 	@RequestMapping(value = "/account/test", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	public String test(MultipartHttpServletRequest request, HttpServletResponse response,
-			@RequestParam Map<String, Object> testData) {
-		//파일 업로드를 위한 준비
-				OutputStream out = null;
-				PrintWriter printWriter = null;
-				MultipartFile file = request.getFile("excelFile");
-				String[] colmn = {
-						"MTL_IDX", "TYPE", "MTL_MKR_NO", "MTL_MKR_CD", "MTL_QTY", "DSNUM"
-				};
-				List<Map<String, Object>> vo = excelUpload.excelRead(file, colmn); //엑셀의 데이터 파싱함 (단 xlsx만가능)
-				
-				//파싱된데이터에 pjt_idx를 주입할준비
-				Object Pjt = testData.get("pjidxHidden");
-				String REG_ID = SessionUtil.getMemberId(request);
-				
-				for(int i=0; i<vo.size(); i++) {
-					vo.get(i).put("PJT_IDX", Pjt);
-					vo.get(i).put("REG_ID", REG_ID);
-				}//pjt_idx를 주입함
-				
-				int result = sYInfoService.InsertBOMExcel(vo);
-				
-				String a = "";
-		return "";
+	public Map<String,Object> test(MultipartHttpServletRequest request, HttpServletResponse response,
+			@RequestParam("files") MultipartFile file
+			,@RequestParam Map<String, Object> testData) {
+		String basePath="/upload";
+		System.out.println("패스는 "+basePath+"\n\n\n\n");
+		
+		Map<String, Object> result = fileUpload.savePDF(file, basePath, request);
+		return result;
 	}
+	
+	
+	@RequestMapping(value = "/pdfViewer", method = {RequestMethod.GET, RequestMethod.POST})
+	public ModelAndView product_pdfViewer(HttpServletRequest request, HttpServletResponse response, HttpSession session
+			,@RequestParam("path") String path
+			) {
+		// logger.debug("CommonController.pdfViewer() is called.");
+		ModelAndView modelAndView = new ModelAndView();
+			modelAndView.addObject("file_path",path);
+			modelAndView.addObject("isPDFs","Y");
+			modelAndView.setViewName("common/pdf_viewer");
+
+		return modelAndView;
+	}
+
 	
 	/**
 	 * <pre>

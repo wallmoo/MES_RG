@@ -1680,14 +1680,16 @@ function showPdf(){
 	console.log("showPdf()");
 
 	var key = w2ui.grid_list.getSelection();
-	var data = w2ui.grid_list.get(key[0]);
+	var data = w2ui.grid_list.get(key[0]+1);
 	var item_code = data.item_code;
+	var items = "I";
 	
 	// 현재 도면이 있는 item_code가 없어서 강제로 셋팅 
 	//item_code = 'S00-664178-00';
 	
 	var page_url = "/common/product_pdfViewer";
-	var postData = page_url + "?item_code=" + encodeURIComponent(item_code);
+		page_url = "/common/jsp_test";
+	var postData = page_url + "?item_code=" + encodeURIComponent(item_code) + "&items="+items;
 			
 	//$(location).attr('href', postData);
 

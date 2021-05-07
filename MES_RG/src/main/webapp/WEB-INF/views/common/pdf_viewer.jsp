@@ -4,6 +4,8 @@ String file_path = (String) request.getAttribute("file_path");
 %>
 <html dir="ltr" mozdisallowselectionprint moznomarginboxes>
 <head>
+<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c" %> 
+<%@ taglib uri="http://www.springframework.org/tags" prefix="spring" %>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta name="google" content="notranslate">
@@ -25,8 +27,13 @@ String file_path = (String) request.getAttribute("file_path");
 <script src="/res/plugins/pdf/viewer.js?v=<%=System.currentTimeMillis()%>"></script>
 <script type="text/javascript">
 var file_path = "<%=file_path%>";
+var isPDFS = "${isPDFs}";
+if(isPDFS== ""){
 if(file_path != ""){
 	setDefaultUrl(file_path);	
+}
+}else{
+	setDefaultUrl("/PDF/"+file_path)
 }
 </script>
 </head>

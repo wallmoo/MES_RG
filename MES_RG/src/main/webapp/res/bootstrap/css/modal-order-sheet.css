@@ -9,6 +9,9 @@
 .bl-none tr td:first-child {
   border-left: none;
 }
+.modal-content{
+      max-width: 1024px;
+    }
 
 /* table css */
 .order-sheet-table-wrap table {
@@ -145,10 +148,13 @@
 }
 
 /* modal-header */
+.modal-header{
+      position: relative;
+}
 .modal-header .box-tools {
   position: absolute;
   right: 10px;
-  top: 14px;
+  top: 0;
 }
 
 /* css */
