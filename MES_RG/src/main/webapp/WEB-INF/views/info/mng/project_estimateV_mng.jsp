@@ -62,7 +62,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 														<h3 class="box-title">구매 견적 결과 관리</h3>
 														<div class="box-tools pull-right">
 															<button type="button" id="btn_dlv_csr" onclick="excelFileDownload('grid_list','구매 견적 관리');" class="btn btn-info btn-sm">견적 요청 Excel Download</button>
-															<button type="button" id="btn_ins_csr" onclick="bomOrder();" class="btn btn-primary btn-sm">견적 결과 Excel Upload</button>															
+															<button type="button" id="btn_ins_csr" onclick="excelInsert();" class="btn btn-primary btn-sm">견적 결과 Excel Upload</button>															
 															<button type="button" id="btn_search_csr" onclick="loadLeftGrid();" class="btn btn-warning btn-sm">조회</button>
 														</div>
 													</div>
@@ -121,6 +121,43 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 					</section>
 				</div>
 			</section>
+						
+		<div class="modal fade" id="modal_ExcelUpload" data-backdrop="static">
+			<div class="modal-dialog modal-md">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<h4 class="modal-title" id="modal_add_title">엑셀 일괄업로드</h4>
+					</div>
+					<div class="modal-body" id="modal_code_body">
+							<div class="col-sm-9">
+								<div class="row">
+									<div class="form-group">
+										<label class="col-sm-3 control-label">파일명</label>
+										<div class="col-sm-7">
+											<form method="POST" enctype="multipart/form-data" id="excelUploadForm">
+												<input type="hidden" id="pjidxHidden" name="pjidxHidden">
+												<input type="text" class="form-control input-sm pull-right clear_val2" id="excelName" maxlength="100">
+												<input type="file"  class="fileupload file_info" id="excelFile" name="excelFile" onchange="$('#excelName').val(this.value)">
+											</form>
+										</div>
+									</div>
+								</div>
+									<br/>* 수정가능한 컬럼은 MOQ, 금액,납기가능일,비고 입니다.
+									<br/>* 견적요청excel을 다운받은후 해당컬럼을 수정해주세요.
+					</div>
+					<div class="modal-footer" style="border-top-color: transparent !important;">
+						<div class="col-md-12 text-center" style="margin-top: 10px">
+							<button type="button" id="" class="btn btn-success btn-sm" onclick="UploadExcels()">등록</button>
+							<button type="button" id="" class="btn btn-danger btn-sm" data-dismiss="modal">취소</button>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		</div>
 			<!-- /.content -->
 		</div>
 		<!-- /.content-wrapper -->
@@ -168,7 +205,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			},
 			multiSelect : true,
 			columns : [ 
-				{ field:'est_CD', caption:'구매견적 코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'est_IDX', caption:'구매견적 코드', size:'2%', style:'text-align:center', sortable: true},
 				{ field:'pjt_IDX', caption:'프로젝트 번호', size:'17%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'pjt_CD', caption:'프로젝트코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'mtl_REQ_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
@@ -332,6 +369,56 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		$('#S_PJT_DLV_DT').val("");
 		
 	}	
+	function excelInsert(){
+		$("#modal_ExcelUpload").modal('show');
+	}
+	function UploadExcels(){
+		console.log('saveAccount()');
+		if(confirm("업로드 하시겠습니까?")){
+	
+			//$("#modal_ExcelUpload").modal('hide');
+	
+			var strUrl = "/info/info/insertestimateVExcel";
+				//strUrl = "/info/account/test";
+					 
+			// escape(
+			var form = $("#excelUploadForm")[0];
+			
+			var data = new FormData(form);
+			console.log(data);
+			
+							
+			$.ajax({
+				type: "POST",
+				enctype: 'multipart/form-data',
+				url: strUrl,
+				data: data,
+				processData: false,
+				contentType: false,
+				cache: false,
+				timeout: 600000,
+			    success:function(data){
+			    		if(data.sucess){
+					    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
+					    	startValue_combo = "";
+							form.reset();
+							$("#modal_ExcelUpload").modal('hide');
+			    		}else{
+					    	fnMessageModalAlert("결과", "일부컬럼에 에러가 발생하였습니다. <br/> 에러가 발생한 컬럼은 <br/>"+data.errors+"<br/>번컬럼입니다");// Notification(MES)
+					    	startValue_combo = "";
+							form.reset();
+							$("#modal_ExcelUpload").modal('hide');
+			    		}
+			    	
+			    },
+			    error: function(jqXHR, textStatus, errorThrown){
+				    	fnMessageModalAlert("결과", "정보를 처리하는데 에러가 발생하였습니다.");	// Notification(MES)
+			    },
+			    complete: function() {
+			    }
+			});
+		}
+	}
 
 </script>
 
