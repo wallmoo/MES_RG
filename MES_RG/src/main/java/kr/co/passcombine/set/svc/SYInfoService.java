@@ -48,6 +48,7 @@ import kr.co.passcombine.set.vo.SYBomVo;
 import kr.co.passcombine.set.vo.SYTBranchVo;
 import kr.co.passcombine.set.vo.SYTClientVo;
 import kr.co.passcombine.set.vo.SYTEstimateVo;
+import kr.co.passcombine.set.vo.SYTMaterialOrderVo;
 import kr.co.passcombine.set.vo.SYTMaterialRequestVo;
 import kr.co.passcombine.set.vo.SYTMaterialVo;
 import kr.co.passcombine.set.vo.SYTProjectVo;
@@ -1524,13 +1525,7 @@ public class SYInfoService {
 		return result;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
+
 	public List<SYIncome_insp_mstVo> selectIncome_inspect_master(
 			SYIncome_insp_mstVo vo) {
 		return infoDAO.selectIncome_inspect_master(vo);
@@ -1657,8 +1652,6 @@ public class SYInfoService {
 	}
 
 	
-	
-	
 	// Estimate Start	
 	public List<SYTEstimateVo> selectEstimate(SYTEstimateVo vo){//자재 요청 조회
 		return infoDAO.selectEstimate(vo);
@@ -1677,5 +1670,22 @@ public class SYInfoService {
 		return infoDAO.updateEstimatExcel(vo);
 	}
 	
+	// Estimate Start	
+	public List<SYTMaterialOrderVo> selectMaterialOrder(SYTMaterialOrderVo vo){//자재 요청 조회
+		return infoDAO.selectMaterialOrder(vo);
+	}	
+	public int insertMaterialOrderMST(Map<String,Object> vo) {//자재 요청
+		return infoDAO.insertMaterialOrderMST(vo);
+	}	
+	public int insertMaterialOrder(List<Map<String,Object>> vo) {//자재 요청
+		return infoDAO.insertMaterialOrder(vo);
+	}	
+	public int updateMaterialOrder(SYTMaterialOrderVo vo) {//자재 요청 수정
+		return infoDAO.updateMaterialOrder(vo);
+	}
+	public int deleteMaterialOrder(SYTMaterialOrderVo vo) {//자재 요청 삭제
+		return infoDAO.deleteMaterialOrder(vo);
+	}	
+	// Material End			
 	
 }
