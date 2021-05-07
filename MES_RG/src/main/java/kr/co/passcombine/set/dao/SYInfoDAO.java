@@ -277,6 +277,7 @@ public interface SYInfoDAO {
 	public int updateMaterialRequest(SYTMaterialRequestVo vo);
 	public int deleteMaterialRequest(SYTMaterialRequestVo vo);
 	public int updateReqQuantity(SYTMaterialRequestVo vo);
+	public int updateEstVendor(SYTEstimateVo vo);
 	// Material Request End	
 	
 	

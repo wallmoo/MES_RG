@@ -271,47 +271,6 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 		fnLoadDeliveryOption();//검색폼 달력			
 
 	})
-	function fnCdD(val, val2){//공통코드를 드랍다운 메뉴화
-		console.log("fnCdD("+val+")");
-		
-		initOptions($('#'+val)); // select 박스 초기화
-		
-		var strUrl = "/info/codeDetail/selectCdD";
-		var postData = "master_code=" + encodeURIComponent(val2);
-		
-		$.ajax({
-		    url: strUrl,
-		    type: "POST",
-		    data: postData, 
-		    dataType: 'json', 
-		    async : false, // 다 끝나고 다음 처리 해!
-		    success:function(data, textStatus, jqXHR){
-//	 	    	console.log("(data.rows).length = " + (data.rows).length);
-		    	if(data.status == "200" && (data.rows).length>0 /* 1 */ ) {
-		    		rowArr = data.rows;
-		    		
-		    		var sub = val.substr(0,2);
-		    		
-		    		//  if(valsub != "m_")
-		    		if(sub.indexOf("m_") == -1) // val
-		    			$("#"+val ).append("<option value="+'ALL'+">" + "전체" + "</option>");
-		    		
-					$.each(rowArr, function(idx, row){
-						$("#"+val ).append("<option value=" + row.detail_code + ">" + row.code_nm + "</option>");
-					});
-					
-		 			$("#"+val+" option:eq(0)").prop("selected", true);	
-		    	} 
-		    },
-		    error: function(jqXHR, textStatus, errorThrown){
-			    //fnMessageModalAlert("Notification(MES)", "정보를 처리하는데 에러가 발생하였습니다.");	
-		    },
-		    complete: function() {
-		    	
-		    }
-		});
-	}
-
 	function fnLoadProjectGrid() {
 	// 	 console.log(page_url);
 		var rowArr = [];
@@ -344,7 +303,6 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 		});
 		loadList();
 	}
-	
 	function loadList() {
 		console.log("loadList()");
 		
@@ -576,7 +534,8 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 			});
 		} 
 	}
-
+	
+	// ############################
 	// init component
 	function fnLoadCommonOption() {
 	 	console.log('fnLoadCommonOption()');
@@ -617,58 +576,6 @@ String pageTitle = "SET"; //SessionUtil.getProperties("mes.company");
 		$('#S_PJT_DLV_DT').val("");
 		
 	}	
-	function getFormatDate(d) {
-		var month = d.getMonth() + 1;
-		var date = d.getDate();
-		month = (month < 10) ? "0" + month : month;
-		date = (date < 10) ? "0" + date : date;
-		return d.getFullYear() + '-' + month + '-' + date;
-	}
-
-	// 고객사 가져오기
-	function requestClient(val){
-		console.log("requestClient");
-		
-		initOptions($('#'+val)); // select 박스 초기화
-		
-		var strUrl = "/info/account/selectClient";
-		var postData = "";
-		
-		//w2ui['grid_list'].lock('loading...', true);
-		$.ajax({
-		    url: strUrl,
-		    type: "POST",
-		    data: postData, 
-		    async : false, // 다 끝나고 다음 처리 해!
-		    dataType: 'json', 
-		    success:function(data, textStatus, jqXHR){
-//	 	    	console.log("(data.rows).length = " + (data.rows).length);
-		    	if(data.status == "200" && (data.rows).length > 0) {
-		    		rowArr = data.rows;
-		    		
-		    		/* 검색어 입력시 */
-		    		var sub = val.substr(0,2);
-
-		    		if(sub.indexOf("S_") != -1) // val
-		    			$("#"+val ).append("<option value="+'ALL'+">" + "전체" + "</option>");
-		    		
-					$.each(rowArr, function(idx, row){
-						$("#"+val ).append("<option value=" + row.cst_IDX + ">" + row.cst_NM + "</option>");
-					});
-					
-		 			$("#"+val+" option:eq(0)").prop("selected", true);	
-		    	} 
-		    },
-		    error: function(jqXHR, textStatus, errorThrown){
-			    //fnMessageModalAlert("Notification(MES)", "정보를 처리하는데 에러가 발생하였습니다.");	
-		    },
-		    complete: function() {
-	    	
-		    }
-		});
-	}
-	
-	
 	//엑셀 1024
 	function excelFileDownload() {
 		console.log("excelFileDownload()");
