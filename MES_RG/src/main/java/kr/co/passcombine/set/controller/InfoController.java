@@ -4751,7 +4751,7 @@ public class InfoController {
 	/**
 	 * <pre>
 	* 1. MethodName : insertBOMExcel
-	* 2. ClassName  : insertBOMExcel.java
+	* 2. ClassName  : infoController.java
 	* 3. Comment    : 관리자 > 기준정보관리 > BOM 관리 엑셀일괄업로드
 	* 4. 작성자       : LJH
 	* 5. 작성일       : 2021. 05. 05.
@@ -4788,6 +4788,92 @@ public class InfoController {
 					int result = sYInfoService.InsertBOMExcel(vo);
 			return result;
 		
+	}
+	/**
+	 * <pre>
+	* 1. MethodName : insertestimateVExcel
+	* 2. ClassName  : infoController.java
+	* 3. Comment    : 관리자 > 기준정보관리 > 구매견적관리(V)
+	* 4. 작성자       : LJH
+	* 5. 작성일       : 2021. 05. 07.
+	 * </pre>
+	 *
+	 * @param testData, request
+	 * @return
+	 */
+
+	@ResponseBody
+	@RequestMapping(value = "/info/insertestimateVExcel", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public Map<String,Object> insertestimateVExcel(MultipartHttpServletRequest request, HttpServletResponse response,
+			@RequestParam Map<String, Object> testData) {
+			//파일 업로드를 위한 준비
+					HashMap <String,Object> resultMap = new HashMap<String,Object>();	
+					OutputStream out = null;
+					PrintWriter printWriter = null;
+					MultipartFile file = request.getFile("excelFile");
+					String[] colmn = {
+							"EST_IDX", "c1","c2", "c3", "c4", "c5","c6","c7",
+							"MTL_EST_MOQ","c8","c9","MTL_EST_PRICE","MTL_TOT_PRICE","MTL_EST_DLV_DT","MTL_EST_BG"
+					};
+					String errors = "";
+					List<Map<String, Object>> vo = excelUpload.excelRead(file, colmn); //엑셀의 데이터 파싱함 (단 xlsx만가능)
+					int rownum=1;
+					Boolean sucess = true;
+					int maxsize = vo.size();
+					for(int i=1; i<maxsize; i++) {
+						try {
+							vo.get(rownum).putAll(isval(vo.get(rownum), rownum));
+							if("N".equals((String)vo.get(rownum).get("results"))) {
+								vo.remove(rownum);
+								errors+=rownum+" ";
+								sucess=false;
+							}else {
+								rownum++;
+							}
+						} catch (Exception e) {
+							e.printStackTrace();
+						}
+					}
+					vo.remove(0);
+				
+			 int result=sYInfoService.insertestimateV(vo);
+			 resultMap.put("sucess",sucess);
+			 resultMap.put("errors",errors);
+			return resultMap;
+		
+	}
+	public Map<String,Object> isval(Map<String,Object> vo, int i) throws Exception{
+		try {
+			int test=0; 
+			if(!vo.containsKey("MTL_EST_MOQ")) {
+				vo.put("MTL_EST_MOQ",0);
+			}//EST_MOQ에 값을넣어둔다. 안하면 포이치에서 에러남
+			else {
+				test = Integer.parseInt((String)vo.get("MTL_EST_MOQ"));
+			}
+			
+			if(!vo.containsKey("MTL_EST_PRICE")) {
+				vo.put("MTL_EST_PRICE",0);
+			}
+			else {
+				test = Integer.parseInt((String)vo.get("MTL_EST_PRICE"));
+			}
+			if(!vo.containsKey("MTL_EST_DLV_DT")) {
+				vo.put("MTL_EST_DLV_DT",null);
+			}
+			if(!vo.containsKey("MTL_EST_BG")) {
+				vo.put("MTL_EST_BG",null);
+			}
+				vo.put("results","Y");
+		}catch (Exception e) {
+			System.out.println((i) +"번쨰의 컬럼에 유효성 문제가 발생하였습니다.");
+			System.out.println("원인은\n"+e +" \n 입니다");
+			vo.put("results","N");
+		}
+		
+		return vo;
 	}
 	
 	@SuppressWarnings("unchecked")
