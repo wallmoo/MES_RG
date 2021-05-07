@@ -1635,6 +1635,9 @@ public class SYInfoService {
 	public int updateReqQuantity(SYTMaterialRequestVo vo) {
 		return infoDAO.updateReqQuantity(vo);
 	}		
+	public int updateEstVendor(SYTEstimateVo vo) {
+		return infoDAO.updateEstVendor(vo);
+	}		
 	// Material Request End	
 	public List<SYTMaterialVo> selectMaterialD(List<Map<String, Object>> vo) {
 		// TODO Auto-generated method stub

@@ -11,6 +11,7 @@ public class SYTEstimateVo implements Serializable{
 	private int MTL_IDX;
 	private int VDR_IDX;
 	private int MTL_REQ_IDX;
+	private int CST_IDX;
 	private String MTL_REQ_QTY;
 	private String MTL_EST_MOQ;
 	private String MTL_EST_PRICE;
@@ -23,7 +24,7 @@ public class SYTEstimateVo implements Serializable{
 	
 	//추가 VO
 	private String VDR_NM;
-	private String PJt_NM;
+	private String PJT_NM;
 	private String MTL_NM;
 	private String MTL_MKR_NO;
 	private String MTL_STD;
@@ -121,11 +122,11 @@ public class SYTEstimateVo implements Serializable{
 	public void setVDR_NM(String vDR_NM) {
 		this.VDR_NM = vDR_NM;
 	}
-	public String getPJt_NM() {
-		return PJt_NM;
+	public String getPJT_NM() {
+		return PJT_NM;
 	}
-	public void setPJt_NM(String pJt_NM) {
-		this.PJt_NM = pJt_NM;
+	public void setPJT_NM(String pJT_NM) {
+		this.PJT_NM = pJT_NM;
 	}
 	public String getMTL_NM() {
 		return MTL_NM;
@@ -162,6 +163,12 @@ public class SYTEstimateVo implements Serializable{
 	}
 	public void setMTL_TOT_PRICE(String mTL_TOT_PRICE) {
 		this.MTL_TOT_PRICE = mTL_TOT_PRICE;
+	}
+	public int getCST_IDX() {
+		return CST_IDX;
+	}
+	public void setCST_IDX(int cST_IDX) {
+		CST_IDX = cST_IDX;
 	}
 	
 }
