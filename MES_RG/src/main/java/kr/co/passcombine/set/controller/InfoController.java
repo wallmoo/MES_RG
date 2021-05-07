@@ -4751,7 +4751,7 @@ public class InfoController {
 	/**
 	 * <pre>
 	* 1. MethodName : insertBOMExcel
-	* 2. ClassName  : insertBOMExcel.java
+	* 2. ClassName  : infoController.java
 	* 3. Comment    : 관리자 > 기준정보관리 > BOM 관리 엑셀일괄업로드
 	* 4. 작성자       : LJH
 	* 5. 작성일       : 2021. 05. 05.
@@ -4791,11 +4791,11 @@ public class InfoController {
 	}
 	/**
 	 * <pre>
-	* 1. MethodName : insertBOMExcel
-	* 2. ClassName  : insertBOMExcel.java
-	* 3. Comment    : 관리자 > 기준정보관리 > BOM 관리 엑셀일괄업로드
+	* 1. MethodName : insertestimateVExcel
+	* 2. ClassName  : infoController.java
+	* 3. Comment    : 관리자 > 기준정보관리 > 구매견적관리(V)
 	* 4. 작성자       : LJH
-	* 5. 작성일       : 2021. 05. 05.
+	* 5. 작성일       : 2021. 05. 07.
 	 * </pre>
 	 *
 	 * @param testData, request
