@@ -296,6 +296,7 @@ public interface SYInfoDAO {
 	public int updateEstimate(SYTEstimateVo vo);
 	public int deleteEstimate(SYTEstimateVo vo);
 	// Estimate End	
+	public int updateEstimatExcel(List<Map<String, Object>> vo);
 	
 	// MaterialOrder Start	
 	public List<SYTMaterialOrderVo> selectMaterialOrder(SYTMaterialOrderVo vo);

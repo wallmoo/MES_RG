@@ -1525,13 +1525,7 @@ public class SYInfoService {
 		return result;
 	}
 	
-	
-	
-	
-	
-	
-	
-	
+
 	public List<SYIncome_insp_mstVo> selectIncome_inspect_master(
 			SYIncome_insp_mstVo vo) {
 		return infoDAO.selectIncome_inspect_master(vo);
@@ -1672,7 +1666,9 @@ public class SYInfoService {
 		return infoDAO.deleteEstimate(vo);
 	}	
 	// Material End		
-
+	public int insertestimateV(List<Map<String, Object>> vo) {
+		return infoDAO.updateEstimatExcel(vo);
+	}
 	
 	// Estimate Start	
 	public List<SYTMaterialOrderVo> selectMaterialOrder(SYTMaterialOrderVo vo){//자재 요청 조회
