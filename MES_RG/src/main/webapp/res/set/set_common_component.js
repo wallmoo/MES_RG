@@ -116,7 +116,7 @@
 						$("#"+val ).append("<option value=" + row.vdr_IDX + ">" + row.vdr_NM + "</option>");
 					});
 					
-		 			$("#"+val+" option:eq(0)").prop("selected", true);	
+		 			$("#"+val+" option:eq(0)").prop("selected", true);
 		    	} 
 		    },
 		    error: function(jqXHR, textStatus, errorThrown){

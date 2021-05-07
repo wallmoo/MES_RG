@@ -3366,7 +3366,7 @@
 		<if test="PJT_NM != null and !''.equals(PJT_NM) and !'undefined'.equals(PJT_NM) and !'null'.equals(PJT_NM)">
 			AND P.PJT_NM LIKE CONCAT('%', #{PJT_NM}, '%')
 		</if>		
-		<if test="VDR_IDX != null and VDR_IDX !='' and VDR_IDX !='ALL' and VDR_IDX > 0">
+		<if test="VDR_IDX != null and VDR_IDX !='' and VDR_IDX !='0'">
 			AND V.VDR_IDX = #{VDR_IDX}
 		</if>
 		<if test="MTL_EST_REG_DT != null and !''.equals( MTL_EST_REG_DT ) and !'null'.equals( MTL_EST_REG_DT )">

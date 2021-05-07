@@ -72,7 +72,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 															<div class="form-group">																
 																<div class="col-sm-2">
 																	<label>거래처</label> 
-																	<select id="S_VDR_IDX" name="S_VDR_IDX" class="form-control" style="height: 30px;" ></select>
+																	<select id="S_VDR_IDX" name="S_VDR_IDX" class="form-control" style="height: 30px;" onChange="loadLeftGrid(); return false;" ></select>
 																</div>
 									
 																<div class="col-sm-2">
@@ -257,9 +257,9 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 				{ field:'est_CD', caption:'구매견적 코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'pjt_IDX', caption:'프로젝트 번호', size:'17%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'pjt_CD', caption:'프로젝트코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
-				{ field:'MTL_REQ_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'mtl_REQ_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true, hidden: true},
-				{ field:'VDR_IDX', caption:'거래처 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'vdr_IDX', caption:'거래처 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'vdr_NM', caption:'거래처', size:'8%', style:'text-align:center', sortable: true}, 
 				{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'mtl_NM', caption:'품목', size:'10%', style:'text-align:center' , sortable: true},
@@ -277,7 +277,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 			],			
 			
 			sortData : [ {
-				field : 'EST_IDX',
+				field : 'pjt_IDX',
 				direction : 'DESC'
 			} 
 			],
@@ -302,10 +302,17 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	function loadLeftGrid() {//grid_list Data Arr
 		console.log("loadLeftGrid()");
 		
+		var VDR_IDX_VAL = "";
+		if($('#S_VDR_IDX').val() == "ALL") {
+			VDR_IDX_VAL = "0";
+		} else {
+			VDR_IDX_VAL = $('#S_VDR_IDX').val();
+		}	
+		
 		var page_url = "/info/info/selectEstimate";
 		var postData = "PJT_NM=" + encodeURIComponent($("#S_PJT_NM").val()) 
-						/* + "&VDR_IDX=" + encodeURIComponent($("#S_VDR_IDX").val())  */
 						+ "&MTL_EST_REG_DT=" + encodeURIComponent($("#S_MTL_EST_REG_DT").val())
+						+ "&VDR_IDX=" + encodeURIComponent(VDR_IDX_VAL)
 						+ "&MTL_NM=" + encodeURIComponent($("#S_MTL_NM").val()) 
 						+ "&MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val()) 
 						+ "&MTL_MKR_NO=" + encodeURIComponent($("#S_MTL_MKR_NO").val());
@@ -355,6 +362,10 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		var keys = w2ui.grid_list.getSelection();
 		var ModalDataList = [];
 		
+		if($('#S_VDR_IDX').val() == "ALL") {
+			alert("거래처 정보를 선택하여주십시오");
+			return;
+		}			
 		if (keys == null || keys == "") {
 			alert("구매발주를 등록할 항목을 선택하여주십시오");
 		} else {
