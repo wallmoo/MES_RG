@@ -1672,7 +1672,9 @@ public class SYInfoService {
 		return infoDAO.deleteEstimate(vo);
 	}	
 	// Material End		
-
+	public int insertestimateV(List<Map<String, Object>> vo) {
+		return infoDAO.updateEstimatExcel(vo);
+	}
 	
 	// Estimate Start	
 	public List<SYTMaterialOrderVo> selectMaterialOrder(SYTMaterialOrderVo vo){//자재 요청 조회

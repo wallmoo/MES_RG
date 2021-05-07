@@ -3437,6 +3437,20 @@
 	</update>
 	<!-- T_EST_MST 구매견적 End -->		
 	
+	<update id="updateEstimatExcel" parameterType="java.util.List">
+	<foreach item="item" collection="list" open="" close="" separator=";">
+		UPDATE T_EST_MST SET
+			MTL_EST_MOQ = IFNULL(#{item.MTL_EST_MOQ}, 0),
+			MTL_EST_PRICE =  IFNULL(#{item.MTL_EST_PRICE,}, 0),
+			<if test="item.MTL_EST_DLV_DT!=null || item.MTL_EST_DLV_DT!=''">
+				MTL_EST_DLV_DT = #{item.MTL_EST_DLV_DT},
+			</if>
+			<if test="item.MTL_EST_BG!=null || item.MTL_EST_BG!=''">
+			MTL_EST_BG = #{item.MTL_EST_BG}
+			</if>
+		WHERE EST_IDX = #{item.EST_IDX}
+		</foreach>
+	</update>
 	
 	<!-- T_MTL_ORD_MST, T_MTL_ORD_DTL 구매발주 Start -->
 	<select id="selectMaterialOrder" parameterType="SYTMaterialOrderVo" resultType="SYTMaterialOrderVo">
