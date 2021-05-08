@@ -1704,5 +1704,12 @@ public class SYInfoService {
 		return infoDAO.deleteMaterialOrder(vo);
 	}	
 	// Material End			
+	public Map<String, Object> selectFilesbyOrder(Map<String, Object> vo) {
+		return infoDAO.selectFilesbyOrder(vo);
+	}
+	public int updateT_MTL_ORD_MST(Map<String, Object> queryMap) {
+		// TODO Auto-generated method stub
+		return infoDAO.updateT_MTL_ORD_MST(queryMap);
+	}
 	
 }
