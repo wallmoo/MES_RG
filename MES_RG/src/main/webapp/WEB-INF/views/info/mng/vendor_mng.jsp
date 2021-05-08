@@ -2,8 +2,8 @@
 <%@ page import="kr.co.passcombine.set.util.*"%>
 <%
 // jsp properties
-String thema = "purple"; //SessionUtil.getProperties("mes.thema");
-String pageTitle = "SET Vendor"; //SessionUtil.getProperties("mes.company");
+String thema = SessionUtil.getProperties("mes.thema");
+String pageTitle = SessionUtil.getProperties("mes.company");
 %>
 <!DOCTYPE html>
 <html>

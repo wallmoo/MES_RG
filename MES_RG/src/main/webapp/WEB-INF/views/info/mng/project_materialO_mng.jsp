@@ -3,8 +3,8 @@
 <%@ page import="kr.co.passcombine.set.util.*"%>
 <%
 // jsp properties
-String thema = "purple"; //SessionUtil.getProperties("mes.thema");
-String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
+String thema = SessionUtil.getProperties("mes.thema");
+String pageTitle = SessionUtil.getProperties("mes.company");
 %>
 <!DOCTYPE html>
 <html>
@@ -68,7 +68,12 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 													</div>
 													<div class="box-body">
 														<div class="row">
-															<div class="form-group">																
+															<div class="form-group">	
+																<div class="col-sm-3">
+																	<label>프로젝트명</label> 
+																	<select id="S_PJT_IDX" name="S_PJT_IDX" class="form-control" style="height: 30px;" onChange="loadRequestGridData(); return false;"></select>
+																</div>
+																																														
 																<div class="col-sm-2">
 																	<label>자재 요청일</label> 
 																	<div class="input-group">
@@ -199,6 +204,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	comboValue_cd = new Array;
 
 	$(function($) {
+		requestProject('S_PJT_IDX');//프로젝트명 가져오기
 		fnCdD('S_PJT_PRD_UNT', 'MC1027');//공통코드를 호출-재고 단위
 		requestVendor('S_VDR_IDX1');//고객사 정보를 검색폼 드랍다운 형태로 만듬
 		requestVendor('S_VDR_IDX2');
@@ -298,12 +304,18 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	function loadRequestGridData() {//grid_list Data Arr
 		console.log("loadRequestGridData()");
 		
+		if($('#S_PJT_IDX').val() == "ALL") {
+			PJT_IDX = "0";
+		} else {
+			PJT_IDX = $('#S_PJT_IDX').val();
+		}		
 		var page_url = "/info/info/selectMaterialRequest";
 		var postData = "MTL_REQ_TYPE=" + encodeURIComponent($("#S_MTL_REQ_TYPE").val()) 
 					+ "&MTL_REQ_REG_DT=" + encodeURIComponent($("#S_MTL_REQ_REG_DT").val())
 					+ "&MTL_NM=" + encodeURIComponent($("#S_MTL_NM").val())
 					+ "&MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val())
-					+ "&MTL_MKR_NO=" + encodeURIComponent($("#S_MTL_MKR_NO").val());
+					+ "&MTL_MKR_NO=" + encodeURIComponent($("#S_MTL_MKR_NO").val())
+					+ "&PJT_IDX=" + PJT_IDX;
 		
 		w2ui['grid_list'].lock('loading...', true);
 		$.ajax({
@@ -350,7 +362,10 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		var keys = w2ui.grid_list.getSelection();
 		var ModalDataList = [];
 		
-		if (keys == null || keys == "") {
+		if($('#S_PJT_IDX').val() == "ALL") {
+			alert("프로젝트 정보를 선택하여주십시오");
+			return;
+		} else if (keys == null || keys == "") {
 			alert("견적을 요청할 항목을 선택하여주십시오");
 		} else {
 			$(".clear_val").val('');//검색어 초기화

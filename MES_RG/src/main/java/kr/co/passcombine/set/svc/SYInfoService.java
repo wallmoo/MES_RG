@@ -1671,15 +1671,21 @@ public class SYInfoService {
 	}
 	
 	// Estimate Start	
-	public List<SYTMaterialOrderVo> selectMaterialOrder(SYTMaterialOrderVo vo){//자재 요청 조회
+	public List<SYTMaterialOrderVo> selectMaterialOrder(SYTMaterialOrderVo vo){//자재요청 마스터 조회
 		return infoDAO.selectMaterialOrder(vo);
 	}	
-	public int insertMaterialOrderMST(Map<String,Object> vo) {//자재 요청
+	public List<SYTMaterialOrderVo> selectMaterialOrdDTL(SYTMaterialOrderVo vo){//자재요청 상세 조회
+		return infoDAO.selectMaterialOrdDTL(vo);
+	}	
+	public int insertMaterialOrderMST(Map<String,Object> vo) {//자재요청 마스터 등록
 		return infoDAO.insertMaterialOrderMST(vo);
 	}	
-	public int insertMaterialOrder(List<Map<String,Object>> vo) {//자재 요청
+	public int insertMaterialOrder(List<Map<String,Object>> vo) {//자재요청 자재리스트 등록
 		return infoDAO.insertMaterialOrder(vo);
 	}	
+	
+	
+	
 	public int updateMaterialOrder(SYTMaterialOrderVo vo) {//자재 요청 수정
 		return infoDAO.updateMaterialOrder(vo);
 	}

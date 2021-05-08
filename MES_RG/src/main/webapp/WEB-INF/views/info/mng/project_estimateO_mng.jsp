@@ -3,8 +3,8 @@
 <%@ page import="kr.co.passcombine.set.util.*"%>
 <%
 // jsp properties
-String thema = "purple"; //SessionUtil.getProperties("mes.thema");
-String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
+String thema = SessionUtil.getProperties("mes.thema");
+String pageTitle = SessionUtil.getProperties("mes.company");
 %>
 <!DOCTYPE html>
 <html>
@@ -173,7 +173,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 									<div class="form-group">
 										<label class="col-sm-4 control-label">이행 증권</label>
 										<div class="col-sm-6">
-											<select id="MTL_ORD_FLE1" name="MTL_ORD_FLE2" class="form-control" style="height: 30px;" >
+											<select id="MTL_ORD_FLE2" name="MTL_ORD_FLE2" class="form-control" style="height: 30px;" >
 												<option value="N">No</option>
 												<option value="Y">Yes</option>
 											</select>											
@@ -184,7 +184,7 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 									<div class="form-group">
 										<label class="col-sm-4 control-label">계약서</label>
 										<div class="col-sm-6">
-											<select id="MTL_ORD_FLE1" name="MTL_ORD_FLE3" class="form-control" style="height: 30px;" >
+											<select id="MTL_ORD_FLE3" name="MTL_ORD_FLE3" class="form-control" style="height: 30px;" >
 												<option value="N">No</option>
 												<option value="Y">Yes</option>
 											</select>											
@@ -375,25 +375,6 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 	function makeOrder() {
 		var keys = w2ui.grid_list.getSelection();
 
-		//var PJT_IDX = $("#hiddenPjtIdx").val();
-		var PJT_IDX = w2ui.grid_list.records[0].pjt_IDX;
-		var VDR_IDX = $("#S_VDR_IDX").val();
-		var MTL_ORD_PLC = $("#MTL_ORD_PLC").val();
-		var MTL_ORD_DLV_DT = $("#MTL_ORD_DLV_DT").val();
-		var MTL_ORD_FLE1 = $("#MTL_ORD_FLE1").val();
-		var MTL_ORD_FLE2 = $("#MTL_ORD_FLE2").val();
-		var MTL_ORD_FLE3 = $("#MTL_ORD_FLE3").val();
-		
-		var mstData = {
-			'PJT_IDX': PJT_IDX,
-			'VDR_IDX': VDR_IDX,
-			'MTL_ORD_PLC': MTL_ORD_PLC,
-			'MTL_ORD_DLV_DT': MTL_ORD_DLV_DT,
-			'MTL_ORD_FLE1': MTL_ORD_FLE1,
-			'MTL_ORD_FLE2': MTL_ORD_FLE2,
-			'MTL_ORD_FLE3': MTL_ORD_FLE3
-		}
-		
  		if(MTL_ORD_PLC == "") {
 			alert("입고요청 사업장 정보를 선택하여주십시오");
 			return;
@@ -402,25 +383,42 @@ String pageTitle = "RealGain"; //SessionUtil.getProperties("mes.company");
 		} else {
 			for (var i = 0; i < keys.length; i++) {
 				if(i == 0) {
-					//$("#hiddenPjtIdx").val() = w2ui.grid_list.records[keys[i]-1].pjt_IDX;
+					$('#hiddenPjtIdx').val(w2ui.grid_list.records[keys[i]-1].pjt_IDX);
 				}
 				var Data = {
 						ORD_IDX : w2ui.grid_list.records[keys[i]-1].ord_IDX,
 						PJT_IDX : w2ui.grid_list.records[keys[i]-1].pjt_IDX,
 						MTL_IDX : w2ui.grid_list.records[keys[i]-1].mtl_IDX,
-						MTL_EST_PRICE : w2ui.grid_list.records[keys[i]-1].mtl_EST_PRICE,
+						MTL_DTL_PRICE : w2ui.grid_list.records[keys[i]-1].mtl_EST_PRICE,
 						MTL_REQ_QTY : w2ui.grid_list.records[keys[i]-1].mtl_REQ_QTY
 				};				
 				reqDataList.push(Data);
 			}
 			
-
+			var PJT_IDX = $("#hiddenPjtIdx").val();
+			//var PJT_IDX = w2ui.grid_list.records[0].pjt_IDX;
+			var VDR_IDX = $("#S_VDR_IDX").val();
+			var MTL_ORD_PLC = $("#MTL_ORD_PLC").val();
+			var MTL_ORD_DLV_DT = $("#MTL_ORD_DLV_DT").val();
+			var MTL_ORD_FLE1 = $("#MTL_ORD_FLE1").val();
+			var MTL_ORD_FLE2 = $("#MTL_ORD_FLE2").val();
+			var MTL_ORD_FLE3 = $("#MTL_ORD_FLE3").val();
+			
+			var mstData = {
+				'PJT_IDX': PJT_IDX,
+				'VDR_IDX': VDR_IDX,
+				'MTL_ORD_PLC': MTL_ORD_PLC,
+				'MTL_ORD_DLV_DT': MTL_ORD_DLV_DT,
+				'MTL_ORD_FLE1': MTL_ORD_FLE1,
+				'MTL_ORD_FLE2': MTL_ORD_FLE2,
+				'MTL_ORD_FLE3': MTL_ORD_FLE3
+			}
+			
 			if (confirm("등록하시겠습니까?")) {
 				console.log(reqDataList);
 
 				var page_url = "/info/info/insertMaterialOrder";
-				var jsonData = JSON.stringify({'mstData': mstData, 'reqDataList': reqDataList})
-							+ "&MTL_ORD_PLC=" + encodeURIComponent($("#MTL_ORD_PLC").val());
+				var jsonData = JSON.stringify({'mstData': mstData, 'reqDataList': reqDataList});
 				
 				console.log(jsonData);
 
