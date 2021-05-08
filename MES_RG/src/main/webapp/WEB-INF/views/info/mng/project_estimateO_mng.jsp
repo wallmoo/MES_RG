@@ -234,8 +234,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		requestVendor('S_VDR_IDX');//고객사 정보를 검색폼 드랍다운 형태로 만듬
 		requestBranchInfo('MTL_ORD_PLC');//사업장 정복
 		
-		fnLoadCommonOption();//등록폼 달력
-		fnLoadDeliveryOption();//검색폼 달력
+		fnLoadCommonOption('#MTL_ORD_DLV_DT');//등록폼 달력
+		fnLoadDeliveryOption('#S_MTL_EST_REG_DT','right');//검색폼 달력
 		
 		fnLoadLeftGrid();
 	})
@@ -445,47 +445,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			}				
 		}
 	}
-	// ############################
-	// init component
-	function fnLoadCommonOption() {
-	 	console.log('fnLoadCommonOption()');
-	 	
-		$('#MTL_ORD_DLV_DT').daterangepicker({
-			opens: 'right',
-			singleDatePicker: true,
-			locale: {
-				format : 'YYYY-MM-DD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-				showMonthAfterYear : true,
-				yearSuffix : '년'
-		    },
-		    startDate : moment(minDate)
-		})
-		.on("change", function() {
-		    loadLeftGrid();
-		}); 
-	}
-	function fnLoadDeliveryOption() {
-	 	console.log('fnLoadCommonOption()');
-	 	
-		$('#S_MTL_EST_REG_DT, #S_PJT_DLV_DT').daterangepicker({
-			opens: 'left',
-			locale: {
-				format : 'YYYYMMDD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-				showMonthAfterYear : true,
-				yearSuffix : '년'
-		    },
- 			startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
-			endDate: moment().format('YYYY-MM-DD'),
-		}); 
-		
-		$('#S_MTL_EST_REG_DT').val("");
-		$('#S_PJT_DLV_DT').val("");
-		
-	}	
 	
 </script>
 

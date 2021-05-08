@@ -1691,10 +1691,15 @@ public class SYInfoService {
 	}	
 	
 	
-	
-	public int updateMaterialOrder(SYTMaterialOrderVo vo) {//자재 요청 수정
-		return infoDAO.updateMaterialOrder(vo);
+	public int chkOrdStatus(SYTMaterialOrderVo vo) {//자재 요청 수정
+		return infoDAO.chkOrdStatus(vo);
+	}	
+	public int updateAllMTL(SYTMaterialOrderVo vo) {//자재 요청 수정
+		return infoDAO.updateAllMTL(vo);
 	}
+	public int updateEachMTL(SYTMaterialOrderVo vo) {//자재 요청 수정
+		return infoDAO.updateAllMTL(vo);
+	}	
 	public int deleteMaterialOrder(SYTMaterialOrderVo vo) {//자재 요청 삭제
 		return infoDAO.deleteMaterialOrder(vo);
 	}	

@@ -3463,7 +3463,7 @@
 			O.MTL_ORD_FLE1,
 			O.MTL_ORD_FLE2,
 			O.MTL_ORD_FLE3,
-			O.MTL_ORD_STATE,
+			O.MTL_ORD_STATUS,
 			O.MTL_ORD_REG_DT,
 			O.MTL_ORD_REG_ID,
 			P.PJT_NM,
@@ -3508,7 +3508,8 @@
 			O.MTL_ORD_REG_ID,
 			OD.ORD_DTL_QTY,
 			OD.ORD_DTL_PRICE,
-			OD.ORD_DTL_STATUS
+			OD.ORD_DTL_STATUS,
+			OD.ORD_CHK_STATUS
 		FROM T_MTL_ORD_DTL OD
 		LEFT JOIN T_MTL_ORD_MST O ON O.ORD_IDX = OD.ORD_IDX
 		LEFT JOIN T_MTL_MST M ON M.MTL_IDX = OD.MTL_IDX
@@ -3556,6 +3557,50 @@
 		)
 		</foreach>
 	</insert>
+	<select id="chkOrdStatus" parameterType="SYTMaterialOrderVo" resultType="SYTMaterialOrderVo">
+		SELECT 
+			MTL_ORD_STATUS
+		FROM T_MTL_ORD_MST
+		WHERE ORD_IDX = #{ORD_IDX}
+	</select>		
+	<insert id="updateAllMTL" parameterType="SYTMaterialOrderVo">
+		INSERT INTO T_MTL_ORD_MST
+		(
+			PJT_IDX,
+			VDR_IDX,
+			MTL_ORD_TYPE,
+			MTL_ORD_PLC,
+			MTL_ORD_DLV_DT,
+			MTL_ORD_FLE1,
+			MTL_ORD_FLE2,
+			MTL_ORD_FLE3,
+			MTL_ORD_REG_ID
+		) VALUES
+		(
+			#{PJT_IDX}, #{VDR_IDX}, #{MTL_ORD_TYPE}, #{MTL_ORD_PLC},#{MTL_ORD_DLV_DT}, #{MTL_ORD_FLE1}, #{MTL_ORD_FLE2}, #{MTL_ORD_FLE3}, #{MTL_ORD_REG_ID}
+		)		
+			
+		INSERT INTO T_MTL_ORD_MST (column1, colum2, colum3) SELECT column1, colum2, colum3 FROM [table] WHERE [조건];
+	</insert>	
+	<insert id="updateEachMTL" parameterType="java.util.List">
+		INSERT INTO T_MTL_ORD_DTL
+		(
+			ORD_IDX,
+			MTL_IDX,
+			PJT_IDX,
+			ORD_DTL_PRICE,
+			ORD_DTL_QTY
+		) VALUES
+		<foreach  collection="list" item="item"  separator=" , ">
+		(
+			#{item.ORD_IDX},
+			#{item.MTL_IDX},
+			#{item.PJT_IDX},
+			#{item.MTL_DTL_PRICE},
+			#{item.MTL_REQ_QTY}
+		)
+		</foreach>
+	</insert>	
 	<!-- T_MTL_ORD_MST, T_MTL_ORD_DTL 구매발주 End -->			
 		<select id="selectFilesbyOrder" parameterType="java.util.HashMap" resultType="java.util.HashMap">
 			SELECT 	MTL_ORD_FLE1

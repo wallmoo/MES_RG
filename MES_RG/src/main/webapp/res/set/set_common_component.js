@@ -226,6 +226,63 @@
 		//.append('<option value="All">-----</option>')
 	    .val();
 	}
+	// 개별 달력
+	function fnLoadCommonOption(val) {
+	 	console.log('fnLoadCommonOption()');
+	 	
+		$(val).daterangepicker({
+			opens: 'right',
+			singleDatePicker: true,
+			locale: {
+				format : 'YYYY-MM-DD'	,
+				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
+				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
+				showMonthAfterYear : true,
+				yearSuffix : '년'
+		    },
+		    startDate : moment(minDate)
+		})
+		.on("change", function() {
+
+		}); 
+	}
+	//시작~종료 달력
+	function fnLoadDeliveryOption(val) {
+	 	console.log('fnLoadCommonOption()');
+	 	
+		$(val).daterangepicker({
+			opens: 'left',
+			locale: {
+				format : 'YYYYMMDD'	,
+				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
+				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
+				showMonthAfterYear : true,
+				yearSuffix : '년'
+		    },
+ 			startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
+			endDate: moment().format('YYYY-MM-DD'),
+		}); 
+		
+		$(val).val("");		
+	}	
+	function fnLoadDeliveryOption(val1, val2) {
+	 	console.log('fnLoadCommonOption()');
+	 	
+		$(val1).daterangepicker({
+			opens: val2,
+			locale: {
+				format : 'YYYYMMDD'	,
+				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
+				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
+				showMonthAfterYear : true,
+				yearSuffix : '년'
+		    },
+ 			startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
+			endDate: moment().format('YYYY-MM-DD'),
+		}); 
+		
+		$(val1).val("");		
+	}		
 	//엑셀파일 다운로드
 	function excelFileDownload(val1,val2) {//initOptions($('#'+val)); // select 박스 초기화
 /*		var gridCols = w2ui['grid_list'].columns;

@@ -123,7 +123,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 												<div class="box-header with-border" style="background-color: #DB8EB5;">
 													<h3 class="box-title">재고조회</h3>
 													<div class="box-tools pull-right">
-														<button type="button" id="btn_search_csr" onclick="bomNewOrder();" class="btn btn-primary btn-sm">신규자재 요청</button>
+														<button type="button" id="btn_search_csr" onclick="showMaterialAddForm();" class="btn btn-primary btn-sm">신규자재 요청</button>
 														<button type="button" id="btn_ins_csr" onclick="showBomOrderModal();" class="btn btn-primary btn-sm">자재 요청</button>
 													</div>
 												</div>
@@ -240,14 +240,14 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			</div>
 		</div>
 
-		<div class="modal fade" id="modal_add" data-backdrop="static">
+		<div class="modal fade" id="modal_materialAddForm" data-backdrop="static">
 			<div class="modal-dialog modal-md">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>
-						<h4 class="modal-title" id="modal_code_title">등록</h4>
+						<h4 class="modal-title" id="modal_code_title">신규자재 등록</h4>
 		        	</div>
 					<div class="modal-body" id="modal_code_body">
 						<form id="frm_routingItnbr" name="frm_routingItnbr" class="form-horizontal">	
@@ -382,7 +382,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			<jsp:param name="page_title" value="0" />
 		</jsp:include>
 	</div>
-	<input type="hidden" id="hiddenIdx" name="hiddenIdx" />
+	<input type="hidden" id="hiddenPjtIdx" name="hiddenPjtIdx" />
 	<input type="hidden" id="rightIDX" name="rightIdx" />
 	<!-- ./wrapper -->
 
@@ -411,8 +411,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		requestClient('S_CST_IDX');//고객사 정보를 검색폼 드랍다운 형태로 만듬
 		requestVendor('S_VDR_IDX');//거래처 정보를 검색폼 드랍다운 형태로 만듬
 		
-		fnLoadCommonOption();//등록폼 달력
-		fnLoadDeliveryOption();//검색폼 달력
+		fnLoadCommonOption('#PJT_DLV_DT, #MTL_REQ_REG_DT');//등록폼 달력
+		fnLoadDeliveryOption('#S_PJT_REG_DT, #S_PJT_DLV_DT, #S_MTL_REQ_REG_DT');//검색폼 달력
 		
 		fnLoadLeftGrid();
 		fnLoadRightGrid();
@@ -578,7 +578,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		var page_url = "/info/info/selectBOMbyPRO";
 		var postData = "PJT_IDX=" + encodeURIComponent(pjtIDX);
 		
-		$("#hiddenIdx").val(pjtIDX);//프로젝트 번호 세팅
+		$("#hiddenPjtIdx").val(pjtIDX);//프로젝트 번호 세팅
 		
 		w2ui['grid_list2'].lock('loading...', true);
 		w2ui['grid_list2'].clear();
@@ -777,7 +777,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		} else {
 			$(".clear_val").val('');//검색어 초기화
 
-			var insertPJT = $("#hiddenIdx").val();//PJT_IDX
+			var insertPJT = $("#hiddenPjtIdx").val();//PJT_IDX
 			for (var i = 0; i < keys.length; i++) {
 				var Data = {
 					bom_IDX : w2ui.grid_list2.records[keys[i]-1].bom_IDX,
@@ -912,8 +912,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					success : function(data) {
 						if (data != 0) {
 							alert("추가되었습니다");
-							loadRightGridData($("#hiddenIdx").val());
-							loadFootGridData($("#hiddenIdx").val());
+							loadRightGridData($("#hiddenPjtIdx").val());
+							loadFootGridData($("#hiddenPjtIdx").val());
 							$("#modal_bomReqForm").modal('hide');
 						} else {
 							alert("오류가 발생하였습니다");
@@ -927,50 +927,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		}	
 	}
 
-	// ############################
-	// init component
-	function fnLoadCommonOption() {
-	 	console.log('fnLoadCommonOption()');
-	 	
-		$('#PJT_DLV_DT, #MTL_REQ_REG_DT').daterangepicker({
-			opens: 'right',
-			singleDatePicker: true,
-			locale: {
-				format : 'YYYY-MM-DD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-				showMonthAfterYear : true,
-				yearSuffix : '년'
-		    },
-		    startDate : moment(minDate)
-		})
-		.on("change", function() {
-		    loadLeftGridData();
-		}); 
+	function showMaterialAddForm(){		
+		if ($("#hiddenPjtIdx").val() == null || $("#hiddenPjtIdx").val() == "") {
+			alert("신규자재를 요청할 프로젝트를 선택하여주십시오");
+		} else {
+			$("#modal_materialAddForm").modal('show');	
+		}
 	}
-	
-	function fnLoadDeliveryOption() {
-	 	console.log('fnLoadCommonOption()');
-	 	
-		$('#S_PJT_REG_DT, #S_PJT_DLV_DT, #S_MTL_REQ_REG_DT').daterangepicker({
-			opens: 'left',
-			locale: {
-				format : 'YYYYMMDD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-				showMonthAfterYear : true,
-				yearSuffix : '년'
-		    },
- 			startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
-			endDate: moment().format('YYYY-MM-DD'),
-		}); 
-		
-		$('#S_PJT_REG_DT').val("");
-		$('#S_PJT_DLV_DT').val("");
-		$('#S_MTL_REQ_REG_DT').val("");
-		
-	}	
-
 </script>
 
 </body>
