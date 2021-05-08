@@ -13,205 +13,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <style type="text/css">
-    /* default setting */
-    .bg-none th {
-      background-color: #fff;
-    }
-
-    .bl-none:first-child,
-    .bl-none tr th:first-child,
-    .bl-none tr td:first-child {
-      border-left: none;
-    }
-
-    .modal-content {
-      max-width: 1024px;
-    }
-
-    /* table css */
-    .order-sheet-table-wrap table {
-      width: 100%;
-      height: 100%;
-      font-size: 10px;
-      border-collapse: collapse;
-    }
-
-    .order-sheet-table-wrap table tr {
-      border-bottom: 1px solid #000;
-    }
-
-    .order-sheet-table-wrap table th,
-    .order-sheet-table-wrap table td {
-      border-left: 1px solid #000;
-    }
-
-    .order-sheet-table-wrap table th {
-      padding: 4px 5px;
-      background-color: #d9d9d9;
-      text-align: center;
-    }
-
-    .order-sheet-table-wrap table td {
-      padding: 8px 4px;
-    }
-
-    .order-sheet-table-wrap table th:first-child {
-      border-left: none;
-    }
-
-    .top-table {
-      display: table-row;
-    }
-
-    .bot-table th {
-      background-color: #fff;
-    }
-
-    .bot-table tfoot tr:last-child {
-      border-bottom: none;
-    }
-
-    /* ---------- */
-    .order-sheet-table-wrap {
-      width: 100%;
-      max-width: 850px;
-      border: 2px solid #000;
-      text-align: center;
-    }
-
-    .order-sheet-table-wrap>h4 {
-      font-size: 24px;
-      font-weight: 700;
-      padding: 32px 0;
-      margin: 0;
-      border-bottom: 1px solid #000;
-    }
-
-
-    /* 상단 테이블 */
-    .top-cont {
-      width: 46%;
-      height : 100;
-      border-right: 1px solid #000;
-      display:table-cell;
-    }
-
-    .tc-02 {
-      width: 54%;
-      border-right: none;
-    }
-
-    .top-cont.tc-01 th,
-    .top-cont.tc-01 td {
-      background-color: #fff;
-      border-left: 1px solid #d9d9d9;
-    }
-
-    .top-cont.tc-01 tr {
-      border-bottom: 1px solid #d9d9d9;
-    }
-
-    .top-cont.tc-01 tr:last-child {
-      border-bottom: none;
-    }
-
-    .top-cont.tc-02 table {
-      border-left: none;
-    }
-
-    .top-cont table .top-title {
-      line-height: 30px;
-      background-color: #d9d9d9;
-      border-right: 1px solid #000;
-      border-bottom: 1px solid #000;
-      border-left: none;
-      padding: 0 8px;
-    }
-
-    .provider {
-      font-size: 15px;
-    }
-
-    /* 중간테이블 */
-    .mid-table {
-      border-top: 1px solid #000;
-    }
-
-    .mid-table td {
-      padding: 6px 4px;
-    }
-
-    .mid-table tfoot tr:first-child td {
-      height: 17px;
-    }
-
-    .mid-table .mid-total td {
-      position: relative;
-    }
-
-    .mid-table .mid-total td::before {
-      content: '￦';
-      position: absolute;
-      left: 6px;
-    }
-
-
-    /* 하단 테이블 */
-    .sign-wrap {
-      display: flex;
-      align-items: center;
-      width: 100%;
-      padding: 1px 0;
-    }
-
-    .order-sheet-sign tr:first-child {
-      border-bottom: 2px dashed #d9d9d9;
-    }
-
-    .order-sheet-sign tr:last-child td {
-      padding: 0;
-    }
-
-    .order-sheet-sign .comp-name {
-      width: 60%;
-      font-size: 15px;
-      font-weight: 700;
-      border-right: 1px solid #d9d9d9;
-      text-align: right;
-      padding-right: 4px;
-    }
-
-    .order-sheet-sign .date {
-      width: 40%;
-      text-align: center;
-    }
-
-
-    /* modal-header */
-    .modal-header {
-      position: relative;
-    }
-
-    .modal-header .box-tools {
-      position: absolute;
-      right: 10px;
-      top: 0;
-    }
-
-    /* css */
-    .fc-red {
-      color: red;
-    }
-
-    .order-sheet-table-wrap .text-left {
-      text-align: left;
-    }
-
-    .order-sheet-table-wrap .text-right {
-      text-align: right;
-    }
-  </style>
+ 
 </head>
 <body>
 <div class="modal_fade" id="modal_fade" name="modal_fade" data-backdrop="static">
@@ -232,15 +34,14 @@
           <article class="top-table">
             <div class="top-cont tc-01" height="100%">
               <table summary="발주서 공급자">
-                <!--
                 <colgroup>
                   <col width="6%" />
+                  
                   <col width="28%" />
                   <col width="38%" />
                   <col width="18%" />
                   <col width="10%" />
                 </colgroup>
-                -->
                 <tbody>
                   <tr>
                     <th rowspan="6" class="top-title"><br />공<br />급<br />자<br/>&nbsp<br/></th>
@@ -476,6 +277,7 @@
       </body>
       
 <script>
+/*
   var files;
 $(document).ready(function(){
       var pdf = new jsPDF('p', 'mm', 'a4'); // A4 size page of PDF
@@ -536,7 +338,27 @@ $(document).ready(function(){
     var bb = new Blob([ab], { "type": mimeString });
     return bb;
   }
+  */
 
+function test(){
+var test="";
+ $.ajax({
+          type: "POST",
+          url: "/info/test",
+          data:  {test, test
+          },
+          processData: false,
+          contentType: false,
+          cache: false,
+          timeout: 600000,
+          success: function (data) {
+          },
+          error: function (jqXHR, textStatus, errorThrown) {
+            //fnMessageModalAlert("결과", "정보를 처리하는데 에러가 발생하였습니다.");	// Notification(MES)
+          },
+          complete: function () {
+          }
+}
 </script>
 
 </html>

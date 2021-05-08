@@ -5116,6 +5116,16 @@ public class InfoController {
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
+		try{
+			if(session.getAttribute("member_vdr_idx")!=null) {
+				String mem_vdr_idx=(String)session.getAttribute("member_vdr_idx");
+				vo.setVDR_IDX(Integer.parseInt(mem_vdr_idx));
+			};
+		}catch (Exception e) {
+			// TODO: handle exception
+		}
+
+		
 		try {
 			List<SYTMaterialOrderVo> dataList = sYInfoService.selectMaterialOrder(vo);
 
@@ -5207,6 +5217,142 @@ public class InfoController {
 		}
 		return result;
 	}	
+	
+	@ResponseBody
+	@RequestMapping(value = "/account/testUpload", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String testUpload(@RequestParam Map<String,Object> vo, MultipartHttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.saveAccount is called.");
+
+		//파일 업로드를 위한 준비
+		OutputStream out = null;
+		PrintWriter printWriter = null;
+		MultipartFile file1 = (request).getFile("MTL_ORD_FLE1");
+		MultipartFile file2 = (request).getFile("MTL_ORD_FLE2");
+		MultipartFile file3 = (request).getFile("MTL_ORD_FLE3");
+		String basePath="/upload";
+		System.out.println("패스는 "+basePath+"\n\n\n\n");
+		Map<String, Object> file_info= new HashMap<String,Object>();
+		Map<String, Object> queryMap= new HashMap<String,Object>();
+		queryMap.putAll(vo);
+		String path="";
+		String fileName = "";
+		String fullName="";
+	
+		if(file1.getSize()>1) {
+			file_info= fileUpload.saveFile(file1, basePath, request);
+			if(file_info.containsKey("CMM_FLE_SYS_NM")) {
+				path=(String)file_info.get("CMM_FLE_ATT_PATH");
+				fileName=(String)file_info.get("CMM_FLE_SYS_NM");
+				fullName =path+"/"+fileName;
+				queryMap.put("MTL_ORD_FLE1", fullName);
+			}
+		}
+		if(file2.getSize()>1) {
+			file_info= fileUpload.saveFile(file2, basePath, request);
+			if(file_info.containsKey("CMM_FLE_SYS_NM")) {
+				path=(String)file_info.get("CMM_FLE_ATT_PATH");
+				fileName=(String)file_info.get("CMM_FLE_SYS_NM");
+				fullName =path+"/"+fileName;
+				queryMap.put("MTL_ORD_FLE2", fullName);
+			}
+		}
+		if(file3.getSize()>1) {
+			file_info= fileUpload.saveFile(file3, basePath, request);
+			if(file_info.containsKey("CMM_FLE_SYS_NM")) {
+				path=(String)file_info.get("CMM_FLE_ATT_PATH");
+				fileName=(String)file_info.get("CMM_FLE_SYS_NM");
+				fullName =path+"/"+fileName;
+				queryMap.put("MTL_ORD_FLE3", fullName);
+			}
+		}
+				
+
+		JSONObject resultData = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
+		JSONParser parser = new JSONParser();
+
+		try {
+			
+				queryMap.put("ORD_IDX",queryMap.get("FILE_ORD_IDX"));
+				Map<String,Object> result = sYInfoService.selectFilesbyOrder(queryMap);
+				if(result!=null) {
+					String files ="";
+					String filePath = "";
+					String fileNames ="";
+					//1번파일 확장명 추출하기
+					if(queryMap.containsKey("MTL_ORD_FLE1")) {
+						if(result.containsKey("MTL_ORD_FLE1")) {
+							if(result.get("MTL_ORD_FLE1")!=null) {
+								files = (String)result.get("MTL_ORD_FLE1");
+								if(!files.equals("Y")&&!files.equals("N")) {
+									filePath = files.substring(0,files.lastIndexOf("/"));
+									fileNames = files.substring(files.lastIndexOf("/")+1);
+									Map<String,Object> removeMap = new HashMap<String, Object>();
+									removeMap.put("CMM_FLE_ATT_PATH",filePath);
+									removeMap.put("CMM_FLE_SYS_NM",fileNames);
+									fileUpload.delFile(request, removeMap);
+								}
+							}
+						}
+					}
+					
+					//CMM_FLE_ATT_PATH - CMM_FLE_SYS_NM
+					//2번파일 확장명 추출하기
+					if(queryMap.containsKey("MTL_ORD_FLE2")) {
+						if(result.containsKey("MTL_ORD_FLE2")) {
+							if(result.get("MTL_ORD_FLE2")!=null) {
+								files = (String)result.get("MTL_ORD_FLE2");
+								if(!files.equals("Y")&&!files.equals("N")) {
+									filePath = files.substring(0,files.lastIndexOf("/"));
+									fileNames = files.substring(files.lastIndexOf("/")+1);
+									Map<String,Object> removeMap = new HashMap<String, Object>();
+									removeMap.put("CMM_FLE_ATT_PATH",filePath);
+									removeMap.put("CMM_FLE_SYS_NM",fileNames);
+									fileUpload.delFile(request, removeMap);
+								}
+							}
+						}
+					}
+					if(queryMap.containsKey("MTL_ORD_FLE3")) {
+						if(result.containsKey("MTL_ORD_FLE3")) {
+							if(result.get("MTL_ORD_FLE3")!=null) {
+								files = (String)result.get("MTL_ORD_FLE3");
+								if(!files.equals("Y")&&!files.equals("N")) {
+									filePath = files.substring(0,files.lastIndexOf("/"));
+									fileNames = files.substring(files.lastIndexOf("/")+1);
+									Map<String,Object> removeMap = new HashMap<String, Object>();
+									removeMap.put("CMM_FLE_ATT_PATH",filePath);
+									removeMap.put("CMM_FLE_SYS_NM",fileNames);
+									fileUpload.delFile(request, removeMap);
+								}
+							}
+						}
+					}
+					
+					
+					
+					//3번파일 확장명 추출하기
+					
+				}
+				int cnt = sYInfoService.updateT_MTL_ORD_MST(queryMap);
+				if(cnt==0) {
+					resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+				}else {
+				resultData.put("status",200);
+				}
+				
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+
+		return resultData.toJSONString();
+	}
+
+	
 	// saveBranch
 	@ResponseBody
 	@RequestMapping(value = "/info/updateAllMTL", method = { RequestMethod.GET,
