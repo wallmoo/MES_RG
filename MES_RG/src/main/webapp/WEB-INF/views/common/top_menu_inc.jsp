@@ -9,6 +9,7 @@ String role_cd = SessionUtil.getRoleCd(request);
 String role_nm = SessionUtil.getRoleNm(request);
 String member_id = SessionUtil.getMemberId(request);
 String member_nm = SessionUtil.getMemberNm(request);
+String member_vdr_idx = SessionUtil.getMemberVdrIdx(request);
 
 String company_cd = SessionUtil.getCompanyCd(request);
 String member_division = SessionUtil.getMemberDivision(request);

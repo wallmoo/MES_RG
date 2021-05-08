@@ -44,5 +44,9 @@
  <!-- Download View  -->
   <bean id="download" class="kr.co.passcombine.set.view.DownloadView"></bean> 
   
-	
+  <!-- 커스텀뷰클래스 사용하기위한준비 -->
+	<bean id="beanNameViewResolver" class="org.springframework.web.servlet.view.BeanNameViewResolver">
+		<property name="order" value="0" />
+	</bean>
+
 </beans>

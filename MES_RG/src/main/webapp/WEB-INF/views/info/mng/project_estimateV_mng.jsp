@@ -145,7 +145,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 										</div>
 									</div>
 								</div>
-									<br/>* 수정가능한 컬럼은 MOQ, 금액,납기가능일,비고 입니다.
+									<br/>* 수정가능한 컬럼은 MOQ, 단가,납기가능일,비고 입니다.
 									<br/>* 견적요청excel을 다운받은후 해당컬럼을 수정해주세요.
 					</div>
 					<div class="modal-footer" style="border-top-color: transparent !important;">
@@ -281,12 +281,17 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		console.log("loadLeftGrid()");
 		
 		var page_url = "/info/info/selectEstimate";
+		var VDR_IDX = $("#S_VDR_IDX").val();
+		if(VDR_IDX=="ALL"){
+			VDR_IDX=0;
+		}
 		var postData = "PJT_NM=" + encodeURIComponent($("#S_PJT_NM").val()) 
 							/* + "&VDR_IDX=" + encodeURIComponent($("#S_VDR_IDX").val())  */
 							+ "&MTL_EST_REG_DT=" + encodeURIComponent($("#S_MTL_EST_REG_DT").val())
 							+ "&MTL_NM=" + encodeURIComponent($("#S_MTL_NM").val()) 
 							+ "&MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val()) 
-							+ "&MTL_MKR_NO=" + encodeURIComponent($("#S_MTL_MKR_NO").val());
+							+ "&MTL_MKR_NO=" + encodeURIComponent($("#S_MTL_MKR_NO").val())
+							+ "&VDR_IDX=" + encodeURI(VDR_IDX);
 
 		w2ui['grid_list'].lock('loading...', true);
 		$.ajax({
@@ -398,17 +403,17 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				cache: false,
 				timeout: 600000,
 			    success:function(data){
-			    		if(data.sucess){
-					    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
-					    	startValue_combo = "";
-							form.reset();
-							$("#modal_ExcelUpload").modal('hide');
-			    		}else{
-					    	fnMessageModalAlert("결과", "일부컬럼에 에러가 발생하였습니다. <br/> 에러가 발생한 컬럼은 <br/>"+data.errors+"<br/>번컬럼입니다");// Notification(MES)
-					    	startValue_combo = "";
-							form.reset();
-							$("#modal_ExcelUpload").modal('hide');
-			    		}
+					if(data.sucess){
+				    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
+				    	startValue_combo = "";
+						form.reset();
+						$("#modal_ExcelUpload").modal('hide');
+				}else{
+						fnMessageModalAlert("결과", "일부컬럼에 에러가 발생하였습니다. <br/> 에러가 발생한 컬럼은 <br/>" + data.errors + "<br/>번컬럼입니다");// Notification(MES)
+					startValue_combo = "";
+					form.reset();
+					$("#modal_ExcelUpload").modal('hide');
+				}
 			    	
 			    },
 			    error: function(jqXHR, textStatus, errorThrown){

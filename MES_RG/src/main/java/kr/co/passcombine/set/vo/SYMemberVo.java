@@ -53,9 +53,15 @@ public class SYMemberVo implements Serializable{
 	
 	private String lang; 
 	private String jocod; 
-	
+	private String vdr_idx;
 	
   
+	public String getVdr_idx() {
+		return vdr_idx;
+	}
+	public void setVdr_idx(String vdr_idx) {
+		this.vdr_idx = vdr_idx;
+	}
 	public String getMember_new_pwd() {
 		return member_new_pwd;
 	}
