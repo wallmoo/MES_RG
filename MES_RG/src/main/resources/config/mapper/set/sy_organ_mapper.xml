@@ -166,6 +166,7 @@ SELECT a.member_emp_no, a.member_id, a.member_email
   , fn_code_filter_nm('MC1005', 1, b.position_cd) as position_nm
   , b.start_dt, b.end_dt
   , b.map_ord
+  ,	a.vdr_idx 
 FROM sy_member_master a
   INNER JOIN sy_organ_member_map b
     ON a.company_cd = b.company_cd
@@ -381,11 +382,16 @@ INSERT INTO sy_member_master (
   , member_nm, member_nm_en, phone_no, extension, company_cd
   , area_cd, use_yn, init_yn, pwd_chg_date
   , date_created, date_updated, creator, updater
+  <if test="vdr_idx!=null and vdr_idx!='ALL'">,vdr_idx</if>
+ 
+  
+  
 ) VALUES (
   #{member_emp_no}, lower(#{member_id}), lower(#{member_email}), password(lower(#{member_pwd}))
   , #{member_nm}, #{member_nm_en}, #{phone_no}, #{extension}, #{company_cd}
   , #{area_cd}, #{use_yn}, #{init_yn}, #{pwd_chg_date}
   , current_timestamp(), current_timestamp(), #{creator}, #{updater}
+    <if test="vdr_idx!=null and vdr_idx!='ALL'">,#{vdr_idx}</if>
 )
 <!-- FN_COMMON_SEQ('member') -->
 	</insert>
@@ -404,6 +410,7 @@ SET member_email = lower(#{member_email})
 	, init_yn = #{init_yn}
 	, date_updated = current_timestamp()
 	, updater = #{updater}
+	 <if test="vdr_idx!=null and vdr_idx!='ALL'">,vdr_idx=#{vdr_idx}</if>
 WHERE member_emp_no = #{default_member_emp_no}
 	</update>
 	

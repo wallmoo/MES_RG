@@ -3557,5 +3557,26 @@
 		</foreach>
 	</insert>
 	<!-- T_MTL_ORD_MST, T_MTL_ORD_DTL 구매발주 End -->			
+		<select id="selectFilesbyOrder" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+			SELECT 	MTL_ORD_FLE1
+					,MTL_ORD_FLE2
+					,MTL_ORD_FLE3
+			  FROM  T_MTL_ORD_MST
+			 WHERE  ORD_IDX=#{ORD_IDX}
+		</select>
 		
+		<update id="updateT_MTL_ORD_MST" parameterType="java.util.HashMap">
+			UPDATE T_MTL_ORD_MST SET
+					ORD_IDX = #{ORD_IDX}
+				<if test="MTL_ORD_FLE1!=null">
+					,MTL_ORD_FLE1=#{MTL_ORD_FLE1}
+				</if>
+				<if test="MTL_ORD_FLE2!=null">
+					,MTL_ORD_FLE2=#{MTL_ORD_FLE2}
+				</if>
+				<if test="MTL_ORD_FLE3!=null">
+					,MTL_ORD_FLE3=#{MTL_ORD_FLE3}
+				</if>
+			WHERE ORD_IDX = #{ORD_IDX}
+		</update>
 </mapper>

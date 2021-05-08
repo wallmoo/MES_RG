@@ -62,7 +62,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 														<h3 class="box-title">조회조건 및 기타 관리</h3>
 														<div class="box-tools pull-right">
 															<button type="button" id="btn_excel_csr" onclick="bomNewOrder();" class="btn btn-success btn-sm">발주서(PDF)출력</button>
-															<button type="button" id="btn_dlv_csr" onclick="bomNewOrder();" class="btn btn-info btn-sm">파일첨부</button>
+															<button type="button" id="btn_dlv_csr" onclick="orderFile();" class="btn btn-info btn-sm">파일첨부</button>
 															<button type="button" id="btn_ins_csr" onclick="bomOrder();" class="btn btn-primary btn-sm">승인</button>
 															<button type="button" id="btn_search_csr" onclick="loadLeftGrid();" class="btn btn-danger btn-sm" onclick="">거절</button>
 														</div>
@@ -121,7 +121,76 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		<!-- /.content-wrapper -->
 
 		<!-- 모달 커팅 -->
-
+			<div class="modal fade" id="modal_plus_file" data-backdrop="static">
+				<div class="modal-dialog modal-md">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<h4 class="modal-title" id="modal_code_title">등록</h4>
+			        	</div>
+						<div class="modal-body" id="modal_code_body">
+							<form id="frm_fileUpload" name="frm_fileUpload" class="form-horizontal"
+							method="POST" enctype="multipart/form-data">	
+								<input type="hidden" id="upload_mode"/>
+								<input type="hidden" class="clear_field" id="mod_file_group"/>
+								<input type="hidden" class="clear_field" id="mod_file_no"/>	
+								<input type="hidden" id="FILE_ORD_IDX" name="FILE_ORD_IDX"/>		
+								
+								<div class="row">
+									<label class="col-sm-3 control-label">하자증권 파일</label>
+									<div class="col-sm-7" style="padding-right: 0px;">
+										<input type="text" id="MTL_ORD_FLE1_NAME" name="MTL_ORD_FLE1_NAME" class="form-control input-sm clear_field" readonly>
+									</div>	
+									<div class="col-sm-1" style="padding-left: 7px;">
+										<span class="btn btn-danger btn-sm fileinput-button " style="width: 100%;" id="file_btn"> <i class="fa fa-plus"></i>
+											<input id="file_group" type="file" class="fileupload file_info" name="MTL_ORD_FLE1" onchange="$('#MTL_ORD_FLE1_NAME').val(this.value)">
+										</span>
+									</div>
+								</div>
+								<br/>		
+								
+								<div class="row">
+									<label class="col-sm-3 control-label">이행증권 파일</label>
+									<div class="col-sm-7" style="padding-right: 0px;">
+										<input type="text" id="MTL_ORD_FLE2_NAME" name="MTL_ORD_FLE2_NAME" class="form-control input-sm clear_field" readonly>
+									</div>	
+									<div class="col-sm-1" style="padding-left: 7px;">
+										<span class="btn btn-danger btn-sm fileinput-button " style="width: 100%;" id="file_btn"> <i class="fa fa-plus"></i>
+											<input id="file_group" type="file" class="fileupload file_info" name="MTL_ORD_FLE2" onchange="$('#MTL_ORD_FLE2_NAME').val(this.value)">
+										</span>
+									</div>
+								</div>	
+								<br/>
+								
+								<div class="row">
+									<label class="col-sm-3 control-label">게약서 파일</label>
+									<div class="col-sm-7" style="padding-right: 0px;">
+										<input type="text" id="MTL_ORD_FLE3_NAME" name="MTL_ORD_FLE3_NAME" class="form-control input-sm clear_field" readonly>
+									</div>	
+									<div class="col-sm-1" style="padding-left: 7px;">
+										<span class="btn btn-danger btn-sm fileinput-button " style="width: 100%;" id="file_btn"> <i class="fa fa-plus"></i>
+											<input id="file_group" type="file" class="fileupload file_info" name="MTL_ORD_FLE3" onchange="$('#MTL_ORD_FLE3_NAME').val(this.value)">
+										</span>
+									</div>
+								</div>				
+								<br/>
+								
+								<div class="row">
+									<div class="col-md-12" id="msg" style="font-weight:bold; color:blue;"></div>
+								</div>
+							</form>
+						</div>
+						<div class="modal-footer">
+							<div class="col-md-12 text-center">
+								<button type="button" id="" class="btn btn-success btn-sm" onclick="saveFile();">저장</button>
+								<button type="button" id="" class="btn btn-default btn-sm" data-dismiss="modal">닫기</button>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
 		<!--  -->
 		<jsp:include page="/common/footer_inc" flush="true">
 			<jsp:param name="page_title" value="0" />
@@ -197,9 +266,47 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						return html;
 	           		} 					
 				}, 
-				{ field:'mtl_ORD_FLE1', caption:'하자증권', size:'8%', style:'text-align:center', sortable: true}, 
-				{ field:'mtl_ORD_FLE2', caption:'이행증권', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_ORD_FLE3', caption:'계약서', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_ORD_FLE1', caption:'하자증권', size:'8%', style:'text-align:center', sortable: true,
+					render: function (record, index, col_index) {
+					var html = this.getCellValue(index, col_index);
+					
+					if(html == '1') {
+						return 'X';
+					} else if(html == '2') {
+						return 'O';
+					} else {
+						var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
+						return html2;
+					}
+					return html;
+           		} 	}, 
+				{ field:'mtl_ORD_FLE2', caption:'이행증권', size:'8%', style:'text-align:center', sortable: true
+           			,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == 'N') {
+							return 'N';
+						} else if(html == 'Y') {
+							return 'Y';
+						} else {
+							var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
+							return html2;
+						}
+						return html;
+	           		} 	},
+				{ field:'mtl_ORD_FLE3', caption:'계약서', size:'8%', style:'text-align:center', sortable: true,render: function (record, index, col_index) {
+					var html = this.getCellValue(index, col_index);
+					
+					if(html == '1') {
+						return 'X';
+					} else if(html == '2') {
+						return 'O';
+					} else {
+						var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
+						return html2;
+					}
+					return html;
+           		} 	},
 				{ field:'mtl_ORD_STATE', caption:'거래승인여부', size:'8%', style:'text-align:center', sortable: true
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
@@ -449,7 +556,56 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		$('#S_MTL_ORD_DLV_DT').val("");
 		
 	}	
+	
+	function orderFile(){
+		var key = w2ui.grid_list.getSelection();
+		if( key.length==0 ) {
+			fnMessageModalAlert("알림", "파일을 첨부할 항목을 1개 선택하여야 합니다."); // Notification
+			return;
+		} else{
+			$("#modal_plus_file").modal('show');
+			$("#FILE_ORD_IDX").val(w2ui.grid_list.get(key[0]).ord_IDX);
+			}
+	}
+	//frm_fileUpload
+	function saveFile(){
+		if(confirm("저장하시겠습니까?")){
 
+		
+		var strUrl = "/info/account/saveBranch";
+		strUrl = "/info/account/testUpload";
+		var form = $("#frm_fileUpload")[0];
+		
+		var data = new FormData(form);
+				 
+		// escape(
+		
+		$.ajax({
+			type: "POST",
+			enctype: 'multipart/form-data',
+			url: strUrl,
+			data: data,
+			processData: false,
+			contentType: false,
+			cache: false,
+			timeout: 600000,
+		    success:function(data, textStatus, jqXHR){
+		    	if(data.status == "200") {
+			    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
+			    	loadLeftGrid();
+					form.reset();
+			    	$("#modal_plus_file").modal('hide');
+		    	}
+		    },
+		    error: function(jqXHR, textStatus, errorThrown){
+			    	fnMessageModalAlert("결과", "정보를 처리하는데 에러가 발생하였습니다.");	// Notification(MES)
+		    },
+		    complete: function() {
+		    }
+		});
+		}//if end
+	}
+	
 </script>
 
 </body>
