@@ -250,15 +250,17 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						<h4 class="modal-title" id="modal_code_title">신규자재 등록</h4>
 		        	</div>
 					<div class="modal-body" id="modal_code_body">
-						<form id="frm_routingItnbr" name="frm_routingItnbr" class="form-horizontal">	
+						<form id="frm_routingItnbr" name="frm_routingItnbr" class="form-horizontal"
+						method="POST" enctype="multipart/form-data">	
 							<input type="hidden" id="upload_mode"/>
 							<input type="hidden" class="clear_field" id="mod_file_group"/>
-							<input type="hidden" class="clear_field" id="mod_file_no"/>				
+							<input type="hidden" class="clear_field" id="mod_file_no"/>	
+							<input type="hidden" id="PJT_IDX" name="PJT_IDX">	
 							<div class="row">
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">자재코드</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm pull-right" id="MTL_IDX" maxlength="100" readonly="readonly">
+										<input type="text" class="form-control input-sm pull-right" id="MTL_IDX" name ="MTL_IDX" maxlength="100" readonly="readonly">
 									</div>
 								</div>
 							</div>
@@ -267,7 +269,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">자재분류</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm pull-right" id="MTL_CATE" maxlength="30">
+										<input type="text" class="form-control input-sm pull-right" id="MTL_CATE" name ="MTL_CATE" maxlength="30">
 									</div>
 								</div>
 							</div>
@@ -276,7 +278,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">품목</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm pull-right" id="MTL_NM" maxlength="20">
+										<input type="text" class="form-control input-sm pull-right" id="MTL_NM" name ="MTL_NM" maxlength="20">
 									</div>
 								</div>
 							</div>
@@ -285,7 +287,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">제조사</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm" id="MTL_MKR_CD" maxlength="14">
+										<input type="text" class="form-control input-sm" id="MTL_MKR_CD" name ="MTL_MKR_CD" maxlength="14">
 									</div>
 								</div>
 							</div>
@@ -294,7 +296,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">제조사 품번</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm pull-right" id="MTL_MKR_NO" maxlength="10">
+										<input type="text" class="form-control input-sm pull-right" id="MTL_MKR_NO" name ="MTL_MKR_CD" maxlength="10">
 									</div>
 								</div>
 							</div>	
@@ -303,7 +305,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">규격</label><!-- 공통코드 ea/kg 중 선택 -->
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm" id="MTL_STD" value="" maxlength="60">
+										<input type="text" class="form-control input-sm" id="MTL_STD" name ="MTL_STD" value="" maxlength="60">
 									</div>
 									
 								</div>
@@ -313,7 +315,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">단가</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm" id="MTL_PRICE" maxlength="14">
+										<input type="text" class="form-control input-sm" id="MTL_PRICE" name ="MTL_PRICE" maxlength="14">
 									</div>
 								</div>
 							</div>
@@ -322,7 +324,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">재고단위</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm" id="MTL_UNT" maxlength="14">
+										<input type="text" class="form-control input-sm" id="MTL_UNT" name ="MTL_UNT" maxlength="14">
 									</div>
 								</div>
 							</div>				
@@ -331,7 +333,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">Datasheet URL</label>
 									<div class="col-sm-7">
-										<textarea type="text" class="form-control input-sm pull-right" id="MTL_DS_URL" ></textarea>
+										<textarea type="text" class="form-control input-sm pull-right" id="MTL_DS_URL" name ="MTL_DS_URL"></textarea>
 									</div>
 								</div>
 							</div>
@@ -340,7 +342,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">비고</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm" id="MTL_BG" maxlength="60">
+										<input type="text" class="form-control input-sm" id="MTL_BG" name ="MTL_BG" maxlength="60">
 									</div>
 								</div>
 							</div>					
@@ -352,7 +354,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								</div>	
 								<div class="col-sm-1" style="padding-left: 7px;">
 									<span class="btn btn-danger btn-sm fileinput-button " style="width: 100%;" id="file_btn"> <i class="fa fa-plus"></i>
-										<input id="file_group" type="file" class="fileupload file_info" name="file[]">
+										<input id="file_group" type="file" class="fileupload file_info" name="file[]" onchange="$('#mod_file_name').val(this.value)">
 									</span>
 								</div>
 							</div>					
@@ -931,9 +933,48 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		if ($("#hiddenPjtIdx").val() == null || $("#hiddenPjtIdx").val() == "") {
 			alert("신규자재를 요청할 프로젝트를 선택하여주십시오");
 		} else {
-			$("#modal_materialAddForm").modal('show');	
+			$("#modal_materialAddForm").modal('show');
+			$("#PJT_IDX").val($("#hiddenPjtIdx").val());
 		}
 	}
+	function saveAccount() {
+		console.log('saveAccount()');
+
+		var strUrl = "/materials/account/saveMaterial";
+		
+		// escape(
+		var form = $("#frm_routingItnbr")[0];
+		
+		var data = new FormData(form);
+		
+						
+		$.ajax({
+			type: "POST",
+			enctype: 'multipart/form-data',
+			url: strUrl,
+			data: data,
+			processData: false,
+			contentType: false,
+			cache: false,
+			timeout: 600000,
+		    success:function(data, textStatus, jqXHR){
+		    	if(data.status == "200") {
+			    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
+			    	startValue_combo = "";
+			    	loadRightGridData($("#PJT_IDX").val());
+					form.reset();
+					$("#modal_materialAddForm").modal('hide');
+		    	}
+		    },
+		    error: function(jqXHR, textStatus, errorThrown){
+			    	fnMessageModalAlert("결과", "정보를 처리하는데 에러가 발생하였습니다.");	// Notification(MES)
+		    },
+		    complete: function() {
+		    }
+		});
+		
+	}
+	
 </script>
 
 </body>

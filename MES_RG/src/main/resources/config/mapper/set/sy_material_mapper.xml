@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.co.passcombine.set.dao.SYMaterialsDAO">
+
+		<insert id="insertFile2" parameterType="java.util.HashMap" >
+			INSERT INTO T_CMM_FLE
+				(CMM_FLE_ATT_EXT,CMM_FLE_ORG_NM,CMM_FLE_SYS_NM,CMM_FLE_ATT_SIZE,CMM_FLE_ATT_PATH
+				,CMM_FLE_USE_YN,CMM_FLE_REG_DT,CMM_FLE_REG_ID,CMM_FLE_DEL_YN)
+			VALUES(
+				#{CMM_FLE_ATT_EXT},#{CMM_FLE_ORG_NM},#{CMM_FLE_SYS_NM},#{CMM_FLE_ATT_SIZE},#{CMM_FLE_ATT_PATH},
+				#{CMM_FLE_USE_YN},SYSDATE(),#{CMM_FLE_REG_ID},#{CMM_FLE_DEL_YN}
+				)
+			<selectKey resultType="int" keyProperty="CMM_FLE_IDX" order="AFTER">
+			        SELECT LAST_INSERT_ID()
+	    	</selectKey>  
+	</insert>
+
+		<insert id="insertMaterialMap2" parameterType="java.util.HashMap">
+			INSERT INTO T_MTL_MST
+				( CMM_FLE_IDX, MTL_CATE, MTL_NM, MTL_MKR_CD, MTL_MKR_NO, MTL_STD, MTL_PRICE, MTL_UNT, MTL_DS_URL, MTL_BG, MTL_REG_ID )
+			VALUES
+				(
+					IFNULL(#{CMM_FLE_IDX},null), #{MTL_CATE}, #{MTL_NM}, #{MTL_MKR_CD}, #{MTL_MKR_NO}, #{MTL_STD}, #{MTL_PRICE}, #{MTL_UNT}, #{MTL_DS_URL}, #{MTL_BG}, #{MTL_REG_ID}
+				)
+			<selectKey resultType="int" keyProperty="MTL_IDX" order="AFTER">
+			        SELECT LAST_INSERT_ID()
+	    	</selectKey> 
+	</insert>
+	
+	<insert id="insertBOM2" parameterType="java.util.HashMap">
+		INSERT INTO T_BOM_MST
+		(
+			MTL_IDX,
+			PJT_IDX,
+			BOM_MTL_QTY,
+			BOM_DEL_YN,
+			BOM_REG_DT,
+			BOM_REG_ID
+		) VALUES
+		(
+			#{MTL_IDX},
+			#{PJT_IDX},
+			'0',
+			'Y',
+			SYSDATE(),
+			#{REG_ID}
+		)
+	</insert>
+</mapper>

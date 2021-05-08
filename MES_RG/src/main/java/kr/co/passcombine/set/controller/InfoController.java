@@ -5217,7 +5217,6 @@ public class InfoController {
 		}
 		return result;
 	}	
-<<<<<<< HEAD
 	
 	@ResponseBody
 	@RequestMapping(value = "/account/testUpload", method = { RequestMethod.GET,
@@ -5354,7 +5353,6 @@ public class InfoController {
 	}
 
 	
-=======
 	// saveBranch
 	@ResponseBody
 	@RequestMapping(value = "/info/updateAllMTL", method = { RequestMethod.GET,
@@ -5407,6 +5405,5 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}	
->>>>>>> branch 'main' of https://github.com/wallmoo/MES_RG.git
 	
 }
