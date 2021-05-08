@@ -266,6 +266,7 @@
             	<input type="hidden" id="m_map_ord" name="map_ord">
             	<input type="hidden" id="fg_check_yn" name="fg_check_yn" value="N">
             	<input type="hidden" id="fg_check_yn2" name="fg_check_yn2" value="N">
+            	<input type="hidden" id="vdr_idx" name="vdr_idx">
             	
               <div class="box-body">
                 <div class="form-group">
@@ -333,6 +334,13 @@
                   <label for="sel_position_cd" class="col-sm-3 control-label">직급</label>
                   <div class="col-sm-9">
                   	<select id="sel_position_cd" class="form-control select2" data-placeholder="직급선택" style="width: 100%;">
+		                </select>
+                  </div>
+                </div>
+               <div class="form-group">
+                  <label for="sel_vendor_idx" class="col-sm-3 control-label">거래처</label>
+                  <div class="col-sm-9">
+                  	<select id="S_vdr_idx" class="form-control select2" data-placeholder="거래처선택" style="width: 100%;">
 		                </select>
                   </div>
                 </div>
@@ -906,6 +914,8 @@ function fnLoadMemberInfo() {
     	
     	$("#default_member_emp_no").val(member_data.member_emp_no);
     	$("#m_member_emp_no").val(member_data.member_emp_no);
+    	$("#S_vdr_idx").val(member_data.vdr_idx);
+    	console.log(member_data.vdr_idx);
     	$("#m_member_id").val(member_data.member_id);
     	$("#m_member_nm").val(member_data.member_nm);
     	$("#m_member_nm_en").val(member_data.member_nm_en);
@@ -915,6 +925,8 @@ function fnLoadMemberInfo() {
     	$("#sel_position_cd").val(member_data.position_cd).trigger('change');
     	$("#m_start_dt").datepicker("setDate", strWithYYMMDD(member_data.start_dt));
     	$("#m_end_dt").datepicker("setDate", strWithYYMMDD(member_data.end_dt));
+    	$("#position_cd").val(member_data.position_cd);
+    	$("#position_cd").select2();
     	
     	$(':radio[name="rdo_use_yn"][value="'+ member_data.use_yn +'"]').iCheck('check');
 			$(':radio[name="rdo_use_yn"]').iCheck('update');
@@ -971,6 +983,7 @@ function fnDeleteOrgan(){
 }
 
 function fnSaveMember(){
+ 	$("#vdr_idx").val($("#S_vdr_idx").val()+"");
 	var postData = $("#frm_member").serializeArray();
   var formURL = "/backend/mng_organ/save_member";
   
@@ -982,6 +995,7 @@ function fnSaveMember(){
       	if(data.status == "200") {
       		fnMessageModalAlert("Notification(Organ)", "입력하신 사용자정보를 저장하였습니다.");
       		fnSearchOrganMemberGrid(selected_dept_cd);
+      		$("#frm_member")[0].reset();
       		$("#modal_member").modal('hide');
       	} else {
       		fnMessageModalAlert("Notification(Organ)", "입력하신 사용자정보를 저장하는데 에러가 발생하였습니다.");	
@@ -1240,6 +1254,8 @@ function chnDeptSave()
 		}
 	});
 }
+
+$(document).ready(requestVendor("S_vdr_idx"));
 </script>
 </body>
 </html>

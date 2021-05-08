@@ -26,7 +26,7 @@
 	<resources mapping="/res/**" location="/res/" />
 	
 	<!-- UPLOAD IMAGE -->
-	<resources mapping="/images/**" location="/upload/" />
+	<resources mapping="/upload/**" location="/upload/" />
 	
 	<!-- UPLOAD PDF -->
 	<resources mapping="/PDF/**" location="/upload/PDF/" />
