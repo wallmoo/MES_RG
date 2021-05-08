@@ -17,7 +17,7 @@ public class SYTMaterialOrderVo implements Serializable{
 	private String MTL_ORD_FLE1;
 	private String MTL_ORD_FLE2;
 	private String MTL_ORD_FLE3;
-	private String MTL_ORD_STATE;
+	private String MTL_ORD_STATUS;
 	private String MTL_ORD_REG_DT;
 	private String MTL_ORD_REG_ID;
 	private String MTL_ORD_DEL_YN;
@@ -31,6 +31,7 @@ public class SYTMaterialOrderVo implements Serializable{
 	private String MTL_MKR_NO;
 	private String MTL_UNT;
 	private String MTL_STD;
+	private String ORD_CHK_STATUS;
 	
 	public int getORD_IDX() {
 		return ORD_IDX;
@@ -98,11 +99,11 @@ public class SYTMaterialOrderVo implements Serializable{
 	public void setMTL_ORD_FLE3(String mTL_ORD_FLE3) {
 		this.MTL_ORD_FLE3 = mTL_ORD_FLE3;
 	}
-	public String getMTL_ORD_STATE() {
-		return MTL_ORD_STATE;
+	public String getMTL_ORD_STATUS() {
+		return MTL_ORD_STATUS;
 	}
-	public void setMTL_ORD_STATE(String mTL_ORD_STATE) {
-		this.MTL_ORD_STATE = mTL_ORD_STATE;
+	public void setMTL_ORD_STATUS(String MTL_ORD_STATUS) {
+		this.MTL_ORD_STATUS = MTL_ORD_STATUS;
 	}
 	public String getMTL_ORD_REG_DT() {
 		return MTL_ORD_REG_DT;
@@ -181,6 +182,12 @@ public class SYTMaterialOrderVo implements Serializable{
 	}
 	public void setMTL_STD(String mTL_STD) {
 		MTL_STD = mTL_STD;
+	}
+	public String getORD_CHK_STATUS() {
+		return ORD_CHK_STATUS;
+	}
+	public void setORD_CHK_STATUS(String oRD_CHK_STATUS) {
+		ORD_CHK_STATUS = oRD_CHK_STATUS;
 	}
 	
 

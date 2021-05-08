@@ -327,7 +327,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'ord_DTL_QTY', caption:'발주수량', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'calcul_QTY', caption:'입고수량', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'calcul_cha_QTY', caption:'잔량', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_REQ_STATE', caption:'검수여부', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'ord_CHK_STATUS', caption:'검수여부', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'calcul_DLV_DT', caption:'납품일자', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'ord_DTL_STATUS', caption:'Status', size:'8%', style:'text-align:center', sortable: true}
 			],

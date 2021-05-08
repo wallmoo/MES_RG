@@ -102,9 +102,9 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 													<div class="box-header with-border" style="background-color: #DB8EB5;">
 														<h3 class="box-title">발주 자재 상세 현황</h3>
 														<div class="box-tools pull-right">
-															<button type="button" id="btn_excel_csr" onclick="bomNewOrder();" class="btn btn-success btn-sm">일괄 입고 처리</button>
-															<button type="button" id="btn_dlv_csr" onclick="bomNewOrder();" class="btn btn-info btn-sm">자재 입고 처리</button>
-															<button type="button" id="btn_ins_csr" onclick="bomOrder();" class="btn btn-primary btn-sm">조회</button>
+															<button type="button" id="btn_excel_csr" onclick="updateAllMTL();" class="btn btn-success btn-sm">일괄 입고 처리</button>
+															<button type="button" id="btn_dlv_csr" onclick="updateEachMTL();" class="btn btn-info btn-sm">자재 입고 처리</button>
+															<!-- <button type="button" id="btn_ins_csr" onclick="bomOrder();" class="btn btn-primary btn-sm">조회</button> -->
 														</div>
 													</div>
 													<div class="box-body">
@@ -274,8 +274,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		requestProject('S_PJT_IDX');//프로젝트명 가져오기
 		requestVendor('S_VDR_IDX');//거래처 정보를 검색폼 드랍다운 형태로 만듬
 	
-		fnLoadCommonOption();//등록폼 달력
-		fnLoadDeliveryOption();//검색폼 달력
+		fnLoadDeliveryOption('#S_MTL_ORD_DLV_DT','right');//검색폼 달력
 		
 		fnLoadLeftGrid();
 		fnLoadRightGrid();
@@ -445,7 +444,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'ord_DTL_QTY', caption:'발주수량', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'calcul_QTY', caption:'입고수량', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'calcul_cha_QTY', caption:'잔량', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_REQ_STATE', caption:'검수여부', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'ord_CHK_STATUS', caption:'검수여부', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'calcul_DLV_DT', caption:'납품일자', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'ord_DTL_STATUS', caption:'Status', size:'8%', style:'text-align:center', sortable: true}
 			],
@@ -526,48 +525,112 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			}
 		}
 	}
+	//일괄 입고 처리
+	function updateAllMTL() {		
+		var keys = w2ui.grid_list.getSelection();
+		var ModalDataList = [];
+		
+		if($('#S_PJT_IDX').val() == "ALL") {
+			alert("프로젝트 정보를 선택하여주십시오");
+			return;
+		} else if (keys == null || keys == "") {
+			alert("일괄 입고할 구매발주번호를 선택하여주십시오");
+		} else {
+			alert("일괄 입고처리를 진행합니다.");
 
-	// ############################
-	// init component
-	function fnLoadCommonOption() {
-	 	console.log('fnLoadCommonOption()');
-	 	
-		$('#PJT_DLV_DT').daterangepicker({
-			opens: 'right',
-			singleDatePicker: true,
-			locale: {
-				format : 'YYYY-MM-DD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-				showMonthAfterYear : true,
-				yearSuffix : '년'
-		    },
-		    startDate : moment(minDate)
-		})
-		.on("change", function() {
-		    loadLeftGrid();
-		}); 
+			var data = w2ui.grid_list.get(keys[0]);			
+			var ORD_IDX = data.ord_IDX;//구매발주번호		
+			
+			var page_url = "/info/info/updateAllMTL";		
+			var postData = 'ORD_IDX=' + ORD_IDX;
+
+			$.ajax({
+				url : page_url,
+				type : 'POST',
+				data : postData,
+				data_type : 'json',
+				success : function(data) {
+					if (data != 0) {
+						alert("추가되었습니다");
+						$("#modal_estimateForm").modal('hide');
+					} else {
+						alert("오류가 발생하였습니다");
+					}
+				},
+				complete : function() {
+
+				}
+			});			
+		}
 	}
-	function fnLoadDeliveryOption() {
-	 	console.log('fnLoadCommonOption()');
-	 	
-		$('#S_MTL_ORD_DLV_DT, #S_PJT_DLV_DT').daterangepicker({
-			opens: 'right',
-			locale: {
-				format : 'YYYYMMDD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-				showMonthAfterYear : true,
-				yearSuffix : '년'
-		    },
- 			startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
-			endDate: moment().format('YYYY-MM-DD'),
-		}); 
+	//개별 자재 입고 처리
+	function updateEachMTL() {
+		var keys = w2ui.grid_list.getSelection();
+		var ModalDataList = [];
 		
-		$('#S_MTL_ORD_DLV_DT').val("");
-		
-	}	
+		if($('#S_PJT_IDX').val() == "ALL") {
+			alert("프로젝트 정보를 선택하여주십시오");
+			return;
+		} else if (keys == null || keys == "") {
+			alert("개별 입고할 구매발주번호를 선택하여주십시오");
+		} else {
+			alert("개별 입고처리를 진행합니다.");
+			return;
+			for (var i = 0; i < keys.length; i++) {
+				var Data = {
+					MTL_REQ_IDX : w2ui.grid_list.records[keys[i]-1].mtl_REQ_IDX,	
+					PJT_IDX : w2ui.grid_list2.records[keys[i]-1].pjt_IDX,
+                    BOM_IDX : w2ui.grid_list2.records[keys[i]-1].bom_IDX,
+					PJT_CD : w2ui.grid_list2.records[keys[i]-1].pjt_CD,
+					PJT_NM : w2ui.grid_list2.records[keys[i]-1].pjt_NM,
+					MTL_IDX : w2ui.grid_list2.records[keys[i]-1].mtl_IDX,
+					MTL_MKR_CD : w2ui.grid_list2.records[keys[i]-1].mtl_MKR_CD,
+					MTL_NM : w2ui.grid_list2.records[keys[i]-1].mtl_NM,
+					MTL_MKR_NO : w2ui.grid_list2.records[keys[i]-1].mtl_MKR_NO,
+					MTL_STD : w2ui.grid_list2.records[keys[i]-1].mtl_STD,
+					MTL_UNT : w2ui.grid_list2.records[keys[i]-1].mtl_UNT,
+					MTL_REQ_QTY : mtl_REQ_QTY_val,
+					MTL_REQ_TYPE : w2ui.grid_list2.records[keys[i]-1].mtl_REQ_TYPE,
+					MTL_EST_REG_DT : $('#MTL_EST_REG_DT').val(),
+					MTL_EST_REG_ID : w2ui.grid_list2.records[keys[i]-1].mtl_REQ_REG_ID,
+					S_VDR_IDX0 : $('#S_VDR_IDX1').val()+"",
+					S_VDR_IDX1 : $('#S_VDR_IDX2').val()+"",
+					S_VDR_IDX2 : $('#S_VDR_IDX3').val()+"",
+					S_VDR_IDX3 : $('#S_VDR_IDX4').val()+""
+				};
+				reqDataList.push(Data);
+			}			
 
+			if (confirm("등록하시겠습니까?")) {
+				console.log(reqDataList);
+
+				var page_url = "/info/info/insertEstimate";
+				var jsonData = JSON.stringify(reqDataList);
+				console.log(jsonData);
+
+				jQuery.ajaxSettings.traditional = true;
+				$.ajax({
+					url : page_url,
+					type : 'POST',
+					data : {
+						"jsonData" : jsonData
+					},
+					data_type : 'json',
+					success : function(data) {
+						if (data != 0) {
+							alert("추가되었습니다");
+							$("#modal_estimateForm").modal('hide');
+						} else {
+							alert("오류가 발생하였습니다");
+						}
+					},
+					complete : function() {
+
+					}
+				});
+			}
+		}		
+	}
 </script>
 
 </body>
