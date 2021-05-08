@@ -154,7 +154,7 @@
 		    			$("#"+val ).append("<option value="+'ALL'+">" + "전체" + "</option>");
 		    		
 					$.each(rowArr, function(idx, row){
-						$("#"+val ).append("<option value=" + row.bco_IDX + ">" + row.bco_NM + "</option>");
+						$("#"+val ).append("<option value=" + row.bco_NM + ">" + row.bco_NM + "</option>");
 					});
 					
 		 			$("#"+val+" option:eq(0)").prop("selected", true);	
@@ -167,7 +167,48 @@
 	    	
 		    }
 		});
-	}		
+	}	
+	// 프로젝트명 가져오기
+	function requestProject(val){
+		console.log("requestVendor");
+		
+		initOptions($('#'+val)); // select 박스 초기화
+		
+		var strUrl = "/info/account/selectProject";
+		var postData = "";
+		
+		$.ajax({
+		    url: strUrl,
+		    type: "POST",
+		    data: postData, 
+		    async : false, // 다 끝나고 다음 처리 해!
+		    dataType: 'json', 
+		    success:function(data, textStatus, jqXHR){
+//	 	    	console.log("(data.rows).length = " + (data.rows).length);
+		    	if(data.status == "200" && (data.rows).length > 0) {
+		    		rowArr = data.rows;
+		    		
+		    		/* 검색어 입력시 */
+		    		var sub = val.substr(0,2);
+
+		    		if(sub.indexOf("S_") != -1) // val
+		    			$("#"+val ).append("<option value="+'ALL'+">" + "전체" + "</option>");
+		    		
+					$.each(rowArr, function(idx, row){
+						$("#"+val ).append("<option value=" + row.pjt_IDX + ">" + row.pjt_NM + "</option>");
+					});
+					
+		 			$("#"+val+" option:eq(0)").prop("selected", true);
+		    	} 
+		    },
+		    error: function(jqXHR, textStatus, errorThrown){
+			    
+		    },
+		    complete: function() {
+	    	
+		    }
+		});
+	}	
 	//날짜 형식 맞추기
 	function getFormatDate(d) {
 		var month = d.getMonth() + 1;

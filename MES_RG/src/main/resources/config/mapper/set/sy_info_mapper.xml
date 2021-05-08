@@ -3454,16 +3454,24 @@
 	<!-- T_MTL_ORD_MST, T_MTL_ORD_DTL 구매발주 Start -->
 	<select id="selectMaterialOrder" parameterType="SYTMaterialOrderVo" resultType="SYTMaterialOrderVo">
 		SELECT 
-		E.EST_IDX,E.MTL_EST_MOQ,E.MTL_EST_PRICE,E.MTL_EST_DLV_DT,E.MTL_EST_BG,E.MTL_EST_REG_DT,E.MTL_EST_RE_DT,E.MTL_EST_REG_ID,E.MTL_EST_DEL_YN,
-		P.PJT_IDX,P.PJt_NM,P.PJt_CD,
-		M.MTL_IDX,M.MTL_NM,M.MTL_MKR_NO,M.MTL_STD,M.MTL_MKR_CD,M.MTL_UNT,
-		V.VDR_IDX,V.VDR_NM,R.MTL_REQ_QTY,R.MTL_REQ_IDX
-		FROM T_EST_MST E
-		LEFT JOIN T_PJT_MST P ON E.PJT_IDX = P.PJT_IDX
-		LEFT JOIN T_MTL_MST M ON E.MTL_IDX = M.MTL_IDX
-		LEFT JOIN T_VDR_MST V ON E.VDR_IDX = V.VDR_IDX
-		LEFT JOIN T_MTL_REQ_MST R ON E.MTL_REQ_IDX = R.MTL_REQ_IDX
-		WHERE E.MTL_EST_DEL_YN = 'N'
+			O.ORD_IDX,
+			O.PJT_IDX,
+			O.VDR_IDX,
+			O.MTL_ORD_TYPE,
+			O.MTL_ORD_PLC,
+			O.MTL_ORD_DLV_DT,
+			O.MTL_ORD_FLE1,
+			O.MTL_ORD_FLE2,
+			O.MTL_ORD_FLE3,
+			O.MTL_ORD_STATE,
+			O.MTL_ORD_REG_DT,
+			O.MTL_ORD_REG_ID,
+			P.PJT_NM,
+			V.VDR_NM
+		FROM T_MTL_ORD_MST O
+		LEFT JOIN T_PJT_MST P ON P.PJT_IDX = O.PJT_IDX
+		LEFT JOIN T_VDR_MST V ON V.VDR_IDX = O.VDR_IDX
+		WHERE O.MTL_ORD_DEL_YN = 'N'
 
 		<if test="PJT_IDX != null and !''.equals(PJT_IDX) and !'null'.equals(PJT_IDX) and !'null'.equals( PJT_IDX ) and PJT_IDX > 0">
 			AND P.PJT_IDX = #{PJT_IDX}
@@ -3474,20 +3482,41 @@
 		<if test="VDR_IDX != null and VDR_IDX !='' and VDR_IDX !='0'">
 			AND V.VDR_IDX = #{VDR_IDX}
 		</if>
-		<if test="MTL_EST_REG_DT != null and !''.equals( MTL_EST_REG_DT ) and !'null'.equals( MTL_EST_REG_DT )">
-			AND date_format(E.MTL_EST_REG_DT, '%Y%m%d') BETWEEN left(#{MTL_EST_REG_DT}, 8) AND right(#{MTL_EST_REG_DT}, 8)
+		<if test="MTL_ORD_DLV_DT != null and !''.equals( MTL_ORD_DLV_DT ) and !'null'.equals( MTL_ORD_DLV_DT )">
+			AND date_format(O.MTL_ORD_DLV_DT, '%Y%m%d') BETWEEN left(#{MTL_ORD_DLV_DT}, 8) AND right(#{MTL_ORD_DLV_DT}, 8)
 		</if>	
 		<if test="MTL_NM != null and !''.equals( MTL_NM ) and !'undefined'.equals( MTL_NM ) and !'null'.equals( MTL_NM )">
 			AND M.MTL_NM LIKE CONCAT('%', #{MTL_NM}, '%')
-		</if>		
-		<if test="MTL_MKR_CD != null and !''.equals( MTL_MKR_CD ) and !'undefined'.equals( MTL_MKR_CD ) and !'null'.equals( MTL_MKR_CD )">
-			AND M.MTL_MKR_CD LIKE CONCAT('%', #{MTL_MKR_CD}, '%')
-		</if>	
-		<if test="MTL_MKR_NO != null and !''.equals( MTL_MKR_NO ) and !'undefined'.equals( MTL_MKR_NO ) and !'null'.equals( MTL_MKR_NO )">
-			AND M.MTL_MKR_NO LIKE CONCAT('%', #{MTL_MKR_NO}, '%')
-		</if>						
-		ORDER BY E.EST_IDX DESC
+		</if>							
+		ORDER BY O.ORD_IDX DESC
 	</select>
+	<select id="selectMaterialOrdDTL" parameterType="SYTMaterialOrderVo" resultType="SYTMaterialOrderVo">
+		SELECT 
+			M.MTL_IDX,
+			M.MTL_MKR_CD,
+			M.MTL_NM,
+			M.MTL_MKR_NO,
+			M.MTL_STD,
+			M.MTL_UNT,
+			P.PJT_NM,
+			V.VDR_IDX,
+			V.VDR_NM,
+			O.ORD_IDX,
+			O.PJT_IDX,  
+			O.VDR_IDX,
+			O.MTL_ORD_REG_DT,
+			O.MTL_ORD_REG_ID,
+			OD.ORD_DTL_QTY,
+			OD.ORD_DTL_PRICE,
+			OD.ORD_DTL_STATUS
+		FROM T_MTL_ORD_DTL OD
+		LEFT JOIN T_MTL_ORD_MST O ON O.ORD_IDX = OD.ORD_IDX
+		LEFT JOIN T_MTL_MST M ON M.MTL_IDX = OD.MTL_IDX
+		LEFT JOIN T_PJT_MST P ON P.PJT_IDX = O.PJT_IDX
+		LEFT JOIN T_VDR_MST V ON V.VDR_IDX = O.VDR_IDX
+		WHERE O.ORD_IDX = #{ORD_IDX}
+		ORDER BY OD.MTL_ORD_DTL_IDX DESC
+	</select>	
 	<insert id="insertMaterialOrderMST" parameterType="java.util.HashMap">
 		INSERT INTO T_MTL_ORD_MST
 		(
@@ -3522,7 +3551,7 @@
 			#{item.ORD_IDX},
 			#{item.MTL_IDX},
 			#{item.PJT_IDX},
-			#{item.MTL_EST_PRICE},
+			#{item.MTL_DTL_PRICE},
 			#{item.MTL_REQ_QTY}
 		)
 		</foreach>

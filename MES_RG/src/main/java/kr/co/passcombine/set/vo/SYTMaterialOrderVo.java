@@ -23,7 +23,14 @@ public class SYTMaterialOrderVo implements Serializable{
 	private String MTL_ORD_DEL_YN;
 	private String ORD_DTL_PRICE;
 	private String ORD_DTL_QTY;
-	
+	private String PJT_NM;
+	private String MTL_NM;
+	private String VDR_NM;
+	private String ORD_DTL_STATUS;
+	private String MTL_MKR_CD;
+	private String MTL_MKR_NO;
+	private String MTL_UNT;
+	private String MTL_STD;
 	
 	public int getORD_IDX() {
 		return ORD_IDX;
@@ -112,6 +119,12 @@ public class SYTMaterialOrderVo implements Serializable{
 	public String getMTL_ORD_DEL_YN() {
 		return MTL_ORD_DEL_YN;
 	}
+	public String getPJT_NM() {
+		return PJT_NM;
+	}
+	public void setPJT_NM(String pJT_NM) {
+		PJT_NM = pJT_NM;
+	}
 	public void setMTL_ORD_DEL_YN(String mTL_ORD_DEL_YN) {
 		this.MTL_ORD_DEL_YN = mTL_ORD_DEL_YN;
 	}
@@ -126,6 +139,48 @@ public class SYTMaterialOrderVo implements Serializable{
 	}
 	public void setORD_DTL_QTY(String oRD_DTL_QTY) {
 		this.ORD_DTL_QTY = oRD_DTL_QTY;
+	}
+	public String getMTL_NM() {
+		return MTL_NM;
+	}
+	public void setMTL_NM(String mTL_NM) {
+		MTL_NM = mTL_NM;
+	}
+	public String getVDR_NM() {
+		return VDR_NM;
+	}
+	public void setVDR_NM(String vDR_NM) {
+		VDR_NM = vDR_NM;
+	}
+	public String getORD_DTL_STATUS() {
+		return ORD_DTL_STATUS;
+	}
+	public void setORD_DTL_STATUS(String oRD_DTL_STATUS) {
+		ORD_DTL_STATUS = oRD_DTL_STATUS;
+	}
+	public String getMTL_MKR_CD() {
+		return MTL_MKR_CD;
+	}
+	public void setMTL_MKR_CD(String mTL_MKR_CD) {
+		MTL_MKR_CD = mTL_MKR_CD;
+	}
+	public String getMTL_MKR_NO() {
+		return MTL_MKR_NO;
+	}
+	public void setMTL_MKR_NO(String mTL_MKR_NO) {
+		MTL_MKR_NO = mTL_MKR_NO;
+	}
+	public String getMTL_UNT() {
+		return MTL_UNT;
+	}
+	public void setMTL_UNT(String mTL_UNT) {
+		MTL_UNT = mTL_UNT;
+	}
+	public String getMTL_STD() {
+		return MTL_STD;
+	}
+	public void setMTL_STD(String mTL_STD) {
+		MTL_STD = mTL_STD;
 	}
 	
 

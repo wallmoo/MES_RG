@@ -300,8 +300,10 @@ public interface SYInfoDAO {
 	
 	// MaterialOrder Start	
 	public List<SYTMaterialOrderVo> selectMaterialOrder(SYTMaterialOrderVo vo);
+	public List<SYTMaterialOrderVo> selectMaterialOrdDTL(SYTMaterialOrderVo vo);
 	public int insertMaterialOrderMST(Map<String,Object> vo);
 	public int insertMaterialOrder(List<Map<String,Object>> vo);
+	
 	public int updateMaterialOrder(SYTMaterialOrderVo vo);
 	public int deleteMaterialOrder(SYTMaterialOrderVo vo);
 	// MaterialOrder End		

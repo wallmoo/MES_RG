@@ -5134,7 +5134,34 @@ public class InfoController {
 		
 		return resultData.toJSONString();
 	}
+	//selectMaterialOrdDtl
+	@ResponseBody
+	@RequestMapping(value = "/info/selectMaterialOrdDTL", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectMaterialOrdDTL(@ModelAttribute SYTMaterialOrderVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.selectMaterialOrder is called.");
 
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		try {
+			List<SYTMaterialOrderVo> dataList = sYInfoService.selectMaterialOrdDTL(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		
+		return resultData.toJSONString();
+	}
 	// insertMaterialOrder
 	@ResponseBody
 	@RequestMapping(value = "/info/insertMaterialOrder", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
@@ -5155,36 +5182,11 @@ public class InfoController {
 			System.out.println(e1);
 			e1.printStackTrace();
 		}
-//		for (int i = 0; i < vo.size(); i++) {
-//			vo.get(i).put("REG_ID", REG_ID);
-//		}
 
 		int result = 0;
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
-		/* <insert id="insertMaterialOrderMST" parameterType="SYTMaterialOrderVo"> --> 마스터 정보 입력
-		 * <insert id="insertMaterialOrder" parameterType="java.util.List"> --> 자재 상세정보 입력
-		 *
-## Master
-ORD_IDX			발주번호, 일렬번호
-PJT_IDX			프로젝트 번호
-VDR_IDX			거래처 번호
-MTL_ORD_TYPE	주문유형
-MTL_ORD_PLC		납품 장소
-MTL_ORD_DLV_DT	납품일자
-MTL_ORD_FLE1	하자증권
-MTL_ORD_FLE2	이행증권
-MTL_ORD_FLE3	계약서
-MTL_ORD_REG_ID	등록자
-
-# Detail
-ORD_IDX			발주번호
-PJT_IDX			프로젝트 번호
-MTL_IDX			자재 번호
-ORD_DTL_PRICE	단가
-ORD_DTL_QTY		수량
-		 * */
 		
 		try {
 			Map<String, Object> mstMap = (Map<String, Object>) vo.get("mstData");
