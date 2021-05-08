@@ -5207,6 +5207,57 @@ public class InfoController {
 		}
 		return result;
 	}	
-	
+	// saveBranch
+	@ResponseBody
+	@RequestMapping(value = "/info/updateAllMTL", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String updateAllMTL(@ModelAttribute SYTMaterialOrderVo vo, HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.saveAccount is called.");
+
+		vo.setMTL_ORD_REG_ID(SessionUtil.getMemberId(request));
+		
+		JSONObject resultData = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
+		JSONParser parser = new JSONParser();
+
+		try {
+			String ORD_IDX = "";
+			int cnt = 0;
+			int chkOrder = 0;
+			
+			String flag = request.getParameter("flag");
+
+			ORD_IDX = request.getParameter("ord_IDX");
+			vo.setORD_IDX(Integer.parseInt(ORD_IDX));
+			
+			//구매발주 상태 체크
+			chkOrder = sYInfoService.chkOrdStatus(vo);
+			if(chkOrder > 0) {
+				//vo.get
+			}
+			//if(!old_rcC.equals("")) { System.out.println("old_rcC.substring(0, 1) = " +
+
+			String MTL_ORD_STATUS = vo.getMTL_ORD_STATUS();// 등록된 CST_IDX 값 가져오기
+			
+			//ORD_IDX 세팅
+			vo.setORD_IDX(Integer.parseInt(ORD_IDX));
+			
+			cnt = sYInfoService.updateAllMTL(vo);
+			
+
+			System.out.println("ORD_IDX = " + ORD_IDX);
+			System.out.println("cnt = " + cnt);
+
+			resultData.put("status", HttpStatus.OK.value());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+
+		return resultData.toJSONString();
+	}	
 	
 }

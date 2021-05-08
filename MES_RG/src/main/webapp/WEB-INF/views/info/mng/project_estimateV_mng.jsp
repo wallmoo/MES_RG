@@ -228,7 +228,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			],			
 			
 			sortData : [ {
-				field : 'EST_IDX',
+				field : 'est_IDX',
 				direction : 'DESC'
 			} 
 			],
