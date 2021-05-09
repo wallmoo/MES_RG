@@ -1,5 +1,6 @@
 package kr.co.passcombine.set.svc;
 
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
@@ -34,6 +35,11 @@ public class SYMaterialService {
 			}
 			MaterialsDAO.insertMaterialMap2(vo);
 			return MaterialsDAO.insertBOM2(vo);
+	}
+
+	public int UpdateEstimate(List<Map<String, Object>> valueList) {
+		// TODO Auto-generated method stub
+		return MaterialsDAO.updateEstimate2(valueList);
 	}
 	
 /*

@@ -48,4 +48,18 @@
 			#{REG_ID}
 		)
 	</insert>
+	
+	<update id="updateEstimate2" parameterType="java.util.List">
+		<foreach collection="list" item="item"  separator=" ; ">
+				UPDATE 	T_EST_MST SET
+						MTL_REQ_QTY 	= 	IFNULL(#{item.MTL_REQ_QTY}, 0),
+						MTL_EST_REG_DT 	=  	IFNULL(#{item.MTL_EST_REG_DT}, SYSDATE())
+				WHERE 	EST_IDX 		= 	#{item.EST_IDX}
+				
+<!-- 				UPDATE 	T_MTL_REQ_MST SET -->
+<!-- 						MTL_REQ_QTY 	= 	IFNULL(#{item.MTL_REQ_QTY}, 0), -->
+<!-- 						MTL_EST_REG_DT 	=  	IFNULL(#{item.MTL_EST_REG_DT}, SYSDATE()) -->
+<!-- 				WHERE 	EST_IDX 		= 	#{item.EST_IDX} -->
+		</foreach>
+	</update>
 </mapper>

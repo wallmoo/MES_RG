@@ -4991,9 +4991,11 @@ public class InfoController {
 					//초기화하지않으면 계속 같은값이 들어감.
 					valueMap.putAll(vo.get(j));
 					//a = b로하면 메모리가 같아져서 같은값이 들어감
-					if(!"ALL".equals((String)valueMap.get("S_VDR_IDX"+i))){
-						valueMap.put("VDR_IDX",valueMap.get("S_VDR_IDX"+i));
-						valueList.add(valueMap);
+					if(valueMap.containsKey("S_VDR_IDX"+i)) {
+						if(!"ALL".equals((String)valueMap.get("S_VDR_IDX"+i))){
+							valueMap.put("VDR_IDX",valueMap.get("S_VDR_IDX"+i));
+							valueList.add(valueMap);
+						}
 					}
 				}
 			}
