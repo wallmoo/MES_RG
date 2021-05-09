@@ -1,5 +1,6 @@
 package kr.co.passcombine.set.dao;
 
+import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Repository;
@@ -18,5 +19,7 @@ public interface SYMaterialsDAO {
 	int updateMaterialMap2(Map<String, Object> vo);
 
 	int insertBOM2(Map<String, Object> vo);
+
+	int updateEstimate2(List<Map<String, Object>> valueList);
 
 }

@@ -1,10 +1,15 @@
 package kr.co.passcombine.set.controller;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.PrintWriter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
@@ -22,6 +27,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import kr.co.passcombine.set.svc.SYGoalService;
 import kr.co.passcombine.set.svc.SYInfoService;
 import kr.co.passcombine.set.svc.SYMaterialService;
@@ -33,6 +41,11 @@ public class MaterialsController {
 	private static final Logger logger = LoggerFactory.getLogger(MaterialsController.class);
 	@Resource(name = "setMateriaService")
 	SYMaterialService sYMaterialService;
+	
+
+	@Resource(name = "setInfoService")
+	SYInfoService sYInfoServices;
+
 
 	// saveMaterial
 		@ResponseBody
@@ -85,7 +98,68 @@ public class MaterialsController {
 			return resultData.toJSONString();
 		}
 
+		// insertEstimate/update도 포함 
+		@ResponseBody
+		@RequestMapping(value = "/info/insertEstimate", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+		@SuppressWarnings("unchecked")
+		public int insertEstimate(HttpServletRequest request, @RequestParam String jsonData) {
+			List<Map<String, Object>> vo = null;
+
+			logger.debug("FrontendController.insertEstimate is called." + request.getParameter("S_VDR_IDX1"));
+
+			String REG_ID = SessionUtil.getMemberId(request);
+
+			ObjectMapper mapper = new ObjectMapper();
+			TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() { };
+			List<Map<String,Object>> valueList = new ArrayList<Map<String,Object>>();
+			try {
+				vo = mapper.readValue(jsonData, typeRef);
+				for (int i = 0; i < vo.size(); i++) {
+					vo.get(i).put("REG_ID", REG_ID);
+				}
+				//현재 거래처는 4개이므로 4번까지돌도록함
+				for(int j=0; j<vo.size(); j++) {
+					for(int i=0; i<4;i++) {
+						Map<String, Object> valueMap = new HashMap();
+						//초기화하지않으면 계속 같은값이 들어감.
+						valueMap.putAll(vo.get(j));
+						//a = b로하면 메모리가 같아져서 같은값이 들어감
+						if(valueMap.containsKey("S_VDR_IDX"+i)) {
+							if(!"ALL".equals((String)valueMap.get("S_VDR_IDX"+i))){
+								valueMap.put("VDR_IDX",valueMap.get("S_VDR_IDX"+i));
+								valueList.add(valueMap);
+							}
+						}
+					}
+				}
+							
+				System.out.println("Dd");
+			} catch (IOException e1) {
+				System.out.println(e1);
+				e1.printStackTrace();
+			}
+
+			
+			int result = 0;
+			JSONObject resultData = new JSONObject();
+			JSONArray listDataJArray = new JSONArray();
+			JSONParser jsonParser = new JSONParser();
+			try {
+				String flag = (String)vo.get(0).get("flag");
+				if(flag.equals("I")) {
+					result = sYInfoServices.insertEstimate(valueList);//자재요청내역 저장
+				}else {
+					result = sYMaterialService.UpdateEstimate(vo);//자재요청내역 저장
+				}
+				
+				} catch (Exception e) {
+				e.printStackTrace();
+				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+				resultData.put("rows", null);
+			}
+			
+			return result;
+		}
+		
 	
 }
-
-
