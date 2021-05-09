@@ -3506,6 +3506,7 @@
 			O.VDR_IDX,
 			O.MTL_ORD_REG_DT,
 			O.MTL_ORD_REG_ID,
+			OD.MTL_ORD_DTL_IDX,
 			OD.ORD_DTL_QTY,
 			OD.ORD_DTL_PRICE,
 			OD.ORD_DTL_STATUS,
@@ -3563,25 +3564,54 @@
 		FROM T_MTL_ORD_MST
 		WHERE ORD_IDX = #{ORD_IDX}
 	</select>		
-	<insert id="updateAllMTL" parameterType="SYTMaterialOrderVo">
-		INSERT INTO T_MTL_ORD_MST
+	<insert id="updateAllMTL" parameterType="java.util.List">
+		INSERT INTO T_WHS_HIS
 		(
-			PJT_IDX,
-			VDR_IDX,
-			MTL_ORD_TYPE,
-			MTL_ORD_PLC,
-			MTL_ORD_DLV_DT,
-			MTL_ORD_FLE1,
-			MTL_ORD_FLE2,
-			MTL_ORD_FLE3,
-			MTL_ORD_REG_ID
+			ORD_IDX,
+			MTL_ORD_DTL_IDX,
+			MTL_IDX,
+			WHS_HIS_GB,
+			WHS_HIS_TYPE,
+			WHS_HIS_QTY,
+			WHS_HIS_REG_ID
 		) VALUES
+		<foreach  collection="list" item="item"  separator=" , ">
 		(
-			#{PJT_IDX}, #{VDR_IDX}, #{MTL_ORD_TYPE}, #{MTL_ORD_PLC},#{MTL_ORD_DLV_DT}, #{MTL_ORD_FLE1}, #{MTL_ORD_FLE2}, #{MTL_ORD_FLE3}, #{MTL_ORD_REG_ID}
-		)		
-			
-		INSERT INTO T_MTL_ORD_MST (column1, colum2, colum3) SELECT column1, colum2, colum3 FROM [table] WHERE [조건];
+			#{item.ORD_IDX},
+			#{item.MTL_ORD_DTL_IDX},		
+			#{item.MTL_IDX},
+			#{item.WHS_HIS_GB},
+			#{item.WHS_HIS_TYPE},
+			#{item.WHS_HIS_QTY},
+			#{item.WHS_HIS_REG_ID}
+		)
+		</foreach>
 	</insert>	
+	<insert id="updateAllMTLVO" parameterType="SYTMaterialOrderVo">
+		INSERT INTO T_WHS_HIS
+		(
+			ORD_IDX,
+			MTL_ORD_DTL_IDX,			
+			MTL_IDX,
+			WHS_HIS_GB,
+			WHS_HIS_TYPE,
+			WHS_HIS_QTY,
+			WHS_HIS_REG_ID
+		) VALUES
+		SELECT ORD_IDX,MTL_ORD_DTL_IDX,MTL_IDX, 'IN' AS WHS_HIS_GB AS WHS_HIS_TYPE, 'O' AS WHS_HIS_QTY, ORD_DTL_QTY AS WHS_HIS_QTY, #{setMTL_ORD_REG_ID} AS WHS_HIS_REG_ID 
+		FROM T_MTL_ORD_DTL WHERE ORD_IDX=#{ORD_IDX}
+	</insert>	
+	<update id="updateAllMTLDTL" parameterType="SYTMaterialOrderVo">
+		UPDATE T_MTL_ORD_DTL SET
+				ORD_DTL_STATUS = 'A',
+				ORD_CHK_STATUS = 'Y'
+		WHERE ORD_IDX = #{ORD_IDX}
+	</update>	
+	<update id="updateAllMTLMST" parameterType="SYTMaterialOrderVo">
+		UPDATE T_MTL_ORD_MST SET
+				MTL_ORD_STATUS = 'O'
+		WHERE ORD_IDX = #{ORD_IDX}
+	</update>			
 	<insert id="updateEachMTL" parameterType="java.util.List">
 		INSERT INTO T_MTL_ORD_DTL
 		(
