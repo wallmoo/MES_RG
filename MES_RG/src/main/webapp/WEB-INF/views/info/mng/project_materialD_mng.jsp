@@ -81,7 +81,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																
 																<div class="col-sm-2">
 																	<label>고객사</label> 
-																	<select id="S_CST_IDX" name="S_CST_IDX" class="form-control" style="height: 30px;" ></select>
+																	<select id="S_CST_IDX" name="S_CST_IDX" class="form-control" style="height: 30px;"
+																	onchange="refreshLeftGrid(); return false;" ></select>
 																</div>	
 																							
 																<div class="col-sm-2">
@@ -93,7 +94,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																<div class="col-sm-2">
 																	<label>납품 요청일</label>
 																	<div class="input-group">
-																		<input type="text" class="form-control pull-right input-sm" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd">
+																		<input type="text" class="form-control pull-right input-sm" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd"
+																		onchange="refreshLeftGrid(); return false;" >
 																		<div class="input-group-addon">
 																			<i class="fa fa-calendar"></i>
 																		</div>
@@ -104,7 +106,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																	<label>프로젝트 등록일</label>
 																	<div class="input-group">
 																		<input type="text" 
-																			class="form-control pull-right input-sm" id="S_PJT_REG_DT" placeholder="yyyymmdd~yyyymmdd">
+																			class="form-control pull-right input-sm" id="S_PJT_REG_DT" placeholder="yyyymmdd~yyyymmdd"
+																			onchange="refreshLeftGrid(); return false;" >
 																		<div class="input-group-addon">
 																			<i class="fa fa-calendar"></i>	
 																		</div>
@@ -133,7 +136,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 															<div class="col-sm-6">
 																<label>자재검색</label> 
 																<input type="combo" id="r_mt_name" name="r_mt_name" class="form-control input-sm" placeholder="자재검색"
-																	onkeypress="if(event.keyCode==13) {requestRightGrid(); return false;}" style="padding: 5px 10px;">
+																	onkeypress="if(event.keyCode==13) {requestRightGrid('grid_list2'); return false;}" style="padding: 5px 10px;">
 															</div>
 														</div>
 													</div>
@@ -157,7 +160,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																<div class="col-sm-2">
 																	<label>자재 요청일</label> 
 																	<div class="input-group">
-																		<input type="text" class="form-control pull-right input-sm" id="S_MTL_REQ_REG_DT" placeholder="yyyymmdd~yyyymmdd">
+																		<input type="text" class="form-control pull-right input-sm" id="S_MTL_REQ_REG_DT" placeholder="yyyymmdd~yyyymmdd"
+																		onchange="loadfootGridRefresh()">
 																		<div class="input-group-addon">
 																			<i class="fa fa-calendar"></i>	
 																		</div>
@@ -250,15 +254,17 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						<h4 class="modal-title" id="modal_code_title">신규자재 등록</h4>
 		        	</div>
 					<div class="modal-body" id="modal_code_body">
-						<form id="frm_routingItnbr" name="frm_routingItnbr" class="form-horizontal">	
+						<form id="frm_routingItnbr" name="frm_routingItnbr" class="form-horizontal"
+						method="POST" enctype="multipart/form-data">	
 							<input type="hidden" id="upload_mode"/>
 							<input type="hidden" class="clear_field" id="mod_file_group"/>
-							<input type="hidden" class="clear_field" id="mod_file_no"/>				
+							<input type="hidden" class="clear_field" id="mod_file_no"/>	
+							<input type="hidden" id="PJT_IDX" name="PJT_IDX">	
 							<div class="row">
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">자재코드</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm pull-right" id="MTL_IDX" maxlength="100" readonly="readonly">
+										<input type="text" class="form-control input-sm pull-right" id="MTL_IDX" name ="MTL_IDX" maxlength="100" readonly="readonly">
 									</div>
 								</div>
 							</div>
@@ -267,7 +273,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">자재분류</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm pull-right" id="MTL_CATE" maxlength="30">
+										<input type="text" class="form-control input-sm pull-right" id="MTL_CATE" name ="MTL_CATE" maxlength="30">
 									</div>
 								</div>
 							</div>
@@ -276,7 +282,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">품목</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm pull-right" id="MTL_NM" maxlength="20">
+										<input type="text" class="form-control input-sm pull-right" id="MTL_NM" name ="MTL_NM" maxlength="20">
 									</div>
 								</div>
 							</div>
@@ -285,7 +291,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">제조사</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm" id="MTL_MKR_CD" maxlength="14">
+										<input type="text" class="form-control input-sm" id="MTL_MKR_CD" name ="MTL_MKR_CD" maxlength="14">
 									</div>
 								</div>
 							</div>
@@ -294,7 +300,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">제조사 품번</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm pull-right" id="MTL_MKR_NO" maxlength="10">
+										<input type="text" class="form-control input-sm pull-right" id="MTL_MKR_NO" name ="MTL_MKR_CD" maxlength="10">
 									</div>
 								</div>
 							</div>	
@@ -303,7 +309,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">규격</label><!-- 공통코드 ea/kg 중 선택 -->
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm" id="MTL_STD" value="" maxlength="60">
+										<input type="text" class="form-control input-sm" id="MTL_STD" name ="MTL_STD" value="" maxlength="60">
 									</div>
 									
 								</div>
@@ -313,7 +319,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">단가</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm" id="MTL_PRICE" maxlength="14">
+										<input type="text" class="form-control input-sm" id="MTL_PRICE" name ="MTL_PRICE" maxlength="14">
 									</div>
 								</div>
 							</div>
@@ -322,7 +328,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">재고단위</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm" id="MTL_UNT" maxlength="14">
+										<input type="text" class="form-control input-sm" id="MTL_UNT" name ="MTL_UNT" maxlength="14">
 									</div>
 								</div>
 							</div>				
@@ -331,7 +337,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">Datasheet URL</label>
 									<div class="col-sm-7">
-										<textarea type="text" class="form-control input-sm pull-right" id="MTL_DS_URL" ></textarea>
+										<textarea type="text" class="form-control input-sm pull-right" id="MTL_DS_URL" name ="MTL_DS_URL"></textarea>
 									</div>
 								</div>
 							</div>
@@ -340,7 +346,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">비고</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm" id="MTL_BG" maxlength="60">
+										<input type="text" class="form-control input-sm" id="MTL_BG" name ="MTL_BG" maxlength="60">
 									</div>
 								</div>
 							</div>					
@@ -352,7 +358,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								</div>	
 								<div class="col-sm-1" style="padding-left: 7px;">
 									<span class="btn btn-danger btn-sm fileinput-button " style="width: 100%;" id="file_btn"> <i class="fa fa-plus"></i>
-										<input id="file_group" type="file" class="fileupload file_info" name="file[]">
+										<input id="file_group" type="file" class="fileupload file_info" name="file[]" onchange="$('#mod_file_name').val(this.value)">
 									</span>
 								</div>
 							</div>					
@@ -389,6 +395,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 <script type="text/javascript">
 
+	var loadingEnd = false;
 	var grid_material_data;
 	var grid_add_data;
 	var grid_lev1_data;
@@ -418,7 +425,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		fnLoadRightGrid();
 		fnloadFootGrid();
 		fnLoadModalGrid();
+		loadingEnd = true;
 	});
+	function refreshLeftGrid(){
+		if(loadingEnd){
+			loadLeftGridData();
+		}
+	}
 
 
 	// fnLoadLeftGrid
@@ -627,7 +640,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		var list = w2ui[gridname].records;
 		for (i = 0; list.length > i; i++) {
 			var num = i + 1;
-			if (list[i].c_item_nm.indexOf(cnm) !== -1) {
+			if (list[i].mtl_NM.indexOf(cnm) !== -1) {
 				$('#grid_' + gridname + '_rec_' + num + ' > td').css({ "color" : "red" });
 			} else {
 				$('#grid_' + gridname + '_rec_' + num + ' > td').css({ "color" : "black" });
@@ -715,6 +728,14 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				}
 			}
 		});
+	}
+	function loadfootGridRefresh(){
+		var key = $("#hiddenPjtIdx").val();//프로젝트 번호가져오기
+		if(!key){
+			if(loadingEnd){
+				loadFootGridData(key);
+			}
+		}
 	}
 	function loadFootGridData(pjtIDX) {
 		console.log("loadRequestGridData()");
@@ -896,33 +917,44 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 			if (confirm("등록하시겠습니까?")) {
 				console.log(reqDataList);
-
-				var page_url = "/info/info/insertMaterialRequest";
-				var jsonData = JSON.stringify(reqDataList);
-				console.log(jsonData);
-
-				jQuery.ajaxSettings.traditional = true;
-				$.ajax({
-					url : page_url,
-					type : 'POST',
-					data : {
-						"jsonData" : jsonData
-					},
-					data_type : 'json',
-					success : function(data) {
-						if (data != 0) {
-							alert("추가되었습니다");
-							loadRightGridData($("#hiddenPjtIdx").val());
-							loadFootGridData($("#hiddenPjtIdx").val());
-							$("#modal_bomReqForm").modal('hide');
-						} else {
-							alert("오류가 발생하였습니다");
-						}
-					},
-					complete : function() {
-
+				var reco = w2ui.grid_list4.records.length;
+				var sele = w2ui.grid_list4.getSelection().length;
+				var isOK = false;
+				if(reco!=sele){
+					if(confirm("현재 요청수는 "+reco+"개이나, 선택한 수는 "+sele+"개입니다.\n정말 저장하시겠습니까?")){
+						isOK=true;	
 					}
-				});
+				}else{
+					isOK=true;
+				}
+				if(isOK){
+					var page_url = "/info/info/insertMaterialRequest";
+					var jsonData = JSON.stringify(reqDataList);
+					console.log(jsonData);
+	
+					jQuery.ajaxSettings.traditional = true;
+					$.ajax({
+						url : page_url,
+						type : 'POST',
+						data : {
+							"jsonData" : jsonData
+						},
+						data_type : 'json',
+						success : function(data) {
+							if (data != 0) {
+								alert("추가되었습니다");
+								loadRightGridData($("#hiddenPjtIdx").val());
+								loadFootGridData($("#hiddenPjtIdx").val());
+								$("#modal_bomReqForm").modal('hide');
+							} else {
+								alert("오류가 발생하였습니다");
+							}
+						},
+						complete : function() {
+	
+						}
+					});
+				}
 			}				
 		}	
 	}
@@ -931,9 +963,48 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		if ($("#hiddenPjtIdx").val() == null || $("#hiddenPjtIdx").val() == "") {
 			alert("신규자재를 요청할 프로젝트를 선택하여주십시오");
 		} else {
-			$("#modal_materialAddForm").modal('show');	
+			$("#modal_materialAddForm").modal('show');
+			$("#PJT_IDX").val($("#hiddenPjtIdx").val());
 		}
 	}
+	function saveAccount() {
+		console.log('saveAccount()');
+
+		var strUrl = "/materials/account/saveMaterial";
+		
+		// escape(
+		var form = $("#frm_routingItnbr")[0];
+		
+		var data = new FormData(form);
+		
+						
+		$.ajax({
+			type: "POST",
+			enctype: 'multipart/form-data',
+			url: strUrl,
+			data: data,
+			processData: false,
+			contentType: false,
+			cache: false,
+			timeout: 600000,
+		    success:function(data, textStatus, jqXHR){
+		    	if(data.status == "200") {
+			    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
+			    	startValue_combo = "";
+			    	loadRightGridData($("#PJT_IDX").val());
+					form.reset();
+					$("#modal_materialAddForm").modal('hide');
+		    	}
+		    },
+		    error: function(jqXHR, textStatus, errorThrown){
+			    	fnMessageModalAlert("결과", "정보를 처리하는데 에러가 발생하였습니다.");	// Notification(MES)
+		    },
+		    complete: function() {
+		    }
+		});
+		
+	}
+	
 </script>
 
 </body>
