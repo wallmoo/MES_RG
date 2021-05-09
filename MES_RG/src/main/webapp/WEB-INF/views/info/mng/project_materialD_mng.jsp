@@ -81,7 +81,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																
 																<div class="col-sm-2">
 																	<label>고객사</label> 
-																	<select id="S_CST_IDX" name="S_CST_IDX" class="form-control" style="height: 30px;" ></select>
+																	<select id="S_CST_IDX" name="S_CST_IDX" class="form-control" style="height: 30px;"
+																	onchange="refreshLeftGrid(); return false;" ></select>
 																</div>	
 																							
 																<div class="col-sm-2">
@@ -93,7 +94,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																<div class="col-sm-2">
 																	<label>납품 요청일</label>
 																	<div class="input-group">
-																		<input type="text" class="form-control pull-right input-sm" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd">
+																		<input type="text" class="form-control pull-right input-sm" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd"
+																		onchange="refreshLeftGrid(); return false;" >
 																		<div class="input-group-addon">
 																			<i class="fa fa-calendar"></i>
 																		</div>
@@ -104,7 +106,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																	<label>프로젝트 등록일</label>
 																	<div class="input-group">
 																		<input type="text" 
-																			class="form-control pull-right input-sm" id="S_PJT_REG_DT" placeholder="yyyymmdd~yyyymmdd">
+																			class="form-control pull-right input-sm" id="S_PJT_REG_DT" placeholder="yyyymmdd~yyyymmdd"
+																			onchange="refreshLeftGrid(); return false;" >
 																		<div class="input-group-addon">
 																			<i class="fa fa-calendar"></i>	
 																		</div>
@@ -133,7 +136,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 															<div class="col-sm-6">
 																<label>자재검색</label> 
 																<input type="combo" id="r_mt_name" name="r_mt_name" class="form-control input-sm" placeholder="자재검색"
-																	onkeypress="if(event.keyCode==13) {requestRightGrid(); return false;}" style="padding: 5px 10px;">
+																	onkeypress="if(event.keyCode==13) {requestRightGrid('grid_list2'); return false;}" style="padding: 5px 10px;">
 															</div>
 														</div>
 													</div>
@@ -157,7 +160,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																<div class="col-sm-2">
 																	<label>자재 요청일</label> 
 																	<div class="input-group">
-																		<input type="text" class="form-control pull-right input-sm" id="S_MTL_REQ_REG_DT" placeholder="yyyymmdd~yyyymmdd">
+																		<input type="text" class="form-control pull-right input-sm" id="S_MTL_REQ_REG_DT" placeholder="yyyymmdd~yyyymmdd"
+																		onchange="loadfootGridRefresh()">
 																		<div class="input-group-addon">
 																			<i class="fa fa-calendar"></i>	
 																		</div>
@@ -391,6 +395,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 <script type="text/javascript">
 
+	var loadingEnd = false;
 	var grid_material_data;
 	var grid_add_data;
 	var grid_lev1_data;
@@ -420,7 +425,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		fnLoadRightGrid();
 		fnloadFootGrid();
 		fnLoadModalGrid();
+		loadingEnd = true;
 	});
+	function refreshLeftGrid(){
+		if(loadingEnd){
+			loadLeftGridData();
+		}
+	}
 
 
 	// fnLoadLeftGrid
@@ -629,7 +640,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		var list = w2ui[gridname].records;
 		for (i = 0; list.length > i; i++) {
 			var num = i + 1;
-			if (list[i].c_item_nm.indexOf(cnm) !== -1) {
+			if (list[i].mtl_NM.indexOf(cnm) !== -1) {
 				$('#grid_' + gridname + '_rec_' + num + ' > td').css({ "color" : "red" });
 			} else {
 				$('#grid_' + gridname + '_rec_' + num + ' > td').css({ "color" : "black" });
@@ -717,6 +728,14 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				}
 			}
 		});
+	}
+	function loadfootGridRefresh(){
+		var key = $("#hiddenPjtIdx").val();//프로젝트 번호가져오기
+		if(!key){
+			if(loadingEnd){
+				loadFootGridData(key);
+			}
+		}
 	}
 	function loadFootGridData(pjtIDX) {
 		console.log("loadRequestGridData()");
