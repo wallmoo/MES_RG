@@ -5355,57 +5355,124 @@ public class InfoController {
 	}
 
 	
-	// saveBranch
-	@ResponseBody
-	@RequestMapping(value = "/info/updateAllMTL", method = { RequestMethod.GET,
-			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	@SuppressWarnings("unchecked")
-	public String updateAllMTL(@ModelAttribute SYTMaterialOrderVo vo, HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
-		logger.debug("FrontendController.saveAccount is called.");
 
-		vo.setMTL_ORD_REG_ID(SessionUtil.getMemberId(request));
-		
-		JSONObject resultData = new JSONObject();
-		JSONArray jsonArray = new JSONArray();
-		JSONParser parser = new JSONParser();
-
-		try {
-			String ORD_IDX = "";
-			int cnt = 0;
-			int chkOrder = 0;
-			
-			String flag = request.getParameter("flag");
-
-			ORD_IDX = request.getParameter("ord_IDX");
-			vo.setORD_IDX(Integer.parseInt(ORD_IDX));
-			
-			//구매발주 상태 체크
-			chkOrder = sYInfoService.chkOrdStatus(vo);
-			if(chkOrder > 0) {
-				//vo.get
-			}
-			//if(!old_rcC.equals("")) { System.out.println("old_rcC.substring(0, 1) = " +
-
-			String MTL_ORD_STATUS = vo.getMTL_ORD_STATUS();// 등록된 CST_IDX 값 가져오기
-			
-			//ORD_IDX 세팅
-			vo.setORD_IDX(Integer.parseInt(ORD_IDX));
-			
-			cnt = sYInfoService.updateAllMTL(vo);
-			
-
-			System.out.println("ORD_IDX = " + ORD_IDX);
-			System.out.println("cnt = " + cnt);
-
-			resultData.put("status", HttpStatus.OK.value());
-
-		} catch (Exception e) {
-			e.printStackTrace();
-			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
-		}
-
-		return resultData.toJSONString();
+	// updateAllMTL	
+	@ResponseBody	
+	@RequestMapping(value = "/info/updateAllMTL", method = { RequestMethod.GET,	
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")	
+	@SuppressWarnings("unchecked")	
+	public String updateAllMTL(@ModelAttribute SYTMaterialOrderVo vo, HttpServletRequest request,	
+			@RequestParam String jsonData) {	
+		logger.debug("FrontendController.updateAllMTL is called.");	
+		HashMap<String, Object> mapVO = null;	
+		String REG_ID = SessionUtil.getMemberId(request);	
+		ObjectMapper mapper = new ObjectMapper();	
+		TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {	
+		};	
+		try {	
+			mapVO = mapper.readValue(jsonData, typeRef);	
+			System.out.println(vo);	
+		} catch (IOException e1) {	
+			System.out.println(e1);	
+			e1.printStackTrace();	
+		}	
+		JSONObject resultData = new JSONObject();	
+		JSONArray jsonArray = new JSONArray();	
+		JSONParser parser = new JSONParser();	
+		try {	
+			// 파라미터 값 받기	
+			/*	
+			 * String ORD_IDX = request.getParameter("ORD_IDX");//	
+			 * vo.setORD_IDX(Integer.parseInt(ORD_IDX));//vo 세팅	
+			 */	
+			// map으로 값 받기	
+			Map<String, Object> mstMap = (Map<String, Object>) mapVO.get("mstData");	
+			int ord_IDX = (int) mstMap.get("ORD_IDX");	
+			vo.setORD_IDX(ord_IDX);	
+			// 구매발주 상태 체크	
+			SYTMaterialOrderVo result = sYInfoService.chkOrdStatus(vo);// 발주내역 저장 return ORD_IDX	
+			String MTL_ORD_STATUS = result.getMTL_ORD_STATUS();	
+			if (!MTL_ORD_STATUS.equals("N") && !MTL_ORD_STATUS.equals("100")) {// 일괄업데이트	
+				// 0. MTL LIST를 가져온다. ==> 맵 + json --> ok	
+				List<Map<String, Object>> list = (List<Map<String, Object>>) mapVO.get("reqDataList");	
+				for (Map<String, Object> map : list) {	
+					map.put("WHS_HIS_REG_ID", REG_ID);	
+					map.put("WHS_HIS_GB", "IN");	
+					map.put("WHS_HIS_TYPE", "O");	
+				}	
+				System.out.println(list);	
+				// ## Transaction 처리가 필요하다.	
+				// 1. T_WHS_HIS 테이블에 입고 이력을 입력 --> ok	
+				int cnt = sYInfoService.updateAllMTL(list);	
+				// 2.T_MTL_ORD_DTL 테이블 업데이트: 상태값 - ORD_DTL_STATUS, ORD_CHK_STATUS	
+				sYInfoService.updateAllMTLDTL(vo);	
+					
+				// 3.T_MTL_ORD_MST 테이블 업데이트: 상태값 - MTL_ORD_STATUS	
+				sYInfoService.updateAllMTLMST(vo);	
+					
+				if (cnt == 1) {	
+					resultData.put("status", HttpStatus.OK.value());	
+					resultData.put("msg", "success");	
+				} else {	
+					resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());	
+					resultData.put("msg", "whatfall");	
+				}	
+				System.out.println("ORD_IDX = " + ord_IDX);	
+				System.out.println("cnt = " + cnt);	
+			} else {	
+				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());	
+				resultData.put("msg", "거절된 발주서이거나 완료된 발주서입니다.");	
+			}	
+			logger.debug("MTL_ORD_STATUS:" + vo.getMTL_ORD_STATUS());	
+		} catch (Exception e) {	
+			e.printStackTrace();	
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());	
+		}	
+		return resultData.toJSONString();	
 	}	
-	
+	@ResponseBody	
+	@RequestMapping(value = "/info/updateAllMtlVO", method = { RequestMethod.GET,	
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")	
+	@SuppressWarnings("unchecked")	
+	public String updateAllMtlVO(@ModelAttribute SYTMaterialOrderVo vo, HttpServletRequest request) {	
+		logger.debug("FrontendController.updateAllMTL is called.");	
+		String REG_ID = SessionUtil.getMemberId(request);	
+		JSONObject resultData = new JSONObject();	
+		JSONArray jsonArray = new JSONArray();	
+		JSONParser parser = new JSONParser();	
+		try {	
+			// 파라미터 값 받기	
+			String ORD_IDX = request.getParameter("ORD_IDX");//	
+			vo.setORD_IDX(Integer.parseInt(ORD_IDX));// vo 세팅	
+			vo.setMTL_ORD_REG_ID(REG_ID);// vo 세팅	
+			// 구매발주 상태 체크	
+			SYTMaterialOrderVo result = sYInfoService.chkOrdStatus(vo);// 발주내역 저장 return ORD_IDX	
+			String MTL_ORD_STATUS = result.getMTL_ORD_STATUS();	
+				
+			// 0. MTL LIST를 가져온다. ==> 맵 --> ok	
+			if (!MTL_ORD_STATUS.equals("I") && !MTL_ORD_STATUS.equals("N") && !MTL_ORD_STATUS.equals("O")) {// 일괄업데이트, 상태-진행중(I), 발주 승인(Y), 거절(N), 입고완료(O)	
+				// ## Transaction 처리가 필요하다.	
+				// 1. T_WHS_HIS 테이블에 입고 이력을 입력 --> ok	
+				int cnt = sYInfoService.updateAllMTLVO(vo);	
+				// 2.T_MTL_ORD_DTL 테이블 업데이트: 상태값 - ORD_DTL_STATUS, ORD_CHK_STATUS	
+				// 3.T_MTL_ORD_MST 테이블 업데이트: 상태값 - MTL_ORD_STATUS	
+				if (cnt == 1) {	
+					resultData.put("status", HttpStatus.OK.value());	
+					resultData.put("msg", "success");	
+				} else {	
+					resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());	
+					resultData.put("msg", "whatfall");	
+				}	
+				System.out.println("cnt = " + cnt);	
+			} else {	
+				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());	
+				resultData.put("msg", "거절된 발주서이거나 완료된 발주서입니다.");	
+			}	
+			logger.debug("MTL_ORD_STATUS:" + vo.getMTL_ORD_STATUS());	
+		} catch (Exception e) {	
+			e.printStackTrace();	
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());	
+		}	
+		return resultData.toJSONString();	
+	}
 }

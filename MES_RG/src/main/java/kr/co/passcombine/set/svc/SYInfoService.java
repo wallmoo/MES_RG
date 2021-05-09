@@ -1691,14 +1691,28 @@ public class SYInfoService {
 	}	
 	
 	
-	public int chkOrdStatus(SYTMaterialOrderVo vo) {//자재 요청 수정
+	/*
+	 * public SYTMaterialOrderVo chkOrdStatus(SYTMaterialOrderVo vo) {//자재 요청 수정
+	 * SYTMaterialOrderVo result = new SYTMaterialOrderVo(); result =
+	 * infoDAO.chkOrdStatus(vo); return result; }
+	 */	
+	public SYTMaterialOrderVo chkOrdStatus(SYTMaterialOrderVo vo) {//자재 요청 수정
 		return infoDAO.chkOrdStatus(vo);
 	}	
-	public int updateAllMTL(SYTMaterialOrderVo vo) {//자재 요청 수정
+	public int updateAllMTL(List<Map<String,Object>> vo) {//자재발주 일괄처리-List형
 		return infoDAO.updateAllMTL(vo);
 	}
+	public int updateAllMTLVO(SYTMaterialOrderVo vo) {//자재발주 일괄처리-VO형
+		return infoDAO.updateAllMTLVO(vo);
+	}	
+	public int updateAllMTLDTL(SYTMaterialOrderVo vo) {//자재발주 일괄처리-VO형
+		return infoDAO.updateAllMTLDTL(vo);
+	}	
+	public int updateAllMTLMST(SYTMaterialOrderVo vo) {//자재발주 일괄처리-VO형
+		return infoDAO.updateAllMTLMST(vo);
+	}		
 	public int updateEachMTL(SYTMaterialOrderVo vo) {//자재 요청 수정
-		return infoDAO.updateAllMTL(vo);
+		return infoDAO.updateEachMTL(vo);
 	}	
 	public int deleteMaterialOrder(SYTMaterialOrderVo vo) {//자재 요청 삭제
 		return infoDAO.deleteMaterialOrder(vo);

@@ -255,11 +255,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 
 <script type="text/javascript">
+	var rowArr = [];
+	var rowArrDtl = [];
+	var reqDataList = [];
 
-	var grid_material_data;
-	var grid_add_data;
-	var grid_lev1_data;
-	var grid_lev2_data;
 	var startValue_combo = "";
 	
 	var minDate = getFormatDate(new Date());
@@ -343,6 +342,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					w2ui['grid_list2'].refresh();
 					
 					// 오른쪽 그리드
+					rowArrDtl = [];
 					loadRightGrid(this.get(event.recid).ord_IDX);
 				}
 			},
@@ -391,20 +391,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					rowArr = data.rows;
 					$.each(rowArr, function(idx, row) {
 						row.recid = idx + 1;
-						comboValue_nm.push(row.pjt_PRD_NM + "");
-						comboValue_cd.push(row.pjt_IDX + "");
+/* 						comboValue_nm.push(row.pjt_PRD_NM + "");
+						comboValue_cd.push(row.pjt_IDX + ""); */
 					});
+					
+					//
 					w2ui['grid_list'].records = rowArr;
-					if (startValue_combo == "") {
-						$('#Business').w2field('combo', {
-							items : comboValue_nm,
-							match : 'contains'
-						});
-						$('#Business').w2field('combo', {
-							items : comboValue_cd,
-							match : 'contains'
-						});
-					}
+					
 				} else {
 					w2ui.grid_list.clear();
 				}
@@ -419,7 +412,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	}
 
 	function fnLoadRightGrid() {
-		var rowArr = [];
+		
 
 		$('#grid_list2').w2grid({
 			name : 'grid_list2',
@@ -433,6 +426,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			columns : [ 
 				{ field:'mtl_REQ_IDX', caption:'구매발주 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'pjt_IDX', caption:'프로젝트 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'ord_IDX', caption:'주문발주 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'mtl_ORD_DTL_IDX', caption:'발주 상세 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
 				
 				{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_NM', caption:'품목', size:'10%', style:'text-align:center' , sortable: true},
@@ -444,7 +439,18 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'ord_DTL_QTY', caption:'발주수량', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'calcul_QTY', caption:'입고수량', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'calcul_cha_QTY', caption:'잔량', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'ord_CHK_STATUS', caption:'검수여부', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'ord_CHK_STATUS', caption:'검수여부', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == 'Y') {
+							return '검수완료';
+						} else {
+							return '';
+						}
+						return html;
+	           		} 
+				},
 				{ field:'calcul_DLV_DT', caption:'납품일자', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'ord_DTL_STATUS', caption:'Status', size:'8%', style:'text-align:center', sortable: true}
 			],
@@ -490,77 +496,120 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			success : function(data) {
 				console.log(data);
 				if (data.status == 200 && (data.rows).length > 0) {
-					rowArr = data.rows;
-					$.each(rowArr, function(idx, row) {
+					rowArrDtl = data.rows;
+					$.each(rowArrDtl, function(idx, row) {
 						row.recid = idx + 1;
 						comboValue_cd.push(row.c_item_nm + "");
 					});
-					w2ui['grid_list2'].records = rowArr;
+					w2ui['grid_list2'].records = rowArrDtl;
 				} else {
 					
 				}
 				w2ui['grid_list2'].refresh();
 				w2ui['grid_list2'].unlock();
-
-				requestRightGrid('grid_list2');
 			},
 			complete : function() {
 
 			}
 		});
 	}
-	function requestRightGrid(gridname) {//기능을 모르겠음
-		$("#rightIDX").val(gridname);
-		var cnm = $('#r_mt_name').val();
-		if (cnm == '' || cnm == null) {
-			return;
-		}
-		var list = w2ui[gridname].records;
-		for (i = 0; list.length > i; i++) {
-			var num = i + 1;
-			if (list[i].c_item_nm.indexOf(cnm) !== -1) {
-				$('#grid_' + gridname + '_rec_' + num + ' > td').css({ "color" : "red" });
-			} else {
-				$('#grid_' + gridname + '_rec_' + num + ' > td').css({ "color" : "black" });
-			}
-		}
-	}
 	//일괄 입고 처리
-	function updateAllMTL() {		
+	function updateAllMTLVO() {		
+		console.log(rowArrDtl);
 		var keys = w2ui.grid_list.getSelection();
-		var ModalDataList = [];
 		
-		if($('#S_PJT_IDX').val() == "ALL") {
-			alert("프로젝트 정보를 선택하여주십시오");
-			return;
-		} else if (keys == null || keys == "") {
+		if (rowArrDtl.length < 1) {
 			alert("일괄 입고할 구매발주번호를 선택하여주십시오");
 		} else {
-			alert("일괄 입고처리를 진행합니다.");
-
 			var data = w2ui.grid_list.get(keys[0]);			
 			var ORD_IDX = data.ord_IDX;//구매발주번호		
 			
-			var page_url = "/info/info/updateAllMTL";		
-			var postData = 'ORD_IDX=' + ORD_IDX;
+			if (confirm("일괄 입고처리를 진행하시겠습니까?")) {
+				var page_url = "/info/info/updateAllMtlVO";
+				var postData = "ORD_IDX=" + encodeURIComponent(ORD_IDX);
 
-			$.ajax({
-				url : page_url,
-				type : 'POST',
-				data : postData,
-				data_type : 'json',
-				success : function(data) {
-					if (data != 0) {
-						alert("추가되었습니다");
-						$("#modal_estimateForm").modal('hide');
-					} else {
-						alert("오류가 발생하였습니다");
+				$.ajax({
+					url : page_url,
+					type : 'POST',
+					data : postData,
+					data_type : 'json',
+					success : function(data) {
+						if (data != 0) {
+							alert("추가되었습니다");
+							loadRightGrid(ORD_IDX);
+						} else {
+							alert("오류가 발생하였습니다");
+						}
+					},
+					complete : function() {
+
 					}
-				},
-				complete : function() {
+				});
+			}			
 
-				}
-			});			
+		}
+	}	
+	function updateAllMTL() {		
+		console.log(rowArrDtl);
+		var keys = w2ui.grid_list.getSelection();
+		
+		if (rowArrDtl.length < 1) {
+			alert("일괄 입고할 구매발주번호를 선택하여주십시오");
+		} else {
+			var data = w2ui.grid_list.get(keys[0]);			
+			var ORD_IDX = data.ord_IDX;//구매발주번호		
+			
+			for (var i = 0; i < rowArrDtl.length; i++) {
+				var Data = {
+						ORD_IDX : rowArrDtl[i].ord_IDX,
+						MTL_ORD_DTL_IDX : rowArrDtl[i].mtl_ORD_DTL_IDX,
+						MTL_IDX : rowArrDtl[i].mtl_IDX,
+						WHS_HIS_QTY : rowArrDtl[i].ord_DTL_QTY
+				};				
+				reqDataList.push(Data);
+			}
+			
+			var mstData = {
+				'ORD_IDX': ORD_IDX
+			}
+			
+			if (confirm("일괄 입고처리를 진행하시겠습니까?")) {
+				console.log(reqDataList);
+
+				var page_url = "/info/info/updateAllMTL";
+				var jsonData = JSON.stringify({'mstData': mstData, 'reqDataList': reqDataList});
+				
+				console.log(jsonData);
+
+				jQuery.ajaxSettings.traditional = true;
+				$.ajax({
+					url : page_url,
+					type : 'POST',
+					data : {
+						"jsonData" : jsonData
+					},
+					data_type : 'json',
+					success : function(data) {
+						if (data != 0) {
+							rowArrDtl=[];
+							reqDataList=[];
+
+							w2ui.grid_list.clear();
+							loadLeftGrid();
+							
+							w2ui.grid_list2.clear();
+							
+							alert("추가되었습니다");
+						} else {
+							alert("오류가 발생하였습니다");
+						}
+					},
+					complete : function() {
+
+					}
+				});
+			}			
+
 		}
 	}
 	//개별 자재 입고 처리
