@@ -382,7 +382,7 @@ public class InfoController {
 		logger.debug("FrontendController.saveAccount is called.");
 
 		vo.setCST_REG_ID(SessionUtil.getMemberId(request));
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
 		JSONParser parser = new JSONParser();
@@ -494,15 +494,16 @@ public class InfoController {
 	public String selectVendor(@ModelAttribute SYTVendorVo vo, HttpServletRequest request, HttpServletResponse response,
 			HttpSession session) {
 		logger.debug("FrontendController.selectVendor is called.");
-		try{
-			if(session.getAttribute("member_vdr_idx")!=null) {
-				String mem_vdr_idx=(String)session.getAttribute("member_vdr_idx");
+		try {
+			if (session.getAttribute("member_vdr_idx") != null) {
+				String mem_vdr_idx = (String) session.getAttribute("member_vdr_idx");
 				vo.setVDR_IDX(Integer.parseInt(mem_vdr_idx));
-			};
-		}catch (Exception e) {
+			}
+			;
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
@@ -536,7 +537,7 @@ public class InfoController {
 		logger.debug("FrontendController.saveAccount is called.");
 
 		vo.setVDR_REG_ID(SessionUtil.getMemberId(request));
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
 		JSONParser parser = new JSONParser();
@@ -679,7 +680,7 @@ public class InfoController {
 		logger.debug("FrontendController.saveAccount is called.");
 
 		vo.setBCO_REG_ID(SessionUtil.getMemberId(request));
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
 		JSONParser parser = new JSONParser();
@@ -817,26 +818,25 @@ public class InfoController {
 	@RequestMapping(value = "/account/saveMaterial", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String saveMaterial(@RequestParam Map<String,Object> vo, MultipartHttpServletRequest request,
+	public String saveMaterial(@RequestParam Map<String, Object> vo, MultipartHttpServletRequest request,
 			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.saveAccount is called.");
 
-		
-		//파일 업로드를 위한 준비
+		// 파일 업로드를 위한 준비
 		OutputStream out = null;
 		PrintWriter printWriter = null;
 		MultipartFile fileList = (request).getFile("file[]");
-		String basePath="/upload";
-		System.out.println("패스는 "+basePath+"\n\n\n\n");
-		
+		String basePath = "/upload";
+		System.out.println("패스는 " + basePath + "\n\n\n\n");
+
 		Map<String, Object> file = fileUpload.saveFile(fileList, basePath, request);
-		if(!file.isEmpty()) {
-		file.put("CMM_FLE_TB_TYPE","A");//파일 종류를 넣는곳인데 뭔지모르겠으므로 보류
-		file.put("CMM_FLE_REG_ID",SessionUtil.getMemberId(request));
+		if (!file.isEmpty()) {
+			file.put("CMM_FLE_TB_TYPE", "A");// 파일 종류를 넣는곳인데 뭔지모르겠으므로 보류
+			file.put("CMM_FLE_REG_ID", SessionUtil.getMemberId(request));
 		}
-		
-		//기본DAO셋팅
-		vo.put("MTL_REG_ID",SessionUtil.getMemberId(request));
+
+		// 기본DAO셋팅
+		vo.put("MTL_REG_ID", SessionUtil.getMemberId(request));
 
 		JSONObject resultData = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
@@ -846,7 +846,7 @@ public class InfoController {
 			String MTL_IDX = "";
 			int cnt = 0;
 
-			String flag = (String)vo.get("flag");
+			String flag = (String) vo.get("flag");
 			request.setAttribute("flag", flag);
 
 			if (flag.equals("I")) {
@@ -855,20 +855,18 @@ public class InfoController {
 				// hKey
 				// vo.setAccount_code(account_code);
 
-
-				cnt = sYInfoService.insertMaterial(vo,file);
+				cnt = sYInfoService.insertMaterial(vo, file);
 			} else if (flag.equals("U")) {// Modify
 				MTL_IDX = request.getParameter("MTL_IDX");
 
-				
 				// hKey
-				vo.put("MTL_IDX",(Integer.parseInt(MTL_IDX)));
-				Map<String,Object> result = sYInfoService.selectFiles(vo);
-				if(result!=null) {
-					if(result.get("CMM_FLE_SYS_NM")!=null)
-					fileUpload.delFile(request,result);
+				vo.put("MTL_IDX", (Integer.parseInt(MTL_IDX)));
+				Map<String, Object> result = sYInfoService.selectFiles(vo);
+				if (result != null) {
+					if (result.get("CMM_FLE_SYS_NM") != null)
+						fileUpload.delFile(request, result);
 				}
-				cnt = sYInfoService.updateMaterial(vo,file);
+				cnt = sYInfoService.updateMaterial(vo, file);
 			}
 
 			System.out.println("MTL_IDX = " + MTL_IDX);
@@ -896,17 +894,17 @@ public class InfoController {
 
 		JSONObject resultData = new JSONObject();
 		try {
-			Map<String, Object>vos = new HashMap<String,Object>();
+			Map<String, Object> vos = new HashMap<String, Object>();
 			String MTL_IDX = request.getParameter("MTL_IDX");
-			
+
 			// hKey
-			vos.put("MTL_IDX",(Integer.parseInt(MTL_IDX)));
-			Map<String,Object> result = sYInfoService.selectFiles(vos);
-			if(result!=null) {
-				if(result.get("CMM_FLE_SYS_NM")!=null)
-				fileUpload.delFile(request,result);
+			vos.put("MTL_IDX", (Integer.parseInt(MTL_IDX)));
+			Map<String, Object> result = sYInfoService.selectFiles(vos);
+			if (result != null) {
+				if (result.get("CMM_FLE_SYS_NM") != null)
+					fileUpload.delFile(request, result);
 			}
-			
+
 			int results = 0;
 
 			results = sYInfoService.deleteMaterial(vo);
@@ -969,12 +967,11 @@ public class InfoController {
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
 		try {
-			
+
 //			String CST_IDX = "";
 //			CST_IDX = request.getParameter("CST_IDX");
 //			if(CST_IDX == null) CST_IDX = "";
 //			vo.setPJT_IDX(Integer.parseInt(CST_IDX));
-			 
 
 			List<SYTProjectVo> dataList = sYInfoService.selectProject(vo);
 
@@ -1003,7 +1000,7 @@ public class InfoController {
 		logger.debug("FrontendController.saveAccount is called.");
 
 		vo.setPJT_REG_ID(SessionUtil.getMemberId(request));
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
 		JSONParser parser = new JSONParser();
@@ -4617,7 +4614,8 @@ public class InfoController {
 		String MTL_REQ_TYPE = "자재불출요청";
 
 		ObjectMapper mapper = new ObjectMapper();
-		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() { };
+		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() {
+		};
 		try {
 			vo = mapper.readValue(jsonData, typeRef);
 			System.out.println("Dd");
@@ -4635,7 +4633,7 @@ public class InfoController {
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
 		try {
-			result = sYInfoService.insertMaterialRequest(vo);//자재요청내역 저장
+			result = sYInfoService.insertMaterialRequest(vo);// 자재요청내역 저장
 		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
@@ -4671,10 +4669,10 @@ public class InfoController {
 		return resultData.toJSONString();
 	}
 
-	
-	//change Request Material Quantity
+	// change Request Material Quantity
 	@ResponseBody
-	@RequestMapping(value = "/info/updateReqQuantity", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/info/updateReqQuantity", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
 	public String updateReqQuantity(@ModelAttribute SYTMaterialRequestVo vo, HttpServletRequest request,
 			HttpServletResponse response, HttpSession session) {
@@ -4692,7 +4690,7 @@ public class InfoController {
 
 			MTL_REQ_IDX = request.getParameter("MTL_REQ_IDX");
 			MTL_REQ_QTY = request.getParameter("MTL_REQ_QTY");
-			
+
 			// hKey
 			vo.setMTL_REQ_IDX(Integer.parseInt(MTL_REQ_IDX));
 			vo.setMTL_REQ_QTY(MTL_REQ_QTY);
@@ -4710,7 +4708,7 @@ public class InfoController {
 		}
 
 		return resultData.toJSONString();
-	}	
+	}
 
 	@SuppressWarnings("unchecked")
 	@ResponseBody
@@ -4756,7 +4754,6 @@ public class InfoController {
 		return resultData.toJSONString();
 	}
 
-
 	/**
 	 * <pre>
 	* 1. MethodName : insertBOMExcel
@@ -4776,28 +4773,27 @@ public class InfoController {
 	@SuppressWarnings("unchecked")
 	public int insertBOMExcel(MultipartHttpServletRequest request, HttpServletResponse response,
 			@RequestParam Map<String, Object> testData) {
-			//파일 업로드를 위한 준비
-					OutputStream out = null;
-					PrintWriter printWriter = null;
-					MultipartFile file = request.getFile("excelFile");
-					String[] colmn = {
-							"MTL_IDX", "TYPE", "MTL_MKR_NO", "MTL_MKR_CD", "MTL_QTY", "DSNUM"
-					};
-					List<Map<String, Object>> vo = excelUpload.excelRead(file, colmn); //엑셀의 데이터 파싱함 (단 xlsx만가능)
-					
-					//파싱된데이터에 pjt_idx를 주입할준비
-					Object Pjt = testData.get("pjidxHidden");
-					String REG_ID = SessionUtil.getMemberId(request);
-					
-					for(int i=0; i<vo.size(); i++) {
-						vo.get(i).put("PJT_IDX", Pjt);
-						vo.get(i).put("REG_ID", REG_ID);
-					}//pjt_idx를 주입함
-					
-					int result = sYInfoService.InsertBOMExcel(vo);
-			return result;
-		
+		// 파일 업로드를 위한 준비
+		OutputStream out = null;
+		PrintWriter printWriter = null;
+		MultipartFile file = request.getFile("excelFile");
+		String[] colmn = { "MTL_IDX", "TYPE", "MTL_MKR_NO", "MTL_MKR_CD", "MTL_QTY", "DSNUM" };
+		List<Map<String, Object>> vo = excelUpload.excelRead(file, colmn); // 엑셀의 데이터 파싱함 (단 xlsx만가능)
+
+		// 파싱된데이터에 pjt_idx를 주입할준비
+		Object Pjt = testData.get("pjidxHidden");
+		String REG_ID = SessionUtil.getMemberId(request);
+
+		for (int i = 0; i < vo.size(); i++) {
+			vo.get(i).put("PJT_IDX", Pjt);
+			vo.get(i).put("REG_ID", REG_ID);
+		} // pjt_idx를 주입함
+
+		int result = sYInfoService.InsertBOMExcel(vo);
+		return result;
+
 	}
+
 	/**
 	 * <pre>
 	* 1. MethodName : insertestimateVExcel
@@ -4815,105 +4811,99 @@ public class InfoController {
 	@RequestMapping(value = "/info/insertestimateVExcel", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public Map<String,Object> insertestimateVExcel(MultipartHttpServletRequest request, HttpServletResponse response,
+	public Map<String, Object> insertestimateVExcel(MultipartHttpServletRequest request, HttpServletResponse response,
 			@RequestParam Map<String, Object> testData) {
-			//파일 업로드를 위한 준비
-					HashMap <String,Object> resultMap = new HashMap<String,Object>();	
-					OutputStream out = null;
-					PrintWriter printWriter = null;
-					MultipartFile file = request.getFile("excelFile");
-					String[] colmn = {
-							"EST_IDX", "c1","c2", "c3", "c4", "c5","c6","c7",
-							"MTL_EST_MOQ","c8","c9","MTL_EST_PRICE","MTL_TOT_PRICE","MTL_EST_DLV_DT","MTL_EST_BG"
-					};
-					String errors = "";
-					List<Map<String, Object>> vo = excelUpload.excelRead(file, colmn); //엑셀의 데이터 파싱함 (단 xlsx만가능)
-					int rownum=1;
-					Boolean sucess = true;
-					int maxsize = vo.size();
-					for(int i=1; i<maxsize; i++) {
-						try {
-							vo.get(rownum).putAll(isval(vo.get(rownum), rownum));
-							if("N".equals((String)vo.get(rownum).get("results"))) {
-								vo.remove(rownum);
-								errors+=rownum+" ";
-								sucess=false;
-							}else {
-								rownum++;
-							}
-						} catch (Exception e) {
-							e.printStackTrace();
-						}
-					}
-					vo.remove(0);
-				
-			 int result=sYInfoService.insertestimateV(vo);
-			 resultMap.put("sucess",sucess);
-			 resultMap.put("errors",errors);
-			return resultMap;
-		
-	}
-	public Map<String,Object> isval(Map<String,Object> vo, int i) throws Exception{
-		try {
-			int test=0; 
-			if(!vo.containsKey("MTL_EST_MOQ")) {
-				vo.put("MTL_EST_MOQ",0);
-			}//EST_MOQ에 값을넣어둔다. 안하면 포이치에서 에러남
-			else {
-				test = Integer.parseInt((String)vo.get("MTL_EST_MOQ"));
+		// 파일 업로드를 위한 준비
+		HashMap<String, Object> resultMap = new HashMap<String, Object>();
+		OutputStream out = null;
+		PrintWriter printWriter = null;
+		MultipartFile file = request.getFile("excelFile");
+		String[] colmn = { "EST_IDX", "c1", "c2", "c3", "c4", "c5", "c6", "c7", "MTL_EST_MOQ", "c8", "c9",
+				"MTL_EST_PRICE", "MTL_TOT_PRICE", "MTL_EST_DLV_DT", "MTL_EST_BG" };
+		String errors = "";
+		List<Map<String, Object>> vo = excelUpload.excelRead(file, colmn); // 엑셀의 데이터 파싱함 (단 xlsx만가능)
+		int rownum = 1;
+		Boolean sucess = true;
+		int maxsize = vo.size();
+		for (int i = 1; i < maxsize; i++) {
+			try {
+				vo.get(rownum).putAll(isval(vo.get(rownum), rownum));
+				if ("N".equals((String) vo.get(rownum).get("results"))) {
+					vo.remove(rownum);
+					errors += rownum + " ";
+					sucess = false;
+				} else {
+					rownum++;
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
 			}
-			
-			if(!vo.containsKey("MTL_EST_PRICE")) {
-				vo.put("MTL_EST_PRICE",0);
-			}
-			else {
-				test = Integer.parseInt((String)vo.get("MTL_EST_PRICE"));
-			}
-			if(!vo.containsKey("MTL_EST_DLV_DT")) {
-				vo.put("MTL_EST_DLV_DT",null);
-			}
-			if(!vo.containsKey("MTL_EST_BG")) {
-				vo.put("MTL_EST_BG",null);
-			}
-				vo.put("results","Y");
-		}catch (Exception e) {
-			System.out.println((i) +"번쨰의 컬럼에 유효성 문제가 발생하였습니다.");
-			System.out.println("원인은\n"+e +" \n 입니다");
-			vo.put("results","N");
 		}
-		
+		vo.remove(0);
+
+		int result = sYInfoService.insertestimateV(vo);
+		resultMap.put("sucess", sucess);
+		resultMap.put("errors", errors);
+		return resultMap;
+
+	}
+
+	public Map<String, Object> isval(Map<String, Object> vo, int i) throws Exception {
+		try {
+			int test = 0;
+			if (!vo.containsKey("MTL_EST_MOQ")) {
+				vo.put("MTL_EST_MOQ", 0);
+			} // EST_MOQ에 값을넣어둔다. 안하면 포이치에서 에러남
+			else {
+				test = Integer.parseInt((String) vo.get("MTL_EST_MOQ"));
+			}
+
+			if (!vo.containsKey("MTL_EST_PRICE")) {
+				vo.put("MTL_EST_PRICE", 0);
+			} else {
+				test = Integer.parseInt((String) vo.get("MTL_EST_PRICE"));
+			}
+			if (!vo.containsKey("MTL_EST_DLV_DT")) {
+				vo.put("MTL_EST_DLV_DT", null);
+			}
+			if (!vo.containsKey("MTL_EST_BG")) {
+				vo.put("MTL_EST_BG", null);
+			}
+			vo.put("results", "Y");
+		} catch (Exception e) {
+			System.out.println((i) + "번쨰의 컬럼에 유효성 문제가 발생하였습니다.");
+			System.out.println("원인은\n" + e + " \n 입니다");
+			vo.put("results", "N");
+		}
+
 		return vo;
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@ResponseBody
 	@RequestMapping(value = "/account/test", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
-	public Map<String,Object> test(MultipartHttpServletRequest request, HttpServletResponse response,
-			@RequestParam("files") MultipartFile file
-			,@RequestParam Map<String, Object> testData) {
-		String basePath="/upload";
-		System.out.println("패스는 "+basePath+"\n\n\n\n");
-		
+	public Map<String, Object> test(MultipartHttpServletRequest request, HttpServletResponse response,
+			@RequestParam("files") MultipartFile file, @RequestParam Map<String, Object> testData) {
+		String basePath = "/upload";
+		System.out.println("패스는 " + basePath + "\n\n\n\n");
+
 		Map<String, Object> result = fileUpload.savePDF(file, basePath, request);
 		return result;
 	}
-	
-	
-	@RequestMapping(value = "/pdfViewer", method = {RequestMethod.GET, RequestMethod.POST})
-	public ModelAndView product_pdfViewer(HttpServletRequest request, HttpServletResponse response, HttpSession session
-			,@RequestParam("path") String path
-			) {
+
+	@RequestMapping(value = "/pdfViewer", method = { RequestMethod.GET, RequestMethod.POST })
+	public ModelAndView product_pdfViewer(HttpServletRequest request, HttpServletResponse response, HttpSession session,
+			@RequestParam("path") String path) {
 		// logger.debug("CommonController.pdfViewer() is called.");
 		ModelAndView modelAndView = new ModelAndView();
-			modelAndView.addObject("file_path",path);
-			modelAndView.addObject("isPDFs","Y");
-			modelAndView.setViewName("common/pdf_viewer");
+		modelAndView.addObject("file_path", path);
+		modelAndView.addObject("isPDFs", "Y");
+		modelAndView.setViewName("common/pdf_viewer");
 
 		return modelAndView;
 	}
 
-	
 	/**
 	 * <pre>
 	* 1. MethodName : Estimate
@@ -4930,19 +4920,21 @@ public class InfoController {
 	// selectMaterialRequest
 	@SuppressWarnings("unchecked")
 	@ResponseBody
-	@RequestMapping(value = "/info/selectEstimate", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/info/selectEstimate", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	public String selectEstimate(@ModelAttribute SYTEstimateVo vo, HttpServletRequest request,
 			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectEstimate is called.");
-		try{
-			if(session.getAttribute("member_vdr_idx")!=null) {
-				String mem_vdr_idx=(String)session.getAttribute("member_vdr_idx");
+		try {
+			if (session.getAttribute("member_vdr_idx") != null) {
+				String mem_vdr_idx = (String) session.getAttribute("member_vdr_idx");
 				vo.setVDR_IDX(Integer.parseInt(mem_vdr_idx));
-			};
-		}catch (Exception e) {
+			}
+			;
+		} catch (Exception e) {
 			// TODO: handle exception
 		}
-		
+
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
@@ -4961,13 +4953,14 @@ public class InfoController {
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			resultData.put("rows", null);
 		}
-		
+
 		return resultData.toJSONString();
 	}
 
 	// insertEstimate
 	@ResponseBody
-	@RequestMapping(value = "/info/insertEstimate", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/info/insertEstimate", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
 	public int insertEstimate(HttpServletRequest request, @RequestParam String jsonData) {
 		List<Map<String, Object>> vo = null;
@@ -4977,49 +4970,51 @@ public class InfoController {
 		String REG_ID = SessionUtil.getMemberId(request);
 
 		ObjectMapper mapper = new ObjectMapper();
-		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() { };
-		List<Map<String,Object>> valueList = new ArrayList<Map<String,Object>>();
+		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() {
+		};
+		List<Map<String, Object>> valueList = new ArrayList<Map<String, Object>>();
 		try {
 			vo = mapper.readValue(jsonData, typeRef);
 			for (int i = 0; i < vo.size(); i++) {
 				vo.get(i).put("REG_ID", REG_ID);
 			}
-			//현재 거래처는 4개이므로 4번까지돌도록함
-			for(int i=0; i<4;i++) {
+			// 현재 거래처는 4개이므로 4번까지돌도록함
+			for (int i = 0; i < 4; i++) {
 				Map<String, Object> valueMap = new HashMap();
-				//초기화하지않으면 계속 같은값이 들어감.
+				// 초기화하지않으면 계속 같은값이 들어감.
 				valueMap.putAll(vo.get(0));
-				//a = b로하면 메모리가 같아져서 같은값이 들어감
-				if(!"ALL".equals((String)valueMap.get("S_VDR_IDX"+i))){
-					valueMap.put("VDR_IDX",valueMap.get("S_VDR_IDX"+i));
+				// a = b로하면 메모리가 같아져서 같은값이 들어감
+				if (!"ALL".equals((String) valueMap.get("S_VDR_IDX" + i))) {
+					valueMap.put("VDR_IDX", valueMap.get("S_VDR_IDX" + i));
 					valueList.add(valueMap);
 				}
 			}
-						
+
 			System.out.println("Dd");
 		} catch (IOException e1) {
 			System.out.println(e1);
 			e1.printStackTrace();
 		}
 
-		
 		int result = 0;
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
 		try {
-			result = sYInfoService.insertEstimate(valueList);//자재요청내역 저장
+			result = sYInfoService.insertEstimate(valueList);// 자재요청내역 저장
 		} catch (Exception e) {
 			e.printStackTrace();
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			resultData.put("rows", null);
 		}
-		
+
 		return result;
 	}
-	//change Estimate Contents
+
+	// change Estimate Contents
 	@ResponseBody
-	@RequestMapping(value = "/info/updateEstVendor", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/info/updateEstVendor", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
 	public String updateEstVendor(@ModelAttribute SYTEstimateVo vo, HttpServletRequest request,
 			HttpServletResponse response, HttpSession session) {
@@ -5029,7 +5024,7 @@ public class InfoController {
 		JSONArray jsonArray = new JSONArray();
 		JSONParser parser = new JSONParser();
 
-		try {		
+		try {
 			int cnt = 0;
 
 			String EST_IDX = request.getParameter("EST_IDX");
@@ -5037,13 +5032,13 @@ public class InfoController {
 			String MTL_EST_PRICE = request.getParameter("MTL_EST_PRICE");
 			String MTL_EST_DLV_DT = request.getParameter("MTL_EST_DLV_DT");
 			String MTL_EST_BG = request.getParameter("MTL_EST_BG");
-			
-			/* 날짜 초기화
-			 * if(MTL_EST_DLV_DT == null || MTL_EST_DLV_DT.equals("") ||
+
+			/*
+			 * 날짜 초기화 if(MTL_EST_DLV_DT == null || MTL_EST_DLV_DT.equals("") ||
 			 * MTL_EST_DLV_DT.equals("null")) { MTL_EST_DLV_DT = new
 			 * SimpleDateFormat("yyyy-MM-dd").format(Calendar.getInstance().getTime()); }
 			 */
-			
+
 			// hKey
 			vo.setEST_IDX(Integer.parseInt(EST_IDX));
 			vo.setMTL_EST_MOQ(MTL_EST_MOQ);
@@ -5064,10 +5059,12 @@ public class InfoController {
 		}
 
 		return resultData.toJSONString();
-	}	
+	}
+
 	// deleteEstimate
 	@ResponseBody
-	@RequestMapping(value = "/account/deleteEstimate", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/account/deleteEstimate", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
 	public String deleteClient(@ModelAttribute SYTEstimateVo vo, HttpServletRequest request,
 			HttpServletResponse response, HttpSession session) {
@@ -5088,9 +5085,9 @@ public class InfoController {
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			resultData.put("rows", 0);
 		}
-		
+
 		return resultData.toJSONString();
-	}	
+	}
 
 	/**
 	 * <pre>
@@ -5108,7 +5105,8 @@ public class InfoController {
 	// selectMaterialRequest
 	@SuppressWarnings("unchecked")
 	@ResponseBody
-	@RequestMapping(value = "/info/selectMaterialOrder", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/info/selectMaterialOrder", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	public String selectMaterialOrder(@ModelAttribute SYTMaterialOrderVo vo, HttpServletRequest request,
 			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectMaterialOrder is called.");
@@ -5131,12 +5129,14 @@ public class InfoController {
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			resultData.put("rows", null);
 		}
-		
+
 		return resultData.toJSONString();
 	}
-	//selectMaterialOrdDtl
+
+	// selectMaterialOrdDtl
 	@ResponseBody
-	@RequestMapping(value = "/info/selectMaterialOrdDTL", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/info/selectMaterialOrdDTL", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	public String selectMaterialOrdDTL(@ModelAttribute SYTMaterialOrderVo vo, HttpServletRequest request,
 			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.selectMaterialOrder is called.");
@@ -5159,12 +5159,14 @@ public class InfoController {
 			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
 			resultData.put("rows", null);
 		}
-		
+
 		return resultData.toJSONString();
 	}
+
 	// insertMaterialOrder
 	@ResponseBody
-	@RequestMapping(value = "/info/insertMaterialOrder", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@RequestMapping(value = "/info/insertMaterialOrder", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
 	public int insertMaterialOrder(HttpServletRequest request, @RequestParam String jsonData) {
 		HashMap<String, Object> vo = null;
@@ -5172,9 +5174,10 @@ public class InfoController {
 		logger.debug("FrontendController.insertMaterialRequest is called.");
 
 		String REG_ID = SessionUtil.getMemberId(request);
-		
+
 		ObjectMapper mapper = new ObjectMapper();
-		TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() { };
+		TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
+		};
 		try {
 			vo = mapper.readValue(jsonData, typeRef);
 			System.out.println(vo);
@@ -5187,18 +5190,18 @@ public class InfoController {
 		JSONObject resultData = new JSONObject();
 		JSONArray listDataJArray = new JSONArray();
 		JSONParser jsonParser = new JSONParser();
-		
+
 		try {
 			Map<String, Object> mstMap = (Map<String, Object>) vo.get("mstData");
 			mstMap.put("MTL_ORD_REG_ID", REG_ID);
-			result = sYInfoService.insertMaterialOrderMST(mstMap);//발주내역 저장 return ORD_IDX
-			if(result > 0) {
+			result = sYInfoService.insertMaterialOrderMST(mstMap);// 발주내역 저장 return ORD_IDX
+			if (result > 0) {
 				List<Map<String, Object>> list = (List<Map<String, Object>>) vo.get("reqDataList");
-				for(Map<String, Object> map : list) {
+				for (Map<String, Object> map : list) {
 					map.put("ORD_IDX", mstMap.get("ORD_IDX"));
 				}
 				System.out.println(list);
-				result = sYInfoService.insertMaterialOrder(list);//발주내역 저장
+				result = sYInfoService.insertMaterialOrder(list);// 발주내역 저장
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -5206,51 +5209,87 @@ public class InfoController {
 			resultData.put("rows", null);
 		}
 		return result;
-	}	
-	// saveBranch
+	}
+
+	// updateAllMTL
 	@ResponseBody
 	@RequestMapping(value = "/info/updateAllMTL", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String updateAllMTL(@ModelAttribute SYTMaterialOrderVo vo, HttpServletRequest request, HttpServletResponse response,
-			HttpSession session) {
-		logger.debug("FrontendController.saveAccount is called.");
+	public String updateAllMTL(@ModelAttribute SYTMaterialOrderVo vo, HttpServletRequest request,
+			@RequestParam String jsonData) {
+		logger.debug("FrontendController.updateAllMTL is called.");
 
-		vo.setMTL_ORD_REG_ID(SessionUtil.getMemberId(request));
-		
+		HashMap<String, Object> mapVO = null;
+		String REG_ID = SessionUtil.getMemberId(request);
+
+		ObjectMapper mapper = new ObjectMapper();
+		TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {
+		};
+		try {
+			mapVO = mapper.readValue(jsonData, typeRef);
+			System.out.println(vo);
+		} catch (IOException e1) {
+			System.out.println(e1);
+			e1.printStackTrace();
+		}
+
 		JSONObject resultData = new JSONObject();
 		JSONArray jsonArray = new JSONArray();
 		JSONParser parser = new JSONParser();
 
 		try {
-			String ORD_IDX = "";
-			int cnt = 0;
-			int chkOrder = 0;
-			
-			String flag = request.getParameter("flag");
+			// 파라미터 값 받기
+			/*
+			 * String ORD_IDX = request.getParameter("ORD_IDX");//
+			 * vo.setORD_IDX(Integer.parseInt(ORD_IDX));//vo 세팅
+			 */
 
-			ORD_IDX = request.getParameter("ord_IDX");
-			vo.setORD_IDX(Integer.parseInt(ORD_IDX));
-			
-			//구매발주 상태 체크
-			chkOrder = sYInfoService.chkOrdStatus(vo);
-			if(chkOrder > 0) {
-				//vo.get
+			// map으로 값 받기
+			Map<String, Object> mstMap = (Map<String, Object>) mapVO.get("mstData");
+			int ord_IDX = (int) mstMap.get("ORD_IDX");
+			vo.setORD_IDX(ord_IDX);
+
+			// 구매발주 상태 체크
+			SYTMaterialOrderVo result = sYInfoService.chkOrdStatus(vo);// 발주내역 저장 return ORD_IDX
+			String MTL_ORD_STATUS = result.getMTL_ORD_STATUS();
+
+			if (!MTL_ORD_STATUS.equals("N") && !MTL_ORD_STATUS.equals("100")) {// 일괄업데이트
+				// 0. MTL LIST를 가져온다. ==> 맵 + json --> ok
+				List<Map<String, Object>> list = (List<Map<String, Object>>) mapVO.get("reqDataList");
+				for (Map<String, Object> map : list) {
+					map.put("WHS_HIS_REG_ID", REG_ID);
+					map.put("WHS_HIS_GB", "IN");
+					map.put("WHS_HIS_TYPE", "O");
+				}
+				System.out.println(list);
+
+				// ## Transaction 처리가 필요하다.
+				// 1. T_WHS_HIS 테이블에 입고 이력을 입력 --> ok
+				int cnt = sYInfoService.updateAllMTL(list);
+
+				// 2.T_MTL_ORD_DTL 테이블 업데이트: 상태값 - ORD_DTL_STATUS, ORD_CHK_STATUS
+				sYInfoService.updateAllMTLDTL(vo);
+				
+				// 3.T_MTL_ORD_MST 테이블 업데이트: 상태값 - MTL_ORD_STATUS
+				sYInfoService.updateAllMTLMST(vo);
+				
+				if (cnt == 1) {
+					resultData.put("status", HttpStatus.OK.value());
+					resultData.put("msg", "success");
+				} else {
+					resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+					resultData.put("msg", "whatfall");
+				}
+
+				System.out.println("ORD_IDX = " + ord_IDX);
+				System.out.println("cnt = " + cnt);
+			} else {
+				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+				resultData.put("msg", "거절된 발주서이거나 완료된 발주서입니다.");
 			}
-			//if(!old_rcC.equals("")) { System.out.println("old_rcC.substring(0, 1) = " +
 
-			String MTL_ORD_STATUS = vo.getMTL_ORD_STATUS();// 등록된 CST_IDX 값 가져오기
-			
-			//ORD_IDX 세팅
-			vo.setORD_IDX(Integer.parseInt(ORD_IDX));
-			
-			cnt = sYInfoService.updateAllMTL(vo);
-			
-
-			System.out.println("ORD_IDX = " + ORD_IDX);
-			System.out.println("cnt = " + cnt);
-
-			resultData.put("status", HttpStatus.OK.value());
+			logger.debug("MTL_ORD_STATUS:" + vo.getMTL_ORD_STATUS());
 
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -5258,6 +5297,64 @@ public class InfoController {
 		}
 
 		return resultData.toJSONString();
-	}	
-	
+	}
+
+	@ResponseBody
+	@RequestMapping(value = "/info/updateAllMtlVO", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String updateAllMtlVO(@ModelAttribute SYTMaterialOrderVo vo, HttpServletRequest request) {
+		logger.debug("FrontendController.updateAllMTL is called.");
+
+		String REG_ID = SessionUtil.getMemberId(request);
+
+		JSONObject resultData = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
+		JSONParser parser = new JSONParser();
+
+		try {
+			// 파라미터 값 받기
+			String ORD_IDX = request.getParameter("ORD_IDX");//
+			vo.setORD_IDX(Integer.parseInt(ORD_IDX));// vo 세팅
+			vo.setMTL_ORD_REG_ID(REG_ID);// vo 세팅
+
+			// 구매발주 상태 체크
+			SYTMaterialOrderVo result = sYInfoService.chkOrdStatus(vo);// 발주내역 저장 return ORD_IDX
+			String MTL_ORD_STATUS = result.getMTL_ORD_STATUS();
+			
+			// 0. MTL LIST를 가져온다. ==> 맵 --> ok
+			if (!MTL_ORD_STATUS.equals("I") && !MTL_ORD_STATUS.equals("N") && !MTL_ORD_STATUS.equals("O")) {// 일괄업데이트, 상태-진행중(I), 발주 승인(Y), 거절(N), 입고완료(O)
+
+				// ## Transaction 처리가 필요하다.
+				// 1. T_WHS_HIS 테이블에 입고 이력을 입력 --> ok
+				int cnt = sYInfoService.updateAllMTLVO(vo);
+
+				// 2.T_MTL_ORD_DTL 테이블 업데이트: 상태값 - ORD_DTL_STATUS, ORD_CHK_STATUS
+
+				// 3.T_MTL_ORD_MST 테이블 업데이트: 상태값 - MTL_ORD_STATUS
+
+				if (cnt == 1) {
+					resultData.put("status", HttpStatus.OK.value());
+					resultData.put("msg", "success");
+				} else {
+					resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+					resultData.put("msg", "whatfall");
+				}
+
+				System.out.println("cnt = " + cnt);
+			} else {
+				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+				resultData.put("msg", "거절된 발주서이거나 완료된 발주서입니다.");
+			}
+
+			logger.debug("MTL_ORD_STATUS:" + vo.getMTL_ORD_STATUS());
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+
+		return resultData.toJSONString();
+	}
+
 }
