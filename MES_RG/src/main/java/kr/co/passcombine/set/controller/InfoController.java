@@ -4985,14 +4985,16 @@ public class InfoController {
 				vo.get(i).put("REG_ID", REG_ID);
 			}
 			//현재 거래처는 4개이므로 4번까지돌도록함
-			for(int i=0; i<4;i++) {
-				Map<String, Object> valueMap = new HashMap();
-				//초기화하지않으면 계속 같은값이 들어감.
-				valueMap.putAll(vo.get(0));
-				//a = b로하면 메모리가 같아져서 같은값이 들어감
-				if(!"ALL".equals((String)valueMap.get("S_VDR_IDX"+i))){
-					valueMap.put("VDR_IDX",valueMap.get("S_VDR_IDX"+i));
-					valueList.add(valueMap);
+			for(int j=0; j<vo.size(); j++) {
+				for(int i=0; i<4;i++) {
+					Map<String, Object> valueMap = new HashMap();
+					//초기화하지않으면 계속 같은값이 들어감.
+					valueMap.putAll(vo.get(j));
+					//a = b로하면 메모리가 같아져서 같은값이 들어감
+					if(!"ALL".equals((String)valueMap.get("S_VDR_IDX"+i))){
+						valueMap.put("VDR_IDX",valueMap.get("S_VDR_IDX"+i));
+						valueList.add(valueMap);
+					}
 				}
 			}
 						
