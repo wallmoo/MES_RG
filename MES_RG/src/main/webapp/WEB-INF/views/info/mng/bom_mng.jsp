@@ -169,6 +169,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					</div>
 					<div class="modal-body" id="modal_code_body">
 						<form id="bom_lvl0" name="bom_lvl0" class="form-horizontal">
+							<input type="hidden" name="BOM_IDX" id="BOM_IDX">
 							<div class="row">
 								<div class="col-md-12 text-center">
 									<label class="col-sm-1 control-label" style="padding-left: 0px">제조사</label>
@@ -202,7 +203,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						<form id="bom_lvl1" name="bom_lvl1" class="form-horizontal" style="margin-top: 10px">
 							<div class="row">
 								<div class="col-md-12 text-center" style="margin-top: 20px; text-align: right;">
-									<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">등록</button>
+<!-- 									<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">등록</button> -->
 									<button type="button" id="" class="btn btn-danger btn-sm" data-dismiss="modal">닫기</button>
 								</div>	
 								<div class="col-sm-12">
@@ -300,6 +301,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		</div>
 		</div>
 		
+			
 		
 		<!--  -->
 
@@ -613,6 +615,22 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			alert("먼저 프로젝트를 선택하여주십시오");
 		} else {
 			$("#modal_ExcelUpload").modal('show');
+		}
+
+	};
+	function updateBom() {
+		var keys = w2ui.grid_list.getSelection();
+		
+		if (keys == null || keys == "") {
+			alert("먼저 프로젝트를 선택하여주십시오");
+		} else {
+			$(".clear_val").val('');
+
+			$("#modal_info").modal('show');
+			$("#bom_IDX").val(w2ui.grid_list2.get(keys[0]).bom_IDX);
+			$('#hiddenProduct_code').val('');
+			$('#hiddenM_item_code').val('');
+			$('#BOM_IDX').val('')
 		}
 
 	};
@@ -992,7 +1010,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		if ($("#modal_add_title").text() == 'Bom 1lev 등록') {
 			lvl = 'MD1245';
 		}
-		var selectdata = w2ui.grid_list6.getSelection();
+		var selectdata = w2ui.grid_list4.getSelection();
 		if (selectdata != '') {
 			var msg = '등록을 완료 하였습니다.';
 			var page_url = "/info/insertBomlist";

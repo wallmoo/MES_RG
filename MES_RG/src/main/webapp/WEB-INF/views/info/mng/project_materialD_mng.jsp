@@ -898,33 +898,44 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 			if (confirm("등록하시겠습니까?")) {
 				console.log(reqDataList);
-
-				var page_url = "/info/info/insertMaterialRequest";
-				var jsonData = JSON.stringify(reqDataList);
-				console.log(jsonData);
-
-				jQuery.ajaxSettings.traditional = true;
-				$.ajax({
-					url : page_url,
-					type : 'POST',
-					data : {
-						"jsonData" : jsonData
-					},
-					data_type : 'json',
-					success : function(data) {
-						if (data != 0) {
-							alert("추가되었습니다");
-							loadRightGridData($("#hiddenPjtIdx").val());
-							loadFootGridData($("#hiddenPjtIdx").val());
-							$("#modal_bomReqForm").modal('hide');
-						} else {
-							alert("오류가 발생하였습니다");
-						}
-					},
-					complete : function() {
-
+				var reco = w2ui.grid_list4.records.length;
+				var sele = w2ui.grid_list4.getSelection().length;
+				var isOK = false;
+				if(reco!=sele){
+					if(confirm("현재 요청수는 "+reco+"개이나, 선택한 수는 "+sele+"개입니다.\n정말 저장하시겠습니까?")){
+						isOK=true;	
 					}
-				});
+				}else{
+					isOK=true;
+				}
+				if(isOK){
+					var page_url = "/info/info/insertMaterialRequest";
+					var jsonData = JSON.stringify(reqDataList);
+					console.log(jsonData);
+	
+					jQuery.ajaxSettings.traditional = true;
+					$.ajax({
+						url : page_url,
+						type : 'POST',
+						data : {
+							"jsonData" : jsonData
+						},
+						data_type : 'json',
+						success : function(data) {
+							if (data != 0) {
+								alert("추가되었습니다");
+								loadRightGridData($("#hiddenPjtIdx").val());
+								loadFootGridData($("#hiddenPjtIdx").val());
+								$("#modal_bomReqForm").modal('hide');
+							} else {
+								alert("오류가 발생하였습니다");
+							}
+						},
+						complete : function() {
+	
+						}
+					});
+				}
 			}				
 		}	
 	}
