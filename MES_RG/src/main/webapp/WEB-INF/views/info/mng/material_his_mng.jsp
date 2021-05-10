@@ -359,27 +359,29 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						cache : false,
 						success : function(response) {
 							alert('수정되었습니다.');
-
+							loadList();
 						},
 						error : function() {
-							alert('Error while request...');
+							alert('Error while request...'); 
 						}
 					})					
 				}
-			loadList();
+			
 			}	
 			
 		});
 		loadList1()
 	}
 	function loadList(){
-		if(currentTab=='tab1'){
-			loadList1();
-		}else if(currenTab=='tab2'){
-			loadList2();
-		}else{
-			loadList3();
-		}
+		setTimeout(function(){
+			if(currentTab=='tab1'){
+				loadList1();
+			}else if(currentTab=='tab2'){
+				loadList2();
+			}else{
+				loadList3();
+			}
+		},200);
 	}
 	function loadList1() {
 		console.log("loadList1()");
@@ -426,7 +428,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	}
 	function loadList2() {
 		console.log("loadList2()");
-		w2ui.grid_list.clear();
 		
 		var page_url = "/materials/materials/selectMaterial";
 		var postData = "MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val())
@@ -471,7 +472,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	}
 	function loadList3() {
 		console.log("loadList3()");
-		w2ui.grid_list.clear();
 		
 		var page_url = "/materials/materials/selectMaterial";
 		var postData = "MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val())

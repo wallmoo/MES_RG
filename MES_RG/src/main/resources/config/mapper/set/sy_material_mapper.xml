@@ -128,8 +128,9 @@
 			<if test="WHS_HIS_GB!='' and WHS_HIS_GB!='null'">
 			WHS_HIS_GB = #{WHS_HIS_GB}
 			</if>
+			,WHS_HIS_QTY =#{WHS_HIS_QTY}
 			WHERE WHS_HIS_IDX = #{WHS_HIS_IDX}
-			WHS_HIS_QTY =#{WHS_HIS_QTY}
+
 	</update>
 	
 	<insert id="insertEstimateOs1" parameterType="java.util.HashMap">
