@@ -266,20 +266,21 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						return html;
 	           		} 					
 				}, 
-				{ field:'mtl_ORD_FLE1', caption:'하자증권', size:'8%', style:'text-align:center', sortable: true,
-					render: function (record, index, col_index) {
-					var html = this.getCellValue(index, col_index);
-					
-					if(html == '1') {
-						return 'X';
-					} else if(html == '2') {
-						return 'O';
-					} else {
-						var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
-						return html2;
-					}
-					return html;
-           		} 	}, 
+				{ field:'mtl_ORD_FLE1', caption:'하자증권', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == '1') {
+							return 'X';
+						} else if(html == '2') {
+							return 'O';
+						} else {
+							var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
+							return html2;
+						}
+						return html;
+           			} 	
+				}, 
 				{ field:'mtl_ORD_FLE2', caption:'이행증권', size:'8%', style:'text-align:center', sortable: true
            			,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
@@ -293,20 +294,23 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 							return html2;
 						}
 						return html;
-	           		} 	},
-				{ field:'mtl_ORD_FLE3', caption:'계약서', size:'8%', style:'text-align:center', sortable: true,render: function (record, index, col_index) {
-					var html = this.getCellValue(index, col_index);
-					
-					if(html == '1') {
-						return 'X';
-					} else if(html == '2') {
-						return 'O';
-					} else {
-						var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
-						return html2;
-					}
-					return html;
-           		} 	},
+	           		} 	
+				},
+				{ field:'mtl_ORD_FLE3', caption:'계약서', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == '1') {
+							return 'X';
+						} else if(html == '2') {
+							return 'O';
+						} else {
+							var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
+							return html2;
+						}
+						return html;
+	           		} 	
+				},
 				{ field:'mtl_ORD_STATE', caption:'거래승인여부', size:'8%', style:'text-align:center', sortable: true
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);

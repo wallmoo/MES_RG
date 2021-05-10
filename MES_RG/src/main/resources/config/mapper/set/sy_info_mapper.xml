@@ -3510,7 +3510,8 @@
 			OD.ORD_DTL_QTY,
 			OD.ORD_DTL_PRICE,
 			OD.ORD_DTL_STATUS,
-			OD.ORD_CHK_STATUS
+			OD.ORD_CHK_STATUS,
+			(SELECT SUM(WHS_HIS_QTY) FROM T_WHS_HIS WHERE ORD_IDX=#{ORD_IDX}) AS MTL_QTY
 		FROM T_MTL_ORD_DTL OD
 		LEFT JOIN T_MTL_ORD_MST O ON O.ORD_IDX = OD.ORD_IDX
 		LEFT JOIN T_MTL_MST M ON M.MTL_IDX = OD.MTL_IDX
@@ -3611,26 +3612,45 @@
 		UPDATE T_MTL_ORD_MST SET
 				MTL_ORD_STATUS = 'O'
 		WHERE ORD_IDX = #{ORD_IDX}
-	</update>			
+	</update>	
+			
 	<insert id="updateEachMTL" parameterType="java.util.List">
-		INSERT INTO T_MTL_ORD_DTL
+		INSERT INTO T_WHS_HIS
 		(
 			ORD_IDX,
+			MTL_ORD_DTL_IDX,
 			MTL_IDX,
-			PJT_IDX,
-			ORD_DTL_PRICE,
-			ORD_DTL_QTY
+			WHS_HIS_GB,
+			WHS_HIS_TYPE,
+			WHS_HIS_QTY,
+			WHS_HIS_REG_DT,
+			WHS_HIS_REG_ID
 		) VALUES
 		<foreach  collection="list" item="item"  separator=" , ">
 		(
 			#{item.ORD_IDX},
+			#{item.MTL_ORD_DTL_IDX},		
 			#{item.MTL_IDX},
-			#{item.PJT_IDX},
-			#{item.MTL_DTL_PRICE},
-			#{item.MTL_REQ_QTY}
+			#{item.WHS_HIS_GB},
+			#{item.WHS_HIS_TYPE},
+			#{item.WHS_HIS_QTY},
+			#{item.WHS_HIS_REG_DT},
+			#{item.WHS_HIS_REG_ID}
 		)
 		</foreach>
 	</insert>	
+	<update id="updateEachMTLDTL" parameterType="SYTMaterialOrderVo">
+		UPDATE T_MTL_ORD_DTL SET
+				ORD_DTL_STATUS = 'A',
+				ORD_CHK_STATUS = #{ORD_CHK_STATUS}
+		WHERE ORD_IDX = #{ORD_IDX}
+	</update>	
+	<update id="updateEachMTLMST" parameterType="SYTMaterialOrderVo">
+		UPDATE T_MTL_ORD_MST SET
+				MTL_ORD_STATUS = 'O'
+		WHERE ORD_IDX = #{ORD_IDX}
+	</update>		
+	
 	<!-- T_MTL_ORD_MST, T_MTL_ORD_DTL 구매발주 End -->			
 		<select id="selectFilesbyOrder" parameterType="java.util.HashMap" resultType="java.util.HashMap">
 			SELECT 	MTL_ORD_FLE1
