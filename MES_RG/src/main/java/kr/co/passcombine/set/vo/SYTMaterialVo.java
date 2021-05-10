@@ -25,9 +25,30 @@ public class SYTMaterialVo implements Serializable{
 	/*여기부턴 추가VO*/
 	private int PJT_IDX;
 	private String BOM_MTL_QTY;
+	private String WHS_HIS_GB;
 	private int BOM_IDX;
+	private int WHS_HIS_IDX;
+	private int WHS_HIS_QTY;
 	
 	
+	public int getWHS_HIS_QTY() {
+		return WHS_HIS_QTY;
+	}
+	public void setWHS_HIS_QTY(int wHS_HIS_QTY) {
+		WHS_HIS_QTY = wHS_HIS_QTY;
+	}
+	public int getWHS_HIS_IDX() {
+		return WHS_HIS_IDX;
+	}
+	public void setWHS_HIS_IDX(int wHS_HIS_IDX) {
+		WHS_HIS_IDX = wHS_HIS_IDX;
+	}
+	public String getWHS_HIS_GB() {
+		return WHS_HIS_GB;
+	}
+	public void setWHS_HIS_GB(String wHS_HIS_GB) {
+		WHS_HIS_GB = wHS_HIS_GB;
+	}
 	public int getBOM_IDX() {
 		return BOM_IDX;
 	}

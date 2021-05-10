@@ -41,6 +41,29 @@ public class SYMaterialService {
 		// TODO Auto-generated method stub
 		return MaterialsDAO.updateEstimate2(valueList);
 	}
+
+	public List<Map<String, Object>> selectMaterials(Map<String, Object> vo) {
+		if(vo.containsKey("WHS_HIS_GB")) {
+			return  MaterialsDAO.selectMaterialIO(vo);
+		}else {
+			return MaterialsDAO.selectMaterialNotIO(vo);
+		}
+	}
+
+	public int updateEstimateOs(Map<String, Object> vo) {
+		int result=0;
+		MaterialsDAO.updateEstimateOs1(vo);
+		String idx = (String)vo.get("WHS_HIS_IDX");
+		if(!idx.equals("") && !idx.equals("0")){
+			result = MaterialsDAO.updateEstimateOs2(vo);
+		}
+		if(result==0) {
+			MaterialsDAO.insertEstimateOs1(vo);
+		}
+		
+		
+		return 1;
+	}
 	
 /*
 	public Map<String, Object> selectFiles(Map<String, Object> vo) {
