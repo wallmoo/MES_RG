@@ -26,8 +26,21 @@ public class SYTMaterialRequestVo implements Serializable{
 	private String MTL_STD;
 	private String MTL_UNT;
 	private String MTL_QTY;
-
+	private String MTL_MD_NO;
 	
+	
+	
+	
+	
+	public String getMTL_MD_NO() {
+		return MTL_MD_NO;
+	}
+	public void setMTL_MD_NO(String mTL_MD_NO) {
+		MTL_MD_NO = mTL_MD_NO;
+	}
+	public void setMTL_REQ_REG_ID(String mTL_REQ_REG_ID) {
+		MTL_REQ_REG_ID = mTL_REQ_REG_ID;
+	}
 	public int getMTL_REQ_IDX() {
 		return MTL_REQ_IDX;
 	}

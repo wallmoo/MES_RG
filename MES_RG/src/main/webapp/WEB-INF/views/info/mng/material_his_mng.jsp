@@ -61,7 +61,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 									<button type="button" id="btn_create" class="btn btn-primary btn-sm" onclick="insertAccount();">등록</button>
 <!-- 									<button type="button" id="btn_update" class="btn btn-info btn-sm" onclick="updateAccount();">수정</button> -->
 <!-- 									<button type="button" id="btn_delete" class="btn btn-danger btn-sm" onclick="deleteAccount();">삭제</button> -->
-									<button type="button" id="btn_search_csr" onclick="loadList();" class="btn btn-warning btn-sm" onclick="">조회</button>
+									<button type="button" id="btn_search_csr" onclick="loadList();" class="btn btn-warning btn-sm">조회</button>
 								</div>
 							</div>
 							<div id="" class="box-body">
@@ -70,28 +70,28 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 										<div class="form-group">
 											<label>제조사</label> 
 											<input type="combo" id="S_MTL_MKR_CD" name="S_MTL_MKR_CD" class="form-control input-sm" placeholder="제조사"
-												onkeypress="if(event.keyCode==13) {tabGridLoad(); return false;}">
+												 onkeypress="if(event.keyCode==13) {loadList(); return false;}">
 										</div>
 									</div>
 									<div class="col-sm-2">
 										<div class="form-group">
 											<label>자재분류</label> 
 											<input type="combo" id="S_MTL_CATE" name="S_MTL_CATE" class="form-control input-sm" placeholder="자재분류"
-												onkeypress="if(event.keyCode==13) {tabGridLoad(); return false;}">
+												 onkeypress="if(event.keyCode==13) {loadList(); return false;}">
 										</div>
 									</div>
 									<div class="col-sm-2">
 										<div class="form-group">
 											<label>품목</label> 
 											<input type="combo" id="S_MTL_NM" name="S_MTL_NM" class="form-control input-sm" placeholder="품목"
-												onkeypress="if(event.keyCode==13) {tabGridLoad(); return false;}">
+												 onkeypress="if(event.keyCode==13) {loadList(); return false;}">
 										</div>
 									</div>
 									<div class="col-sm-2">
 										<div class="form-group">
 											<label>제조사 품번</label> 
 											<input type="combo" id="S_MTL_MKR_NO" name="S_MTL_MKR_NO" class="form-control input-sm" placeholder="제조사 품번"
-												onkeypress="if(event.keyCode==13) {tabGridLoad(); return false;}">
+												 onkeypress="if(event.keyCode==13) {loadList(); return false;}">
 										</div>
 									</div>
 								</div>

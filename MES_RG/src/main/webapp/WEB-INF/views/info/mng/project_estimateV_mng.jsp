@@ -71,19 +71,21 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 															<div class="form-group">																
 																<div class="col-sm-2">
 																	<label>거래처</label> 
-																	<select id="S_VDR_IDX" name="S_VDR_IDX" class="form-control" style="height: 30px;" ></select>
+																	<select id="S_VDR_IDX" name="S_VDR_IDX" class="form-control" style="height: 30px;" 
+																	onchange="searchs();"></select>
 																</div>
 									
 																<div class="col-sm-2">
 																	<label>프로젝트명</label> 
 																	<input type="text" id="S_PJT_NM" name="S_PJT_NM" placeholder="ex) 프로젝트명"
-																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadLeftGrid(); return false;}"/>
+																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {searchs(); return false;}"/>
 																</div>
 																
 																<div class="col-sm-2">
 																	<label>견적 요청일</label>
 																	<div class="input-group">
-																		<input type="text" class="form-control pull-right input-sm" id="S_MTL_EST_REG_DT" placeholder="yyyymmdd~yyyymmdd">
+																		<input type="text" class="form-control pull-right input-sm" id="S_MTL_EST_REG_DT" placeholder="yyyymmdd~yyyymmdd"
+																		onchange="searchs();">
 																		<div class="input-group-addon">
 																			<i class="fa fa-calendar"></i>
 																		</div>
@@ -93,19 +95,19 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																<div class="col-sm-2">
 																	<label>품명</label> 
 																	<input type="text" id="S_MTL_NM" name="S_MTL_NM" placeholder="ex) 품명"
-																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {loadLeftGrid(); return false;}"/>
+																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {searchs(); return false;}"/>
 																</div>																														
 																
 																<div class="col-sm-2">
 																	<label>제조사</label> 
 																	<input type="text" id="S_MTL_MKR_CD" name="S_MTL_MKR_CD" placeholder="ex) 제조사"
-																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadLeftGrid(); return false;}"/>
+																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {searchs(); return false;}"/>
 																</div>	
 																							
 																<div class="col-sm-2">
 																	<label>제조사 Model No</label> 
 																	<input type="text" id="S_MTL_MKR_NO" name="S_MTL_MKR_NO" placeholder="ex) 제조사 Model No"
-																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {loadLeftGrid(); return false;}"/>
+																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {searchs(); return false;}"/>
 																</div>															
 															</div>
 														</div>
@@ -178,8 +180,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	
 	var minDate = getFormatDate(new Date());
 	
+	var loadingEnd=false;
 	comboValue_nm = new Array;
 	comboValue_cd = new Array;
+	
 	
 	$(function($) {
 		fnCdD('S_PJT_PRD_UNT', 'MC1027');//공통코드를 호출-재고 단위
@@ -189,8 +193,14 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		fnLoadDeliveryOption();//검색폼 달력
 		
 		fnLoadLeftGrid();
+		loadingEnd=true;
 	})
-
+	
+	function searchs(){
+		if(loadingEnd){
+			loadLeftGrid();
+		}
+	}
 
 	// fnLoadLeftGrid
 	function fnLoadLeftGrid() {
