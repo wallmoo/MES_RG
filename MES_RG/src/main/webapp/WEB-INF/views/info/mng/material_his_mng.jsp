@@ -362,7 +362,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 							loadList();
 						},
 						error : function() {
-							alert('Error while request...');
+							alert('Error while request...'); 
 						}
 					})					
 				}
