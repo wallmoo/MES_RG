@@ -5220,6 +5220,51 @@ public class InfoController {
 			resultData.put("rows", null);
 		}
 		return result;
+	}
+	//구매발주 승인
+	@ResponseBody
+	@RequestMapping(value = "/info/acceptOrder", method = { RequestMethod.GET,
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	@SuppressWarnings("unchecked")
+	public String acceptOrder(@ModelAttribute SYTMaterialOrderVo vo, HttpServletRequest request, HttpServletResponse response,
+			HttpSession session) {
+		logger.debug("FrontendController.saveAccount is called.");
+
+		vo.setMTL_ORD_REG_ID(SessionUtil.getMemberId(request));
+		
+		JSONObject resultData = new JSONObject();
+		JSONArray jsonArray = new JSONArray();
+		JSONParser parser = new JSONParser();
+
+		try {
+			String CST_IDX = "";
+			int cnt = 0;
+			int insertedIDX = 0;
+
+			String ORD_IDX = request.getParameter("ORD_IDX");
+			vo.setORD_IDX(Integer.parseInt(ORD_IDX));
+			
+			String MTL_ORD_STATUS = request.getParameter("MTL_ORD_STATUS");
+			vo.setMTL_ORD_STATUS(MTL_ORD_STATUS);
+			
+			cnt = sYInfoService.acceptOrder(vo);
+			
+			if (cnt == 1) {	
+				resultData.put("status", HttpStatus.OK.value());	
+				resultData.put("msg", "success");	
+			} else {	
+				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());	
+				resultData.put("msg", "whatfall");	
+			}	
+			System.out.println("ORD_IDX = " + ORD_IDX);	
+			System.out.println("cnt = " + cnt);	
+
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+		}
+
+		return resultData.toJSONString();
 	}	
 	
 	@ResponseBody
@@ -5394,7 +5439,7 @@ public class InfoController {
 			// 구매발주 상태 체크	
 			SYTMaterialOrderVo result = sYInfoService.chkOrdStatus(vo);// 발주내역 저장 return ORD_IDX	
 			String MTL_ORD_STATUS = result.getMTL_ORD_STATUS();	
-			if (!MTL_ORD_STATUS.equals("N") && !MTL_ORD_STATUS.equals("100")) {// 일괄업데이트	
+			if (!MTL_ORD_STATUS.equals("I") && !MTL_ORD_STATUS.equals("N") && !MTL_ORD_STATUS.equals("O")) {// 일괄업데이트, 상태-진행중(I), 발주 승인(Y), 거절(N), 입고완료(O)	
 				// 0. MTL LIST를 가져온다. ==> 맵 + json --> ok	
 				List<Map<String, Object>> list = (List<Map<String, Object>>) mapVO.get("reqDataList");	
 				for (Map<String, Object> map : list) {	

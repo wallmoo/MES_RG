@@ -309,13 +309,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						return html;
 	           		} 		
 				},
-				{ field:'mtl_ORD_STATE', caption:'거래승인여부', size:'8%', style:'text-align:center', sortable: true
+				{ field:'mtl_ORD_STATUS', caption:'거래승인여부', size:'8%', style:'text-align:center', sortable: true
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
 						
-						if(html == '1') {
+						if(html == 'Y') {
 							return '승인';
-						} else if(html == '2') {
+						} else if(html == 'N') {
 							return '거절';
 						} else {
 							return '승인';

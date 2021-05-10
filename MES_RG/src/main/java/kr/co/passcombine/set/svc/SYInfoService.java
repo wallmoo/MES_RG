@@ -1696,6 +1696,9 @@ public class SYInfoService {
 	 * SYTMaterialOrderVo result = new SYTMaterialOrderVo(); result =
 	 * infoDAO.chkOrdStatus(vo); return result; }
 	 */	
+	public int acceptOrder(SYTMaterialOrderVo vo) {//자재 요청 수정
+		return infoDAO.acceptOrder(vo);
+	}		
 	public SYTMaterialOrderVo chkOrdStatus(SYTMaterialOrderVo vo) {//자재 요청 수정
 		return infoDAO.chkOrdStatus(vo);
 	}	
