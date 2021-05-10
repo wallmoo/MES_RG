@@ -84,7 +84,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 							<div class="col-sm-2">
 								<div class="form-group">
 									<label>고객사</label> 
-									<select id="S_CST_IDX" name="S_CST_IDX" class="form-control" style="height: 30px;" ></select>
+									<select id="S_CST_IDX" name="S_CST_IDX" class="form-control" style="height: 30px;" 
+									onchange="loadLists()"></select>
 								</div>
 							</div>	
 														
@@ -100,7 +101,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<label>납품 요청일</label>
 									<div class="input-group">
 										<input type="text" 
-											class="form-control pull-right input-sm" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd">
+											class="form-control pull-right input-sm" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd"
+											onchange="loadLists()">
 										<div class="input-group-addon">
 											<i class="fa fa-calendar"></i>	
 										</div>
@@ -113,7 +115,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<label>프로젝트 등록일</label>
 									<div class="input-group">
 										<input type="text" 
-											class="form-control pull-right input-sm" id="S_PJT_REG_DT" placeholder="yyyymmdd~yyyymmdd">
+											class="form-control pull-right input-sm" id="S_PJT_REG_DT" placeholder="yyyymmdd~yyyymmdd"
+											onchange="loadLists()">
 										<div class="input-group-addon">
 											<i class="fa fa-calendar"></i>	
 										</div>
@@ -259,7 +262,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	
 	comboValue_nm = new Array;
 	comboValue_cd = new Array;
-		
+		var loadingEnd= false;
 	$(function($) {
 		fnCdD('PJT_PRD_UNT', 'MC1027');//공통코드를 호출-재고 단위
 		
@@ -269,8 +272,14 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		fnLoadProjectGrid(); 
 		fnLoadCommonOption();//등록폼 달력
 		fnLoadDeliveryOption();//검색폼 달력			
-
+		loadingEnd=true;
 	})
+	function loadLists(){
+		if(loadingEnd){
+		loadList();
+		}
+	}
+	
 	function fnLoadProjectGrid() {
 	// 	 console.log(page_url);
 		var rowArr = [];

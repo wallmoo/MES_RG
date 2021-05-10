@@ -151,7 +151,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 													<div class="box-header with-border" style="background-color: #DB8EB5;">
 														<h3 class="box-title">자재요청내역</h3>
 														<div class="box-tools pull-right">
-															<button type="button" id="btn_search_csr" onclick="loadLeftGridData();" class="btn btn-primary btn-sm">조회</button>
+															<button type="button" id="btn_search_csr" onclick="loadfootGridRefresh();" class="btn btn-primary btn-sm">조회</button>
 														</div>
 													</div>
 													<div class="box-body">
@@ -170,17 +170,17 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																<div class="col-sm-2">
 																	<label>제조사</label> 
 																	<input type="text" id="S_MTL_MKR_CD" name="S_MTL_MKR_CD" placeholder="ex) 제조사"
-																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadRequestGridData(); return false;}"/>
+																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadfootGridRefresh(); return false;}"/>
 																</div>	
 																<div class="col-sm-2">
 																	<label>품번</label> 
 																	<input type="text" id="S_MTL_MD_NO" name="S_MTL_MD_NO" placeholder="ex) 품번"
-																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadRequestGridData(); return false;}"/>
+																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadfootGridRefresh(); return false;}"/>
 																</div>
 																<div class="col-sm-2">
 																	<label>요청 유형</label>
 																	<input type="text" id="S_MTL_REQ_TYPE" name="S_MTL_REQ_TYPE" placeholder="ex) 요청 유형"
-																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadRequestGridData(); return false;}"/>
+																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadfootGridRefresh(); return false;}"/>
 																</div>															
 															</div>
 														</div>
@@ -731,8 +731,9 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	}
 	function loadfootGridRefresh(){
 		var key = $("#hiddenPjtIdx").val();//프로젝트 번호가져오기
-		if(!key){
+		if(key){
 			if(loadingEnd){
+				console.log("아래변경");
 				loadFootGridData(key);
 			}
 		}
@@ -746,7 +747,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					+ "&MTL_REQ_REG_DT=" + encodeURIComponent($("#S_MTL_REQ_REG_DT").val())
 					+ "&MTL_NM=" + encodeURIComponent($("#S_MTL_NM").val())
 					+ "&MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val())
-					+ "&MTL_MKR_NO=" + encodeURIComponent($("#S_MTL_MKR_NO").val());
+					+ "&MTL_MKR_NO=" + encodeURIComponent($("#S_MTL_MD_NO").val());
 		
 		w2ui['grid_list3'].lock('loading...', true);
 		$.ajax({
