@@ -304,6 +304,7 @@ public interface SYInfoDAO {
 	public int insertMaterialOrderMST(Map<String,Object> vo);
 	public int insertMaterialOrder(List<Map<String,Object>> vo);
 	
+	public int acceptOrder(SYTMaterialOrderVo vo);
 	public SYTMaterialOrderVo chkOrdStatus(SYTMaterialOrderVo vo);
 	public int updateAllMTL(List<Map<String,Object>> vo);
 	public int updateAllMTLVO(SYTMaterialOrderVo vo);

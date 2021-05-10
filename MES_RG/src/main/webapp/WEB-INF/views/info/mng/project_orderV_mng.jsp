@@ -63,8 +63,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 														<div class="box-tools pull-right">
 															<button type="button" id="btn_excel_csr" onclick="bomNewOrder();" class="btn btn-success btn-sm">발주서(PDF)출력</button>
 															<button type="button" id="btn_dlv_csr" onclick="orderFile();" class="btn btn-info btn-sm">파일첨부</button>
-															<button type="button" id="btn_ins_csr" onclick="bomOrder();" class="btn btn-primary btn-sm">승인</button>
-															<button type="button" id="btn_search_csr" onclick="loadLeftGrid();" class="btn btn-danger btn-sm" onclick="">거절</button>
+															<button type="button" id="btn_ins_csr" onclick="acceptOrder('Y');" class="btn btn-primary btn-sm">승인</button>
+															<button type="button" id="btn_search_csr" onclick="acceptOrder('N');" class="btn btn-danger btn-sm" onclick="">거절</button>
 														</div>
 													</div>
 													<div class="box-body">
@@ -225,8 +225,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		requestProject('S_PJT_IDX');//프로젝트명 가져오기
 		requestVendor('S_VDR_IDX');//거래처 정보를 검색폼 드랍다운 형태로 만듬
 	
-		fnLoadCommonOption();//등록폼 달력
-		fnLoadDeliveryOption();//검색폼 달력
+		fnLoadDeliveryOption('#S_MTL_ORD_DLV_DT','right');//검색폼 달력
 		
 		fnLoadLeftGrid();
 		fnLoadRightGrid();
@@ -311,13 +310,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						return html;
 	           		} 	
 				},
-				{ field:'mtl_ORD_STATE', caption:'거래승인여부', size:'8%', style:'text-align:center', sortable: true
+				{ field:'mtl_ORD_STATUS', caption:'거래승인여부', size:'8%', style:'text-align:center', sortable: true
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
 						
-						if(html == '1') {
+						if(html == 'Y') {
 							return '승인';
-						} else if(html == '2') {
+						} else if(html == 'N') {
 							return '거절';
 						} else {
 							return '승인';
@@ -520,47 +519,52 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		}
 	}
 
-	// ############################
-	// init component
-	function fnLoadCommonOption() {
-	 	console.log('fnLoadCommonOption()');
-	 	
-		$('#PJT_DLV_DT').daterangepicker({
-			opens: 'right',
-			singleDatePicker: true,
-			locale: {
-				format : 'YYYY-MM-DD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-				showMonthAfterYear : true,
-				yearSuffix : '년'
-		    },
-		    startDate : moment(minDate)
-		})
-		.on("change", function() {
-		    loadLeftGrid();
-		}); 
+	//구매발주 승인/거절
+	function acceptOrder(val) {
+		var keys = w2ui.grid_list.getSelection();
+		
+		if (val == null || val == "") {
+			alert("비정상 작동입니다.");
+			return false;
+		}
+		
+		if (keys == null || keys == "") {
+			alert("처리할 구매발주를 선택하여주십시오");
+		} else {
+			var data = w2ui.grid_list.get(keys[0]);			
+			var ORD_IDX = data.ord_IDX;//구매발주번호	
+
+			if (confirm("진행하시겠습니까?")) {
+				var page_url = "/info/info/acceptOrder";
+				var postData = "ORD_IDX=" + ORD_IDX
+							+"&MTL_ORD_STATUS=" + val;
+
+				w2ui['grid_list'].lock('loading...', true);
+				$.ajax({
+					url : page_url,
+					type : 'POST',
+					data : postData,
+					data_type : 'json',
+					success : function(data) {
+						if (data != 0) {
+							w2ui.grid_list.clear();
+							loadLeftGrid();
+							w2ui.grid_list.clear();
+							
+							alert("처리되었습니다");
+
+						} else {
+							alert("오류가 발생하였습니다");
+						}
+					},
+					complete : function() {
+
+					}
+				});
+			}
+		}	
 	}
-	function fnLoadDeliveryOption() {
-	 	console.log('fnLoadCommonOption()');
-	 	
-		$('#S_MTL_ORD_DLV_DT, #S_PJT_DLV_DT').daterangepicker({
-			opens: 'right',
-			locale: {
-				format : 'YYYYMMDD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-				showMonthAfterYear : true,
-				yearSuffix : '년'
-		    },
- 			startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
-			endDate: moment().format('YYYY-MM-DD'),
-		}); 
-		
-		$('#S_MTL_ORD_DLV_DT').val("");
-		
-	}	
-	
+
 	function orderFile(){
 		var key = w2ui.grid_list.getSelection();
 		if( key.length==0 ) {

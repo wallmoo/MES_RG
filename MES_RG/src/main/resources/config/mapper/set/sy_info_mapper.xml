@@ -3650,7 +3650,12 @@
 				MTL_ORD_STATUS = 'O'
 		WHERE ORD_IDX = #{ORD_IDX}
 	</update>		
-	
+	<update id="acceptOrder" parameterType="SYTMaterialOrderVo">
+		UPDATE T_MTL_ORD_MST SET
+				MTL_ORD_STATUS = #{MTL_ORD_STATUS}
+		WHERE ORD_IDX = #{ORD_IDX}
+	</update>	
+		
 	<!-- T_MTL_ORD_MST, T_MTL_ORD_DTL 구매발주 End -->			
 		<select id="selectFilesbyOrder" parameterType="java.util.HashMap" resultType="java.util.HashMap">
 			SELECT 	MTL_ORD_FLE1
