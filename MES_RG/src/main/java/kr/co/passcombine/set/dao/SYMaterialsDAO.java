@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 @Repository(value = "setMaterialsDAO")
 public interface SYMaterialsDAO {
 
+
 	int insertFile2(Map<String, Object> file);
 
 	int insertMaterialMap2(Map<String, Object> vo);
@@ -21,5 +22,15 @@ public interface SYMaterialsDAO {
 	int insertBOM2(Map<String, Object> vo);
 
 	int updateEstimate2(List<Map<String, Object>> valueList);
+
+	List<Map<String, Object>> selectMaterialNotIO(Map<String, Object> vo);
+
+	List<Map<String, Object>> selectMaterialIO(Map<String, Object> vo);
+
+	int updateEstimateOs1(Map<String, Object> vo);
+
+	int updateEstimateOs2(Map<String, Object> vo);
+
+	int insertEstimateOs1(Map<String, Object> vo);
 
 }

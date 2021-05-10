@@ -3,8 +3,13 @@
 "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <mapper namespace="kr.co.passcombine.set.dao.SYMaterialsDAO">
+	<resultMap id="SYTMaterialVo" type="SYTMaterialVo">
+		<result property="WHS_HIS_GB" column="WHS_HIS_GB" jdbcType="VARCHAR" javaType="java.lang.String" />
+	</resultMap>
+		
 
 		<insert id="insertFile2" parameterType="java.util.HashMap" >
+		/* insertFile2 */
 			INSERT INTO T_CMM_FLE
 				(CMM_FLE_ATT_EXT,CMM_FLE_ORG_NM,CMM_FLE_SYS_NM,CMM_FLE_ATT_SIZE,CMM_FLE_ATT_PATH
 				,CMM_FLE_USE_YN,CMM_FLE_REG_DT,CMM_FLE_REG_ID,CMM_FLE_DEL_YN)
@@ -18,6 +23,7 @@
 	</insert>
 
 		<insert id="insertMaterialMap2" parameterType="java.util.HashMap">
+			/* insertMaterialMap2 */ 
 			INSERT INTO T_MTL_MST
 				( CMM_FLE_IDX, MTL_CATE, MTL_NM, MTL_MKR_CD, MTL_MKR_NO, MTL_STD, MTL_PRICE, MTL_UNT, MTL_DS_URL, MTL_BG, MTL_REG_ID )
 			VALUES
@@ -30,6 +36,7 @@
 	</insert>
 	
 	<insert id="insertBOM2" parameterType="java.util.HashMap">
+	/* insertBOM2 */
 		INSERT INTO T_BOM_MST
 		(
 			MTL_IDX,
@@ -61,5 +68,89 @@
 <!-- 						MTL_EST_REG_DT 	=  	IFNULL(#{item.MTL_EST_REG_DT}, SYSDATE()) -->
 <!-- 				WHERE 	EST_IDX 		= 	#{item.EST_IDX} -->
 		</foreach>
+		
 	</update>
+
+<!-- 아래코드 공통  -->
+	<sql id="selectMaterialWhere">
+        <if test="MTL_MKR_CD!=null and !''.equals(MTL_MKR_CD) ">
+				AND MTL_MKR_CD LIKE CONCAT('%', #{MTL_MKR_CD}, '%')
+			</if>
+			<if test="MTL_CATE!=null and !''.equals(MTL_CATE) ">
+				AND MTL_CATE LIKE CONCAT('%', #{MTL_CATE}, '%')
+			</if>
+			<if test="MTL_NM!=null and !''.equals(MTL_NM) ">
+				AND MTL_NM LIKE CONCAT('%', #{MTL_NM}, '%')
+			</if>
+			<if test="MTL_MKR_NO!=null and !''.equals(MTL_MKR_NO) ">
+				AND MTL_MKR_NO LIKE CONCAT('%', #{MTL_MKR_NO}, '%')
+			</if>
+	</sql>
+
+
+	<select id="selectMaterialIO"  parameterType="java.util.HashMap" resultMap="SYTMaterialVo">
+		   /* selectMaterialIO */ 
+		   SELECT 	WHS_HIS_IDX, TMM.MTL_IDX, CMM_FLE_IDX, MTL_CATE, MTL_NM, MTL_MKR_CD, MTL_MKR_NO, MTL_STD, MTL_PRICE, 
+					MTL_UNT, MTL_QTY, MTL_DS_URL, MTL_BG, MTL_REG_DT, MTL_REG_ID, TWH.WHS_HIS_GB, TWH.ORD_IDX, WHS_HIS_QTY
+			 FROM 	T_WHS_HIS TWH
+		LEFT JOIN 	T_MTL_MST TMM ON TWH.MTL_IDX = TMM.MTL_IDX 
+		LEFT JOIN 	T_MTL_ORD_DTL TMOD ON TWH.MTL_ORD_DTL_IDX =TMOD.MTL_ORD_DTL_IDX 
+			WHERE	MTL_DEL_YN = 'N'
+			 <include refid="selectMaterialWhere"/>
+			  AND	WHS_HIS_GB=#{WHS_HIS_GB};
+	</select>
+	
+	<select id="selectMaterialNotIO" parameterType="java.util.HashMap" resultMap="SYTMaterialVo">
+	 /* selectMaterialNotIO */ 
+	  SELECT	WHS_HIS_IDX, TMM.MTL_IDX, CMM_FLE_IDX, MTL_CATE, MTL_NM, MTL_MKR_CD, MTL_MKR_NO, MTL_STD,
+				MTL_PRICE, MTL_UNT, MTL_QTY, MTL_DS_URL, MTL_BG, MTL_REG_DT, MTL_REG_ID,
+				TWH.WHS_HIS_GB, ORD_IDX, WHS_HIS_QTY
+		FROM 	T_MTL_MST TMM
+   LEFT JOIN 	T_WHS_HIS TWH ON TMM.MTL_IDX = TWH.MTL_IDX 
+		WHERE 	MTL_DEL_YN = 'N'
+		 <include refid="selectMaterialWhere"/>					
+	</select>	
+	
+	<update id="updateEstimateOs1" parameterType="java.util.HashMap">
+		/* updateEstimateOs1 */
+		UPDATE T_MTL_MST SET
+		MTL_IDX = #{MTL_IDX}
+		<if test="MTL_BG!='' and MTL_BG!= null and BTL_BG!='null'">
+			,MTL_BG = #{MTL_BG}
+		</if>
+		WHERE MTL_IDX = #{MTL_IDX}
+	</update>
+	
+	
+	<update id="updateEstimateOs2" parameterType="java.util.HashMap">
+		/* updateEstimateOs2 */
+			UPDATE T_WHS_HIS SET
+			<if test="WHS_HIS_GB!='' and WHS_HIS_GB!='null'">
+			WHS_HIS_GB = #{WHS_HIS_GB}
+			</if>
+			WHERE WHS_HIS_IDX = #{WHS_HIS_IDX}
+			WHS_HIS_QTY =#{WHS_HIS_QTY}
+	</update>
+	
+	<insert id="insertEstimateOs1" parameterType="java.util.HashMap">
+		/* insertEstimateOs1 */
+		INSERT INTO T_WHS_HIS
+			(
+				MTL_IDX,
+				WHS_HIS_GB,
+				WHS_HIS_REG_DT,
+				WHS_HIS_REG_ID,
+				WHS_DEL_YN,
+				WHS_HIS_QTY
+			)
+			VALUES(
+				#{MTL_IDX},
+				IF(#{WHS_HIS_GB}='null','IN',#{WHS_HIS_GB}),
+				SYSDATE(),
+				#{REG_ID},
+				'N',
+				#{WHS_HIS_QTY}
+			)
+	</insert>
+
 </mapper>

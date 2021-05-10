@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,8 +34,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import kr.co.passcombine.set.svc.SYGoalService;
 import kr.co.passcombine.set.svc.SYInfoService;
 import kr.co.passcombine.set.svc.SYMaterialService;
+import kr.co.passcombine.set.util.ResponseUtils;
 import kr.co.passcombine.set.util.SessionUtil;
 import kr.co.passcombine.set.util.fileUpload;
+import kr.co.passcombine.set.vo.SYTBomVo;
+import kr.co.passcombine.set.vo.SYTMaterialVo;
 @Controller
 @RequestMapping("/materials")
 public class MaterialsController {
@@ -161,5 +165,66 @@ public class MaterialsController {
 			return result;
 		}
 		
+		
+		@ResponseBody
+		@RequestMapping(value = "/materials/selectMaterial", method = { RequestMethod.GET,
+				RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+		@SuppressWarnings("unchecked")
+		public String materialsselectMaterial(@RequestParam Map<String,Object> vo, HttpServletRequest request,
+				HttpServletResponse response, HttpSession session) {
+			logger.debug("FrontendController.selectMaterial is called.");
+
+			JSONObject resultData = new JSONObject();
+			JSONArray listDataJArray = new JSONArray();
+			JSONParser jsonParser = new JSONParser();
+			try {
+				// String lifnr = URLDecoder.decode(request.getParameter("LIFNR"), "UTF-8" );
+				String REG_ID = SessionUtil.getMemberId(request);
+				vo.put("REG_ID",REG_ID);
+				List<Map<String,Object>> dataList = sYMaterialService.selectMaterials(vo);
+
+				System.out.println("dataList");
+				System.out.println(dataList);
+
+				String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+				listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+				resultData.put("status", HttpStatus.OK.value());
+				resultData.put("rows", listDataJArray);
+			} catch (Exception e) {
+				e.printStackTrace();
+				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+				resultData.put("rows", null);
+			}
+			return resultData.toJSONString();
+		}
+		
+		// change BOM Material Quantity
+		@ResponseBody
+		@RequestMapping(value = "/materials/updateBomQuantity", method = { RequestMethod.GET,
+				RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+		@SuppressWarnings("unchecked")
+		public String updateBomQuantity(@RequestParam Map<String,Object> vo, HttpServletRequest request,
+				HttpServletResponse response, HttpSession session) {
+			logger.debug("FrontendController.changeBOMQuantity is called.");
+
+			JSONObject resultData = new JSONObject();
+			JSONArray jsonArray = new JSONArray();
+			JSONParser parser = new JSONParser();
+			String REG_ID = SessionUtil.getMemberId(request);
+			vo.put("REG_ID",REG_ID);
+
+			int cnt=0;
+			try {
+				cnt = sYMaterialService.updateEstimateOs(vo);
+
+				resultData.put("status", HttpStatus.OK.value());
+
+			} catch (Exception e) {
+				e.printStackTrace();
+				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			}
+
+			return resultData.toJSONString();
+		}
 	
 }

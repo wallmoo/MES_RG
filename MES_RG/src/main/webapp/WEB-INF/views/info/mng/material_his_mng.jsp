@@ -59,9 +59,9 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="box-tools pull-right">
 									<button type="button" id="" class="btn btn-primary btn-sm" onclick="excelFileDownload();">엑셀다운로드</button>
 									<button type="button" id="btn_create" class="btn btn-primary btn-sm" onclick="insertAccount();">등록</button>
-									<button type="button" id="btn_update" class="btn btn-info btn-sm" onclick="updateAccount();">수정</button>
-									<button type="button" id="btn_delete" class="btn btn-danger btn-sm" onclick="deleteAccount();">삭제</button>
-									<button type="button" id="btn_search_csr" onclick="loadList1();" class="btn btn-warning btn-sm" onclick="">조회</button>
+<!-- 									<button type="button" id="btn_update" class="btn btn-info btn-sm" onclick="updateAccount();">수정</button> -->
+<!-- 									<button type="button" id="btn_delete" class="btn btn-danger btn-sm" onclick="deleteAccount();">삭제</button> -->
+									<button type="button" id="btn_search_csr" onclick="loadList();" class="btn btn-warning btn-sm" onclick="">조회</button>
 								</div>
 							</div>
 							<div id="" class="box-body">
@@ -109,157 +109,139 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		</div>
 		<!-- /.content-wrapper -->
 		<div class="modal fade" id="modal_info" data-backdrop="static">
-			<div class="modal-dialog modal-md">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal"
-							aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-						<h4 class="modal-title" id="modal_code_title">등록</h4>
-					</div>
-					<div class="modal-body" id="modal_code_body">
-						<form id="frm_routingItnbr" name="frm_routingItnbr"
-							class="form-horizontal">
-							<input type="hidden" id="upload_mode" /> <input type="hidden"
-								class="clear_field" id="mod_file_group" /> <input type="hidden"
-								class="clear_field" id="mod_file_no" />
-							<div class="row">
-								<div class="form-group">
-									<label for="" class="col-sm-3 control-label">자재코드</label>
-									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm pull-right"
-											id="MTL_IDX" maxlength="100" readonly="readonly">
-									</div>
-								</div>
+	<div class="modal-dialog modal-md">
+		<div class="modal-content">
+			<div class="modal-header">
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">&times;</span>
+				</button>
+				<h4 class="modal-title" id="modal_code_title">등록</h4>
+        	</div>
+			<div class="modal-body" id="modal_code_body">
+				<form id="frm_routingItnbr" name="frm_routingItnbr" class="form-horizontal"
+				method="POST" enctype="multipart/form-data">	
+					<input type="hidden" id="upload_mode"/>
+					<input type="hidden" class="clear_field" id="mod_file_group"/>
+					<input type="hidden" class="clear_field" id="mod_file_no"/>				
+					<div class="row">
+						<div class="form-group">
+							<label for="" class="col-sm-3 control-label">자재코드</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control input-sm pull-right" id="MTL_IDX" name ="MTL_IDX" maxlength="100" readonly="readonly">
 							</div>
-
-							<div class="row">
-								<div class="form-group">
-									<label for="" class="col-sm-3 control-label">자재분류</label>
-									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm pull-right"
-											id="MTL_CATE" maxlength="30">
-									</div>
-								</div>
-							</div>
-
-							<div class="row">
-								<div class="form-group">
-									<label for="" class="col-sm-3 control-label">품목</label>
-									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm pull-right"
-											id="MTL_NM" maxlength="20">
-									</div>
-								</div>
-							</div>
-
-							<div class="row">
-								<div class="form-group">
-									<label for="" class="col-sm-3 control-label">제조사</label>
-									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm"
-											id="MTL_MKR_CD" maxlength="14">
-									</div>
-								</div>
-							</div>
-
-							<div class="row">
-								<div class="form-group">
-									<label for="" class="col-sm-3 control-label">제조사 품번</label>
-									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm pull-right"
-											id="MTL_MKR_NO" maxlength="10">
-									</div>
-								</div>
-							</div>
-
-							<div class="row">
-								<div class="form-group">
-									<label for="" class="col-sm-3 control-label">규격</label>
-									<!-- 공통코드 ea/kg 중 선택 -->
-									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm" id="MTL_STD"
-											value="" maxlength="60">
-									</div>
-
-								</div>
-							</div>
-
-							<div class="row">
-								<div class="form-group">
-									<label for="" class="col-sm-3 control-label">단가</label>
-									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm"
-											id="MTL_PRICE" maxlength="14">
-									</div>
-								</div>
-							</div>
-
-							<div class="row">
-								<div class="form-group">
-									<label for="" class="col-sm-3 control-label">재고단위</label>
-									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm" id="MTL_UNT"
-											maxlength="14">
-									</div>
-								</div>
-							</div>
-
-							<div class="row">
-								<div class="form-group">
-									<label for="" class="col-sm-3 control-label">Datasheet
-										URL</label>
-									<div class="col-sm-7">
-										<textarea type="text" class="form-control input-sm pull-right"
-											id="MTL_DS_URL"></textarea>
-									</div>
-								</div>
-							</div>
-
-							<div class="row">
-								<div class="form-group">
-									<label for="" class="col-sm-3 control-label">비고</label>
-									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm" id="MTL_BG"
-											maxlength="60">
-									</div>
-								</div>
-							</div>
-
-							<div class="row">
-								<label class="col-sm-3 control-label">이미지 파일</label>
-								<div class="col-sm-7" style="padding-right: 0px;">
-									<input type="text" id="mod_file_name" name="mod_file_name"
-										class="form-control input-sm clear_field" readonly>
-								</div>
-								<div class="col-sm-1" style="padding-left: 7px;">
-									<span class="btn btn-danger btn-sm fileinput-button "
-										style="width: 100%;" id="file_btn"> <i
-										class="fa fa-plus"></i> <input id="file_group" type="file"
-										class="fileupload file_info" name="file[]">
-									</span>
-								</div>
-							</div>
-
-
-							<div class="row">
-								<div class="col-md-12" id="msg"
-									style="font-weight: bold; color: blue;"></div>
-							</div>
-						</form>
-					</div>
-					<div class="modal-footer">
-						<div class="col-md-12 text-center">
-							<button type="button" id="" class="btn btn-success btn-sm"
-								onclick="saveAccount();">저장</button>
-							<button type="button" id="" class="btn btn-default btn-sm"
-								data-dismiss="modal">닫기</button>
 						</div>
 					</div>
+									
+					<div class="row">
+						<div class="form-group">
+							<label for="" class="col-sm-3 control-label">자재분류</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control input-sm pull-right" id="MTL_CATE" name ="MTL_CATE" maxlength="30">
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="form-group">
+							<label for="" class="col-sm-3 control-label">품목</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control input-sm pull-right" id="MTL_NM" name ="MTL_NM" maxlength="20">
+							</div>
+						</div>
+					</div>
+
+					<div class="row">
+						<div class="form-group">
+							<label for="" class="col-sm-3 control-label">제조사</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control input-sm" id="MTL_MKR_CD" name ="MTL_MKR_CD" maxlength="14">
+							</div>
+						</div>
+					</div>
+					
+					<div class="row">
+						<div class="form-group">
+							<label for="" class="col-sm-3 control-label">제조사 품번</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control input-sm pull-right" id="MTL_MKR_NO" name ="MTL_MKR_CD" maxlength="10">
+							</div>
+						</div>
+					</div>	
+					
+					<div class="row">
+						<div class="form-group">
+							<label for="" class="col-sm-3 control-label">규격</label><!-- 공통코드 ea/kg 중 선택 -->
+							<div class="col-sm-7">
+								<input type="text" class="form-control input-sm" id="MTL_STD" name ="MTL_STD" value="" maxlength="60">
+							</div>
+							
+						</div>
+					</div>
+					
+					<div class="row">
+						<div class="form-group">
+							<label for="" class="col-sm-3 control-label">단가</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control input-sm" id="MTL_PRICE" name ="MTL_PRICE" maxlength="14">
+							</div>
+						</div>
+					</div>
+				
+					<div class="row">
+						<div class="form-group">
+							<label for="" class="col-sm-3 control-label">재고단위</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control input-sm" id="MTL_UNT" name ="MTL_UNT" maxlength="14">
+							</div>
+						</div>
+					</div>				
+				
+					<div class="row">
+						<div class="form-group">
+							<label for="" class="col-sm-3 control-label">Datasheet URL</label>
+							<div class="col-sm-7">
+								<textarea type="text" class="form-control input-sm pull-right" id="MTL_DS_URL" name ="MTL_DS_URL"></textarea>
+							</div>
+						</div>
+					</div>
+					
+					<div class="row">
+						<div class="form-group">
+							<label for="" class="col-sm-3 control-label">비고</label>
+							<div class="col-sm-7">
+								<input type="text" class="form-control input-sm" id="MTL_BG" name ="MTL_BG" maxlength="60">
+							</div>
+						</div>
+					</div>					
+					
+					<div class="row">
+						<label class="col-sm-3 control-label">이미지 파일</label>
+						<div class="col-sm-7" style="padding-right: 0px;">
+							<input type="text" id="mod_file_name" name="mod_file_name" class="form-control input-sm clear_field" readonly>
+						</div>	
+						<div class="col-sm-1" style="padding-left: 7px;">
+							<span class="btn btn-danger btn-sm fileinput-button " style="width: 100%;" id="file_btn"> <i class="fa fa-plus"></i>
+								<input id="file_group" type="file" class="fileupload file_info" name="file[]" onchange="$('#mod_file_name').val(this.value)">
+							</span>
+						</div>
+					</div>					
+					
+					
+					<div class="row">
+						<div class="col-md-12" id="msg" style="font-weight:bold; color:blue;"></div>
+					</div>
+				</form>
+			</div>
+			<div class="modal-footer">
+				<div class="col-md-12 text-center">
+					<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAccount();">저장</button>
+					<button type="button" id="" class="btn btn-default btn-sm" data-dismiss="modal">닫기</button>
 				</div>
 			</div>
 		</div>
+	</div>
+</div>
+
 
 		<jsp:include page="/common/footer_inc" flush="true">
 			<jsp:param name="page_title" value="0" />
@@ -273,6 +255,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 	<script type="text/javascript">
 	var startValue_combo = "";
+	var HIS_GB =[
+		{ id : null, text : '입출고상태' },
+		{ id : 'IN', text : '입고상태' },
+		{ id : 'OUT', text : '출고상태' },
+		
+	];
+	
 	
 	comboValue_nm = new Array;
 	comboValue_cd = new Array;
@@ -295,35 +284,201 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	        },
 	        multiSelect: false,
 	        columns: [                
-	        	{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true},
-	        	{ field:'mtl_CATE', caption:'자재 분류', size:'10%', style:'text-align:center', sortable: true},
-	        	{ field:'mtl_NM', caption:'품목', size:'10%', style:'text-align:center' , sortable: true},
-				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'17%', style:'text-align:center', sortable: true},
-				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true}, 
-				{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true}, 
-				{ field:'mtl_PRICE', caption:'단가', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'cmm_FLE_IDX', caption:'제품자료', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_DS_URL', caption:'참조링크', size:'7%', style:'text-align:center', sortable: true},
-				{ field:'mtl_BG', caption:'비고', size:'7%', style:'text-align:center', sortable: true}
-				], 
+	        	{ field:'whs_HIS_IDX', caption:'재고번호', size:'4%', style:'text-align:center', hidden: true },
+	        	{ field:'ord_IDX', caption:'재고번호', size:'5%', style:'text-align:center', hidden: true },
+	        	{ field:'mtl_IDX', caption:'자재코드', size:'5%', style:'text-align:center' , sortable: true },
+	        	{ field:'mtl_CATE', caption:'자재 분류', size:'5%', style:'text-align:center', sortable: true} ,
+	        	{ field:'mtl_NM', caption:'품목', size:'13%', style:'text-align:center' , sortable: true },
+				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'13%', style:'text-align:center', sortable: true },
+				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true }, 
+				{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true }, 
+				{ field:'mtl_PRICE', caption:'단가', size:'8%', style:'text-align:center', sortable: true },
+				{ field:'mtl_UNT', caption:'재고단위', size:'5%', style:'text-align:center', sortable: true },
+				{ field:'cmm_FLE_IDX', caption:'제품자료', size:'8%', style:'text-align:center', sortable: true },
+				{ field:'mtl_DS_URL', caption:'참조링크', size:'7%', style:'text-align:center', sortable: true },
+				{ field:'mtl_BG', caption:'비고', size:'7%', style:'text-align:center', sortable: true,
+					editable: { type: 'text' }
+				},
+				{ field:'whs_HIS_GB', caption:'입출고상태', size:'7%', style:'text-align:center', sortable: true,
+					editable: { type: 'select', items: HIS_GB }, 
+	                render: function (record, index, col_index) {
+	                    var html = '';
+	                    for (var p in HIS_GB) {
+	                        if (HIS_GB[p].id == this.getCellValue(index, col_index)) html = HIS_GB[p].text;
+	                    }
+	                    return html;
+	                }	
+				
+				
+				},
+				{ field:'whs_HIS_QTY', caption:'재고', size:'6%', style:'text-align:center', sortable: true,
+					editable: { type: 'number' }
+				},
+				],
 			sortData: [{field: 'mtl_IDX', direction: 'DESC'}],
 			records: [],	//
 			onReload: function(event) {
 				//loadList();
 			},
-			onClick: function (event) {}
+			onClick: function (event) {},
+			onChange : function(event) {//갯수 수정
+				event.onComplete = function() {//onSave
+					console.log("onChange");
+
+					//alert("수정된 값:" + w2ui['grid1'].getChanges());//바뀐것만 json형태.
+
+					var eventColumn = event.column;
+					console.log(event);
+					console.log('event.value : ' + event.value);
+					
+					w2ui.grid_list.save();
+					
+					
+					var updateContent = JSON.stringify(w2ui['grid_list'].getChanges());//stringify(배열을 문자열json으로 바꿔줌.)!!
+					
+					var Bom_MTL_IDX = this.get(event.recid).mtl_IDX;//자재번호
+					var Bom_MTL_BG = this.get(event.recid).mtl_BG;//자재 수량
+					var Bom_whs_HIS_GB = this.get(event.recid).whs_HIS_GB;//재고 구분
+					var whs_HIS_IDX = this.get(event.recid).whs_HIS_IDX;//재고 IDX
+					var ord_IDX = this.get(event.recid).ord_IDX;//재고 IDX
+					var WHS_HIS_QTY = this.get(event.recid).whs_HIS_QTY;//재고 IDX
+					
+					var page_url = "/materials/materials/updateBomQuantity";		
+					var postData =  "MTL_IDX="+ Bom_MTL_IDX
+								+ "&MTL_BG="+ Bom_MTL_BG
+								+ "&WHS_HIS_GB="+ Bom_whs_HIS_GB
+								+ "&WHS_HIS_IDX="+whs_HIS_IDX
+								+ "&ORD_IDX="+ord_IDX
+								+ "&WHS_HIS_QTY="+WHS_HIS_QTY
+								;
+					$.ajax({
+						url : page_url,
+						type : "POST",
+						data : postData,
+						data_type : 'json',
+						cache : false,
+						success : function(response) {
+							alert('수정되었습니다.');
+
+						},
+						error : function() {
+							alert('Error while request...');
+						}
+					})					
+				}
+			loadList();
+			}	
+			
 		});
-		loadList1();
+		loadList1()
+	}
+	function loadList(){
+		if(currentTab=='tab1'){
+			loadList1();
+		}else if(currenTab=='tab2'){
+			loadList2();
+		}else{
+			loadList3();
+		}
 	}
 	function loadList1() {
 		console.log("loadList1()");
 		
-		var page_url = "/info/account/selectMaterial";
+		var page_url = "/materials/materials/selectMaterial";
 		var postData = "MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val())
 					  + "&MTL_CATE=" + encodeURIComponent($("#S_MTL_CATE").val())
 					  + "&MTL_NM="   + encodeURIComponent($("#S_MTL_NM").val())
 					  + "&MTL_MKR_NO="+ encodeURIComponent($("#S_MTL_MKR_NO").val());
+
+		w2ui['grid_list'].lock('loading...', true);
+		$.ajax({
+			url : page_url,
+			type : 'POST',
+			data : postData, 
+			dataType : 'json',
+			success : function( data ) {
+				comboValue_cd = new Array;
+				comboValue_nm = new Array;
+				if(data.status == 200 && (data.rows).length>0 ) {
+					rowArr = data.rows;
+					$.each(rowArr, function(idx, row){
+						row.recid = idx+1;
+						if (startValue_combo == "") {
+							comboValue_nm.push(row.MTL_NM ? row.MTL_NM+'' : '');
+							comboValue_cd.push(row.MTL_IDX ? row.MTL_IDX+'' : '');
+						}
+					});
+					w2ui['grid_list'].records = rowArr;
+					if (startValue_combo == "") {
+						$('#MTL_NM').w2field('combo', { items: comboValue_nm, match : 'contains' });
+						$('#MTL_IDX').w2field('combo', { items: comboValue_cd, match : 'contains' });
+					}
+				} else {
+					w2ui.grid_list.clear();
+				}
+				w2ui['grid_list'].refresh();
+				w2ui['grid_list'].unlock();
+			},complete: function () {
+				startValue_combo = ":)";
+			}
+		});
+		
+	}
+	function loadList2() {
+		console.log("loadList2()");
+		w2ui.grid_list.clear();
+		
+		var page_url = "/materials/materials/selectMaterial";
+		var postData = "MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val())
+					  + "&MTL_CATE=" + encodeURIComponent($("#S_MTL_CATE").val())
+					  + "&MTL_NM="   + encodeURIComponent($("#S_MTL_NM").val())
+					  + "&MTL_MKR_NO="+ encodeURIComponent($("#S_MTL_MKR_NO").val())
+					  + "&WHS_HIS_GB=IN";
+
+		w2ui['grid_list'].lock('loading...', true);
+		$.ajax({
+			url : page_url,
+			type : 'POST',
+			data : postData, 
+			dataType : 'json',
+			success : function( data ) {
+				comboValue_cd = new Array;
+				comboValue_nm = new Array;
+				if(data.status == 200 && (data.rows).length>0 ) {
+					rowArr = data.rows;
+					$.each(rowArr, function(idx, row){
+						row.recid = idx+1;
+						if (startValue_combo == "") {
+							comboValue_nm.push(row.MTL_NM ? row.MTL_NM+'' : '');
+							comboValue_cd.push(row.MTL_IDX ? row.MTL_IDX+'' : '');
+						}
+					});
+					w2ui['grid_list'].records = rowArr;
+					if (startValue_combo == "") {
+						$('#MTL_NM').w2field('combo', { items: comboValue_nm, match : 'contains' });
+						$('#MTL_IDX').w2field('combo', { items: comboValue_cd, match : 'contains' });
+					}
+				} else {
+					w2ui.grid_list.clear();
+				}
+				w2ui['grid_list'].refresh();
+				w2ui['grid_list'].unlock();
+			},complete: function () {
+				startValue_combo = ":)";
+			}
+		});
+		
+	}
+	function loadList3() {
+		console.log("loadList3()");
+		w2ui.grid_list.clear();
+		
+		var page_url = "/materials/materials/selectMaterial";
+		var postData = "MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val())
+					  + "&MTL_CATE=" + encodeURIComponent($("#S_MTL_CATE").val())
+					  + "&MTL_NM="   + encodeURIComponent($("#S_MTL_NM").val())
+					  + "&MTL_MKR_NO="+ encodeURIComponent($("#S_MTL_MKR_NO").val())
+					  + "&WHS_HIS_GB=OUT";
 
 		w2ui['grid_list'].lock('loading...', true);
 		$.ajax({
@@ -433,15 +588,31 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			flag = "U";
 		}
 
+		//if(flag=="I" && !chkSubmit($("#m_account_code"), "고객사코드를")) return;
 		if(flag=="I" && !chkSubmit($("#MTL_NM"), "품목을")) return;
+// 		if(flag=="I" && !chkSubmit($("#MTL_CEO_NM"), "대표자 이름을")) return; 			
+// 		if(flag=="I" && !chkSubmit($("#MTL_ADD"), "주소를")) return; 	
+// 		if(flag=="I" && !chkSubmit($("#MTL_TEL"), "전화번호를")) return;
+// 		if(flag=="I" && !chkSubmit($("#MTL_FAX"), "팩스를")) return;
+// 		if(flag=="I" && !chkSubmit($("#MTL_ML1"), "이메일을")) return;
+// 		if(flag=="I" && !chkSubmit($("#MTL_NO"), "사업자번호를")) return;
 		
 // 		var flag = nullToBlank(account_code)==''?"I":"U";
 		console.log("flag = " + flag);
 		
+// 		console.log( "MTL_IDX = " + $("#MTL_IDX").val() );
+// 		console.log( "MTL_NM = " +$("#MTL_NM").val() );
+// 		console.log( "MTL_CEO_NM = " +$("#MTL_CEO_NM").val() );
+// 		console.log( "MTL_ADD = " +$("#MTL_ADD").val() );
+// 		console.log( "MTL_TEL = " +$("#MTL_TEL").val() );
+// 		console.log( "MTL_FAX = " +$("#MTL_FAX").val() );
+// 		console.log( "MTL_ML1 = " +$("#MTL_ML1").val() );
+// 		console.log( "MTL_NO = " +$("#MTL_NO").val() );
 		
-		$("#modal_info").modal('hide');
+		//$("#modal_info").modal('hide');
 
 		var strUrl = "/info/account/saveMaterial";
+		//strUrl = "/info/account/test";
 		var postData = "flag=" + flag
 				+ "&MTL_IDX=" + encodeURIComponent(MTL_IDX)
 				+ "&MTL_CATE=" + encodeURIComponent(MTL_CATE)
@@ -455,17 +626,28 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				+ "&MTL_BG=" + encodeURIComponent(MTL_BG);
 				 
 		// escape(
+		var form = $("#frm_routingItnbr")[0];
 		
+		var data = new FormData(form);
+		data.append('flag',flag)
+		
+						
 		$.ajax({
-		    url : strUrl,
-		    type : "POST", 
-		    dataType : 'json', 
-		    data : postData, 
+			type: "POST",
+			enctype: 'multipart/form-data',
+			url: strUrl,
+			data: data,
+			processData: false,
+			contentType: false,
+			cache: false,
+			timeout: 600000,
 		    success:function(data, textStatus, jqXHR){
 		    	if(data.status == "200") {
 			    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
 			    	startValue_combo = "";
-			    	loadList1();
+			    	loadList();
+					form.reset();
+					$("#modal_info").modal('hide');
 		    	}
 		    },
 		    error: function(jqXHR, textStatus, errorThrown){
@@ -474,6 +656,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		    complete: function() {
 		    }
 		});
+		
 	}
 	
 	function deleteAccount() {
@@ -552,6 +735,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				var recids = w2ui.grid_list.getSelection();
 	            if(event.target == 'tab1')
 	        	{
+	            	/*
 	       			console.log(' 재고조정');
 	       			w2ui['tabs'].set('tab1' ,  { style: "background-color: #8bcb77;"  });
 	      			$('#btn_in').attr('disabled', false);
@@ -567,11 +751,15 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	   				
 	     			$('#date_parent').hide();
 	    			document.getElementById('date_nm').innerHTML = '입고일자';
-	  
+	    			*/
+	  				
+	            	w2ui['tabs'].set('tab1' ,  { style: "background-color: #8bcb77;"  });
+	    			loadList1();
 	   
 	        	}else if(event.target == 'tab2')
 	        	{
 	      			console.log(' 입고내역');
+	      			/*
 	      			w2ui['tabs'].set('tab2' ,  { style: "background-color: #8bcb77;"  });
 	       			w2ui['grid_list'].showColumn(recids[0], 'in_date');
 	   				w2ui['grid_list'].hideColumn(recids[0], 'out_date');
@@ -585,10 +773,14 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	   				w2ui['grid_list2'].showColumn(recids[0], 'comment');
 	    			$('#date_parent').show();
 	    			document.getElementById('date_nm').innerHTML = '입고일자';
+	    			*/
+	            	w2ui['tabs'].set('tab2' ,  { style: "background-color: #8bcb77;"  });
+	    			loadList2();
 	    
 	       		}else if(event.target == 'tab3')
 	        	{
 	     			console.log(' 출고내역');
+	     			/*
 	     			w2ui['tabs'].set('tab3' ,  { style: "background-color: #8bcb77;"  });
 	     			w2ui['grid_list'].hideColumn(recids[0], 'in_date');
 	   				w2ui['grid_list'].showColumn(recids[0], 'out_date');
@@ -601,12 +793,12 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					w2ui['grid_list2'].showColumn(recids[0], 'comment');
 	    			$('#date_parent').show();
 	     			document.getElementById('date_nm').innerHTML = '출고일자';
+	     			*/
+	            	w2ui['tabs'].set('tab3' ,  { style: "background-color: #8bcb77;"  });
+	    			loadList3();
 	      		}
 				
 	   			w2ui['tabs'].refresh();
-	   			
-	   			
-	   			loadList();
 	        }
 	    });
 	}
