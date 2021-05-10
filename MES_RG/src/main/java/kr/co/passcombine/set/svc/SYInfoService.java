@@ -1710,9 +1710,16 @@ public class SYInfoService {
 	}	
 	public int updateAllMTLMST(SYTMaterialOrderVo vo) {//자재발주 일괄처리-VO형
 		return infoDAO.updateAllMTLMST(vo);
-	}		
-	public int updateEachMTL(SYTMaterialOrderVo vo) {//자재 요청 수정
+	}
+	
+	public int updateEachMTL(List<Map<String,Object>> vo) {//자재 요청 수정
 		return infoDAO.updateEachMTL(vo);
+	}	
+	public int updateEachMTLDTL(SYTMaterialOrderVo vo) {//자재발주 일괄처리-VO형
+		return infoDAO.updateAllMTLDTL(vo);
+	}	
+	public int updateEachMTLMST(SYTMaterialOrderVo vo) {//자재발주 일괄처리-VO형
+		return infoDAO.updateAllMTLMST(vo);
 	}	
 	public int deleteMaterialOrder(SYTMaterialOrderVo vo) {//자재 요청 삭제
 		return infoDAO.deleteMaterialOrder(vo);

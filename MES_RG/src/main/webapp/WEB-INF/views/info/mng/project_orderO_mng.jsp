@@ -103,7 +103,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 														<h3 class="box-title">발주 자재 상세 현황</h3>
 														<div class="box-tools pull-right">
 															<button type="button" id="btn_excel_csr" onclick="updateAllMTL();" class="btn btn-success btn-sm">일괄 입고 처리</button>
-															<button type="button" id="btn_dlv_csr" onclick="updateEachMTL();" class="btn btn-info btn-sm">자재 입고 처리</button>
+															<button type="button" id="btn_dlv_csr" onclick="showOrdModal();" class="btn btn-info btn-sm">자재 입고 처리</button>
 															<!-- <button type="button" id="btn_ins_csr" onclick="bomOrder();" class="btn btn-primary btn-sm">조회</button> -->
 														</div>
 													</div>
@@ -125,120 +125,70 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		<!-- /.content-wrapper -->
 
 		<!-- 모달 커팅 -->
-		<div class="modal fade" id="modal_info" data-backdrop="static">
-			<div class="modal-dialog modal-md" style="width: 800px;">
-				<div class="modal-content">
-					<div class="modal-header">
-						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-							<span aria-hidden="true">&times;</span>
-						</button>
-						<h4 class="modal-title" id="modal_code_title">BOM 등록/수정</h4>
-					</div>
-					<div class="modal-body" id="modal_code_body">
-						<form id="bom_lvl0" name="bom_lvl0" class="form-horizontal">
-							<div class="row">
-								<div class="col-md-12 text-center">
-									<label class="col-sm-1 control-label" style="padding-left: 0px">제조사</label>
-									<div class="col-sm-2" style="padding-left: 0px; padding-right: 0px">
-										<input type="combo" id="S_MTL_MKR_CD" name="S_MTL_MKR_CD" class="form-control input-sm pull-right" placeholder="제조사" 
-													onkeypress="if(event.keyCode==13) {requestGrid3(); return false;}" >
-									</div>		
-																	
-<!--  									<label class="col-sm-2 control-label" style="padding-left: 0px">자재분류</label>
-									<div class="col-sm-2" style="padding-left: 0px; padding-right: 0px">
-										<input type="combo" id="S_MTL_CATE" name="S_MTL_CATE" class="form-control input-sm pull-right" placeholder="자재분류" 
-													onkeypress="if(event.keyCode==13) {requestGrid3(); return false;}" >
-									</div> -->
-									
-									<label class="col-sm-1 control-label" style="padding-left: 0px">품목</label>
-									<div class="col-sm-2" style="padding-left: 0px; padding-right: 0px">
-										<input type="combo" id="S_MTL_NM" name="S_MTL_NM" class="form-control input-sm pull-right" placeholder="품목" 
-													onkeypress="if(event.keyCode==13) {requestGrid3(); return false;}" >
-									</div>	
-									
-									<label class="col-sm-2 control-label" style="padding-left: 0px">제조사 품번</label>
-									<div class="col-sm-2" style="padding-left: 0px; padding-right: 0px">
-										<input type="combo" id="S_MTL_MKR_NO" name="S_MTL_MKR_NO" class="form-control input-sm pull-right" placeholder="제조사 품번" 
-													onkeypress="if(event.keyCode==13) {requestGrid3(); return false;}" >
-									</div>	
-									<div class="col-sm-2">
-										<button type="button" class="btn btn-default btn-sm" onclick="requestGrid3()">조회</button>
-										<button type="button" class="btn btn-success btn-sm" onclick="addBOM()">등록</button>
-									</div>	
-								</div>
-								<div class="col-sm-12">
-									<div id="grid_list3" class="w2g-h200" style="margin-top: 10px;"></div>
-								</div>
-							</div>
-						</form>
-						
-						<form id="bom_lvl1" name="bom_lvl1" class="form-horizontal" style="margin-top: 10px">
-							<div class="row">
-								<div class="col-md-12 text-center" style="margin-top: 20px; text-align: right;">
-									<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">등록</button>
-									<button type="button" id="" class="btn btn-danger btn-sm" data-dismiss="modal">닫기</button>
-								</div>	
-								<div class="col-sm-12">
-									<div id="grid_list4" class="w2g-h200" style="margin-top: 10px;"></div>
-								</div>
-							</div>
-						</form>						
-						
-						<input type="hidden" id="hiddenProduct_code"> 
-						<input type="hidden" id="hiddenM_item_code">
-					</div>				
-				</div>
-			</div>
-		</div>
-
-		<div class="modal fade" id="modal_add" data-backdrop="static">
+		<div class="modal fade" id="modal_eachOrderForm" data-backdrop="static">
 			<div class="modal-dialog modal-md">
 				<div class="modal-content">
 					<div class="modal-header">
 						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
 							<span aria-hidden="true">&times;</span>
 						</button>
-						<h4 class="modal-title" id="modal_add_title">등록</h4>
+						<h4 class="modal-title" id="modal_add_title">자재입고</h4>
 					</div>
 					<div class="modal-body" id="modal_code_body">
 						<form id="frm_routingItnbr" name="frm_routingItnbr" class="form-horizontal">
-							<div class="col-sm-9">
+							<div class="col-sm-10">
 								<div class="row">
 									<div class="form-group">
-										<label class="col-sm-3 control-label">품명</label>
-										<div class="col-sm-7">
-											<input type="combo" class="form-control input-sm pull-right clear_val2" id="add_nm" maxlength="100">
+										<label class="col-sm-4 control-label">입고 수량</label>
+										<div class="col-sm-6">
+											<input type="number" id="WHS_HIS_QTY" name="WHS_HIS_QTY" placeholder="ex) 1000" class="form-control input-sm" maxlength="10" />
 										</div>
 									</div>
 								</div>
 								<div class="row">
 									<div class="form-group">
-										<label class="col-sm-3 control-label">P/N</label>
-										<div class="col-sm-7">
-											<input type="combo" class="form-control input-sm pull-right clear_val2" id="add_code" maxlength="100">
+										<label class="col-sm-4 control-label">취소 수량</label>
+										<div class="col-sm-6">
+											<input type="number" id="WHS_HIS_CANCEL_QTY" name="WHS_HIS_CANCEL_QTY" placeholder="ex) 1000" class="form-control input-sm" maxlength="10" />
 										</div>
 									</div>
+								</div>								
+								<div class="row">
+									<div class="form-group">
+										<label class="col-sm-4 control-label">입고 일자</label>
+										<div class="input-group col-sm-6" style="padding-left:15px;">
+											<input type="text" class="form-control pull-right input-sm" id="WHS_HIS_REG_DT" placeholder="yyyymmdd~yyyymmdd">
+											<div class="input-group-addon">
+												<i class="fa fa-calendar"></i>
+											</div>
+										</div>											
+									</div>
 								</div>
+								<div class="row">
+									<div class="form-group">
+										<label class="col-sm-4 control-label">검수 여부</label>
+										<div class="col-sm-6">
+											<select id="ORD_CHK_STATUS" name="ORD_CHK_STATUS" class="form-control" style="height: 30px;" >
+												<option value="Y">검수완료</option>
+												<option value="N">검수 중</option>
+											</select>
+										</div>
+									</div>
+								</div>																							
 							</div>
-							<div class="col-sm-3">
-								<button type="button" id="" class="btn btn-default btn-sm" onclick="selmaterial()">검색</button>
-							</div>
-							<div class="col-sm-12">
-								<div id="grid_list6" class="w2g-h200" style="margin-top: 10px;"></div>
-							</div>
+						<input type="hidden" id="hiddenProduct_code"> 
+						<input type="hidden" id="hiddenM_item_code">							
 						</form>
 					</div>
 					<div class="modal-footer" style="border-top-color: transparent !important;">
 						<div class="col-md-12 text-center" style="margin-top: 10px">
-							<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">등록</button>
+							<button type="button" id="" class="btn btn-success btn-sm" onclick="updateEachMTL()">저장</button>
 							<button type="button" id="" class="btn btn-danger btn-sm" data-dismiss="modal">취소</button>
 						</div>
 					</div>
 				</div>
 			</div>
-		</div>
-		
-		
+		</div>		
 		<!--  -->
 
 		<jsp:include page="/common/footer_inc" flush="true">
@@ -273,6 +223,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		requestProject('S_PJT_IDX');//프로젝트명 가져오기
 		requestVendor('S_VDR_IDX');//거래처 정보를 검색폼 드랍다운 형태로 만듬
 	
+		fnLoadCommonOption('#WHS_HIS_REG_DT');
 		fnLoadDeliveryOption('#S_MTL_ORD_DLV_DT','right');//검색폼 달력
 		
 		fnLoadLeftGrid();
@@ -313,9 +264,51 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						return html;
 	           		} 					
 				}, 
-				{ field:'mtl_ORD_FLE1', caption:'하자증권', size:'8%', style:'text-align:center', sortable: true}, 
-				{ field:'mtl_ORD_FLE2', caption:'이행증권', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_ORD_FLE3', caption:'계약서', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_ORD_FLE1', caption:'하자증권', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == '1') {
+							return 'X';
+						} else if(html == '2') {
+							return 'O';
+						} else {
+							var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
+							return html2;
+						}
+						return html;
+           			} 		
+				}, 
+				{ field:'mtl_ORD_FLE2', caption:'이행증권', size:'8%', style:'text-align:center', sortable: true
+           			,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == 'N') {
+							return 'N';
+						} else if(html == 'Y') {
+							return 'Y';
+						} else {
+							var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
+							return html2;
+						}
+						return html;
+	           		} 		
+				},
+				{ field:'mtl_ORD_FLE3', caption:'계약서', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == '1') {
+							return 'X';
+						} else if(html == '2') {
+							return 'O';
+						} else {
+							var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
+							return html2;
+						}
+						return html;
+	           		} 		
+				},
 				{ field:'mtl_ORD_STATE', caption:'거래승인여부', size:'8%', style:'text-align:center', sortable: true
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
@@ -412,8 +405,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	}
 
 	function fnLoadRightGrid() {
-		
-
 		$('#grid_list2').w2grid({
 			name : 'grid_list2',
 			show : {
@@ -437,22 +428,42 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'ord_DTL_PRICE', caption:'단가', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'ord_DTL_QTY', caption:'발주수량', size:'10%', style:'text-align:center', sortable: true},
-				{ field:'calcul_QTY', caption:'입고수량', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'calcul_cha_QTY', caption:'잔량', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_QTY', caption:'입고수량', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'calcul_cha_QTY', caption:'잔량', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+/* 						var html = this.get(event.recid).ord_DTL_QTY - this.get(event.recid).mtl_QTY;
+						return html; */
+	           		} 
+				},
 				{ field:'ord_CHK_STATUS', caption:'검수여부', size:'8%', style:'text-align:center', sortable: true
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
 						
 						if(html == 'Y') {
-							return '검수완료';
+							return '검수 완료';
 						} else {
-							return '';
+							return '검수 전';
 						}
 						return html;
 	           		} 
 				},
 				{ field:'calcul_DLV_DT', caption:'납품일자', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'ord_DTL_STATUS', caption:'Status', size:'8%', style:'text-align:center', sortable: true}
+				{ field:'ord_DTL_STATUS', caption:'Status', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == 'I') {
+							return '진행중';
+						} else if(html == 'E') {
+							return '부분 입고';
+						} else if(html == 'A') {
+							return '입고';							
+						} else {
+							return '진행중';
+						}
+						return html;
+	           		} 
+				}
 			],
 			records : [],
 			total : 0,
@@ -546,7 +557,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					}
 				});
 			}			
-
 		}
 	}	
 	function updateAllMTL() {		
@@ -570,7 +580,11 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			}
 			
 			var mstData = {
-				'ORD_IDX': ORD_IDX
+				'ORD_IDX': ORD_IDX,
+				'WHS_HIS_QTY' : WHS_HIS_QTY,
+				'WHS_HIS_CANCEL_QTY' : WHS_HIS_CANCEL_QTY,
+				'WHS_HIS_REG_DT' : WHS_HIS_REG_DT,
+				'ORD_CHK_STATUS' : ORD_CHK_STATUS
 			}
 			
 			if (confirm("일괄 입고처리를 진행하시겠습니까?")) {
@@ -612,49 +626,62 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 		}
 	}
-	//개별 자재 입고 처리
-	function updateEachMTL() {
-		var keys = w2ui.grid_list.getSelection();
+	function showOrdModal() {
+		var keys = w2ui.grid_list2.getSelection();
 		var ModalDataList = [];
 		
-		if($('#S_PJT_IDX').val() == "ALL") {
-			alert("프로젝트 정보를 선택하여주십시오");
-			return;
-		} else if (keys == null || keys == "") {
+		if (keys == null || keys == "") {
 			alert("개별 입고할 구매발주번호를 선택하여주십시오");
 		} else {
-			alert("개별 입고처리를 진행합니다.");
-			return;
+/* 			$("#WHS_HIS_QTY").val() = "";
+			$("#WHS_HIS_CANCEL_QTY").val() = ""; */
+			
+			$("#modal_eachOrderForm").modal('show');
+		}
+	}
+	//개별 자재 입고 처리
+	function updateEachMTL() {
+		var keys = w2ui.grid_list2.getSelection();
+		var ModalDataList = [];
+		
+		if (keys == null || keys == "") {
+			alert("개별 입고할 구매발주번호를 선택하여주십시오");
+		} else {
+			var data = w2ui.grid_list.get(keys[0]);			
+			var ORD_IDX = data.ord_IDX;//구매발주번호	
+
+			if($('#WHS_HIS_QTY').val() == "") {
+				var WHS_HIS_QTY = "0";
+				alert("test:" + WHS_HIS_QTY);
+			}
+			if($('#WHS_HIS_CANCEL_QTY').val() == "") {
+				var WHS_HIS_CANCEL_QTY = "0";
+			}
+			var mstData = {
+					'ORD_IDX': ORD_IDX,
+					'WHS_HIS_QTY': $("#WHS_HIS_QTY").val(),
+					'WHS_HIS_CANCEL_QTY': $("#WHS_HIS_CANCEL_QTY").val(),
+					'WHS_HIS_REG_DT': $("#WHS_HIS_REG_DT").val(),
+					'ORD_CHK_STATUS': $("#ORD_CHK_STATUS").val()
+				}			
+			
 			for (var i = 0; i < keys.length; i++) {
-				var Data = {
-					MTL_REQ_IDX : w2ui.grid_list.records[keys[i]-1].mtl_REQ_IDX,	
-					PJT_IDX : w2ui.grid_list2.records[keys[i]-1].pjt_IDX,
-                    BOM_IDX : w2ui.grid_list2.records[keys[i]-1].bom_IDX,
-					PJT_CD : w2ui.grid_list2.records[keys[i]-1].pjt_CD,
-					PJT_NM : w2ui.grid_list2.records[keys[i]-1].pjt_NM,
+				var DataList = {
+					ORD_IDX : w2ui.grid_list2.records[keys[i]-1].ord_IDX,
+					MTL_ORD_DTL_IDX : w2ui.grid_list2.records[keys[i]-1].mtl_ORD_DTL_IDX,
 					MTL_IDX : w2ui.grid_list2.records[keys[i]-1].mtl_IDX,
-					MTL_MKR_CD : w2ui.grid_list2.records[keys[i]-1].mtl_MKR_CD,
-					MTL_NM : w2ui.grid_list2.records[keys[i]-1].mtl_NM,
-					MTL_MKR_NO : w2ui.grid_list2.records[keys[i]-1].mtl_MKR_NO,
-					MTL_STD : w2ui.grid_list2.records[keys[i]-1].mtl_STD,
-					MTL_UNT : w2ui.grid_list2.records[keys[i]-1].mtl_UNT,
-					MTL_REQ_QTY : mtl_REQ_QTY_val,
-					MTL_REQ_TYPE : w2ui.grid_list2.records[keys[i]-1].mtl_REQ_TYPE,
-					MTL_EST_REG_DT : $('#MTL_EST_REG_DT').val(),
-					MTL_EST_REG_ID : w2ui.grid_list2.records[keys[i]-1].mtl_REQ_REG_ID,
-					S_VDR_IDX0 : $('#S_VDR_IDX1').val()+"",
-					S_VDR_IDX1 : $('#S_VDR_IDX2').val()+"",
-					S_VDR_IDX2 : $('#S_VDR_IDX3').val()+"",
-					S_VDR_IDX3 : $('#S_VDR_IDX4').val()+""
+					WHS_HIS_QTY : w2ui.grid_list2.records[keys[i]-1].ord_DTL_QTY,
+					WHS_HIS_QTY : WHS_HIS_QTY
 				};
-				reqDataList.push(Data);
+				reqDataList.push(DataList);
 			}			
 
 			if (confirm("등록하시겠습니까?")) {
 				console.log(reqDataList);
 
-				var page_url = "/info/info/insertEstimate";
-				var jsonData = JSON.stringify(reqDataList);
+				var page_url = "/info/info/updateEachMTL";
+				var jsonData = JSON.stringify({'mstData': mstData, 'reqDataList': reqDataList});
+				
 				console.log(jsonData);
 
 				jQuery.ajaxSettings.traditional = true;
@@ -667,8 +694,17 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					data_type : 'json',
 					success : function(data) {
 						if (data != 0) {
+							rowArrDtl=[];
+							reqDataList=[];
+
+							w2ui.grid_list.clear();
+							loadLeftGrid();
+							
+							w2ui.grid_list2.clear();
+							
 							alert("추가되었습니다");
-							$("#modal_estimateForm").modal('hide');
+							
+							$("#modal_eachOrderForm").modal('hide');
 						} else {
 							alert("오류가 발생하였습니다");
 						}
