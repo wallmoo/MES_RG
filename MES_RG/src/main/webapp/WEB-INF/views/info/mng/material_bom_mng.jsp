@@ -217,7 +217,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						<form id="bom_lvl1" name="bom_lvl1" class="form-horizontal" style="margin-top: 10px">
 							<div class="row">
 								<div class="col-md-12 text-center" style="margin-top: 20px; text-align: right;">
-									<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">등록</button>
+<!-- 									<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">등록</button> -->
 									<button type="button" id="" class="btn btn-danger btn-sm" data-dismiss="modal">닫기</button>
 								</div>	
 								<div class="col-sm-12">
@@ -272,7 +272,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					</div>
 					<div class="modal-footer" style="border-top-color: transparent !important;">
 						<div class="col-md-12 text-center" style="margin-top: 10px">
-							<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">등록</button>
+<!-- 							<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">등록</button> -->
 							<button type="button" id="" class="btn btn-danger btn-sm" data-dismiss="modal">취소</button>
 						</div>
 					</div>
@@ -538,7 +538,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		var list = w2ui[gridname].records;
 		for (i = 0; list.length > i; i++) {
 			var num = i + 1;
-			if (list[i].c_item_nm.indexOf(cnm) !== -1) {
+			if (list[i].mtl_NM.indexOf(cnm) !== -1) {
 				$('#grid_' + gridname + '_rec_' + num + ' > td').css({ "color" : "red" });
 			} else {
 				$('#grid_' + gridname + '_rec_' + num + ' > td').css({ "color" : "black" });
@@ -581,6 +581,32 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 			$('#hiddenProduct_code').val('');
 			$('#hiddenM_item_code').val('');
+		}
+
+	};
+	function updateBom() {
+		var keys = w2ui.grid_list.getSelection();
+		
+		if (keys == null || keys == "") {
+			alert("먼저 프로젝트를 선택하여주십시오");
+		} else {
+			$(".clear_val").val('');
+			
+			setTimeout(function() {
+				w2ui['grid_list3'].resize();
+				w2ui['grid_list3'].refresh();
+				
+				w2ui['grid_list4'].resize();
+				w2ui['grid_list4'].refresh();				
+			}, 200);
+			
+			$("#modal_info").modal('show');
+			$("#bom_IDX").val(w2ui.grid_list2.get(keys[0]).bom_IDX);
+			$('#hiddenProduct_code').val('');
+			$('#hiddenM_item_code').val('');
+			$('#BOM_IDX').val('')
+			requestGrid3();
+			requestGrid4();
 		}
 
 	};
@@ -686,8 +712,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				w2ui['grid_list3'].unlock();
 			},
 			complete : function() {
-				document.getElementById("g3_item_nm").style.removeProperty("height");
-				document.getElementById("g3_item_type_code").style.removeProperty("height");
+				//document.getElementById("g3_item_nm").style.removeProperty("height");
+				//document.getElementById("g3_item_type_code").style.removeProperty("height");
 			}
 		});
 	}
