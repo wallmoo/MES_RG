@@ -32,6 +32,7 @@ public class SYTMaterialOrderVo implements Serializable{
 	private String MTL_UNT;
 	private String MTL_STD;
 	private String ORD_CHK_STATUS;
+	private String MTL_QTY;
 	
 	public int getORD_IDX() {
 		return ORD_IDX;
@@ -188,6 +189,12 @@ public class SYTMaterialOrderVo implements Serializable{
 	}
 	public void setORD_CHK_STATUS(String oRD_CHK_STATUS) {
 		ORD_CHK_STATUS = oRD_CHK_STATUS;
+	}
+	public String getMTL_QTY() {
+		return MTL_QTY;
+	}
+	public void setMTL_QTY(String mTL_QTY) {
+		MTL_QTY = mTL_QTY;
 	}
 	
 

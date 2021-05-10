@@ -141,7 +141,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 									<div class="form-group">
 										<label class="col-sm-4 control-label">입고 수량</label>
 										<div class="col-sm-6">
-											<input type="text" id="WHS_HIS_QTY" name="WHS_HIS_QTY" placeholder="ex) 1000" class="form-control input-sm" maxlength="10" />
+											<input type="number" id="WHS_HIS_QTY" name="WHS_HIS_QTY" placeholder="ex) 1000" class="form-control input-sm" maxlength="10" />
 										</div>
 									</div>
 								</div>
@@ -149,7 +149,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 									<div class="form-group">
 										<label class="col-sm-4 control-label">취소 수량</label>
 										<div class="col-sm-6">
-											<input type="text" id="WHS_HIS_CANCEL_QTY" name="WHS_HIS_CANCEL_QTY" placeholder="ex) 1000" class="form-control input-sm" maxlength="10" />
+											<input type="number" id="WHS_HIS_CANCEL_QTY" name="WHS_HIS_CANCEL_QTY" placeholder="ex) 1000" class="form-control input-sm" maxlength="10" />
 										</div>
 									</div>
 								</div>								
@@ -264,9 +264,51 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						return html;
 	           		} 					
 				}, 
-				{ field:'mtl_ORD_FLE1', caption:'하자증권', size:'8%', style:'text-align:center', sortable: true}, 
-				{ field:'mtl_ORD_FLE2', caption:'이행증권', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_ORD_FLE3', caption:'계약서', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_ORD_FLE1', caption:'하자증권', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == '1') {
+							return 'X';
+						} else if(html == '2') {
+							return 'O';
+						} else {
+							var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
+							return html2;
+						}
+						return html;
+           			} 		
+				}, 
+				{ field:'mtl_ORD_FLE2', caption:'이행증권', size:'8%', style:'text-align:center', sortable: true
+           			,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == 'N') {
+							return 'N';
+						} else if(html == 'Y') {
+							return 'Y';
+						} else {
+							var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
+							return html2;
+						}
+						return html;
+	           		} 		
+				},
+				{ field:'mtl_ORD_FLE3', caption:'계약서', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == '1') {
+							return 'X';
+						} else if(html == '2') {
+							return 'O';
+						} else {
+							var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
+							return html2;
+						}
+						return html;
+	           		} 		
+				},
 				{ field:'mtl_ORD_STATE', caption:'거래승인여부', size:'8%', style:'text-align:center', sortable: true
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
@@ -386,22 +428,42 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'ord_DTL_PRICE', caption:'단가', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'ord_DTL_QTY', caption:'발주수량', size:'10%', style:'text-align:center', sortable: true},
-				{ field:'calcul_QTY', caption:'입고수량', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'calcul_cha_QTY', caption:'잔량', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_QTY', caption:'입고수량', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'calcul_cha_QTY', caption:'잔량', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+/* 						var html = this.get(event.recid).ord_DTL_QTY - this.get(event.recid).mtl_QTY;
+						return html; */
+	           		} 
+				},
 				{ field:'ord_CHK_STATUS', caption:'검수여부', size:'8%', style:'text-align:center', sortable: true
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
 						
 						if(html == 'Y') {
-							return '검수완료';
+							return '검수 완료';
 						} else {
-							return '';
+							return '검수 전';
 						}
 						return html;
 	           		} 
 				},
 				{ field:'calcul_DLV_DT', caption:'납품일자', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'ord_DTL_STATUS', caption:'Status', size:'8%', style:'text-align:center', sortable: true}
+				{ field:'ord_DTL_STATUS', caption:'Status', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == 'I') {
+							return '진행중';
+						} else if(html == 'E') {
+							return '부분 입고';
+						} else if(html == 'A') {
+							return '입고';							
+						} else {
+							return '진행중';
+						}
+						return html;
+	           		} 
+				}
 			],
 			records : [],
 			total : 0,
@@ -570,7 +632,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		
 		if (keys == null || keys == "") {
 			alert("개별 입고할 구매발주번호를 선택하여주십시오");
-		} else {		
+		} else {
+/* 			$("#WHS_HIS_QTY").val() = "";
+			$("#WHS_HIS_CANCEL_QTY").val() = ""; */
+			
 			$("#modal_eachOrderForm").modal('show');
 		}
 	}
@@ -584,26 +649,39 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		} else {
 			var data = w2ui.grid_list.get(keys[0]);			
 			var ORD_IDX = data.ord_IDX;//구매발주번호	
-			
+
+			if($('#WHS_HIS_QTY').val() == "") {
+				var WHS_HIS_QTY = "0";
+				alert("test:" + WHS_HIS_QTY);
+			}
+			if($('#WHS_HIS_CANCEL_QTY').val() == "") {
+				var WHS_HIS_CANCEL_QTY = "0";
+			}
 			var mstData = {
-					'ORD_IDX': ORD_IDX
+					'ORD_IDX': ORD_IDX,
+					'WHS_HIS_QTY': $("#WHS_HIS_QTY").val(),
+					'WHS_HIS_CANCEL_QTY': $("#WHS_HIS_CANCEL_QTY").val(),
+					'WHS_HIS_REG_DT': $("#WHS_HIS_REG_DT").val(),
+					'ORD_CHK_STATUS': $("#ORD_CHK_STATUS").val()
 				}			
 			
 			for (var i = 0; i < keys.length; i++) {
-				var Data = {
+				var DataList = {
 					ORD_IDX : w2ui.grid_list2.records[keys[i]-1].ord_IDX,
 					MTL_ORD_DTL_IDX : w2ui.grid_list2.records[keys[i]-1].mtl_ORD_DTL_IDX,
 					MTL_IDX : w2ui.grid_list2.records[keys[i]-1].mtl_IDX,
-					WHS_HIS_QTY : w2ui.grid_list2.records[keys[i]-1].ord_DTL_QTY
+					WHS_HIS_QTY : w2ui.grid_list2.records[keys[i]-1].ord_DTL_QTY,
+					WHS_HIS_QTY : WHS_HIS_QTY
 				};
-				reqDataList.push(Data);
+				reqDataList.push(DataList);
 			}			
 
 			if (confirm("등록하시겠습니까?")) {
 				console.log(reqDataList);
 
-				var page_url = "/info/info/insertEstimate";
-				var jsonData = JSON.stringify(reqDataList);
+				var page_url = "/info/info/updateEachMTL";
+				var jsonData = JSON.stringify({'mstData': mstData, 'reqDataList': reqDataList});
+				
 				console.log(jsonData);
 
 				jQuery.ajaxSettings.traditional = true;

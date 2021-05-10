@@ -5403,9 +5403,10 @@ public class InfoController {
 					map.put("WHS_HIS_TYPE", "O");	
 				}	
 				System.out.println(list);	
-				// ## Transaction 처리가 필요하다.	
+				
 				// 1. T_WHS_HIS 테이블에 입고 이력을 입력 --> ok	
 				int cnt = sYInfoService.updateAllMTL(list);	
+				
 				// 2.T_MTL_ORD_DTL 테이블 업데이트: 상태값 - ORD_DTL_STATUS, ORD_CHK_STATUS	
 				sYInfoService.updateAllMTLDTL(vo);	
 					
@@ -5479,6 +5480,7 @@ public class InfoController {
 		}	
 		return resultData.toJSONString();	
 	}
+	
 	// updateEachMTL	
 	@ResponseBody	
 	@RequestMapping(value = "/info/updateEachMTL", method = { RequestMethod.GET,	
@@ -5486,12 +5488,12 @@ public class InfoController {
 	@SuppressWarnings("unchecked")	
 	public String updateEachMTL(@ModelAttribute SYTMaterialOrderVo vo, HttpServletRequest request,	
 			@RequestParam String jsonData) {	
-		logger.debug("FrontendController.updateAllMTL is called.");	
+		logger.debug("FrontendController.updateEachMTL is called.");
+		
 		HashMap<String, Object> mapVO = null;	
 		String REG_ID = SessionUtil.getMemberId(request);	
 		ObjectMapper mapper = new ObjectMapper();	
-		TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {	
-		};	
+		TypeReference<HashMap<String, Object>> typeRef = new TypeReference<HashMap<String, Object>>() {};	
 		try {	
 			mapVO = mapper.readValue(jsonData, typeRef);	
 			System.out.println(vo);	
@@ -5506,7 +5508,17 @@ public class InfoController {
 			// map으로 값 받기	
 			Map<String, Object> mstMap = (Map<String, Object>) mapVO.get("mstData");	
 			int ord_IDX = (int) mstMap.get("ORD_IDX");	
+			int whs_HIS_QTY = Integer.valueOf((String) mstMap.get("WHS_HIS_QTY"));
+			int whs_HIS_CANCEL_QTY = Integer.valueOf((String) mstMap.get("WHS_HIS_CANCEL_QTY"));
+			int WHS_HIS_QTY = whs_HIS_QTY - whs_HIS_CANCEL_QTY;
+			
+			String WHS_HIS_REG_DT = (String) mstMap.get("WHS_HIS_REG_DT");
+			String ORD_CHK_STATUS = (String) mstMap.get("ORD_CHK_STATUS");
+			
 			vo.setORD_IDX(ord_IDX);	
+			vo.setMTL_ORD_DLV_DT(WHS_HIS_REG_DT);//납기일	
+			vo.setORD_CHK_STATUS(ORD_CHK_STATUS);	
+			
 			// 구매발주 상태 체크	
 			SYTMaterialOrderVo result = sYInfoService.chkOrdStatus(vo);// 발주내역 저장 return ORD_IDX	
 			String MTL_ORD_STATUS = result.getMTL_ORD_STATUS();	
@@ -5515,19 +5527,23 @@ public class InfoController {
 				List<Map<String, Object>> list = (List<Map<String, Object>>) mapVO.get("reqDataList");	
 				for (Map<String, Object> map : list) {	
 					map.put("WHS_HIS_REG_ID", REG_ID);	
-					map.put("WHS_HIS_GB", "IN");	
-					map.put("WHS_HIS_TYPE", "O");	
+					map.put("WHS_HIS_GB", "IN");//입출고 구분(IN/OUT)	
+					map.put("WHS_HIS_TYPE", "O");//출처: 자재요청서(E), 발주서(O), 강제(F)
+					
+					map.put("WHS_HIS_QTY", WHS_HIS_QTY);
+					map.put("WHS_HIS_REG_DT", WHS_HIS_REG_DT);
+					map.put("ORD_CHK_STATUS", ORD_CHK_STATUS);
 				}	
 				System.out.println(list);	
-				// ## Transaction 처리가 필요하다.	
+				
 				// 1. T_WHS_HIS 테이블에 입고 이력을 입력 --> ok	
-				int cnt = sYInfoService.updateAllMTL(list);	
+				int cnt = sYInfoService.updateEachMTL(list);	
 				
 				// 2.T_MTL_ORD_DTL 테이블 업데이트: 상태값 - ORD_DTL_STATUS, ORD_CHK_STATUS	
-				sYInfoService.updateAllMTLDTL(vo);	
+				sYInfoService.updateEachMTLDTL(vo);	
 					
 				// 3.T_MTL_ORD_MST 테이블 업데이트: 상태값 - MTL_ORD_STATUS	
-				sYInfoService.updateAllMTLMST(vo);	
+				sYInfoService.updateEachMTLMST(vo);	
 					
 				if (cnt == 1) {	
 					resultData.put("status", HttpStatus.OK.value());	

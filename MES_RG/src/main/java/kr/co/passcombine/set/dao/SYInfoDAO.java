@@ -309,7 +309,11 @@ public interface SYInfoDAO {
 	public int updateAllMTLVO(SYTMaterialOrderVo vo);
 	public int updateAllMTLMST(SYTMaterialOrderVo vo);
 	public int updateAllMTLDTL(SYTMaterialOrderVo vo);
-	public int updateEachMTL(SYTMaterialOrderVo vo);
+	
+	public int updateEachMTL(List<Map<String,Object>> vo);
+	public int updateEachMTLMST(SYTMaterialOrderVo vo);
+	public int updateEachMTLDTL(SYTMaterialOrderVo vo);	
+	
 	public int deleteMaterialOrder(SYTMaterialOrderVo vo);
 	// MaterialOrder End		
 	public Map<String, Object> selectFilesbyOrder(Map<String, Object> vo);
