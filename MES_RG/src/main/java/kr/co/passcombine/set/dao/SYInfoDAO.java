@@ -320,4 +320,7 @@ public interface SYInfoDAO {
 	public Map<String, Object> selectFilesbyOrder(Map<String, Object> vo);
 	public int updateT_MTL_ORD_MST(Map<String, Object> queryMap);
 	
+	
+	public int updateReqDelivery(List<Map<String,Object>> vo);
+	public int deliveryMaterial(List<Map<String,Object>> vo);
 }

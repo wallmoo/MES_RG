@@ -5266,6 +5266,59 @@ public class InfoController {
 
 		return resultData.toJSONString();
 	}	
+	//delivery Material: 자재 불출
+	@ResponseBody	
+	@RequestMapping(value = "/info/deliveryMaterial", method = { RequestMethod.GET,	
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")	
+	@SuppressWarnings("unchecked")	
+	public String deliveryMaterial(HttpServletRequest request, @RequestParam String jsonData) {	
+		logger.debug("FrontendController.deliveryMaterial is called.");	
+		
+		List<Map<String, Object>> vo = null;	
+		String REG_ID = SessionUtil.getMemberId(request);	
+		
+		ObjectMapper mapper = new ObjectMapper();
+		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() { };
+		try {
+			vo = mapper.readValue(jsonData, typeRef);
+			System.out.println("Dd");
+		} catch (IOException e1) {
+			System.out.println(e1);
+			e1.printStackTrace();
+		}
+		for (int i = 0; i < vo.size(); i++) {
+			vo.get(i).put("WHS_HIS_REG_ID", REG_ID);	
+			vo.get(i).put("WHS_HIS_GB", "OUT");//입출고 구분(IN/OUT)
+			vo.get(i).put("WHS_HIS_TYPE", "E");//출처: 자재요청서(E), 발주서(O), 강제(F)
+			vo.get(i).put("MTL_REQ_STATE", "O");//불출 완료(O)/대기(I), 견적요청(E)
+		}
+		
+		JSONObject resultData = new JSONObject();	
+		JSONArray jsonArray = new JSONArray();	
+		JSONParser parser = new JSONParser();	
+		try {	
+			// 1. T_MTL_REQ_MST 테이블에 불출 정보를 업데이트 한다.(MTL_DLV_QTY, MTL_REQ_STATE)
+			int cnt = sYInfoService.updateReqDelivery(vo);	
+			
+			// 2.T_WHS_HIS 테이블에 재고 불출 정보 입력	
+			sYInfoService.deliveryMaterial(vo);	
+				
+			if (cnt == 1) {	
+				resultData.put("status", HttpStatus.OK.value());	
+				resultData.put("msg", "success");	
+			} else {	
+				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());	
+				resultData.put("msg", "whatfall");	
+			}	
+			System.out.println("cnt = " + cnt);	
+			
+			logger.debug("MTL_ORD_STATUS:");	
+		} catch (Exception e) {	
+			e.printStackTrace();	
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());	
+		}	
+		return resultData.toJSONString();	
+	}	
 	
 	@ResponseBody
 	@RequestMapping(value = "/account/testUpload", method = { RequestMethod.GET,
