@@ -78,7 +78,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																<div class="col-sm-2">
 																	<label>납품 요청일</label>
 																	<div class="input-group">
-																		<input type="text" class="form-control pull-right input-sm" id="S_MTL_ORD_DLV_DT" placeholder="yyyymmdd~yyyymmdd">
+																		<input type="text" class="form-control pull-right input-sm" id="S_MTL_ORD_DLV_DT" placeholder="yyyymmdd~yyyymmdd"
+																		onchange="searchs();">
 																		<div class="input-group-addon">
 																			<i class="fa fa-calendar"></i>
 																		</div>
@@ -214,6 +215,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	var startValue_combo = "";
 	
 	var minDate = getFormatDate(new Date());
+	var loadingEnd = false;
 	
 	comboValue_nm = new Array;
 	comboValue_cd = new Array;
@@ -229,9 +231,14 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		
 		fnLoadLeftGrid();
 		fnLoadRightGrid();
+		loadingEnd=true;
 	})
 
-
+	function searchs(){
+		if(loadingEnd){
+			loadLeftGrid();
+		}
+	}
 	// fnLoadLeftGrid
 	function fnLoadLeftGrid() {
 		var rowArr = [];

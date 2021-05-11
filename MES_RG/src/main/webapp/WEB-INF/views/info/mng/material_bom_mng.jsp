@@ -84,7 +84,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																<div class="col-sm-2">
 																	<div class="form-group">
 																		<label>고객사</label> 
-																		<select id="S_CST_IDX" name="S_CST_IDX" class="form-control" style="height: 30px;" ></select>
+																		<select id="S_CST_IDX" name="S_CST_IDX" class="form-control" style="height: 30px;" 
+																		onchange="searchs()"></select>
 																	</div>
 																</div>	
 																							
@@ -100,7 +101,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																	<label>납품 요청일</label>
 																		<div class="input-group">
 																			<input type="text" 
-																				class="form-control pull-right input-sm" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd">
+																				class="form-control pull-right input-sm" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd"
+																				onchange="searchs()">
 																			<div class="input-group-addon">
 																				<i class="fa fa-calendar"></i>	
 																			</div>
@@ -113,7 +115,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																	<label>프로젝트 등록일</label>
 																		<div class="input-group">
 																			<input type="text" 
-																				class="form-control pull-right input-sm" id="S_PJT_REG_DT" placeholder="yyyymmdd~yyyymmdd">
+																				class="form-control pull-right input-sm" id="S_PJT_REG_DT" placeholder="yyyymmdd~yyyymmdd"
+																				onchange="searchs()">
 																			<div class="input-group-addon">
 																				<i class="fa fa-calendar"></i>	
 																			</div>
@@ -147,7 +150,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 															<div class="col-sm-6">
 																<label>자재검색</label> 
 																<input type="combo" id="r_mt_name" name="r_mt_name" class="form-control input-sm" placeholder="자재검색"
-																	onkeypress="if(event.keyCode==13) {requestRightGrid(); return false;}" style="padding: 5px 10px;">
+																	onkeypress="if(event.keyCode==13) {requestRightGrid('grid_list2'); return false;}" style="padding: 5px 10px;">
 															</div>
 														</div>
 													</div>
@@ -217,7 +220,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						<form id="bom_lvl1" name="bom_lvl1" class="form-horizontal" style="margin-top: 10px">
 							<div class="row">
 								<div class="col-md-12 text-center" style="margin-top: 20px; text-align: right;">
-									<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">등록</button>
+<!-- 									<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">등록</button> -->
 									<button type="button" id="" class="btn btn-danger btn-sm" data-dismiss="modal">닫기</button>
 								</div>	
 								<div class="col-sm-12">
@@ -272,7 +275,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					</div>
 					<div class="modal-footer" style="border-top-color: transparent !important;">
 						<div class="col-md-12 text-center" style="margin-top: 10px">
-							<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">등록</button>
+<!-- 							<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">등록</button> -->
 							<button type="button" id="" class="btn btn-danger btn-sm" data-dismiss="modal">취소</button>
 						</div>
 					</div>
@@ -303,6 +306,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	var startValue_combo = "";
 	
 	var minDate = getFormatDate(new Date());
+	var loadingEnd = false;
 	
 	comboValue_nm = new Array;
 	comboValue_cd = new Array;
@@ -330,8 +334,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		fnLoadRightGrid();
 		loadGrid3();
 		loadGrid4();
+		loadingEnd=true;
 	})
-
+	function searchs(){
+		if(loadingEnd){
+			loadLeftGrid();
+		}
+	}
 
 	// fnLoadLeftGrid
 	function fnLoadLeftGrid() {
@@ -538,7 +547,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		var list = w2ui[gridname].records;
 		for (i = 0; list.length > i; i++) {
 			var num = i + 1;
-			if (list[i].c_item_nm.indexOf(cnm) !== -1) {
+			if (list[i].mtl_NM.indexOf(cnm) !== -1) {
 				$('#grid_' + gridname + '_rec_' + num + ' > td').css({ "color" : "red" });
 			} else {
 				$('#grid_' + gridname + '_rec_' + num + ' > td').css({ "color" : "black" });
@@ -581,6 +590,32 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 			$('#hiddenProduct_code').val('');
 			$('#hiddenM_item_code').val('');
+		}
+
+	};
+	function updateBom() {
+		var keys = w2ui.grid_list.getSelection();
+		
+		if (keys == null || keys == "") {
+			alert("먼저 프로젝트를 선택하여주십시오");
+		} else {
+			$(".clear_val").val('');
+			
+			setTimeout(function() {
+				w2ui['grid_list3'].resize();
+				w2ui['grid_list3'].refresh();
+				
+				w2ui['grid_list4'].resize();
+				w2ui['grid_list4'].refresh();				
+			}, 200);
+			
+			$("#modal_info").modal('show');
+			$("#bom_IDX").val(w2ui.grid_list2.get(keys[0]).bom_IDX);
+			$('#hiddenProduct_code').val('');
+			$('#hiddenM_item_code').val('');
+			$('#BOM_IDX').val('')
+			requestGrid3();
+			requestGrid4();
 		}
 
 	};
@@ -649,9 +684,17 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					  + "&MTL_NM="   + encodeURIComponent($("#S_MTL_NM").val())
 					  + "&MTL_MKR_NO="+ encodeURIComponent($("#S_MTL_MKR_NO").val()); */
 		
-		var keys = $("#hiddenIdx").val();
+	  	var keys = $("#hiddenIdx").val();
+	  	var S_MTL_MKR_CD =$("#S_MTL_MKR_CD").val();
+	  	var S_MTL_NM = $("#S_MTL_NM").val();
+		var S_MTL_MKR_NO = $("#S_MTL_MKR_NO").val();
+		
 		var page_url = "/info/info/selectMaterialsBOM";
-		var postData = 'PJT_IDX=' + keys;
+		var postData = 'pjt_IDX=' + keys
+					    +'&MTL_MKR_CD='+S_MTL_MKR_CD
+					    +'&MTL_NM='+S_MTL_NM
+					    +'&MTL_MKR_NO='+S_MTL_MKR_NO;
+
 
 		w2ui['grid_list3'].lock('loading...', true);
 		w2ui['grid_list3'].clear();
@@ -686,8 +729,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				w2ui['grid_list3'].unlock();
 			},
 			complete : function() {
-				document.getElementById("g3_item_nm").style.removeProperty("height");
-				document.getElementById("g3_item_type_code").style.removeProperty("height");
+				//document.getElementById("g3_item_nm").style.removeProperty("height");
+				//document.getElementById("g3_item_type_code").style.removeProperty("height");
 			}
 		});
 	}

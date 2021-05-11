@@ -71,13 +71,14 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 															<div class="form-group">	
 																<div class="col-sm-3">
 																	<label>프로젝트명</label> 
-																	<select id="S_PJT_IDX" name="S_PJT_IDX" class="form-control" style="height: 30px;" onChange="loadRequestGridData(); return false;"></select>
+																	<select id="S_PJT_IDX" name="S_PJT_IDX" class="form-control" style="height: 30px;" onChange="reloadRequestGridData(); return false;"></select>
 																</div>
 																																														
 																<div class="col-sm-2">
 																	<label>자재 요청일</label> 
 																	<div class="input-group">
-																		<input type="text" class="form-control pull-right input-sm" id="S_MTL_REQ_REG_DT" placeholder="yyyymmdd~yyyymmdd">
+																		<input type="text" class="form-control pull-right input-sm" id="S_MTL_REQ_REG_DT" placeholder="yyyymmdd~yyyymmdd"
+																		 onChange="reloadRequestGridData()">
 																		<div class="input-group-addon">
 																			<i class="fa fa-calendar"></i>	
 																		</div>
@@ -92,7 +93,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																				
 																<div class="col-sm-2">
 																	<label>품번</label> 
-																	<input type="text" id="S_MTL_MD_NO" name="S_MTL_MD_NO" placeholder="ex) 품번"
+																	<input type="text" id="S_MTL_MKR_NO" name="S_MTL_MKR_NO" placeholder="ex) 품번"
 																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadRequestGridData(); return false;}"/>
 																</div>
 
@@ -199,6 +200,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	var startValue_combo = "";
 	
 	var minDate = getFormatDate(new Date());
+	var loadingEnd = false;
 	
 	comboValue_nm = new Array;
 	comboValue_cd = new Array;
@@ -216,8 +218,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		
 		fnLoadRequestGrid();
 		fnLoadModalGrid();
+		loadingEnd=true;
 	})
-
+function reloadRequestGridData(){
+		if(loadingEnd){
+		loadRequestGridData();
+		}
+	}
 
 	// fnLoadRequestGrid
 	function fnLoadRequestGrid() {
@@ -315,6 +322,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					+ "&MTL_NM=" + encodeURIComponent($("#S_MTL_NM").val())
 					+ "&MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val())
 					+ "&MTL_MKR_NO=" + encodeURIComponent($("#S_MTL_MKR_NO").val())
+					+ "&MTL_MD_NO=" + encodeURIComponent($("#S_MTL_MD_NO").val())
 					+ "&PJT_IDX=" + PJT_IDX;
 		
 		w2ui['grid_list'].lock('loading...', true);

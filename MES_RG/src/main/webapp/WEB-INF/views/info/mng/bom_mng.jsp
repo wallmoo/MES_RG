@@ -81,19 +81,21 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																
 																<div class="col-sm-2">
 																	<label>고객사</label> 
-																	<select id="S_CST_IDX" name="S_CST_IDX" class="form-control" style="height: 30px;" ></select>
+																	<select id="S_CST_IDX" name="S_CST_IDX" class="form-control" style="height: 30px;" 
+																	onchange="loadGrids()"></select>
 																</div>	
 																							
-																<div class="col-sm-2">
-																	<label>품명</label> 
-																	<input type="text" id="S_PJT_PRD_NM" name="S_PJT_PRD_NM" placeholder="ex) 품명"
-																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {loadLeftGrid(); return false;}"/>
-																</div>
+<!-- 																<div class="col-sm-2"> -->
+<!-- 																	<label>품명</label>  -->
+<!-- 																	<input type="text" id="S_PJT_PRD_NM" name="S_PJT_PRD_NM" placeholder="ex) 품명" -->
+<!-- 																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {loadLeftGrid(); return false;}"/> -->
+<!-- 																</div> -->
 
 																<div class="col-sm-2">
 																	<label>납품 요청일</label>
 																	<div class="input-group">
-																		<input type="text" class="form-control pull-right input-sm" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd">
+																		<input type="text" class="form-control pull-right input-sm" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd"
+																		onchange="loadGrids()">
 																		<div class="input-group-addon">
 																			<i class="fa fa-calendar"></i>
 																		</div>
@@ -104,7 +106,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																	<label>프로젝트 등록일</label>
 																	<div class="input-group">
 																		<input type="text" 
-																			class="form-control pull-right input-sm" id="S_PJT_REG_DT" placeholder="yyyymmdd~yyyymmdd">
+																			class="form-control pull-right input-sm" id="S_PJT_REG_DT" placeholder="yyyymmdd~yyyymmdd"
+																			onchange="loadGrids()">
 																		<div class="input-group-addon">
 																			<i class="fa fa-calendar"></i>	
 																		</div>
@@ -343,6 +346,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	comboValue_nm6 = new Array;
 	comboValue_cd6 = new Array;
 	
+	var loadingEnd = false;
 	$(function($) {
 		fnCdD('S_PJT_PRD_UNT', 'MC1027');//공통코드를 호출-재고 단위
 		requestClient('S_CST_IDX');//고객사 정보를 검색폼 드랍다운 형태로 만듬
@@ -354,8 +358,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		fnLoadRightGrid();
 		loadGrid3();
 		loadGrid4();
+		loadingEnd=true;
 	})
-
+	function loadGrids(){
+		if(loadingEnd){
+			loadLeftGrid();
+		}
+	}
 
 	// fnLoadLeftGrid
 	function fnLoadLeftGrid() {
@@ -727,8 +736,15 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					  + "&MTL_MKR_NO="+ encodeURIComponent($("#S_MTL_MKR_NO").val()); */
 		
 		var keys = $("#hiddenIdx").val();
+		var S_MTL_MKR_CD =$("#S_MTL_MKR_CD").val();
+		var S_MTL_NM = $("#S_MTL_NM").val();
+		var S_MTL_MKR_NO = $("#S_MTL_MKR_NO").val();
+		
 		var page_url = "/info/info/selectMaterialsBOM";
-		var postData = 'pjt_IDX=' + keys;
+		var postData = 'pjt_IDX=' + keys
+					    +'&MTL_MKR_CD='+S_MTL_MKR_CD
+					    +'&MTL_NM='+S_MTL_NM
+					    +'&MTL_MKR_NO='+S_MTL_MKR_NO;
 
 		w2ui['grid_list3'].lock('loading...', true);
 		w2ui['grid_list3'].clear();
