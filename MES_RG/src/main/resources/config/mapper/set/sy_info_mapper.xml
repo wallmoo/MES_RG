@@ -614,7 +614,7 @@
 		<if test="PJT_NM != null and !''.equals(PJT_NM) ">
 			AND PJT_NM LIKE CONCAT('%', #{PJT_NM}, '%')
 		</if>	  
-		<if test="PJT_PRD_NM != null and !''.equals(PJT_PRD_NM) ">
+		<if test="PJT_PRD_NM != null and !''.equals(PJT_PRD_NM) and !'undefined'.equals(PJT_PRD_NM)">
 			AND PJT_PRD_NM LIKE CONCAT('%', #{PJT_PRD_NM}, '%')
 		</if>	  
 		<if test="PJT_GRD != null and !''.equals(PJT_GRD) ">

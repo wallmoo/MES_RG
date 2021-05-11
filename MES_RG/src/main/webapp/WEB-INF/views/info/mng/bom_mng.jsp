@@ -189,7 +189,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 									
 									<label class="col-sm-2 control-label" style="padding-left: 0px">제조사 품번</label>
 									<div class="col-sm-2" style="padding-left: 0px; padding-right: 0px">
-										<input type="combo" id="S_MTL_MKR_NO" name="S_MTL_MKR_NO" class="form-control input-sm pull-right" placeholder="제조사 품번" 
+										<input type="combo" id="S_MTL_MKR_NO2" name="S_MTL_MKR_NO2" class="form-control input-sm pull-right" placeholder="제조사 품번" 
 													onkeypress="if(event.keyCode==13) {requestGrid3(); return false;}" >
 									</div>	
 									<div class="col-sm-2">
@@ -738,13 +738,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		var keys = $("#hiddenIdx").val();
 		var S_MTL_MKR_CD =$("#S_MTL_MKR_CD").val();
 		var S_MTL_NM = $("#S_MTL_NM").val();
-		var S_MTL_MKR_NO = $("#S_MTL_MKR_NO").val();
+		var S_MTL_MKR_NO2 = $("#S_MTL_MKR_NO2").val();
 		
 		var page_url = "/info/info/selectMaterialsBOM";
 		var postData = 'pjt_IDX=' + keys
 					    +'&MTL_MKR_CD='+S_MTL_MKR_CD
 					    +'&MTL_NM='+S_MTL_NM
-					    +'&MTL_MKR_NO='+S_MTL_MKR_NO;
+					    +'&MTL_MKR_NO='+S_MTL_MKR_NO2;
 
 		w2ui['grid_list3'].lock('loading...', true);
 		w2ui['grid_list3'].clear();
@@ -773,7 +773,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						match : 'contains'
 					});
 				} else {
-					w2ui.grid_list.clear();
+					w2ui.grid_list3.clear();
 				}
 				w2ui['grid_list3'].refresh();
 				w2ui['grid_list3'].unlock();
