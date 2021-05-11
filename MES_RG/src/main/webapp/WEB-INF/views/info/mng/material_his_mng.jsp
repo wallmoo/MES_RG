@@ -59,6 +59,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="box-tools pull-right">
 									<button type="button" id="" class="btn btn-primary btn-sm" onclick="excelFileDownload();">엑셀다운로드</button>
 									<button type="button" id="btn_create" class="btn btn-primary btn-sm" onclick="insertAccount();">등록</button>
+									<button type="button" id="btn_create" class="btn btn-primary btn-sm" onclick="inAccount();">입고등록</button>
+									<button type="button" id="btn_create" class="btn btn-primary btn-sm" onclick="outAccount();">출고등록</button>
 <!-- 									<button type="button" id="btn_update" class="btn btn-info btn-sm" onclick="updateAccount();">수정</button> -->
 <!-- 									<button type="button" id="btn_delete" class="btn btn-danger btn-sm" onclick="deleteAccount();">삭제</button> -->
 									<button type="button" id="btn_search_csr" onclick="loadList();" class="btn btn-warning btn-sm">조회</button>
@@ -108,140 +110,193 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			<!-- //content -->
 		</div>
 		<!-- /.content-wrapper -->
-		<div class="modal fade" id="modal_info" data-backdrop="static">
-	<div class="modal-dialog modal-md">
-		<div class="modal-content">
-			<div class="modal-header">
-				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
-					<span aria-hidden="true">&times;</span>
-				</button>
-				<h4 class="modal-title" id="modal_code_title">등록</h4>
-        	</div>
-			<div class="modal-body" id="modal_code_body">
-				<form id="frm_routingItnbr" name="frm_routingItnbr" class="form-horizontal"
-				method="POST" enctype="multipart/form-data">	
-					<input type="hidden" id="upload_mode"/>
-					<input type="hidden" class="clear_field" id="mod_file_group"/>
-					<input type="hidden" class="clear_field" id="mod_file_no"/>				
-					<div class="row">
-						<div class="form-group">
-							<label for="" class="col-sm-3 control-label">자재코드</label>
-							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm pull-right" id="MTL_IDX" name ="MTL_IDX" maxlength="100" readonly="readonly">
+	<div class="modal fade" id="modal_info" data-backdrop="static">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="modal_code_title">등록</h4>
+	        	</div>
+				<div class="modal-body" id="modal_code_body">
+					<form id="frm_routingItnbr" name="frm_routingItnbr" class="form-horizontal"
+					method="POST" enctype="multipart/form-data">	
+						<input type="hidden" id="upload_mode"/>
+						<input type="hidden" class="clear_field" id="mod_file_group"/>
+						<input type="hidden" class="clear_field" id="mod_file_no"/>				
+						<div class="row">
+							<div class="form-group">
+								<label for="" class="col-sm-3 control-label">자재코드</label>
+								<div class="col-sm-7">
+									<input type="text" class="form-control input-sm pull-right" id="MTL_IDX" name ="MTL_IDX" maxlength="100" readonly="readonly">
+								</div>
 							</div>
 						</div>
-					</div>
-									
-					<div class="row">
-						<div class="form-group">
-							<label for="" class="col-sm-3 control-label">자재분류</label>
-							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm pull-right" id="MTL_CATE" name ="MTL_CATE" maxlength="30">
+										
+						<div class="row">
+							<div class="form-group">
+								<label for="" class="col-sm-3 control-label">자재분류</label>
+								<div class="col-sm-7">
+									<input type="text" class="form-control input-sm pull-right" id="MTL_CATE" name ="MTL_CATE" maxlength="30">
+								</div>
 							</div>
 						</div>
-					</div>
-
-					<div class="row">
-						<div class="form-group">
-							<label for="" class="col-sm-3 control-label">품목</label>
-							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm pull-right" id="MTL_NM" name ="MTL_NM" maxlength="20">
+	
+						<div class="row">
+							<div class="form-group">
+								<label for="" class="col-sm-3 control-label">품목</label>
+								<div class="col-sm-7">
+									<input type="text" class="form-control input-sm pull-right" id="MTL_NM" name ="MTL_NM" maxlength="20">
+								</div>
 							</div>
 						</div>
-					</div>
-
-					<div class="row">
-						<div class="form-group">
-							<label for="" class="col-sm-3 control-label">제조사</label>
-							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm" id="MTL_MKR_CD" name ="MTL_MKR_CD" maxlength="14">
+	
+						<div class="row">
+							<div class="form-group">
+								<label for="" class="col-sm-3 control-label">제조사</label>
+								<div class="col-sm-7">
+									<input type="text" class="form-control input-sm" id="MTL_MKR_CD" name ="MTL_MKR_CD" maxlength="14">
+								</div>
 							</div>
 						</div>
-					</div>
-					
-					<div class="row">
-						<div class="form-group">
-							<label for="" class="col-sm-3 control-label">제조사 품번</label>
-							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm pull-right" id="MTL_MKR_NO" name ="MTL_MKR_CD" maxlength="10">
+						
+						<div class="row">
+							<div class="form-group">
+								<label for="" class="col-sm-3 control-label">제조사 품번</label>
+								<div class="col-sm-7">
+									<input type="text" class="form-control input-sm pull-right" id="MTL_MKR_NO" name ="MTL_MKR_CD" maxlength="10">
+								</div>
 							</div>
-						</div>
-					</div>	
-					
-					<div class="row">
-						<div class="form-group">
-							<label for="" class="col-sm-3 control-label">규격</label><!-- 공통코드 ea/kg 중 선택 -->
-							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm" id="MTL_STD" name ="MTL_STD" value="" maxlength="60">
-							</div>
-							
-						</div>
-					</div>
-					
-					<div class="row">
-						<div class="form-group">
-							<label for="" class="col-sm-3 control-label">단가</label>
-							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm" id="MTL_PRICE" name ="MTL_PRICE" maxlength="14">
-							</div>
-						</div>
-					</div>
-				
-					<div class="row">
-						<div class="form-group">
-							<label for="" class="col-sm-3 control-label">재고단위</label>
-							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm" id="MTL_UNT" name ="MTL_UNT" maxlength="14">
-							</div>
-						</div>
-					</div>				
-				
-					<div class="row">
-						<div class="form-group">
-							<label for="" class="col-sm-3 control-label">Datasheet URL</label>
-							<div class="col-sm-7">
-								<textarea type="text" class="form-control input-sm pull-right" id="MTL_DS_URL" name ="MTL_DS_URL"></textarea>
-							</div>
-						</div>
-					</div>
-					
-					<div class="row">
-						<div class="form-group">
-							<label for="" class="col-sm-3 control-label">비고</label>
-							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm" id="MTL_BG" name ="MTL_BG" maxlength="60">
-							</div>
-						</div>
-					</div>					
-					
-					<div class="row">
-						<label class="col-sm-3 control-label">이미지 파일</label>
-						<div class="col-sm-7" style="padding-right: 0px;">
-							<input type="text" id="mod_file_name" name="mod_file_name" class="form-control input-sm clear_field" readonly>
 						</div>	
-						<div class="col-sm-1" style="padding-left: 7px;">
-							<span class="btn btn-danger btn-sm fileinput-button " style="width: 100%;" id="file_btn"> <i class="fa fa-plus"></i>
-								<input id="file_group" type="file" class="fileupload file_info" name="file[]" onchange="$('#mod_file_name').val(this.value)">
-							</span>
+						
+						<div class="row">
+							<div class="form-group">
+								<label for="" class="col-sm-3 control-label">규격</label><!-- 공통코드 ea/kg 중 선택 -->
+								<div class="col-sm-7">
+									<input type="text" class="form-control input-sm" id="MTL_STD" name ="MTL_STD" value="" maxlength="60">
+								</div>
+								
+							</div>
 						</div>
-					</div>					
+						
+						<div class="row">
+							<div class="form-group">
+								<label for="" class="col-sm-3 control-label">단가</label>
+								<div class="col-sm-7">
+									<input type="text" class="form-control input-sm" id="MTL_PRICE" name ="MTL_PRICE" maxlength="14">
+								</div>
+							</div>
+						</div>
 					
+						<div class="row">
+							<div class="form-group">
+								<label for="" class="col-sm-3 control-label">재고단위</label>
+								<div class="col-sm-7">
+									<input type="text" class="form-control input-sm" id="MTL_UNT" name ="MTL_UNT" maxlength="14">
+								</div>
+							</div>
+						</div>				
 					
-					<div class="row">
-						<div class="col-md-12" id="msg" style="font-weight:bold; color:blue;"></div>
+						<div class="row">
+							<div class="form-group">
+								<label for="" class="col-sm-3 control-label">Datasheet URL</label>
+								<div class="col-sm-7">
+									<textarea type="text" class="form-control input-sm pull-right" id="MTL_DS_URL" name ="MTL_DS_URL"></textarea>
+								</div>
+							</div>
+						</div>
+						
+						<div class="row">
+							<div class="form-group">
+								<label for="" class="col-sm-3 control-label">비고</label>
+								<div class="col-sm-7">
+									<input type="text" class="form-control input-sm" id="MTL_BG" name ="MTL_BG" maxlength="60">
+								</div>
+							</div>
+						</div>					
+						
+						<div class="row">
+							<label class="col-sm-3 control-label">이미지 파일</label>
+							<div class="col-sm-7" style="padding-right: 0px;">
+								<input type="text" id="mod_file_name" name="mod_file_name" class="form-control input-sm clear_field" readonly>
+							</div>	
+							<div class="col-sm-1" style="padding-left: 7px;">
+								<span class="btn btn-danger btn-sm fileinput-button " style="width: 100%;" id="file_btn"> <i class="fa fa-plus"></i>
+									<input id="file_group" type="file" class="fileupload file_info" name="file[]" onchange="$('#mod_file_name').val(this.value)">
+								</span>
+							</div>
+						</div>					
+						
+						
+						<div class="row">
+							<div class="col-md-12" id="msg" style="font-weight:bold; color:blue;"></div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<div class="col-md-12 text-center">
+						<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAccount();">저장</button>
+						<button type="button" id="" class="btn btn-default btn-sm" data-dismiss="modal">닫기</button>
 					</div>
-				</form>
-			</div>
-			<div class="modal-footer">
-				<div class="col-md-12 text-center">
-					<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAccount();">저장</button>
-					<button type="button" id="" class="btn btn-default btn-sm" data-dismiss="modal">닫기</button>
 				</div>
 			</div>
 		</div>
 	</div>
-</div>
+	
+	<!-- 2차 모달(출고/입고) -->
+	
+	<div class="modal fade" id="modal_inOut" data-backdrop="static">
+		<div class="modal-dialog modal-md">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+						<span aria-hidden="true">&times;</span>
+					</button>
+					<h4 class="modal-title" id="modal_inOut_title">등록</h4>
+	        	</div>
+				<div class="modal-body" id="modal_code_body">
+					<form id="frm_inOut" name="frm_inOut" class="form-horizontal"
+					method="POST" enctype="multipart/form-data">	
+						<input type="hidden" id="flag" name="flag"/>
+						<input type="hidden" id="hidden_MTLIDX" name="hidden_MTLIDX" />
+						<input type="hidden" class="clear_field" id="mod_file_group"/>
+						<input type="hidden" class="clear_field" id="mod_file_no"/>				
+						<div class="row">
+							<div class="form-group">
+								<label for="COUNTT" class="col-sm-3 control-label">수량</label>
+								<div class="col-sm-7">
+									<input type="number" class="form-control input-sm pull-right" id="COUNTT" name ="COUNTT" maxlength="30">
+								</div>
+							</div>
+						</div>
+										
+						<div class="row">
+							<div class="form-group">
+								<label for="TEXT_BG" class="col-sm-3 control-label">비고</label>
+								<div class="col-sm-7">
+									<input type="text" class="form-control input-sm pull-right" id="TEXT_BG" name ="TEXT_BG" maxlength="100">
+								</div>
+							</div>
+						</div>
+	
+						
+						<div class="row">
+							<div class="col-md-12" id="msg" style="font-weight:bold; color:blue;"></div>
+						</div>
+					</form>
+				</div>
+				<div class="modal-footer">
+					<div class="col-md-12 text-center">
+						<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAccount2();">저장</button>
+						<button type="button" id="" class="btn btn-default btn-sm" data-dismiss="modal">닫기</button>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
 
+	<!-- 2차모달끝 -->
 
 		<jsp:include page="/common/footer_inc" flush="true">
 			<jsp:param name="page_title" value="0" />
@@ -296,12 +351,9 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'mtl_UNT', caption:'재고단위', size:'5%', style:'text-align:center', sortable: true },
 				{ field:'cmm_FLE_IDX', caption:'제품자료', size:'8%', style:'text-align:center', sortable: true },
 				{ field:'mtl_DS_URL', caption:'참조링크', size:'7%', style:'text-align:center', sortable: true },
-				{ field:'mtl_BG', caption:'비고', size:'7%', style:'text-align:center', sortable: true,
-					editable: { type: 'text' }
-				},
+				{ field:'mtl_BG', caption:'비고', size:'7%', style:'text-align:center', sortable: true},
 				{ field:'whs_HIS_GB', caption:'입출고상태', size:'7%', style:'text-align:center', sortable: true,
-					editable: { type: 'select', items: HIS_GB }, 
-	                render: function (record, index, col_index) {
+					render: function (record, index, col_index) {
 	                    var html = '';
 	                    for (var p in HIS_GB) {
 	                        if (HIS_GB[p].id == this.getCellValue(index, col_index)) html = HIS_GB[p].text;
@@ -309,11 +361,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	                    return html;
 	                }	
 				
-				
 				},
-				{ field:'whs_HIS_QTY', caption:'재고', size:'6%', style:'text-align:center', sortable: true,
-					editable: { type: 'number' }
-				},
+				{ field:'whs_HIS_QTY', caption:'재고', size:'6%', style:'text-align:center', sortable: true },
 				],
 			sortData: [{field: 'mtl_IDX', direction: 'DESC'}],
 			records: [],	//
@@ -322,6 +371,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			},
 			onClick: function (event) {},
 			onChange : function(event) {//갯수 수정
+				/*
 				event.onComplete = function() {//onSave
 					console.log("onChange");
 
@@ -366,6 +416,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						}
 					})					
 				}
+			*/
 			
 			}	
 			
@@ -893,6 +944,63 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			$(obj).find('option').remove().end()
 			//		    .append('<option value="All">-----</option>')
 			.val();
+		}
+		
+		//팝업 관련(입고,출고처리)
+		function inAccount(){
+			var key = w2ui.grid_list.getSelection();
+			if(key.length==0){
+				fnMessageModalAlert("알림", "추가하실 자재코드를 선택해 주세요.");
+				return false;
+			}else{
+				var idxs = w2ui.grid_list.get(key[0]).mtl_IDX;
+				$("#flag").val("I");
+				$("#hidden_MTLIDX").val(idxs);
+				$("#modal_inOut").modal('show');
+				$("#modal_inOut_title").html("입고등록");
+			}
+		}
+		function outAccount(){
+			var key = w2ui.grid_list.getSelection();
+			if(key.length==0){
+				fnMessageModalAlert("알림", "추가하실 자재코드를 선택해 주세요.");
+				return false;
+			}else{
+				var idxs = w2ui.grid_list.get(key[0]).mtl_IDX;
+				$("#flag").val("O");
+				$("#hidden_MTLIDX").val(idxs);
+				$("#modal_inOut").modal('show');
+				$("#modal_inOut_title").html("출고등록");
+			}
+		}
+		function saveAccount2(){
+			if(confirm("저장하시겠습니까?")){
+				var page_url = "/materials/materials/updateBomQuantity";
+				var form = $("#frm_inOut")[0];
+				
+				var data = new FormData(form);
+							;
+				$.ajax({
+					type: "POST",
+					enctype: 'multipart/form-data',
+					url: page_url,
+					data: data,
+					processData: false,
+					contentType: false,
+					cache: false,
+					timeout: 600000,
+					success : function(response) {
+						alert('수정되었습니다.');
+						$("#modal_inOut").modal('hide');
+						$("#frm_inOut")[0].reset();
+						loadList();
+					},
+					error : function() {
+						alert('Error while request...'); 
+					}
+				})	
+				
+			}
 		}
 	</script>
 
