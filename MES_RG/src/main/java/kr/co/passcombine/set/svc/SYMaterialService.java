@@ -53,10 +53,12 @@ public class SYMaterialService {
 	public int updateEstimateOs(Map<String, Object> vo) {
 		int result=0;
 		MaterialsDAO.updateEstimateOs1(vo);
+		/*
 		String idx = (String)vo.get("WHS_HIS_IDX");
 		if(!idx.equals("") && !idx.equals("0")){
 			result = MaterialsDAO.updateEstimateOs2(vo);
-		}
+		}*/
+		
 		if(result==0) {
 			MaterialsDAO.insertEstimateOs1(vo);
 		}

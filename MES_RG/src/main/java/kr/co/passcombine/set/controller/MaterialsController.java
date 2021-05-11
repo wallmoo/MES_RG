@@ -203,7 +203,7 @@ public class MaterialsController {
 		@RequestMapping(value = "/materials/updateBomQuantity", method = { RequestMethod.GET,
 				RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 		@SuppressWarnings("unchecked")
-		public String updateBomQuantity(@RequestParam Map<String,Object> vo, HttpServletRequest request,
+		public String updateBomQuantity(@RequestParam Map<String,Object> vo, MultipartHttpServletRequest request,
 				HttpServletResponse response, HttpSession session) {
 			logger.debug("FrontendController.changeBOMQuantity is called.");
 
@@ -212,7 +212,19 @@ public class MaterialsController {
 			JSONParser parser = new JSONParser();
 			String REG_ID = SessionUtil.getMemberId(request);
 			vo.put("REG_ID",REG_ID);
-
+			vo.put("MTL_IDX",vo.get("hidden_MTLIDX"));
+			vo.put("WHS_HIS_QTY",vo.get("COUNTT"));
+			vo.put("MTL_BG",vo.get("TEXT_BG"));
+			String flag = (String)vo.get("flag");
+			if(flag.equals("I")) {
+				vo.put("WHS_HIS_GB","IN");
+			}else {
+				vo.put("WHS_HIS_GB","OUT");
+			}
+			
+			
+			
+			
 			int cnt=0;
 			try {
 				cnt = sYMaterialService.updateEstimateOs(vo);
