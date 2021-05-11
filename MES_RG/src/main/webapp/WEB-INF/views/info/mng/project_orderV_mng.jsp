@@ -203,6 +203,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	</div>
 	<input type="hidden" id="hiddenIdx" name="hiddenIdx" />
 	<input type="hidden" id="rightIDX" name="rightIdx" />
+	<form id="testFrm" name="testFrm" class="form-horizontal"
+							method="POST" enctype="multipart/form-data">
+		<input type="hidden" id="dummy" name="dummy" value="dummy">
+	</form>
 	<!-- ./wrapper -->
 
 
@@ -276,10 +280,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
 						
-						if(html == '1') {
-							return 'X';
-						} else if(html == '2') {
-							return 'O';
+						if(html == 'N') {
+							return 'N';
+						} else if(html == 'Y') {
+							return 'Y';
 						} else {
 							var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
 							return html2;
@@ -306,10 +310,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
 						
-						if(html == '1') {
-							return 'X';
-						} else if(html == '2') {
-							return 'O';
+						if(html == 'N') {
+							return 'N';
+						} else if(html == 'Y') {
+							return 'Y';
 						} else {
 							var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
 							return html2;
@@ -620,7 +624,28 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		});
 		}//if end
 	}
-	
+	function bomNewOrder(){
+		
+		var form = $("#testFrm")[0];
+		
+		var data = new FormData(form);
+		
+		$.ajax({
+			type: "POST",
+			enctype: 'multipart/form-data',
+			url: "/materials/test",
+			data: data,
+			processData: false,
+			contentType: false,
+			cache: false,
+			timeout: 600000,
+		    success:function(data, textStatus, jqXHR){
+		    	if(data.status == "200") {
+			    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
+		    	}
+		    },
+	});
+	}
 </script>
 
 </body>
