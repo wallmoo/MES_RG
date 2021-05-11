@@ -1736,4 +1736,10 @@ public class SYInfoService {
 		return infoDAO.updateT_MTL_ORD_MST(queryMap);
 	}
 	
+	public int updateReqDelivery(List<Map<String,Object>> vo) {//자재 요청 수정
+		return infoDAO.updateReqDelivery(vo);
+	}	
+	public int deliveryMaterial(List<Map<String,Object>> vo) {//자재 요청 수정
+		return infoDAO.deliveryMaterial(vo);
+	}		
 }

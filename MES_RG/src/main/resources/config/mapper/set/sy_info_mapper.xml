@@ -3700,4 +3700,32 @@
 				</if>
 			WHERE ORD_IDX = #{ORD_IDX}
 		</update>
+		
+	<insert id="updateReqDelivery" parameterType="java.util.List">
+		<foreach  collection="list" item="item"  separator=" ; ">
+		UPDATE T_MTL_REQ_MST SET
+			MTL_DLV_QTY = #{item.MTL_REQ_QTY},
+			MTL_REQ_STATE = #{item.MTL_REQ_STATE}
+		WHERE MTL_REQ_IDX = #{item.MTL_REQ_IDX}
+		</foreach>	
+	</insert>		
+	<insert id="deliveryMaterial" parameterType="java.util.List">
+		INSERT INTO T_WHS_HIS
+		(
+			MTL_IDX,
+			WHS_HIS_GB,
+			WHS_HIS_TYPE,
+			WHS_HIS_QTY,
+			WHS_HIS_REG_ID
+		) VALUES
+		<foreach  collection="list" item="item"  separator=" , ">
+		(	
+			#{item.MTL_IDX},
+			#{item.WHS_HIS_GB},
+			#{item.WHS_HIS_TYPE},
+			#{item.MTL_REQ_QTY},
+			#{item.WHS_HIS_REG_ID}
+		)
+		</foreach>
+	</insert>			
 </mapper>

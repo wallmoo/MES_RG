@@ -61,7 +61,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 													<div class="box-header with-border" style="background-color: #DB8EB5;">
 														<h3 class="box-title">프로젝트 정보</h3>
 														<div class="box-tools pull-right">
-															<button type="button" id="btn_dlv_csr" onclick="bomNewOrder();" class="btn btn-info btn-sm">불출 처리</button>
+															<button type="button" id="btn_dlv_csr" onclick="deliveryMaterial();" class="btn btn-info btn-sm">불출 처리</button>
 															<button type="button" id="btn_ins_csr" onclick="showReqModal();" class="btn btn-primary btn-sm">견적 요청</button>															
 															<button type="button" id="btn_search_csr" onclick="loadRequestGridData();" class="btn btn-warning btn-sm">조회</button>
 														</div>
@@ -213,8 +213,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		requestVendor('S_VDR_IDX3');
 		requestVendor('S_VDR_IDX4');
 	
-		fnLoadCommonOption();//등록폼 달력
-		fnLoadDeliveryOption();//검색폼 달력
+		fnLoadCommonOption('#MTL_EST_REG_DT');//등록폼 달력
+		fnLoadDeliveryOption('#S_MTL_REQ_REG_DT','right');//검색폼 달력
 		
 		fnLoadRequestGrid();
 		fnLoadModalGrid();
@@ -578,49 +578,63 @@ function reloadRequestGridData(){
 			}				
 		}	
 	}	
+	//불출처리
+	function deliveryMaterial() {		
+		var keys = w2ui.grid_list.getSelection();
+		var reqDataList = [];
+		var mtl_REQ_QTY_val = 0;
 	
+		if (keys == null || keys == "") {
+			alert("견적요청할 항목을 선택하여주십시오");
+		} else {
+			for (var i = 0; i < keys.length; i++) {
+				var Data = {
+					MTL_REQ_IDX : w2ui.grid_list.records[keys[i]-1].mtl_REQ_IDX,
+					MTL_IDX : w2ui.grid_list.records[keys[i]-1].mtl_IDX,
+					MTL_REQ_TYPE : w2ui.grid_list.records[keys[i]-1].mtl_REQ_TYPE,
+					MTL_REQ_REG_DT : w2ui.grid_list.records[keys[i]-1].mtl_REQ_REG_DT,
+					MTL_REQ_REG_ID : w2ui.grid_list.records[keys[i]-1].mtl_REQ_REG_ID,
+					MTL_MKR_CD : w2ui.grid_list.records[keys[i]-1].mtl_MKR_CD,
+					MTL_NM : w2ui.grid_list.records[keys[i]-1].mtl_NM,
+					MTL_MKR_NO : w2ui.grid_list.records[keys[i]-1].mtl_MKR_NO,
+					MTL_STD : w2ui.grid_list.records[keys[i]-1].mtl_STD,
+					MTL_UNT : w2ui.grid_list.records[keys[i]-1].mtl_UNT,
+					MTL_REQ_QTY : w2ui.grid_list.records[keys[i]-1].mtl_REQ_QTY
+				};
+				reqDataList.push(Data);
+			}			
 
-	// ############################
-	// init component
-	function fnLoadCommonOption() {
-	 	console.log('fnLoadCommonOption()');
-	 	
-		$('#MTL_EST_REG_DT').daterangepicker({
-			opens: 'right',
-			singleDatePicker: true,
-			locale: {
-				format : 'YYYY-MM-DD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-				showMonthAfterYear : true,
-				yearSuffix : '년'
-		    },
-		    startDate : moment(minDate)
-		})
-		.on("change", function() {
-		    loadRequestGridData();
-		}); 
-	}
-	function fnLoadDeliveryOption() {
-	 	console.log('fnLoadCommonOption()');
-	 	
-		$('#S_MTL_REQ_REG_DT, #S_PJT_DLV_DT').daterangepicker({
-			opens: 'right',
-			locale: {
-				format : 'YYYYMMDD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-				showMonthAfterYear : true,
-				yearSuffix : '년'
-		    },
- 			startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
-			endDate: moment().format('YYYY-MM-DD'),
-		}); 
-		
-		$('#S_MTL_REQ_REG_DT').val("");
-		$('#S_PJT_DLV_DT').val("");
-		
-	}	
+			if (confirm("등록하시겠습니까?")) {
+				console.log(reqDataList);
+
+				var page_url = "/info/info/deliveryMaterial";
+				var jsonData = JSON.stringify(reqDataList);
+				console.log(jsonData);
+
+				jQuery.ajaxSettings.traditional = true;
+				$.ajax({
+					url : page_url,
+					type : 'POST',
+					data : {
+						"jsonData" : jsonData
+					},
+					data_type : 'json',
+					success : function(data) {
+						if (data != 0) {
+							alert("추가되었습니다");
+							$("#modal_estimateForm").modal('hide');
+						} else {
+							alert("오류가 발생하였습니다");
+						}
+					},
+					complete : function() {
+
+					}
+				});
+			}				
+		}	
+	}		
+	
 </script>
 
 </body>
