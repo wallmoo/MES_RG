@@ -13,9 +13,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title><%=pageTitle%></title>
 <!-- Tell the browser to be responsive to screen width -->
-<meta
-	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
-	name="viewport">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
 <jsp:include page="/common/header_inc" flush="true">
 	<jsp:param name="page_title" value="0" />
@@ -77,8 +75,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 									
 																<div class="col-sm-2">
 																	<label>프로젝트명</label> 
-																	<input type="text" id="S_PJT_NM" name="S_PJT_NM" placeholder="ex) 프로젝트명"
-																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {searchs(); return false;}"/>
+																	<input type="text" id="S_PJT_NM" name="S_PJT_NM" placeholder="ex) 프로젝트명" class="form-control input-sm" 
+																	onkeypress="if(event.keyCode==13) {searchs(); return false;}"/>
 																</div>
 																
 																<div class="col-sm-2">
@@ -94,8 +92,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																
 																<div class="col-sm-2">
 																	<label>품명</label> 
-																	<input type="text" id="S_MTL_NM" name="S_MTL_NM" placeholder="ex) 품명"
-																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {searchs(); return false;}"/>
+																	<input type="text" id="S_MTL_NM" name="S_MTL_NM" placeholder="ex) 품명" class="form-control input-sm" maxlength="100" 
+																	onkeypress="if(event.keyCode==13) {searchs(); return false;}"/>
 																</div>																														
 																
 																<div class="col-sm-2">
@@ -147,8 +145,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 										</div>
 									</div>
 								</div>
-									<br/>* 수정가능한 컬럼은 MOQ, 단가,납기가능일,비고 입니다.
-									<br/>* 견적요청excel을 다운받은후 해당컬럼을 수정해주세요.
+								<br/>* 수정가능한 컬럼은 MOQ, 단가,납기가능일,비고 입니다.
+								<br/>* 견적요청excel을 다운받은후 해당컬럼을 수정해주세요.
 					</div>
 					<div class="modal-footer" style="border-top-color: transparent !important;">
 						<div class="col-md-12 text-center" style="margin-top: 10px">
@@ -189,8 +187,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		fnCdD('S_PJT_PRD_UNT', 'MC1027');//공통코드를 호출-재고 단위
 		requestVendor('S_VDR_IDX');//고객사 정보를 검색폼 드랍다운 형태로 만듬
 	
-		fnLoadCommonOption();//등록폼 달력
-		fnLoadDeliveryOption();//검색폼 달력
+		fnLoadDeliveryOption('#S_MTL_EST_REG_DT','right');//검색폼 달력
 		
 		fnLoadLeftGrid();
 		loadingEnd=true;
@@ -342,48 +339,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		});
 	}
 
-	// ############################
-
-	// init component
-	function fnLoadCommonOption() {
-	 	console.log('fnLoadCommonOption()');
-	 	
-		$('#PJT_DLV_DT').daterangepicker({
-			opens: 'right',
-			singleDatePicker: true,
-			locale: {
-				format : 'YYYY-MM-DD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-				showMonthAfterYear : true,
-				yearSuffix : '년'
-		    },
-		    startDate : moment(minDate)
-		})
-		.on("change", function() {
-		    loadLeftGrid();
-		}); 
-	}
-	function fnLoadDeliveryOption() {
-	 	console.log('fnLoadCommonOption()');
-	 	
-		$('#S_MTL_EST_REG_DT, #S_PJT_DLV_DT').daterangepicker({
-			opens: 'left',
-			locale: {
-				format : 'YYYYMMDD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-				showMonthAfterYear : true,
-				yearSuffix : '년'
-		    },
- 			startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
-			endDate: moment().format('YYYY-MM-DD'),
-		}); 
-		
-		$('#S_MTL_EST_REG_DT').val("");
-		$('#S_PJT_DLV_DT').val("");
-		
-	}	
 	function excelInsert(){
 		$("#modal_ExcelUpload").modal('show');
 	}

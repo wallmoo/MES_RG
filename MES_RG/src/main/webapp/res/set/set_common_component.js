@@ -217,6 +217,17 @@
 		date = (date < 10) ? "0" + date : date;
 		return d.getFullYear() + '-' + month + '-' + date;
 	}
+	// 미 입력시
+	function chkSubmit(item, msg) {
+		if (item.val().replace(/\s/g, "") == "") {
+			fnMessageModalAlert("알림", msg + " 입력해 주세요.");
+			item.val("");
+			item.focus();
+			return false;
+		} else {
+			return true;
+		}
+	}	
 	//셀렉트박스 초기화
 	function initOptions(obj) {
 	    $(obj)

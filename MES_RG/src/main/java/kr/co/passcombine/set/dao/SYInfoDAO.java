@@ -33,6 +33,7 @@ import kr.co.passcombine.set.vo.SYRepairVo;
 import kr.co.passcombine.set.vo.SYRoutingMasterVo;
 import kr.co.passcombine.set.vo.SYTBomVo;
 import kr.co.passcombine.set.vo.SYTVendorVo;
+import kr.co.passcombine.set.vo.SYTWarehouseVo;
 import kr.co.passcombine.set.vo.SYWarehouseVo;
 import kr.co.passcombine.set.vo.SYtool_repmt_hisVo;
 import kr.co.passcombine.set.vo.SYHoldVo;
@@ -323,4 +324,15 @@ public interface SYInfoDAO {
 	
 	public int updateReqDelivery(List<Map<String,Object>> vo);
 	public int deliveryMaterial(List<Map<String,Object>> vo);
+	
+	//stockAdjust: 자재 입/출고 조정
+	public int stockAdjust(List<Map<String,Object>> vo);
+	public int adjustMaterial(List<Map<String,Object>> vo);
+	public int updateMaterialQTY(List<Map<String,Object>> vo);
+	
+	// selectWarehouse Start	
+	public List<SYTWarehouseVo> selectWarehouse(SYTWarehouseVo vo);
+	
+	
+	
 }

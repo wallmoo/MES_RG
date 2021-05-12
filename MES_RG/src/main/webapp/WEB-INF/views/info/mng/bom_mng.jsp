@@ -13,15 +13,12 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title><%=pageTitle%></title>
 <!-- Tell the browser to be responsive to screen width -->
-<meta
-	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
-	name="viewport">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
 <jsp:include page="/common/header_inc" flush="true">
 	<jsp:param name="page_title" value="0" />
 </jsp:include>
 </head>
-
 
 <body class="hold-transition skin-<%=thema%> sidebar-mini">
 	<!-- <.%=thema%.> -->
@@ -85,11 +82,11 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																	onchange="loadGrids()"></select>
 																</div>	
 																							
-<!-- 																<div class="col-sm-2"> -->
-<!-- 																	<label>품명</label>  -->
-<!-- 																	<input type="text" id="S_PJT_PRD_NM" name="S_PJT_PRD_NM" placeholder="ex) 품명" -->
-<!-- 																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {loadLeftGrid(); return false;}"/> -->
-<!-- 																</div> -->
+																<div class="col-sm-2">
+																	<label>품명</label> 
+																	<input type="text" id="S_PJT_PRD_NM" name="S_PJT_PRD_NM" placeholder="ex) 품명"
+																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {loadLeftGrid(); return false;}"/>
+																</div>
 
 																<div class="col-sm-2">
 																	<label>납품 요청일</label>
@@ -132,7 +129,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 														<button type="button" id="btn_ins_csr" onclick="excelFileDownload('grid_list2','Bom 관리');" class="btn btn-info btn-sm" onclick="">엑셀다운로드</button>
 														<button type="button" id="btn_search_csr" onclick="requestRightGrid('grid_list2');" class="btn btn-primary btn-sm" onclick="">조회</button>
 														<button type="button" id="btn_ins_csr" onclick="ItemInsUp();" class="btn btn-primary btn-sm" onclick="">등록/수정</button>
-														<%-- <button type="button" id="btn_del_csr" onclick="delItem();" class="btn btn-primary btn-sm" onclick="">수정</button> --%>
 													</div>
 												</div>
 												<div class="box-body">
@@ -206,7 +202,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						<form id="bom_lvl1" name="bom_lvl1" class="form-horizontal" style="margin-top: 10px">
 							<div class="row">
 								<div class="col-md-12 text-center" style="margin-top: 20px; text-align: right;">
-<!-- 									<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAddModal()">등록</button> -->
 									<button type="button" id="" class="btn btn-danger btn-sm" data-dismiss="modal">닫기</button>
 								</div>	
 								<div class="col-sm-12">
@@ -303,11 +298,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			</div>
 		</div>
 		</div>
-		
-			
-		
 		<!--  -->
-
+		
 		<jsp:include page="/common/footer_inc" flush="true">
 			<jsp:param name="page_title" value="0" />
 		</jsp:include>
@@ -351,8 +343,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		fnCdD('S_PJT_PRD_UNT', 'MC1027');//공통코드를 호출-재고 단위
 		requestClient('S_CST_IDX');//고객사 정보를 검색폼 드랍다운 형태로 만듬
 	
-		fnLoadCommonOption();//등록폼 달력
-		fnLoadDeliveryOption();//검색폼 달력
+		fnLoadCommonOption('#PJT_DLV_DT');//등록폼 달력
+		fnLoadDeliveryOption('#S_PJT_REG_DT, #S_PJT_DLV_DT','left');//검색폼 달력
 		
 		fnLoadLeftGrid();
 		fnLoadRightGrid();
@@ -1142,52 +1134,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			}
 		});
 		$('#hiddenM_item_code').val('');
-	}
-
-	// ############################
-	// init component
-	function fnLoadCommonOption() {
-		console.log('fnLoadCommonOption()');
-
-		$('#PJT_DLV_DT').daterangepicker(
-				{
-					opens : 'right',
-					singleDatePicker : true,
-					locale : {
-						format : 'YYYY-MM-DD',
-						monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월',
-								'7월', '8월', '9월', '10월', '11월', '12월' ],
-						daysOfWeek : [ "일", "월", "화", "수", "목", "금", "토" ],
-						showMonthAfterYear : true,
-						yearSuffix : '년'
-					},
-					startDate : moment(minDate)
-				}).on("change", function() {
-			loadLeftGrid();
-		});
-	}
-	function fnLoadDeliveryOption() {
-		console.log('fnLoadCommonOption()');
-
-		$('#S_PJT_REG_DT, #S_PJT_DLV_DT').daterangepicker(
-				{
-					opens : 'left',
-					locale : {
-						format : 'YYYYMMDD',
-						monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월',
-								'7월', '8월', '9월', '10월', '11월', '12월' ],
-						daysOfWeek : [ "일", "월", "화", "수", "목", "금", "토" ],
-						showMonthAfterYear : true,
-						yearSuffix : '년'
-					},
-					startDate : moment().subtract(30, 'days').format(
-							'YYYY-MM-DD'),
-					endDate : moment().format('YYYY-MM-DD'),
-				});
-
-		$('#S_PJT_REG_DT').val("");
-		$('#S_PJT_DLV_DT').val("");
-
 	}
 	
 	function UploadExcels(){

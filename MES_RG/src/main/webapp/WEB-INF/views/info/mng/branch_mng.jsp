@@ -53,19 +53,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		<div class="row">
 			<section class="col-lg-12">
 				<div class="box box-success box-solid" style="min-height: 90px; border-color: #DB8EB5;">
-				<!-- Progress Bar 
-				 	<div id="hiddenDivLoading" style="visibility:hidden">
-					다중 코드 입력 창 iframe 
-					    <iframe id="iframeLoading" frameborder="0" style="z-index:-1; position:absolute; visibility:hidden"></iframe>
- 					        <div id='load_List'><img src='/img/loading.gif' /></div>
-						
- 					</div> -->
-					<!-- Progress Bar -->
-
 					<div class="box-header with-border" style=" background-color: #DB8EB5;">
 						<h3 class="box-title">조회조건</h3>
 						<div class="box-tools pull-right">
-						   	<button type="button" id="" class="btn btn-primary btn-sm" onclick="excelFileDownload();">엑셀다운로드</button>
+						   	<button type="button" id="" class="btn btn-primary btn-sm" onclick="excelFileDownload('grid_list','기업 정보 관리');">엑셀다운로드</button>
 							<button type="button" id="btn_create" class="btn btn-primary btn-sm" onclick="insertAccount();">등록</button>
 					     	<button type="button" id="btn_update" class="btn btn-info btn-sm" onclick="updateAccount();">수정</button>
 					     	<button type="button" id="btn_delete" class="btn btn-danger btn-sm" onclick="deleteAccount();">삭제</button>
@@ -80,8 +71,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 									 <label>사업장</label> 
 									  <input type="combo" id="S_BCO_PLC" name="S_BCO_PLC" class="form-control input-sm" placeholder="사업장" 
 												onkeypress="if(event.keyCode==13) {loadList(); return false;}" >
-<!-- 									 <input type="text" id="BCO_NM" name="BCO_NM" class="form-control input-sm" placeholder="기업 정보명" -->
-<!-- 										maxlength="15" onkeypress="if(event.keyCode==13) {loadList(); return false;}" > -->
 								</div>
 							</div>
 							
@@ -93,7 +82,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						</div>
 					</div>
 				</div>
-				<!-- <div id="grid_list" style="width: 100%; height: 620px;"></div> -->
 			</section>
 		</div>
 	</section>
@@ -387,24 +375,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 		//if(flag=="I" && !chkSubmit($("#m_account_code"), "기업 정보코드를")) return;
 		if(flag=="I" && !chkSubmit($("#BCO_NM"), "회사명을")) return;
-// 		if(flag=="I" && !chkSubmit($("#BCO_CEO_NM"), "대표자 이름을")) return; 			
-// 		if(flag=="I" && !chkSubmit($("#BCO_ADD"), "주소를")) return; 	
-// 		if(flag=="I" && !chkSubmit($("#BCO_TEL"), "전화번호를")) return;
-// 		if(flag=="I" && !chkSubmit($("#BCO_FAX"), "팩스를")) return;
-// 		if(flag=="I" && !chkSubmit($("#BCO_ML1"), "이메일을")) return;
-// 		if(flag=="I" && !chkSubmit($("#BCO_NO"), "사업자번호를")) return;
-		
-		// var flag = nullToBlank(account_code)==''?"I":"U";
+
 		console.log("flag = " + flag);
-		
-// 		console.log( "BCO_IDX = " + $("#BCO_IDX").val() );
-// 		console.log( "BCO_NM = " +$("#BCO_NM").val() );
-// 		console.log( "BCO_CEO_NM = " +$("#BCO_CEO_NM").val() );
-// 		console.log( "BCO_ADD = " +$("#BCO_ADD").val() );
-// 		console.log( "BCO_TEL = " +$("#BCO_TEL").val() );
-// 		console.log( "BCO_FAX = " +$("#BCO_FAX").val() );
-// 		console.log( "BCO_ML1 = " +$("#BCO_ML1").val() );
-// 		console.log( "BCO_NO = " +$("#BCO_NO").val() );
 		
 		$("#modal_info").modal('hide');
 		
@@ -490,89 +462,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		} 
 	}
 	
-	//엑셀 1024
-	function excelFileDownload()
-	{
-		console.log("excelFileDownload()");
-		var gridCols = w2ui['grid_list'].columns;
-		var gridData = w2ui['grid_list'].records;
-
-		var fileName = '기업 정보 관리.xlsx';
-		var sheetTitle = '기업 정보 관리';
-		var sheetName = '기업 정보 관리';
-		
-		var param_col_name = "", param_col_id="", param_col_align="", param_col_width="";
-		var is_rownum = true;
-		
-		if(gridCols != null && gridCols.length > 0){
-			for(var i=0; i<gridCols.length; i++){
-	 			if(!gridCols[i].hidden){
-					param_col_name += gridCols[i].caption + ",";
-					param_col_id += gridCols[i].field + ",";
-					param_col_align += "center" + ",";
-					param_col_width += (gridCols[i].width==undefined?"10":(gridCols[i].width).replace('px','')) + ",";
-	 			}
-			}
-			param_col_name = param_col_name.substr(0, param_col_name.length -1);
-			param_col_id = param_col_id.substr(0, param_col_id.length -1);
-			param_col_align = param_col_align.substr(0, param_col_align.length -1);
-			param_col_width = param_col_width.substr(0, param_col_width.length -1);
-		}
-
-
-		var export_url = "/export/export_client_jqgrid";
-		var export_data = "file_name="+encodeURIComponent(fileName);
-			export_data += "&sheet_title="+encodeURIComponent(sheetTitle);
-			export_data += "&sheet_name="+encodeURIComponent(sheetName);
-			export_data += "&header_col_names="+encodeURIComponent(param_col_name);
-			export_data += "&header_col_ids="+encodeURIComponent(param_col_id);
-			export_data += "&header_col_aligns="+encodeURIComponent(param_col_align);
-			export_data += "&header_col_widths="+encodeURIComponent(param_col_width);
-			export_data += "&cmd="+encodeURIComponent("grid_goods_detail");
-			export_data += "&body_data="+encodeURIComponent(JSON.stringify(gridData));
-		
-		$.ajax({
-		  url:export_url,
-		  data:export_data,
-		  type:'POST',
-		  dataType: 'json',
-		  success: function( data ) {
-		  	if(data.status == 200) {
-		  		var file_path = data.file_path;
-		  		var file_name = data.file_name;
-		  		var protocol = jQuery(location).attr('protocol');
-	  			var host = jQuery(location).attr('host');
-	  			var link_url = "/file/attach_download";
-	  			link_url += "?file_path="+encodeURIComponent(file_path);
-	  			link_url += "&file_name="+encodeURIComponent(file_name);
-	  			
-	  			$(location).attr('href', link_url);
-		  	}
-		  },
-			complete: function () {}
-		});
-	}
-	
-	// 미 입력시
-	function chkSubmit(item, msg){
-		if(item.val().replace(/\s/g,"")==""){
-			fnMessageModalAlert("알림", msg+ " 입력해 주세요.");
-			item.val("");
-			item.focus();
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	function initOptions(obj) {
-	    $(obj)
-	    .find('option')
-	    .remove()
-	    .end()
-//		.append('<option value="All">-----</option>')
-	    .val();
-	}
 </script>
 
 </body>

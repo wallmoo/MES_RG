@@ -17,6 +17,13 @@ public class SYTWarehouseVo implements Serializable{
 	private String WHS_HIS_REG_ID;
 	private String WHS_DEL_YN;
 	
+	private String MTL_CATE;
+	private String MTL_NM;
+	private String MTL_MKR_CD;
+	private String MTL_STD;
+	private String MTL_PRICE;
+	private String MTL_UNT;			
+	private String MTL_MKR_NO;
 	
 	public int getWHS_HIS_IDX() {
 		return WHS_HIS_IDX;
@@ -77,6 +84,48 @@ public class SYTWarehouseVo implements Serializable{
 	}
 	public void setWHS_DEL_YN(String wHS_DEL_YN) {
 		this.WHS_DEL_YN = wHS_DEL_YN;
+	}
+	public String getMTL_CATE() {
+		return MTL_CATE;
+	}
+	public void setMTL_CATE(String mTL_CATE) {
+		this.MTL_CATE = mTL_CATE;
+	}
+	public String getMTL_NM() {
+		return MTL_NM;
+	}
+	public void setMTL_NM(String mTL_NM) {
+		this.MTL_NM = mTL_NM;
+	}
+	public String getMTL_MKR_CD() {
+		return MTL_MKR_CD;
+	}
+	public void setMTL_MKR_CD(String mTL_MKR_CD) {
+		this.MTL_MKR_CD = mTL_MKR_CD;
+	}
+	public String getMTL_STD() {
+		return MTL_STD;
+	}
+	public void setMTL_STD(String mTL_STD) {
+		this.MTL_STD = mTL_STD;
+	}
+	public String getMTL_PRICE() {
+		return MTL_PRICE;
+	}
+	public void setMTL_PRICE(String mTL_PRICE) {
+		this.MTL_PRICE = mTL_PRICE;
+	}
+	public String getMTL_UNT() {
+		return MTL_UNT;
+	}
+	public void setMTL_UNT(String mTL_UNT) {
+		this.MTL_UNT = mTL_UNT;
+	}
+	public String getMTL_MKR_NO() {
+		return MTL_MKR_NO;
+	}
+	public void setMTL_MKR_NO(String mTL_MKR_NO) {
+		MTL_MKR_NO = mTL_MKR_NO;
 	}
 
 }
