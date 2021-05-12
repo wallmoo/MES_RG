@@ -574,7 +574,7 @@
 		UPDATE T_MTL_MST SET
 		MTL_DEL_YN='Y'
 		WHERE MTL_IDX = #{MTL_IDX}
-	</update>	
+	</update>		
 	<select id="excelLoad" parameterType="SYMaterialVo" resultType="SYMaterialVo">
 		SELECT	
 			m.item_code AS item_code, m.item_nm AS item_nm, 
@@ -3727,5 +3727,80 @@
 			#{item.WHS_HIS_REG_ID}
 		)
 		</foreach>
+	</insert>	
+	
+	<insert id="adjustMaterial" parameterType="java.util.List">
+		INSERT INTO T_WHS_HIS
+		(
+<!-- 			ORD_IDX,
+			MTL_ORD_DTL_IDX, -->
+			MTL_IDX,
+			WHS_HIS_GB,
+			WHS_HIS_TYPE,
+			WHS_HIS_QTY,
+			WHS_HIS_BG,
+			WHS_HIS_REG_ID
+		) VALUES
+		<foreach  collection="list" item="item"  separator=" , ">
+		(	
+<!-- 			#{item.ORD_IDX},
+			#{item.MTL_ORD_DTL_IDX}, -->
+			#{item.MTL_IDX},
+			#{item.WHS_HIS_GB},
+			#{item.WHS_HIS_TYPE},
+			#{item.WHS_HIS_QTY},
+			#{item.WHS_HIS_BG},			
+			#{item.WHS_HIS_REG_ID}
+		)
+		</foreach>
 	</insert>			
+	<update id="updateMaterialQTY" parameterType="java.util.List">
+		<foreach  collection="list" item="item"  separator=" ; ">
+		UPDATE T_MTL_MST SET
+			MTL_QTY = MTL_QTY + #{item.WHS_HIS_QTY}
+		WHERE MTL_IDX = #{item.MTL_IDX}
+		</foreach>			
+	</update>	
+	
+	<!-- selectWarehouse: T_WHS_HIS, T_MTL_MST 재고현황 Start -->
+	<select id="selectWarehouse" parameterType="SYTWarehouseVo" resultType="SYTWarehouseVo">
+		SELECT 
+			W.WHS_HIS_IDX,
+			W.ORD_IDX,
+			W.MTL_ORD_DTL_IDX,
+			W.WHS_HIS_GB,
+			W.WHS_HIS_TYPE,
+			W.WHS_HIS_QTY,
+			W.WHS_HIS_DT,
+			W.WHS_HIS_BG,
+			W.WHS_HIS_REG_DT,
+			M.MTL_CATE,
+			M.MTL_IDX,
+			M.MTL_NM,
+			M.MTL_MKR_CD,
+			M.MTL_STD,
+			M.MTL_PRICE,
+			MTL_UNT
+		FROM T_WHS_HIS W
+		LEFT JOIN T_MTL_MST M ON M.MTL_IDX = W.MTL_IDX
+		WHERE W.WHS_DEL_YN = 'N'
+		<if test="WHS_HIS_GB != null and !''.equals( WHS_HIS_GB ) and !'null'.equals( WHS_HIS_GB )">
+			AND W.WHS_HIS_GB LIKE CONCAT('%', #{WHS_HIS_GB}, '%')
+		</if>	
+		<if test="MTL_MKR_CD != null and !''.equals( MTL_MKR_CD ) and !'null'.equals( MTL_MKR_CD )">
+			AND M.MTL_MKR_CD LIKE CONCAT('%', #{MTL_MKR_CD}, '%')
+		</if>	
+		<if test="MTL_NM != null and !''.equals( MTL_NM ) and !'undefined'.equals( MTL_NM ) and !'null'.equals( MTL_NM )">
+			AND M.MTL_NM LIKE CONCAT('%', #{MTL_NM}, '%')
+		</if>							
+		<if test="MTL_MKR_NO != null and !''.equals( MTL_MKR_NO ) and !'null'.equals( MTL_MKR_NO )">
+			AND M.MTL_MKR_NO LIKE CONCAT('%', #{MTL_MKR_NO}, '%')
+		</if>	
+		<if test="MTL_CATE != null and !''.equals( MTL_CATE ) and !'null'.equals( MTL_CATE )">
+			AND M.MTL_CATE LIKE CONCAT('%', #{MTL_CATE}, '%')
+		</if>					
+		ORDER BY W.WHS_HIS_IDX DESC
+	</select>
+	
+			
 </mapper>

@@ -52,7 +52,7 @@ public class SYMaterialService {
 
 	public int updateEstimateOs(Map<String, Object> vo) {
 		int result=0;
-		MaterialsDAO.updateEstimateOs1(vo);
+		MaterialsDAO.updateEstimateOs1(vo);//재고 수량 업데이트
 		/*
 		String idx = (String)vo.get("WHS_HIS_IDX");
 		if(!idx.equals("") && !idx.equals("0")){
@@ -60,7 +60,7 @@ public class SYMaterialService {
 		}*/
 		
 		if(result==0) {
-			MaterialsDAO.insertEstimateOs1(vo);
+			MaterialsDAO.insertEstimateOs1(vo);//비고 업데이트
 		}
 		
 		

@@ -53,19 +53,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		<div class="row">
 			<section class="col-lg-12">
 				<div class="box box-success box-solid" style="min-height: 90px; border-color: #DB8EB5;">
-				<!-- Progress Bar 
-				 	<div id="hiddenDivLoading" style="visibility:hidden">
-					다중 코드 입력 창 iframe 
-					    <iframe id="iframeLoading" frameborder="0" style="z-index:-1; position:absolute; visibility:hidden"></iframe>
- 					        <div id='load_List'><img src='/img/loading.gif' /></div>
-						
- 					</div> -->
-					<!-- Progress Bar -->
-
 					<div class="box-header with-border" style=" background-color: #DB8EB5;">
 						<h3 class="box-title">조회조건</h3>
 						<div class="box-tools pull-right">
-						   	<button type="button" id="" class="btn btn-primary btn-sm" onclick="excelFileDownload();">엑셀다운로드</button>
+						   	<button type="button" id="" class="btn btn-primary btn-sm" onclick="excelFileDownload('grid_list','자재 관리');">엑셀다운로드</button>
 							<button type="button" id="btn_create" class="btn btn-primary btn-sm" onclick="insertAccount();">등록</button>
 					     	<button type="button" id="btn_update" class="btn btn-info btn-sm" onclick="updateAccount();">수정</button>
 					     	<button type="button" id="btn_delete" class="btn btn-danger btn-sm" onclick="deleteAccount();">삭제</button>
@@ -111,7 +102,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						</div>
 					</div>
 				</div>
-				<!-- <div id="grid_list" style="width: 100%; height: 620px;"></div> -->
 			</section>
 		</div>
 	</section>
@@ -349,7 +339,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				startValue_combo = ":)";
 			}
 		});
-		
 	}
 		
 	// modal 띄우기 
@@ -399,7 +388,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		} else {
 			fnMessageModalAlert("알림", "수정하고자 하는 항목을 1개 선택하여야 합니다."); // Notification
 		}
-		
 	}
 	
 	function saveAccount() {
@@ -427,29 +415,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 		//if(flag=="I" && !chkSubmit($("#m_account_code"), "고객사코드를")) return;
 		if(flag=="I" && !chkSubmit($("#MTL_NM"), "품목을")) return;
-// 		if(flag=="I" && !chkSubmit($("#MTL_CEO_NM"), "대표자 이름을")) return; 			
-// 		if(flag=="I" && !chkSubmit($("#MTL_ADD"), "주소를")) return; 	
-// 		if(flag=="I" && !chkSubmit($("#MTL_TEL"), "전화번호를")) return;
-// 		if(flag=="I" && !chkSubmit($("#MTL_FAX"), "팩스를")) return;
-// 		if(flag=="I" && !chkSubmit($("#MTL_ML1"), "이메일을")) return;
-// 		if(flag=="I" && !chkSubmit($("#MTL_NO"), "사업자번호를")) return;
-		
-// 		var flag = nullToBlank(account_code)==''?"I":"U";
+
 		console.log("flag = " + flag);
-		
-// 		console.log( "MTL_IDX = " + $("#MTL_IDX").val() );
-// 		console.log( "MTL_NM = " +$("#MTL_NM").val() );
-// 		console.log( "MTL_CEO_NM = " +$("#MTL_CEO_NM").val() );
-// 		console.log( "MTL_ADD = " +$("#MTL_ADD").val() );
-// 		console.log( "MTL_TEL = " +$("#MTL_TEL").val() );
-// 		console.log( "MTL_FAX = " +$("#MTL_FAX").val() );
-// 		console.log( "MTL_ML1 = " +$("#MTL_ML1").val() );
-// 		console.log( "MTL_NO = " +$("#MTL_NO").val() );
-		
-		//$("#modal_info").modal('hide');
 
 		var strUrl = "/info/account/saveMaterial";
-		//strUrl = "/info/account/test";
 		var postData = "flag=" + flag
 				+ "&MTL_IDX=" + encodeURIComponent(MTL_IDX)
 				+ "&MTL_CATE=" + encodeURIComponent(MTL_CATE)
@@ -467,8 +436,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		
 		var data = new FormData(form);
 		data.append('flag',flag)
-		
-						
+	
 		$.ajax({
 			type: "POST",
 			enctype: 'multipart/form-data',
@@ -488,7 +456,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		    	}
 		    },
 		    error: function(jqXHR, textStatus, errorThrown){
-			    	fnMessageModalAlert("결과", "정보를 처리하는데 에러가 발생하였습니다.");	// Notification(MES)
+			    fnMessageModalAlert("결과", "정보를 처리하는데 에러가 발생하였습니다.");	// Notification(MES)
 		    },
 		    complete: function() {
 		    }
@@ -544,89 +512,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		} 
 	}
 	
-	//엑셀 1024
-	function excelFileDownload()
-	{
-		console.log("excelFileDownload()");
-		var gridCols = w2ui['grid_list'].columns;
-		var gridData = w2ui['grid_list'].records;
-
-		var fileName = '자재 관리.xlsx';
-		var sheetTitle = '자재 관리';
-		var sheetName = '자재 관리';
-		
-		var param_col_name = "", param_col_id="", param_col_align="", param_col_width="";
-		var is_rownum = true;
-		
-		if(gridCols != null && gridCols.length > 0){
-			for(var i=0; i<gridCols.length; i++){
-	 			if(!gridCols[i].hidden){
-					param_col_name += gridCols[i].caption + ",";
-					param_col_id += gridCols[i].field + ",";
-					param_col_align += "center" + ",";
-					param_col_width += (gridCols[i].width==undefined?"10":(gridCols[i].width).replace('px','')) + ",";
-	 			}
-			}
-			param_col_name = param_col_name.substr(0, param_col_name.length -1);
-			param_col_id = param_col_id.substr(0, param_col_id.length -1);
-			param_col_align = param_col_align.substr(0, param_col_align.length -1);
-			param_col_width = param_col_width.substr(0, param_col_width.length -1);
-		}
-
-
-		var export_url = "/export/export_client_jqgrid";
-		var export_data = "file_name="+encodeURIComponent(fileName);
-			export_data += "&sheet_title="+encodeURIComponent(sheetTitle);
-			export_data += "&sheet_name="+encodeURIComponent(sheetName);
-			export_data += "&header_col_names="+encodeURIComponent(param_col_name);
-			export_data += "&header_col_ids="+encodeURIComponent(param_col_id);
-			export_data += "&header_col_aligns="+encodeURIComponent(param_col_align);
-			export_data += "&header_col_widths="+encodeURIComponent(param_col_width);
-			export_data += "&cmd="+encodeURIComponent("grid_goods_detail");
-			export_data += "&body_data="+encodeURIComponent(JSON.stringify(gridData));
-		
-		$.ajax({
-		  url:export_url,
-		  data:export_data,
-		  type:'POST',
-		  dataType: 'json',
-		  success: function( data ) {
-		  	if(data.status == 200) {
-		  		var file_path = data.file_path;
-		  		var file_name = data.file_name;
-		  		var protocol = jQuery(location).attr('protocol');
-	  			var host = jQuery(location).attr('host');
-	  			var link_url = "/file/attach_download";
-	  			link_url += "?file_path="+encodeURIComponent(file_path);
-	  			link_url += "&file_name="+encodeURIComponent(file_name);
-	  			
-	  			$(location).attr('href', link_url);
-		  	}
-		  },
-			complete: function () {}
-		});
-	}
-	
-	// 미 입력시
-	function chkSubmit(item, msg){
-		if(item.val().replace(/\s/g,"")==""){
-			fnMessageModalAlert("알림", msg+ " 입력해 주세요.");
-			item.val("");
-			item.focus();
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	function initOptions(obj) {
-	    $(obj)
-	    .find('option')
-	    .remove()
-	    .end()
-//		    .append('<option value="All">-----</option>')
-	    .val();
-	}
 </script>
 
 </body>

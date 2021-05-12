@@ -13,9 +13,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 <meta http-equiv="X-UA-Compatible" content="IE=edge">
 <title><%=pageTitle%></title>
 <!-- Tell the browser to be responsive to screen width -->
-<meta
-	content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no"
-	name="viewport">
+<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
 
 <jsp:include page="/common/header_inc" flush="true">
 	<jsp:param name="page_title" value="0" />

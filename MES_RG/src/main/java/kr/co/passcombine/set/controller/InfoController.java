@@ -84,6 +84,7 @@ import kr.co.passcombine.set.vo.SYRepairVo;
 import kr.co.passcombine.set.vo.SYRoutingMasterVo;
 import kr.co.passcombine.set.vo.SYTBomVo;
 import kr.co.passcombine.set.vo.SYTVendorVo;
+import kr.co.passcombine.set.vo.SYTWarehouseVo;
 import kr.co.passcombine.set.vo.SYWarehouseOutVo;
 import kr.co.passcombine.set.vo.SYWarehouseVo;
 import kr.co.passcombine.set.vo.SYWarehouse_MasterHVo;
@@ -5663,4 +5664,128 @@ public class InfoController {
 		}	
 		return resultData.toJSONString();	
 	}	
+
+	//stockAdjust: 자재 입/출고 조정
+	@ResponseBody	
+	@RequestMapping(value = "/info/stockAdjust", method = { RequestMethod.GET,	
+			RequestMethod.POST }, produces = "application/json;charset=UTF-8")	
+	@SuppressWarnings("unchecked")	
+	public String stockAdjust(HttpServletRequest request, @RequestParam String jsonData) {	
+		logger.debug("FrontendController.deliveryMaterial is called.");	
+		
+		List<Map<String, Object>> vo = null;	
+		String REG_ID = SessionUtil.getMemberId(request);	
+		
+		ObjectMapper mapper = new ObjectMapper();
+		TypeReference<List<HashMap<String, Object>>> typeRef = new TypeReference<List<HashMap<String, Object>>>() { };
+		try {
+			vo = mapper.readValue(jsonData, typeRef);
+			System.out.println("Dd");
+		} catch (IOException e1) {
+			System.out.println(e1);
+			e1.printStackTrace();
+		}
+		
+		String WHS_HIS_GB = "";
+		int WHS_HIS_QTY = 0;
+		for (int i = 0; i < vo.size(); i++) {
+			WHS_HIS_GB = (String) vo.get(i).get("WHS_HIS_GB");
+			//WHS_HIS_QTY = Integer.valueOf((String)vo.get(i).get("WHS_HIS_QTY"));
+			WHS_HIS_QTY = Integer.parseInt((String)vo.get(i).get("WHS_HIS_QTY"));
+			if(WHS_HIS_GB.equals("OUT")) {
+				WHS_HIS_QTY = (WHS_HIS_QTY) * -1;
+				vo.get(i).put("WHS_HIS_QTY", WHS_HIS_QTY);	
+			}
+			vo.get(i).put("WHS_HIS_REG_ID", REG_ID);	
+			
+			//vo.get(i).put("ORD_IDX", "OUT");//발주 번호
+			//vo.get(i).put("MTL_ORD_DTL_IDX", "F");//발주 상세번호
+		}
+		
+		JSONObject resultData = new JSONObject();	
+		JSONArray jsonArray = new JSONArray();	
+		JSONParser parser = new JSONParser();	
+		try {	
+			int cnt = sYInfoService.stockAdjust(vo);	
+				
+			if (cnt == 1) {	
+				resultData.put("status", HttpStatus.OK.value());	
+				resultData.put("msg", "success");	
+			} else {	
+				resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());	
+				resultData.put("msg", "whatfall");	
+			}	
+			System.out.println("cnt = " + cnt);	
+			
+			logger.debug("MTL_ORD_STATUS:");	
+		} catch (Exception e) {	
+			e.printStackTrace();	
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());	
+		}	
+		return resultData.toJSONString();	
+	}	
+
+	/**
+	 * <pre>
+	* 1. MethodName : WareHouse
+	* 2. ClassName  : InfoController.java
+	* 3. Comment    : 관리자 > 재고관리 > 자재 재고 관리
+	* 4. 작성자       : DEV_KIMDEUKYONG
+	* 5. 작성일       : 2021. 05. 12.
+	 * </pre>
+	 *
+	 * @param commandMap
+	 * @return
+	 * @throws Exception
+	 */
+	// selectWarehouse
+	@SuppressWarnings("unchecked")
+	@ResponseBody
+	@RequestMapping(value = "/info/selectWHS", method = { RequestMethod.GET, RequestMethod.POST }, produces = "application/json;charset=UTF-8")
+	public String selectWarehouse(@ModelAttribute SYTWarehouseVo vo, HttpServletRequest request,
+			HttpServletResponse response, HttpSession session) {
+		logger.debug("FrontendController.selectWHS is called.");
+
+		JSONObject resultData = new JSONObject();
+		JSONArray listDataJArray = new JSONArray();
+		JSONParser jsonParser = new JSONParser();
+		
+		try {
+			 String WHS_HIS_GB = ""; 
+			 String MTL_MKR_CD = ""; 
+			 String MTL_CATE = ""; 
+			 String MTL_NM = ""; 
+			 String MTL_MKR_NO = ""; 
+			 
+			 WHS_HIS_GB = request.getParameter("WHS_HIS_GB");
+			 MTL_MKR_CD = request.getParameter("MTL_MKR_CD");
+			 MTL_CATE = request.getParameter("MTL_CATE");
+			 MTL_NM = request.getParameter("MTL_NM");
+			 MTL_MKR_NO = request.getParameter("MTL_MKR_NO");
+			 
+			 vo.setWHS_HIS_GB(WHS_HIS_GB);
+			 vo.setMTL_MKR_CD(MTL_MKR_CD);
+			 vo.setMTL_CATE(MTL_CATE);
+			 vo.setMTL_NM(MTL_NM);
+			 vo.setMTL_MKR_NO(MTL_MKR_NO);
+			 
+			List<SYTWarehouseVo> dataList = sYInfoService.selectWarehouse(vo);
+
+			System.out.println("dataList");
+			System.out.println(dataList);
+
+			String listDataJsonString = ResponseUtils.getJsonResponse(response, dataList);
+			listDataJArray = (JSONArray) jsonParser.parse(listDataJsonString);
+			resultData.put("status", HttpStatus.OK.value());
+			resultData.put("rows", listDataJArray);
+		} catch (Exception e) {
+			e.printStackTrace();
+			resultData.put("status", HttpStatus.INTERNAL_SERVER_ERROR.value());
+			resultData.put("rows", null);
+		}
+		
+		return resultData.toJSONString();
+	}
+	
+
 }

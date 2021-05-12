@@ -420,7 +420,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				footer : true,
 				selectColumn : true
 			},
-			multiSelect : false,
+			multiSelect : true,
 
 			columns : [ 
 				{ field:'mtl_REQ_IDX', caption:'구매발주 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
@@ -660,7 +660,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 			if($('#WHS_HIS_QTY').val() == "") {
 				var WHS_HIS_QTY = "0";
-				alert("test:" + WHS_HIS_QTY);
 			}
 			if($('#WHS_HIS_CANCEL_QTY').val() == "") {
 				var WHS_HIS_CANCEL_QTY = "0";
