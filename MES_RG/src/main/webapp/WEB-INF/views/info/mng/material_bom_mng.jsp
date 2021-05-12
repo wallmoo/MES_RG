@@ -666,10 +666,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					comboValue_nm5 = new Array;
 					comboValue_cd5 = new Array;
 					$('#hiddenProduct_code').val('');
-					
+					/*
 					w2ui['grid_list4'].clear();		
 					w2ui['grid_list4'].refresh();					
-					/*
+					
 					w2ui['grid_list5'].clear();		
 					w2ui['grid_list5'].refresh();
 					 */
