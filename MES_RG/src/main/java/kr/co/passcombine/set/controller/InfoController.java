@@ -110,7 +110,9 @@ public class InfoController {
 		logger.debug("InfoController.infoMenuNavigation() is called.");
 		ModelAndView modelAndView = new ModelAndView();
 		modelAndView.setViewName("info/" + menu_div + "/" + menu_page);
-
+		String memberNm = SessionUtil.getMemberNm(request);
+		modelAndView.addObject("memberNm", memberNm);
+		
 		return modelAndView;
 	}
 

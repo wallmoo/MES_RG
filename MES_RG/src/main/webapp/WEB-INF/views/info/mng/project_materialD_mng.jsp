@@ -788,7 +788,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 	function showBomOrderModal() {//자재요청 모달창
 		console.log(w2ui.grid_list2.get("PJT_IDX"));
-		
+		$("#MTL_REQ_REG_ID").val("${memberNm}");	
+	
 		var keys = w2ui.grid_list2.getSelection();//BOM 자료중 선택된 데이터만 전송
 		var ModalDataList = [];
 		
