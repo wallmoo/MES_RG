@@ -7,29 +7,7 @@ import java.util.HashMap;
 //import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
 import javax.annotation.Resource;
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -85,6 +63,7 @@ import kr.co.passcombine.set.vo.SYRepairVo;
 import kr.co.passcombine.set.vo.SYRoutingMasterVo;
 import kr.co.passcombine.set.vo.SYTBomVo;
 import kr.co.passcombine.set.vo.SYTVendorVo;
+import kr.co.passcombine.set.vo.SYTWarehouseVo;
 import kr.co.passcombine.set.vo.SYWarehouseVo;
 import kr.co.passcombine.set.vo.SYtool_repmt_hisVo;
 
@@ -1736,10 +1715,25 @@ public class SYInfoService {
 		return infoDAO.updateT_MTL_ORD_MST(queryMap);
 	}
 	
-	public int updateReqDelivery(List<Map<String,Object>> vo) {//자재 요청 수정
+	public int updateReqDelivery(List<Map<String,Object>> vo) {//자재 요청서 상태 변경
 		return infoDAO.updateReqDelivery(vo);
 	}	
-	public int deliveryMaterial(List<Map<String,Object>> vo) {//자재 요청 수정
+	public int deliveryMaterial(List<Map<String,Object>> vo) {//자재 입/출고 기록
 		return infoDAO.deliveryMaterial(vo);
-	}		
+	}	
+	
+	//stockAdjust: 자재 입/출고 조정
+	public int stockAdjust(List<Map<String,Object>> vo) {//자재 입/출고 조정 기록
+		int result = 0;
+		result = infoDAO.adjustMaterial(vo);//입출고 내역 기록
+		infoDAO.updateMaterialQTY(vo);//재고 수량 업데이트
+		
+		return result;
+	}	
+	
+	// selectWarehouse Start	
+	public List<SYTWarehouseVo> selectWarehouse(SYTWarehouseVo Vo){//자재 요청 조회
+		return infoDAO.selectWarehouse(Vo);
+	}	
+	
 }

@@ -198,7 +198,7 @@ public class MaterialsController {
 			return resultData.toJSONString();
 		}
 		
-		// change BOM Material Quantity
+		// change BOM Material Quantity > 삭제 예정
 		@ResponseBody
 		@RequestMapping(value = "/materials/updateBomQuantity", method = { RequestMethod.GET,
 				RequestMethod.POST }, produces = "application/json;charset=UTF-8")
@@ -215,16 +215,14 @@ public class MaterialsController {
 			vo.put("MTL_IDX",vo.get("hidden_MTLIDX"));
 			vo.put("WHS_HIS_QTY",vo.get("COUNTT"));
 			vo.put("MTL_BG",vo.get("TEXT_BG"));
+			
 			String flag = (String)vo.get("flag");
 			if(flag.equals("I")) {
 				vo.put("WHS_HIS_GB","IN");
 			}else {
 				vo.put("WHS_HIS_GB","OUT");
 			}
-			
-			
-			
-			
+
 			int cnt=0;
 			try {
 				cnt = sYMaterialService.updateEstimateOs(vo);
@@ -238,5 +236,6 @@ public class MaterialsController {
 
 			return resultData.toJSONString();
 		}
+	
 	
 }
