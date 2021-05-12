@@ -276,10 +276,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
 						
-						if(html == '1') {
-							return 'X';
-						} else if(html == '2') {
-							return 'O';
+						if(html == 'N') {
+							return 'N';
+						} else if(html == 'Y') {
+							return 'Y';
 						} else {
 							var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
 							return html2;
@@ -306,10 +306,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
 						
-						if(html == '1') {
-							return 'X';
-						} else if(html == '2') {
-							return 'O';
+						if(html == 'N') {
+							return 'N';
+						} else if(html == 'Y') {
+							return 'Y';
 						} else {
 							var html2='<a href="'+html+'" download>'+html.substring(html.lastIndexOf("/")+1, html.length);
 							return html2;

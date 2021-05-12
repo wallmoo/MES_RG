@@ -723,7 +723,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						match : 'contains'
 					});
 				} else {
-					w2ui.grid_list.clear();
+					w2ui.grid_list3.clear();
 				}
 				w2ui['grid_list3'].refresh();
 				w2ui['grid_list3'].unlock();
@@ -934,7 +934,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						match : 'contains'
 					});
 				} else {
-					//w2ui.grid_list.clear();
+					//w2ui.grid_list3.clear();
 				}
 			},
 			complete : function() {
