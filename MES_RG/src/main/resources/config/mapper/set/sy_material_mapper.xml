@@ -6,6 +6,56 @@
 	<resultMap id="SYTMaterialVo" type="SYTMaterialVo">
 		<result property="WHS_HIS_GB" column="WHS_HIS_GB" jdbcType="VARCHAR" javaType="java.lang.String" />
 	</resultMap>
+		<!-- ceo정보등을 가져오는쿼리 -->
+		<select id="base_info" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+			/*   base_info   */ 
+			SELECT    TVM.VDR_NM
+					, TMOM.MTL_ORD_REG_ID
+					, TVM.VDR_TEL
+					, TVM.VDR_FAX
+					, TVM.VDR_ML1
+					, TVM.VDR_ML2
+					, TVM.VDR_ML3
+					, TCM.CST_NM
+					, TCM.CST_NO
+					, TCM.CST_CEO_NM
+					, TCM.CST_ADD
+					, TCM.CST_TEL
+					, TCM.CST_FAX
+					, TPM.PJT_NM 
+					, TMOM.ORD_IDX
+					, TMOM.MTL_ORD_PLC
+					, SYSDATE() AS DATE
+			FROM 		T_MTL_ORD_MST TMOM
+			LEFT JOIN	T_MTL_ORD_DTL 	TMOD 	ON TMOD.ORD_IDX  		= TMOM.ORD_IDX
+			LEFT JOIN	T_WHS_HIS 		TWH		ON TWH.MTL_ORD_DTL_IDX 	= TMOD.MTL_ORD_DTL_IDX 
+			LEFT JOIN 	T_MTL_MST 		TMM 	ON TMM.MTL_IDX  		= TMOD.MTL_IDX
+			LEFT JOIN 	T_VDR_MST 		TVM		ON TVM.VDR_IDX 			= TMOM.VDR_IDX
+			LEFT JOIN	T_PJT_MST 		TPM		ON TPM.PJT_IDX 			= TMOM.PJT_IDX 
+			LEFT JOIN 	T_CST_MST 		TCM		ON TCM.CST_IDX 			= TPM.CST_IDX 
+			WHERE 		TMOM.ORD_IDX	=	#{ORD_IDX}
+			ORDER  BY   TMOM.ORD_IDX 		LIMIT 	1
+		</select>
+		<!-- 품목등을 가져오는 쿼리 -->
+		<select id="info_List_project" parameterType="java.util.HashMap" resultType="java.util.HashMap">
+			/*   info_List_project   */ 
+			SELECT 	TMM.MTL_IDX
+					,TMM.MTL_NM
+					,TMM.MTL_STD
+					,TMOD.ORD_DTL_QTY
+					,TWH.MTL_ORD_DTL_IDX
+					,TMM.MTL_UNT
+					,TMM.MTL_BG
+					,TMOM.MTL_ORD_DLV_DT
+					,IF(TMM.MTL_PRICE='' OR TMM.MTL_PRICE=null,0,TMM.MTL_PRICE)
+					AS MTL_PRICE
+			FROM 		T_MTL_ORD_MST 	TMOM
+			LEFT JOIN	T_MTL_ORD_DTL 	TMOD 	ON TMOD.ORD_IDX  = TMOM.ORD_IDX
+			LEFT JOIN	T_WHS_HIS 		TWH		ON TWH.MTL_ORD_DTL_IDX = TMOD.MTL_ORD_DTL_IDX 
+			LEFT JOIN 	T_MTL_MST 		TMM 	ON TMM.MTL_IDX  = TMOD.MTL_IDX
+			WHERE 		TMOM.ORD_IDX =	#{ORD_IDX}
+		</select>
+		
 		
 
 		<insert id="insertFile2" parameterType="java.util.HashMap" >
