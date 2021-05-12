@@ -28,6 +28,16 @@ public class SYMaterialService {
 	@Resource(name = "setMaterialsDAO")
 	private SYMaterialsDAO MaterialsDAO;
 
+	public Map<String, Object> base_info(Map<String, Object> vo) {
+		// TODO Auto-generated method stub
+		return MaterialsDAO.base_info(vo);
+	}
+
+	public List<Map<String, Object>> info_List_project(Map<String, Object> vo) {
+		// TODO Auto-generated method stub
+		return MaterialsDAO.info_List_project(vo);
+	}
+	
 	public int insertMaterial2(Map<String, Object> vo, Map<String, Object> file) {
 		if(!file.isEmpty()) {
 			int result = MaterialsDAO.insertFile2(file);
@@ -66,6 +76,8 @@ public class SYMaterialService {
 		
 		return 1;
 	}
+
+
 	
 /*
 	public Map<String, Object> selectFiles(Map<String, Object> vo) {

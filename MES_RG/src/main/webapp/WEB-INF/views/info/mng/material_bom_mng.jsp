@@ -690,7 +690,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		var S_MTL_MKR_NO = $("#S_MTL_MKR_NO").val();
 		
 		var page_url = "/info/info/selectMaterialsBOM";
-		var postData = 'pjt_IDX=' + keys
+		var postData = 'PJT_IDX=' + keys
 					    +'&MTL_MKR_CD='+S_MTL_MKR_CD
 					    +'&MTL_NM='+S_MTL_NM
 					    +'&MTL_MKR_NO='+S_MTL_MKR_NO;

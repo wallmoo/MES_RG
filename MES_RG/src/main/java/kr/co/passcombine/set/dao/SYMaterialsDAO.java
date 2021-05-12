@@ -33,4 +33,8 @@ public interface SYMaterialsDAO {
 
 	int insertEstimateOs1(Map<String, Object> vo);
 
+	Map<String, Object> base_info(Map<String, Object> vo);
+
+	List<Map<String, Object>> info_List_project(Map<String, Object> vo);
+
 }

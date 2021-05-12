@@ -625,26 +625,16 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		}//if end
 	}
 	function bomNewOrder(){
-		
-		var form = $("#testFrm")[0];
-		
-		var data = new FormData(form);
-		
-		$.ajax({
-			type: "POST",
-			enctype: 'multipart/form-data',
-			url: "/materials/test",
-			data: data,
-			processData: false,
-			contentType: false,
-			cache: false,
-			timeout: 600000,
-		    success:function(data, textStatus, jqXHR){
-		    	if(data.status == "200") {
-			    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
-		    	}
-		    },
-	});
+		var key=w2ui.grid_list.getSelection();
+		if(key.length==0){
+			alert("출력하실 발주번호를 클릭해주세요.");
+			return false;
+		}else{
+		var ORD_IDXS = w2ui.grid_list.get(key[0]).ord_IDX;
+		var url = "/materials/test?ORD_IDX="+ORD_IDXS;
+		var option = "toolbar=no, menubar=no, scrollbars=yes, resizable=no, width=800, height=700, left=0, top=0";
+		window.open(url,"팝업미리보기",option);
+		}
 	}
 </script>
 

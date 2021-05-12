@@ -27,6 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.multipart.MultipartHttpServletRequest;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -38,6 +39,7 @@ import kr.co.passcombine.set.util.PdfPage;
 import kr.co.passcombine.set.util.ResponseUtils;
 import kr.co.passcombine.set.util.SessionUtil;
 import kr.co.passcombine.set.util.fileUpload;
+import kr.co.passcombine.set.vo.SYRoutingMasterVo;
 import kr.co.passcombine.set.vo.SYTBomVo;
 import kr.co.passcombine.set.vo.SYTMaterialVo;
 @Controller
@@ -244,10 +246,20 @@ public class MaterialsController {
 		@RequestMapping(value = "/test", method = { RequestMethod.GET,
 				RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 		@SuppressWarnings("unchecked")
-		public String test(MultipartHttpServletRequest request,
+		public ModelAndView test(@RequestParam Map<String,Object> vo,
+				HttpServletRequest request,
 				HttpServletResponse response, HttpSession session) {
 			logger.debug("FrontendController.changeBOMQuantity is called.");
+			/*
 			PdfPage.PDFTEMP(request);
-			return "";
+			return ""*/
+			ModelAndView mav = new ModelAndView();
+			Map<String,Object> base = sYMaterialService.base_info(vo);
+			List<Map<String,Object>> dataList = sYMaterialService.info_List_project(vo);
+			
+			mav.addObject("BASE",base);
+			mav.addObject("DATALIST",dataList);
+			mav.setViewName("/common/pdf_Temp2");
+			return mav;
 		}
 }
