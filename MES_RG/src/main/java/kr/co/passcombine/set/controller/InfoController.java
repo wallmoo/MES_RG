@@ -834,8 +834,8 @@ public class InfoController {
 		
 		Map<String, Object> file = fileUpload.saveFile(fileList, basePath, request);
 		if(!file.isEmpty()) {
-		file.put("CMM_FLE_TB_TYPE","A");//파일 종류를 넣는곳인데 뭔지모르겠으므로 보류
-		file.put("CMM_FLE_REG_ID",SessionUtil.getMemberId(request));
+			file.put("CMM_FLE_TB_TYPE","A");//파일 종류를 넣는곳인데 뭔지모르겠으므로 보류
+			file.put("CMM_FLE_REG_ID",SessionUtil.getMemberId(request));
 		}
 		
 		//기본DAO셋팅
@@ -863,7 +863,6 @@ public class InfoController {
 			} else if (flag.equals("U")) {// Modify
 				MTL_IDX = request.getParameter("MTL_IDX");
 
-				
 				// hKey
 				vo.put("MTL_IDX",(Integer.parseInt(MTL_IDX)));
 				Map<String,Object> result = sYInfoService.selectFiles(vo);
@@ -893,7 +892,7 @@ public class InfoController {
 	@RequestMapping(value = "/account/deleteMaterial", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public String deleteMaterial(@ModelAttribute SYTMaterialVo vo, MultipartHttpServletRequest request,
+	public String deleteMaterial(@ModelAttribute SYTMaterialVo vo, HttpServletRequest request,
 			HttpServletResponse response, HttpSession session) {
 		logger.debug("FrontendController.deleteAccount() is called.");
 
@@ -907,7 +906,7 @@ public class InfoController {
 			Map<String,Object> result = sYInfoService.selectFiles(vos);
 			if(result!=null) {
 				if(result.get("CMM_FLE_SYS_NM")!=null)
-				fileUpload.delFile(request,result);
+					fileUpload.delFile(request,result);
 			}
 			
 			int results = 0;
