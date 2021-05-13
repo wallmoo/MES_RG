@@ -3162,6 +3162,7 @@
 	<insert id="InsertMaterialsBOM" parameterType="java.util.List">
 		INSERT INTO T_BOM_MST
 		(
+			BOM_IDX,
 			MTL_IDX,
 			PJT_IDX,
 			BOM_MTL_QTY,
@@ -3171,6 +3172,7 @@
 		) VALUES
 		<foreach  collection="list" item="item"  separator=" , ">
 		(
+			(SELECT IFNULL(MAX(BOM_IDX)+1,1) FROM (SELECT BOM_IDX FROM T_BOM_MST)AS B ), 
 			#{item.mtl_IDX},
 			#{item.PJT_IDX}
 			<choose><when test="item.bom_MTL_QTY!=null and item.bom_MTL_QTY!=''">,#{item.bom_MTL_QTY}</when><otherwise>,'0'</otherwise></choose>,
@@ -3180,6 +3182,22 @@
 		)
 		</foreach>
 	</insert>
+	<select id="checkBOMMAT" parameterType="java.util.List" resultType="java.util.HashMap">
+	   SELECT 	MTL_IDX, MTL_MKR_CD, MTL_MKR_NO
+	  	 FROM 	T_MTL_MST
+	  	WHERE	
+	  	  1=1
+	  	  AND	
+		  	(
+		  	<foreach  collection="list" item="item"  separator=" OR ">
+				(
+					MTL_MKR_NO=#{item.MTL_MKR_NO}
+				AND MTL_MKR_CD=#{item.MTL_MKR_CD}
+				)
+			</foreach>
+			)
+	</select>
+	
 	<update id="updateBomQuantity" parameterType="SYTBomVo">
 		UPDATE T_BOM_MST SET
 		BOM_MTL_QTY = #{BOM_MTL_QTY}
@@ -3357,11 +3375,16 @@
 	
 	<insert id="InsertBOMExcel" parameterType="java.util.List">
 		INSERT INTO T_BOM_MST
-		( MTL_IDX, PJT_IDX, BOM_MTL_QTY, BOM_REG_DT, BOM_REG_ID, BOM_DEL_YN )
+		( BOM_IDX, MTL_IDX, PJT_IDX, BOM_MTL_QTY, BOM_REG_DT, BOM_REG_ID, BOM_DEL_YN )
 		VALUES
 		<foreach collection="list" item="item" separator=",">
-		(#{item.MTL_IDX},#{item.PJT_IDX},#{item.MTL_QTY},SYSDATE(),#{item.REG_ID},'N')
+		(
+		(SELECT IFNULL(MAX(BOM_IDX)+1,1) FROM (SELECT BOM_IDX FROM T_BOM_MST)AS B ), 
+		#{item.MTL_IDX},#{item.PJT_IDX},#{item.MTL_QTY},SYSDATE(),#{item.REG_ID},'N')
 		</foreach>
+		ON DUPLICATE KEY UPDATE
+			BOM_MTL_QTY = values(BOM_MTL_QTY),
+			BOM_REG_DT	 = values(BOM_REG_DT)
 	</insert>
 		
 		

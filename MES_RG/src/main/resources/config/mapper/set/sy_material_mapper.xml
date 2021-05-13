@@ -89,6 +89,7 @@
 	/* insertBOM2 */
 		INSERT INTO T_BOM_MST
 		(
+			BOM_IDX,
 			MTL_IDX,
 			PJT_IDX,
 			BOM_MTL_QTY,
@@ -97,6 +98,7 @@
 			BOM_REG_ID
 		) VALUES
 		(
+			(SELECT IFNULL(MAX(BOM_IDX)+1,1) FROM (SELECT BOM_IDX FROM T_BOM_MST)AS B) ,
 			#{MTL_IDX},
 			#{PJT_IDX},
 			'0',

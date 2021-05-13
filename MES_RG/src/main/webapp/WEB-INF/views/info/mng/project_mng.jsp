@@ -60,7 +60,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						<div class="box-tools pull-right">
 						 	<!-- <button type="button" id="btn_create" class="btn btn-success btn-sm" onclick="fileComment();">완료</button> -->
 					     	<button type="button" id="btn_create" class="btn btn-primary btn-sm" onclick="requestIU_modal();">등록/수정</button>
-					     	<button type="button" id="btn_delete" class="btn btn-danger btn-sm" onclick="deleteProject()();">삭제</button>
+					     	<button type="button" id="btn_delete" class="btn btn-danger btn-sm" onclick="deleteProject();">삭제</button>
 							<button type="button" id="btn_search_csr" onclick="loadList();" class="btn btn-warning btn-sm">조회</button> 
 							
 						</div>
@@ -224,7 +224,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 							<label for="" class="col-sm-3 control-label">납품요청일</label>
 							<div class="col-sm-8">
 								<div class="input-group">
-									<input type="text" class="form-control input-sm dp_component_mo" id="PJT_DLV_DT">
+									<input type="text" class="form-control input-sm dp_component_mo" id="PJT_DLV_DT" name="PJT_DLV_DT">
 									<div class="input-group-addon">
 										<i class="fa fa-calendar"></i>
 									</div>
@@ -473,7 +473,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				+ "&PJT_CD=" + encodeURIComponent(PJT_CD)
 				+ "&PJT_PRD_NM=" + encodeURIComponent(PJT_PRD_NM)
 				+ "&PJT_PRD_QTY=" + encodeURIComponent(PJT_PRD_QTY)
-				+ "&PJT_PRD_UNT=" + encodeURIComponent(PJT_PRD_UNT);		
+				+ "&PJT_PRD_UNT=" + encodeURIComponent(PJT_PRD_UNT)		
 				+ "&PJT_DLV_DT=" + encodeURIComponent(PJT_DLV_DT);
 		}				
 		

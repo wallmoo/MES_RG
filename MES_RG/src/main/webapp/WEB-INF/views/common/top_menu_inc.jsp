@@ -8,6 +8,7 @@ String lang = SessionUtil.getMemberLang(request);
 String role_cd = SessionUtil.getRoleCd(request);
 String role_nm = SessionUtil.getRoleNm(request);
 String member_id = SessionUtil.getMemberId(request);
+if(member_id!=null && !member_id.equals("")){
 String member_nm = SessionUtil.getMemberNm(request);
 String member_vdr_idx = SessionUtil.getMemberVdrIdx(request);
 
@@ -348,3 +349,10 @@ function fnPwdChange() {
   });
 }
 </script>
+
+<%}else{%>
+<script>
+alert("로그인 세션이 만료되었습니다. 다시 로그인하여 주십시오");
+window.self.location = "/";
+</script>
+<%}%>
