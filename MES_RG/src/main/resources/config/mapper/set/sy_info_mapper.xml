@@ -3112,6 +3112,10 @@
 		 FROM T_MTL_MST TMM
 		 LEFT OUTER JOIN T_BOM_MST TBM ON TMM.MTL_IDX = TBM.MTL_IDX
 		 WHERE TBM.PJT_IDX = #{PJT_IDX}
+		 
+		  <if test="MTL_NM!=null and MTL_NM!='' and MTL_NM!='null'">
+		  	AND	TMM.MTL_NM LIKE CONCAT('%',#{MTL_NM},'%')
+		  </if>		 
 	</select>
 	
 	<select id="selectBOMbyProject" parameterType="SYTProjectVo" resultType="SYTProjectVo">
