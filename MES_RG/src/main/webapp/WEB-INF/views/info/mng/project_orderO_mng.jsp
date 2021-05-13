@@ -61,8 +61,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 													<div class="box-header with-border" style="background-color: #DB8EB5;">
 														<h3 class="box-title">조회조건 및 기타 관리</h3>
 														<div class="box-tools pull-right">
-															<button type="button" id="btn_excel_csr" onclick="makeOrdPDF();" class="btn btn-success btn-sm">발주서(PDF)출력</button>
-															<button type="button" id="btn_dlv_csr" onclick="showOrdModal();" class="btn btn-info btn-sm">약식 발주서 작성</button>
+															<button type="button" id="btn_excel_csr" onclick="printFile();" class="btn btn-success btn-sm">발주서(PDF)출력</button>
+															<button type="button" id="btn_dlv_csr" onclick="showPullModal();" class="btn btn-info btn-sm">약식 발주서 작성</button>
 															<button type="button" id="btn_ins_csr" onclick="loadLeftGrid();" class="btn btn-primary btn-sm">조회</button>
 														</div>
 													</div>
@@ -191,6 +191,106 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			</div>
 		</div>		
 		<!--  -->
+		<div class="modal fade" id="modal_pull" data-backdrop="static">
+			<div class="modal-dialog modal-md" style="width: 800px;">
+				<div class="modal-content">
+					<div class="modal-header">
+						<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+							<span aria-hidden="true">&times;</span>
+						</button>
+						<h4 class="modal-title" id="modal_code_title">약식 발주</h4>
+					</div>
+					<div class="modal-body" id="modal_code_body">
+						<form id="bom_lvl0" name="bom_lvl0" class="form-horizontal">
+							<input type="hidden" name="BOM_IDX" id="BOM_IDX">
+							<div class="row">
+								<div class="col-md-12 text-center">
+									<div class="col-md-7 text-left" style="margin-top:5px;">
+										<label class="col-sm-3 control-label" style="padding-left: 0px">견적요청일자</label>
+										<div class="input-group">
+											<input type="text" class="form-control pull-right input-sm" id="MTL_EST_REG_DT" placeholder="yyyymmdd~yyyymmdd"
+											o>
+											<div class="input-group-addon">
+												<i class="fa fa-calendar"></i>
+											</div>
+										</div>	
+									</div>	
+									<div class="col-sm-5 text-right">
+										<button type="button" class="btn btn-success btn-sm" onclick="saveEstimatePopup()">등록</button>
+									</div>	
+								</div>
+								<div class="col-sm-12">
+									<div id="modal_grid_1" class="w2g-h200" style="margin-top: 10px;"></div>
+								</div>
+							</div>
+						</form>
+						
+						<!--  ----------------------------------------------
+						
+						
+						 -->
+						<form id="bom_lvl1" name="bom_lvl1" class="form-horizontal" style="margin-top: 10px">
+							<div class="row">
+								<div class="col-md-12 text-center">
+										<label class="col-sm-2 control-label" style="padding-left: 0px">입고 요청 사업장</label>
+										<div class="col-sm-3" style="padding-left: 0px; padding-right: 0px">
+											<select id="MTL_ORD_PLCP" name="MTL_ORD_PLCP" class="form-control" style="height: 30px;" ></select>
+										</div>		
+										<label class="col-sm-2 control-label" style="padding-left: 0px">납품요청일자</label>
+										<div class="input-group col-sm-4" style="padding-left: 0px; padding-right: 0px">
+										<input type="text" class="form-control pull-right input-sm" id="MTL_ORD_DLV_DTP" placeholder="yyyymmdd~yyyymmdd"
+											onkeypress="if(event.keyCode==13) {return false;}">
+											<div class="input-group-addon">
+												<i class="fa fa-calendar"></i>
+											</div>
+										</div>	
+									</div>
+							</div>
+							<div class="row" style="margin-top: 20px;>
+								<div class="col-md-12 text-center">
+										<label class="col-sm-2 control-label">하자 증권</label>
+										<div class="col-sm-2">
+											<select id="MTL_ORD_FLE1" name="MTL_ORD_FLE1" class="form-control" style="height: 30px;" >
+												<option value="N">No</option>
+												<option value="Y">Yes</option>
+											</select>
+										</div>
+										<label class="col-sm-2 control-label">이행 증권</label>
+										<div class="col-sm-2">
+											<select id="MTL_ORD_FLE2" name="MTL_ORD_FLE1" class="form-control" style="height: 30px;" >
+												<option value="N">No</option>
+												<option value="Y">Yes</option>
+											</select>
+										</div>
+										<label class="col-sm-2 control-label">계약서 증권</label>
+										<div class="col-sm-2">
+											<select id="MTL_ORD_FLE2" name="MTL_ORD_FLE1" class="form-control" style="height: 30px;" >
+												<option value="N">No</option>
+												<option value="Y">Yes</option>
+											</select>
+										</div>
+									
+							</div>
+							<div class="row">
+								<div class="col-md-12 text-center" style="margin-top: 20px; text-align: right;">
+									<button type="button" class="btn btn-success btn-sm" onclick="saveEstimatePopup2()">등록</button>
+									<button type="button" id="" class="btn btn-danger btn-sm" data-dismiss="modal">닫기</button>
+								</div>	
+								<div class="col-sm-12">
+									<div id="modal_grid_2" class="w2g-h200" style="margin-top: 10px;"></div>
+								</div>
+							</div>
+						</form>						
+						
+						<input type="hidden" id="hiddenProduct_code"> 
+						<input type="hidden" id="hiddenM_item_code">
+									
+					</div>
+				</div>
+			</div>
+		</div>
+		
+		<!--  -->
 
 		<jsp:include page="/common/footer_inc" flush="true">
 			<jsp:param name="page_title" value="0" />
@@ -230,9 +330,28 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		
 		fnLoadLeftGrid();
 		fnLoadRightGrid();
+		fnLoadPopupModalGrid();
+		fnLoadPopupModalGrid2();
+		requestBranchInfo('MTL_ORD_PLCP');//사업장 정복
+		//fnLoadCommonOption('#MTL_ORD_DLV_DTP');//등록폼 달력
 		loadingEnd=true;
 	})
 
+	function showPullModal(){
+		var idx = $("#S_PJT_IDX").val();
+		var vdr = $("#S_VDR_IDX").val();
+		if(idx=="ALL" || vdr=="ALL"){
+			alert("약식발주는 프로젝트와 거래처 모두가 선택되어야 합니다.");
+			return false;
+		}else{
+			fnLoadCommonOption();
+			$("#modal_pull").modal('show');
+			addPopupRequest();
+			addPopupRequest2();
+		}
+		
+	}
+	
 	function searchs(){
 		if(loadingEnd){
 			loadLeftGrid();
@@ -503,6 +622,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		var page_url = "/info/info/selectMaterialOrdDTL";
 		var postData = "ORD_IDX=" + encodeURIComponent(ord_IDX);
 		
+		
 		w2ui['grid_list2'].lock('loading...', true);
 		w2ui['grid_list2'].clear();
 		w2ui['grid_list2'].refresh();
@@ -589,10 +709,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			
 			var mstData = {
 				'ORD_IDX': ORD_IDX,
-				'WHS_HIS_QTY' : WHS_HIS_QTY,
-				'WHS_HIS_CANCEL_QTY' : WHS_HIS_CANCEL_QTY,
-				'WHS_HIS_REG_DT' : WHS_HIS_REG_DT,
-				'ORD_CHK_STATUS' : ORD_CHK_STATUS
+				'WHS_HIS_QTY' : $("#WHS_HIS_QTY").val(),
+				'WHS_HIS_CANCEL_QTY' : $("#WHS_HIS_CANCEL_QTY").val(),
+				'WHS_HIS_REG_DT' : $("#WHS_HIS_REG_DT").val(),
+				'ORD_CHK_STATUS' : $("#ORD_CHK_STATUS").val()
 			}
 			
 			if (confirm("일괄 입고처리를 진행하시겠습니까?")) {
@@ -723,6 +843,393 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			}
 		}		
 	}
+	function printFile(){
+		var key=w2ui.grid_list.getSelection();
+		if(key.length==0){
+			alert("출력하실 발주번호를 클릭해주세요.");
+			return false;
+		}else{
+		var ORD_IDXS = w2ui.grid_list.get(key[0]).ord_IDX;
+		var url = "/materials/print?ORD_IDX="+ORD_IDXS;
+		var option = "toolbar=no, menubar=no, scrollbars=yes, resizable=no, width=800, height=700, left=0, top=0";
+		window.open(url,"팝업미리보기",option);
+		}
+	}
+	
+	function fnLoadPopupModalGrid() {
+		var rowArr = [];
+
+		$('#modal_grid_1').w2grid({
+			name : 'modal_grid_1',
+			show : {
+				lineNumbers : true,
+				footer : true,
+				selectColumn : true
+			},
+			multiSelect : true,
+			columns : [ 
+				{ field:'est_IDX', caption:'기본IDX', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'mtl_REQ_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'pjt_IDX', caption:'프로젝트 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'bom_IDX', caption:'BOM 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'pjt_CD', caption:'프로젝트코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true, hidden: true},
+				{ field:'mtl_REQ_TYPE', caption:'요청 유형', size:'7%', style:'text-align:center', sortable: true},
+	        	{ field:'mtl_REQ_REG_DT', caption:'자재 요청일', size:'10%', style:'text-align:center', sortable: true},
+	        	{ field:'mtl_REQ_REG_ID', caption:'요청자', size:'10%', style:'text-align:center', sortable: true},
+				{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
+				{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_NM', caption:'품목', size:'10%', style:'text-align:center' , sortable: true},
+				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'17%', style:'text-align:center', sortable: true},
+				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center', sortable: true, editable:{type: 'int'} }
+			],					
+			records : [],
+			total : 0,
+			recordHeight : 30,
+			onReload : function(event) { },
+
+			onClick : function(event) {
+				console.log(this.get(event.recid));
+			},
+			onDblClick : function(event) { },
+			onChange : function(event) {//갯수 수정
+				event.onComplete = function() {//onSave
+					console.log("onChange");
+					w2ui.modal_grid_1.save();
+					
+					var eventColumn = event.column;
+					console.log(event);
+					console.log('event.value : ' + event.value);
+								
+				}
+			}			
+		});
+	}	
+	
+function addPopupRequest(){ // 팝업창에 있는 그리드 새로고침
+		
+		var page_url = "/info/info/selectMaterialRequest";
+		var pjt_idxs = $("#S_PJT_IDX").val();
+		if(pjt_idxs=="ALL"){
+			pjt_idxs=0;
+		}
+		
+		var postData = "PJT_IDX=" + pjt_idxs; 
+		
+		w2ui['modal_grid_1'].lock('loading...', true);
+		setTimeout(function(){
+		$.ajax({
+			url : page_url,
+			type : 'POST',
+			data : postData,
+			data_type : 'json',
+			success : function(data) {
+				console.log(data);
+				
+				if (data.status == 200 && (data.rows).length > 0) {
+					rowArr = data.rows;
+					$.each(rowArr, function(idx, row) {
+						row.recid = idx + 1;
+						comboValue_nm.push(row.pjt_PRD_NM + "");
+						comboValue_cd.push(row.pjt_IDX + "");
+					});
+					w2ui['modal_grid_1'].records = rowArr;
+				} else {
+					w2ui.modal_grid_1.clear();
+				}
+				w2ui['modal_grid_1'].refresh();
+				w2ui['modal_grid_1'].unlock();
+			},
+			complete : function() {
+
+			}
+		});
+		},200);
+	}
+
+function fnLoadCommonOption() {
+ 	console.log('fnLoadCommonOption()');
+ 	
+	$('#MTL_EST_REG_DT').daterangepicker({
+		opens: 'right',
+		singleDatePicker: true,
+		locale: {
+			format : 'YYYY-MM-DD'	,
+			monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
+			daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
+			showMonthAfterYear : true,
+			yearSuffix : '년'
+	    },
+	    startDate : moment(minDate)
+	})
+	$('#MTL_ORD_DLV_DTP').daterangepicker({
+		opens: 'right',
+		singleDatePicker: true,
+		locale: {
+			format : 'YYYY-MM-DD'	,
+			monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
+			daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
+			showMonthAfterYear : true,
+			yearSuffix : '년'
+	    },
+	    startDate : moment(minDate)
+	})
+}
+
+
+function saveEstimatePopup(){
+	var keys = w2ui.modal_grid_1.getSelection();
+	var reqDataList = [];
+	var mtl_REQ_QTY_val = 0;
+	
+	if (keys == null || keys == "") {
+		alert("견적요청할 항목을 선택하여주십시오");
+	} else {
+		for (var i = 0; i < keys.length; i++) {
+			if(w2ui.modal_grid_1.records[keys[i]-1].mtl_REQ_QTY == null) {
+				mtl_REQ_QTY_val = 0;
+			} else {
+				mtl_REQ_QTY_val = w2ui.modal_grid_1.records[keys[i]-1].mtl_REQ_QTY;
+			}
+			var Data = {
+				flag : "I",
+				EST_IDX : w2ui.modal_grid_1.records[keys[i]-1].est_IDX,
+				MTL_REQ_IDX : w2ui.modal_grid_1.records[keys[i]-1].mtl_REQ_IDX,	
+				PJT_IDX : $("#S_PJT_IDX").val(),
+				PJT_IDX2 : w2ui.modal_grid_1.records[keys[i]-1].pjt_IDX,
+                BOM_IDX : w2ui.modal_grid_1.records[keys[i]-1].bom_IDX,
+				PJT_CD : w2ui.modal_grid_1.records[keys[i]-1].pjt_CD,
+				PJT_NM : w2ui.modal_grid_1.records[keys[i]-1].pjt_NM,
+				MTL_IDX : w2ui.modal_grid_1.records[keys[i]-1].mtl_IDX,
+				MTL_MKR_CD : w2ui.modal_grid_1.records[keys[i]-1].mtl_MKR_CD,
+				MTL_NM : w2ui.modal_grid_1.records[keys[i]-1].mtl_NM,
+				MTL_MKR_NO : w2ui.modal_grid_1.records[keys[i]-1].mtl_MKR_NO,
+				MTL_STD : w2ui.modal_grid_1.records[keys[i]-1].mtl_STD,
+				MTL_UNT : w2ui.modal_grid_1.records[keys[i]-1].mtl_UNT,
+				MTL_REQ_QTY : mtl_REQ_QTY_val,
+				MTL_REQ_TYPE : w2ui.modal_grid_1.records[keys[i]-1].mtl_REQ_TYPE,
+				MTL_EST_REG_DT : $('#MTL_EST_REG_DT').val(),
+				MTL_EST_REG_ID : w2ui.modal_grid_1.records[keys[i]-1].mtl_REQ_REG_ID,
+				S_VDR_IDX3 : $('#S_VDR_IDX').val()+""
+			};
+			reqDataList.push(Data);
+		}			
+		console.log(reqDataList);
+		var checkVali=false;
+		if (confirm("등록하시겠습니까?")) {
+				var a = w2ui.modal_grid_1.getSelection().length;
+				var b = w2ui.modal_grid_1.records.length;
+				if(b-a>0){
+					if(confirm("현재 선택하신 수는 "+a+"개이며, 전체수는 "+b+"개입니다. 정말 등록하시겠습니까?")){
+						checkVali=true;
+					}
+				}else{
+					checkVali=true;
+				}
+			
+			if(checkVali){
+				var page_url = "/materials/info/insertEstimate";
+				var jsonData = JSON.stringify(reqDataList);
+				console.log(jsonData);
+
+				jQuery.ajaxSettings.traditional = true;
+				$.ajax({
+					url : page_url,
+					type : 'POST',
+					data : {
+						"jsonData" : jsonData
+					},
+					data_type : 'json',
+					success : function(data) {
+						if (data != 0) {
+							
+							alert("추가되었습니다");
+							w2ui['modal_grid_1'].clear();
+							addPopupRequest();
+							addPopupRequest2();
+						} else {
+							alert("오류가 발생하였습니다");
+						}
+					},
+					complete : function() {
+
+					}
+				});
+			}
+		}				
+	}
+	
+}
+function fnLoadPopupModalGrid2() {
+	var rowArr = [];
+
+	$('#modal_grid_2').w2grid({
+		name : 'modal_grid_2',
+		show : {
+			lineNumbers : true,
+			footer : true,
+			selectColumn : true
+		},
+		multiSelect : true,
+		columns : [ 
+			{ field:'est_IDX', caption:'기본IDX', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+			{ field:'mtl_REQ_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+			{ field:'pjt_IDX', caption:'프로젝트 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+			{ field:'bom_IDX', caption:'BOM 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+			{ field:'pjt_CD', caption:'프로젝트코드', size:'12%', style:'text-align:center', sortable: true, hidden: true},
+			{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true, hidden: true},
+			{ field:'mtl_REQ_TYPE', caption:'요청 유형', size:'7%', style:'text-align:center', sortable: true},
+        	{ field:'mtl_EST_REG_DT', caption:'자재 요청일', size:'7%', style:'text-align:center', sortable: true},
+        	{ field:'mtl_EST_REG_ID', caption:'요청자', size:'7%', style:'text-align:center', sortable: true},
+			{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
+			{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true},
+			{ field:'mtl_NM', caption:'품목', size:'10%', style:'text-align:center' , sortable: true},
+			{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'17%', style:'text-align:center', sortable: true},
+			{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true},
+			{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
+			{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center', sortable: true, editable:{type: 'int'} }
+		],					
+		records : [],
+		total : 0,
+		recordHeight : 30,
+		onReload : function(event) { },
+
+		onClick : function(event) {
+			console.log(this.get(event.recid));
+		},
+		onDblClick : function(event) { },
+		onChange : function(event) {//갯수 수정
+			event.onComplete = function() {//onSave
+				console.log("onChange");
+				w2ui.modal_grid_2.save();
+				
+				var eventColumn = event.column;
+				console.log(event);
+				console.log('event.value : ' + event.value);
+							
+			}
+		}			
+	});
+}	
+
+
+function addPopupRequest2() {//grid_list Data Arr
+	
+	var VDR_IDX_VAL = $('#S_VDR_IDX').val();
+	var PJT_IDX = $('#S_PJT_IDX').val();	
+	
+	var page_url = "/info/info/selectEstimate";
+	var postData = "PJT_NM=" + encodeURIComponent($("#S_PJT_NM").val()) 
+					+ "&MTL_EST_REG_DT=" + encodeURIComponent($("#S_MTL_EST_REG_DT").val())
+					+ "&VDR_IDX=" + encodeURIComponent(VDR_IDX_VAL)
+					+ "&MTL_NM=" + encodeURIComponent($("#S_MTL_NM").val()) 
+					+ "&MTL_MKR_CD=" + encodeURIComponent($("#S_MTL_MKR_CD").val()) 
+					+ "&MTL_MKR_NO=" + encodeURIComponent($("#S_MTL_MKR_NO").val())
+					+ "&PJT_IDX=" + encodeURIComponent(PJT_IDX);
+
+	w2ui['modal_grid_2'].lock('loading...', true);
+	setTimeout(function(){
+	$.ajax({
+		url : page_url,
+		type : 'POST',
+		data : postData,
+		data_type : 'json',
+		success : function(data) {
+			console.log(data);
+			
+			if (data.status == 200 && (data.rows).length > 0) {
+				rowArr = data.rows;
+				$.each(rowArr, function(idx, row) {
+					row.recid = idx + 1;
+					comboValue_nm.push(row.pjt_PRD_NM + "");
+					comboValue_cd.push(row.pjt_IDX + "");
+				});
+				w2ui['modal_grid_2'].records = rowArr;
+			} else {
+				w2ui.modal_grid_2.clear();
+			}
+			w2ui['modal_grid_2'].refresh();
+			w2ui['modal_grid_2'].unlock();
+		},
+		complete : function() {
+
+		}
+		});
+	},200);
+}
+
+function saveEstimatePopup2() {
+		var keys = w2ui.modal_grid_2.getSelection();
+		/*
+ 		if(MTL_ORD_PLC == "") {
+			alert("입고요청 사업장 정보를 선택하여주십시오");
+			return;
+		} else if(MTL_ORD_DLV_DT == "") {
+			alert("납품요청 일자를 선택하여주십시오");			
+		} else {
+		*/
+			for (var i = 0; i < keys.length; i++) {
+				var Data = {
+						ORD_IDX : w2ui.modal_grid_2.records[keys[i]].ord_IDX,
+						PJT_IDX : w2ui.modal_grid_2.records[keys[i]].pjt_IDX,
+						MTL_IDX : w2ui.modal_grid_2.records[keys[i]].mtl_IDX,
+						MTL_DTL_PRICE : w2ui.modal_grid_2.records[keys[i]].mtl_EST_PRICE,
+						MTL_REQ_QTY : w2ui.modal_grid_2.records[keys[i]].mtl_REQ_QTY
+				};				
+				reqDataList.push(Data);
+			}
+			var PJT_IDX = $("#PJT_IDX").val();
+			//var PJT_IDX = w2ui.grid_list.records[0].pjt_IDX;
+			var VDR_IDX = $("#S_VDR_IDX").val();
+			var MTL_ORD_PLC = $("#MTL_ORD_PLCP").val();
+			var MTL_ORD_DLV_DT = $("#MTL_ORD_DLV_DTP").val();
+			var MTL_ORD_FLE1 = $("#MTL_ORD_FLE1").val();
+			var MTL_ORD_FLE2 = $("#MTL_ORD_FLE2").val();
+			var MTL_ORD_FLE3 = $("#MTL_ORD_FLE3").val();
+			
+			var mstData = {
+				'PJT_IDX': PJT_IDX,
+				'VDR_IDX': VDR_IDX,
+				'MTL_ORD_PLC': MTL_ORD_PLC,
+				'MTL_ORD_DLV_DT': MTL_ORD_DLV_DT,
+				'MTL_ORD_FLE1': MTL_ORD_FLE1,
+				'MTL_ORD_FLE2': MTL_ORD_FLE2,
+				'MTL_ORD_FLE3': MTL_ORD_FLE3
+			}
+			
+			if (confirm("등록하시겠습니까?")) {
+				console.log(reqDataList);
+
+				var page_url = "/info/info/insertMaterialOrder";
+				var jsonData = JSON.stringify({'mstData': mstData, 'reqDataList': reqDataList});
+				
+				console.log(jsonData);
+
+				jQuery.ajaxSettings.traditional = true;
+				$.ajax({
+					url : page_url,
+					type : 'POST',
+					data : {
+						"jsonData" : jsonData
+					},
+					data_type : 'json',
+					success : function(data) {
+						if (data != 0) {
+							alert("추가되었습니다");
+							$("#modal_orderForm").modal('hide');
+						} else {
+							alert("오류가 발생하였습니다");
+						}
+					},
+					complete : function() {
+
+					}
+				});
+			}				
+		
+}
 </script>
 
 </body>

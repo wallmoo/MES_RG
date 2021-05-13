@@ -33,7 +33,15 @@ public class SYTMaterialOrderVo implements Serializable{
 	private String MTL_STD;
 	private String ORD_CHK_STATUS;
 	private String MTL_QTY;
+	private String CALCUL_DLV_DT;
 	
+	
+	public String getCALCUL_DLV_DT() {
+		return CALCUL_DLV_DT;
+	}
+	public void setCALCUL_DLV_DT(String cALCUL_DLV_DT) {
+		CALCUL_DLV_DT = cALCUL_DLV_DT;
+	}
 	public int getORD_IDX() {
 		return ORD_IDX;
 	}

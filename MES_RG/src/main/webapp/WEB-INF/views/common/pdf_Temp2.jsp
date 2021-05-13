@@ -28,7 +28,7 @@
           <h4 class="modal-title" id="modal_code_title">리얼게인 발주서</h4>
           <div class="box-tools">
             <button type="button" id="" class="btn btn-sm" onclick="print()">인쇄</button>
-            <button type="button" id="" class="btn btn-warning btn-sm" data-dismiss="modal">닫기</button>
+            <button type="button" id="" class="btn btn-warning btn-sm" data-dismiss="modal" onclick="window.close()">닫기</button>
           </div>
         </div>
         <div class="modal-body" id="modal-body" name="modal-body">
