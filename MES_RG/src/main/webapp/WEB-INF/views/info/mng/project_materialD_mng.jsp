@@ -255,8 +255,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						<h4 class="modal-title" id="modal_code_title">신규자재 등록</h4>
 		        	</div>
 					<div class="modal-body" id="modal_code_body">
-						<form id="frm_routingItnbr" name="frm_routingItnbr" class="form-horizontal"
-						method="POST" enctype="multipart/form-data">	
+						<form id="frm_routingItnbr" name="frm_routingItnbr" class="form-horizontal" method="POST" enctype="multipart/form-data">	
 							<input type="hidden" id="upload_mode"/>
 							<input type="hidden" class="clear_field" id="mod_file_group"/>
 							<input type="hidden" class="clear_field" id="mod_file_no"/>	
@@ -338,7 +337,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">Datasheet URL</label>
 									<div class="col-sm-7">
-										<textarea type="text" class="form-control input-sm pull-right" id="MTL_DS_URL" name ="MTL_DS_URL"></textarea>
+										<input type="text" class="form-control input-sm" id="MTL_DS_URL" name ="MTL_DS_URL" maxlength="60">
 									</div>
 								</div>
 							</div>
@@ -401,7 +400,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	var grid_add_data;
 	var grid_lev1_data;
 	var grid_lev2_data;
-	var startValue_combo = "";
 	
 	var pjtIDX = "";
 	
@@ -520,17 +518,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						comboValue_nm.push(row.pjt_PRD_NM + "");
 						comboValue_cd.push(row.pjt_IDX + "");
 					});
+					
 					w2ui['grid_list'].records = rowArr;
-					if (startValue_combo == "") {
-						$('#Business').w2field('combo', {
-							items : comboValue_nm,
-							match : 'contains'
-						});
-						$('#Business').w2field('combo', {
-							items : comboValue_cd,
-							match : 'contains'
-						});
-					}
 				} else {
 					w2ui.grid_list.clear();
 				}
@@ -618,14 +607,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						row.recid = idx + 1;
 						comboValue_cd.push(row.c_item_nm + "");
 					});
+					
 					w2ui['grid_list2'].records = rowArr;
-
-					if (startValue_combo == "") {
-						$('#S_MTL_NM').w2field('combo', {
-							items : _.uniq(comboValue_cd, false),
-							match : 'contains'
-						});
-					}
 				} else {
 					//w2ui.grid_list.clear();
 				}
@@ -674,7 +657,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true, hidden: true},
 				
 				{ field:'mtl_REQ_TYPE', caption:'요청 유형', size:'7%', style:'text-align:center', sortable: true},
-	        	{ field:'mtl_REQ_REG_DT', caption:'자재 요청일', size:'10%', style:'text-align:center', sortable: true},
+	        	{ field:'mtl_REQ_REG_DT', caption:'자재 요청일', size:'10%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+
+						return html.substring(0,10);
+	           		} 	
+	        	},
 	        	{ field:'mtl_REQ_REG_ID', caption:'요청자', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true},
@@ -776,17 +765,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						comboValue_nm.push(row.pjt_PRD_NM + "");
 						comboValue_cd.push(row.pjt_IDX + "");
 					});
+					
 					w2ui['grid_list3'].records = rowArr;
-					if (startValue_combo == "") {
-						$('#Business').w2field('combo', {
-							items : comboValue_nm,
-							match : 'contains'
-						});
-						$('#Business').w2field('combo', {
-							items : comboValue_cd,
-							match : 'contains'
-						});
-					}
 				} else {
 					w2ui.grid_list3.clear();
 				}
@@ -801,17 +781,19 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 	function showBomOrderModal() {//자재요청 모달창
 		console.log(w2ui.grid_list2.get("PJT_IDX"));
-		$("#MTL_REQ_REG_ID").val("${memberNm}");	
+	
+		$("#MTL_REQ_REG_ID").val("${memberNm}");
 	
 		var keys = w2ui.grid_list2.getSelection();//BOM 자료중 선택된 데이터만 전송
 		var ModalDataList = [];
 		
 		if (keys == null || keys == "") {
-			alert("견적을 요청할 항목을 선택하여주십시오");
+			alert("요청할 항목을 선택하여주십시오");
 		} else {
 			$(".clear_val").val('');//검색어 초기화
 
 			var insertPJT = $("#hiddenPjtIdx").val();//PJT_IDX
+			
 			for (var i = 0; i < keys.length; i++) {
 				var Data = {
 					bom_IDX : w2ui.grid_list2.records[keys[i]-1].bom_IDX,
@@ -881,7 +863,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field: 'mtl_STD', caption: '규격/상세', style: 'text-align:center', sortable: true },
 				{ field: 'mtl_UNT', caption: '단위', style: 'text-align:center', sortable: true },			
 				{ field: 'bom_MTL_QTY', caption: '재고수량', style: 'text-align:center', sortable: true },
-				{ field: 'mtl_REQ_QTY', caption: '요청수량', style: 'text-align:center', sortable: true, editable: { type: 'int' } },
+				{ field: 'mtl_REQ_QTY', caption: '요청수량', style: 'text-align:center;background-color:#fff1ce;', sortable: true, editable: { type: 'int' } },
 			],
 			records: [],
 			total: 0,
@@ -956,8 +938,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						success : function(data) {
 							if (data != 0) {
 								alert("추가되었습니다");
+								
 								loadRightGridData($("#hiddenPjtIdx").val());
 								loadFootGridData($("#hiddenPjtIdx").val());
+								
 								$("#modal_bomReqForm").modal('hide');
 							} else {
 								alert("오류가 발생하였습니다");
@@ -986,7 +970,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 		var strUrl = "/materials/account/saveMaterial";
 		
-		// escape(
 		var form = $("#frm_routingItnbr")[0];
 		
 		var data = new FormData(form);
@@ -1004,7 +987,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		    success:function(data, textStatus, jqXHR){
 		    	if(data.status == "200") {
 			    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
-			    	startValue_combo = "";
+			    	//startValue_combo = "";
 			    	loadRightGridData($("#PJT_IDX").val());
 					form.reset();
 					$("#modal_materialAddForm").modal('hide');
@@ -1014,9 +997,9 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			    	fnMessageModalAlert("결과", "정보를 처리하는데 에러가 발생하였습니다.");	// Notification(MES)
 		    },
 		    complete: function() {
+		    	
 		    }
 		});
-		
 	}
 	
 </script>

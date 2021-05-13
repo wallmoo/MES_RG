@@ -75,8 +75,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 									
 																<div class="col-sm-2">
 																	<label>프로젝트명</label> 
-																	<input type="text" id="S_PJT_NM" name="S_PJT_NM" placeholder="ex) 프로젝트명"
-																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadLeftGrid(); return false;}"/>
+																	 <select id="S_PJT_NM" name="S_PJT_NM" class="form-control" style="height: 30px;" onChange="loadLeftGrid(); return false;"></select>
 																</div>
 																
 																<div class="col-sm-2">
@@ -293,6 +292,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		requestVendor('S_VDR_IDX4');//고객사 정보를 검색폼 드랍다운 형태로 만듬
 		requestBranchInfo('MTL_ORD_PLC');//사업장 정복
 		requestProject('S_PJT_IDX');//프로젝트명 가져오기
+		requestProject('S_PJT_NM');//프로젝트명 가져오기
 		
 		fnLoadCommonOption('#MTL_ORD_DLV_DT');//등록폼 달력
 		fnLoadCommonOption('#MTL_ORD_DLV_DT');//등록폼 달력
@@ -350,6 +350,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'mtl_REQ_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true, hidden: true},
 				{ field:'vdr_IDX', caption:'거래처 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				
 				{ field:'vdr_NM', caption:'거래처', size:'8%', style:'text-align:center', sortable: true}, 
 				{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'mtl_NM', caption:'품목', size:'10%', style:'text-align:center' , sortable: true},
@@ -359,10 +360,22 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_EST_MOQ', caption:'MOQ', size:'8%', style:'text-align:center;', sortable: true},
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_EST_REG_DT', caption:'견적요청일', size:'10%', style:'text-align:center', sortable: true},
+				{ field:'mtl_EST_REG_DT', caption:'견적요청일', size:'10%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+
+						return html.substring(0,10);
+	           		} 
+				},
 				{ field:'mtl_EST_PRICE', caption:'단가', size:'7%', style:'text-align:center;', sortable: true},
 	        	{ field:'mtl_TOT_PRICE', caption:'금액', size:'10%', style:'text-align:center;', sortable: true},
-				{ field:'mtl_EST_DLV_DT', caption:'납기가능일', size:'10%', style:'text-align:center;', sortable: true},
+				{ field:'mtl_EST_DLV_DT', caption:'납기가능일', size:'10%', style:'text-align:center;', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+
+						return html.substring(0,10);
+	           		} 
+				},
 				{ field:'mtl_EST_BG', caption:'비고', size:'8%', style:'text-align:center;', sortable: true},
 			],			
 			
@@ -393,14 +406,20 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		console.log("loadLeftGrid()");
 		
 		var VDR_IDX_VAL = "";
+		var PJT_IDX = "";
+		
 		if($('#S_VDR_IDX').val() == "ALL") {
 			VDR_IDX_VAL = "0";
 		} else {
 			VDR_IDX_VAL = $('#S_VDR_IDX').val();
 		}	
-		
+		if($('#S_PJT_NM').val() == "ALL") {
+			PJT_IDX = "0";
+		} else {
+			PJT_IDX = $('#S_PJT_NM').val();
+		}			
 		var page_url = "/info/info/selectEstimate";
-		var postData = "PJT_NM=" + encodeURIComponent($("#S_PJT_NM").val()) 
+		var postData = "PJT_IDX=" + PJT_IDX
 						+ "&MTL_EST_REG_DT=" + encodeURIComponent($("#S_MTL_EST_REG_DT").val())
 						+ "&VDR_IDX=" + encodeURIComponent(VDR_IDX_VAL)
 						+ "&MTL_NM=" + encodeURIComponent($("#S_MTL_NM").val()) 
