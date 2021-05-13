@@ -27,11 +27,18 @@ public class SYTMaterialRequestVo implements Serializable{
 	private String MTL_UNT;
 	private String MTL_QTY;
 	private String MTL_MD_NO;
+	private String OVDR;
 	
 	
 	
 	
 	
+	public String getOVDR() {
+		return OVDR;
+	}
+	public void setOVDR(String oVDR) {
+		OVDR = oVDR;
+	}
 	public String getMTL_MD_NO() {
 		return MTL_MD_NO;
 	}

@@ -1757,6 +1757,10 @@ public class SYInfoService {
 	// selectWarehouse Start	
 	public List<SYTWarehouseVo> selectWarehouse(SYTWarehouseVo Vo){//자재 요청 조회
 		return infoDAO.selectWarehouse(Vo);
+	}
+	public List<Map<String, Object>> DeadEstimate(List<Map<String, Object>> valueList) {
+		// TODO Auto-generated method stub
+		return infoDAO.DeadEstimate(valueList);
 	}	
 	
 }

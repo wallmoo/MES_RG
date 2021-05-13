@@ -61,7 +61,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 													<div class="box-header with-border" style="background-color: #DB8EB5;">
 														<h3 class="box-title">조회조건 및 기타 관리</h3>
 														<div class="box-tools pull-right">
-															<button type="button" id="btn_excel_csr" onclick="bomNewOrder();" class="btn btn-success btn-sm">발주서(PDF)출력</button>
+															<button type="button" id="btn_excel_csr" onclick="printFile();" class="btn btn-success btn-sm">발주서(PDF)출력</button>
 															<button type="button" id="btn_dlv_csr" onclick="orderFile();" class="btn btn-info btn-sm">파일첨부</button>
 															<button type="button" id="btn_ins_csr" onclick="acceptOrder('Y');" class="btn btn-primary btn-sm">승인</button>
 															<button type="button" id="btn_search_csr" onclick="acceptOrder('N');" class="btn btn-danger btn-sm" onclick="">거절</button>
@@ -546,6 +546,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			var ORD_IDX = data.ord_IDX;//구매발주번호	
 
 			if (confirm("진행하시겠습니까?")) {
+
 				var page_url = "/info/info/acceptOrder";
 				var postData = "ORD_IDX=" + ORD_IDX
 							+"&MTL_ORD_STATUS=" + val;
@@ -560,8 +561,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						if (data != 0) {
 							w2ui.grid_list.clear();
 							loadLeftGrid();
-							w2ui.grid_list.clear();
-							
+							w2ui.grid_list2.clear();
 							alert("처리되었습니다");
 
 						} else {
@@ -624,14 +624,14 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		});
 		}//if end
 	}
-	function bomNewOrder(){
+	function printFile(){
 		var key=w2ui.grid_list.getSelection();
 		if(key.length==0){
 			alert("출력하실 발주번호를 클릭해주세요.");
 			return false;
 		}else{
 		var ORD_IDXS = w2ui.grid_list.get(key[0]).ord_IDX;
-		var url = "/materials/test?ORD_IDX="+ORD_IDXS;
+		var url = "/materials/print?ORD_IDX="+ORD_IDXS;
 		var option = "toolbar=no, menubar=no, scrollbars=yes, resizable=no, width=800, height=700, left=0, top=0";
 		window.open(url,"팝업미리보기",option);
 		}

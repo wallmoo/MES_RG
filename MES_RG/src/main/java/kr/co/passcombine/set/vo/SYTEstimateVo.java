@@ -32,6 +32,7 @@ public class SYTEstimateVo implements Serializable{
 	private String MTL_UNT;
 	private String MTL_TOT_PRICE;
 	
+	
 	public int getEST_IDX() {
 		return EST_IDX;
 	}
