@@ -374,6 +374,8 @@ function reloadRequestGridData(){
 		} else if (keys == null || keys == "") {
 			alert("견적을 요청할 항목을 선택하여주십시오");
 		} else {
+
+			//$("#bom_lvl0")[0].reset();
 			$(".clear_val").val('');//검색어 초기화
 
 			var insertPJT = $("#hiddenIdx").val();//PJT_IDX
@@ -563,8 +565,10 @@ function reloadRequestGridData(){
 					data_type : 'json',
 					success : function(data) {
 						if (data != 0) {
+							w2ui.grid_list.clear();
 							alert("추가되었습니다");
 							$("#modal_estimateForm").modal('hide');
+							loadRequestGridData();
 						} else {
 							alert("오류가 발생하였습니다");
 						}
@@ -620,7 +624,9 @@ function reloadRequestGridData(){
 					success : function(data) {
 						if (data != 0) {
 							alert("추가되었습니다");
+							w2ui.grid_list.clear();
 							$("#modal_estimateForm").modal('hide');
+							loadRequestGridData();
 						} else {
 							alert("오류가 발생하였습니다");
 						}

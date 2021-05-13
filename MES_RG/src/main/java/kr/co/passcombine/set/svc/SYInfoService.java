@@ -1631,9 +1631,32 @@ public class SYInfoService {
 		}
 		return result;
 	}
-	public int InsertBOMExcel(List<Map<String, Object>> vo) {
+	public Map<String,Object> InsertBOMExcel(List<Map<String, Object>> vo) {
 		// TODO Auto-generated method stub
-		return infoDAO.InsertBOMExcel(vo);
+		List<Map<String,Object>> getIDX = infoDAO.checkBOMMAT(vo);
+		//등록된 자재인지 체크, mtl_idx를 가져옴
+		int result=0;
+		int failedCount= vo.size();
+		if(getIDX.size()>0) {
+			for(int i=0; i<getIDX.size(); i++){ //등록된 자재목록을 하나씩 꺼내기위한 for문
+				for(int j=0; j<vo.size(); j++) { //엑셀파일의 목록을 하나씩 꺼내기위한 for문
+					if( ((String)vo.get(j).get("MTL_MKR_NO")).equals( (String)getIDX.get(i).get("MTL_MKR_NO") ) ) {
+						getIDX.get(i).put("PJT_IDX", vo.get(j).get("PJT_IDX"));
+						getIDX.get(i).put("MTL_QTY", vo.get(j).get("MTL_QTY"));
+						getIDX.get(i).put("REG_ID", vo.get(j).get("REG_ID"));
+					}
+				}
+			}
+			result = infoDAO.InsertBOMExcel(getIDX);
+		}
+		//(#{item.MTL_IDX},#{item.PJT_IDX},#{item.MTL_QTY},SYSDATE(),#{item.REG_ID},'N')
+
+		
+		failedCount = vo.size() - getIDX.size();
+		Map<String, Object> results = new HashMap<String, Object>();
+		results.put("result",result);
+		results.put("failedCount",failedCount);
+		return results;
 	}
 
 	

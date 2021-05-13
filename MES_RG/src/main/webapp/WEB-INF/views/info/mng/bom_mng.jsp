@@ -598,7 +598,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 	function ItemInsUp() {
 		console.log(w2ui.grid_list2.get("PJT_IDX"));
-		
+		$("#bom_lvl0")[0].reset();
 		var key = w2ui.grid_list2.getSelection();
 
 		if (key.length == 0) {
@@ -621,17 +621,27 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	};
 	function updateBom() {
 		var keys = w2ui.grid_list.getSelection();
-		
+		var key2 = w2ui.grid_list2.getSelection();
 		if (keys == null || keys == "") {
 			alert("먼저 프로젝트를 선택하여주십시오");
 		} else {
 			$(".clear_val").val('');
 
 			$("#modal_info").modal('show');
-			$("#bom_IDX").val(w2ui.grid_list2.get(keys[0]).bom_IDX);
+			$("#bom_IDX").val(w2ui.grid_list2.get(key2[0]).bom_IDX);
 			$('#hiddenProduct_code').val('');
 			$('#hiddenM_item_code').val('');
-			$('#BOM_IDX').val('')
+			$('#BOM_IDX').val('');
+			setTimeout(function() {
+				w2ui['grid_list3'].resize();
+				w2ui['grid_list3'].refresh();
+				
+				w2ui['grid_list4'].resize();
+				w2ui['grid_list4'].refresh();				
+			}, 200);
+			
+			requestGrid3();
+			requestGrid4();
 		}
 
 	};
@@ -838,6 +848,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						success : function(response) {
 							alert('수량이 수정되었습니다.');
 							loadRightGrid(keys);
+							requestGrid4();
 						},
 						error : function() {
 							alert('Error while request...');
@@ -1165,12 +1176,23 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				cache: false,
 				timeout: 600000,
 			    success:function(data){
+			    	if(data.failedCount==0){
 				    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
+						w2ui['grid_list2'].clear();
+						w2ui['grid_list2'].refresh();
 				    	startValue_combo = "";
 				    	loadRightGrid(keys);
 						form.reset();
 						$("#modal_ExcelUpload").modal('hide');
-			    	
+			    	}else{
+				    	fnMessageModalAlert("결과", "일부 데이터는 업로드에 실패하였습니다. \n 실패한 갯수는 "+data.failedCount+"개입니다.");// Notification(MES)
+						w2ui['grid_list2'].clear();
+						w2ui['grid_list2'].refresh();
+				    	startValue_combo = "";
+				    	loadRightGrid(keys);
+						form.reset();
+						$("#modal_ExcelUpload").modal('hide');
+			    	}
 			    },
 			    error: function(jqXHR, textStatus, errorThrown){
 				    	fnMessageModalAlert("결과", "정보를 처리하는데 에러가 발생하였습니다.");	// Notification(MES)
