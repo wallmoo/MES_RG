@@ -21,7 +21,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	<style type="text/css">
 		.ichk_label {
 			font-weight: unset;
-    		font-size: 12px; }
+    		font-size: 12px; 
+    	}
 	</style>
 </head>
 
@@ -41,7 +42,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
  <div class="content-wrapper">
     <section class="content-header">
       <h1>
-        고객사 관리
+		자재관리
         <small>기준정보관리</small>
       </h1>
       <ol class="breadcrumb">
@@ -57,15 +58,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						<h3 class="box-title">조회조건</h3>
 						<div class="box-tools pull-right">
 						   	<button type="button" id="" class="btn btn-primary btn-sm" onclick="excelFileDownload('grid_list','자재 관리');">엑셀다운로드</button>
-							<button type="button" id="btn_create" class="btn btn-primary btn-sm" onclick="insertAccount();">등록</button>
-					     	<button type="button" id="btn_update" class="btn btn-info btn-sm" onclick="updateAccount();">수정</button>
-					     	<button type="button" id="btn_delete" class="btn btn-danger btn-sm" onclick="deleteAccount();">삭제</button>
+							<button type="button" id="btn_create" class="btn btn-primary btn-sm" onclick="showIU_modal();">등록/수정</button>
+					     	<button type="button" id="btn_delete" class="btn btn-danger btn-sm" onclick="deleteMaterial();">삭제</button>
 							<button type="button" id="btn_search_csr" onclick="loadList();" class="btn btn-warning btn-sm" onclick="">조회</button>	 
 						</div>
 					</div>
 					<div id="" class="box-body">
 						<div class="row">
-
 							<div class="col-sm-2">
 								<div class="form-group">
 									 <label>제조사</label> 
@@ -94,21 +93,19 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 												onkeypress="if(event.keyCode==13) {loadList(); return false;}" >
 								</div>
 							</div>																					
-
 							<div class="col-md-12">
 								<div id="grid_list" style="width: 100%; height: 620px;"></div> 
 							</div>
-							
 						</div>
 					</div>
 				</div>
 			</section>
 		</div>
 	</section>
-	
     <!-- /.content -->
   </div>
   <!-- /.content-wrapper -->
+  
 <div class="modal fade" id="modal_info" data-backdrop="static">
 	<div class="modal-dialog modal-md">
 		<div class="modal-content">
@@ -119,8 +116,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				<h4 class="modal-title" id="modal_code_title">등록</h4>
         	</div>
 			<div class="modal-body" id="modal_code_body">
-				<form id="frm_routingItnbr" name="frm_routingItnbr" class="form-horizontal"
-				method="POST" enctype="multipart/form-data">	
+				<form id="frm_routingItnbr" name="frm_routingItnbr" class="form-horizontal" method="POST" enctype="multipart/form-data">	
 					<input type="hidden" id="upload_mode"/>
 					<input type="hidden" class="clear_field" id="mod_file_group"/>
 					<input type="hidden" class="clear_field" id="mod_file_no"/>				
@@ -164,7 +160,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						<div class="form-group">
 							<label for="" class="col-sm-3 control-label">제조사 품번</label>
 							<div class="col-sm-7">
-								<input type="text" class="form-control input-sm pull-right" id="MTL_MKR_NO" name ="MTL_MKR_CD" maxlength="10">
+								<input type="text" class="form-control input-sm pull-right" id="MTL_MKR_NO" name ="MTL_MKR_NO" maxlength="10">
 							</div>
 						</div>
 					</div>	
@@ -201,7 +197,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						<div class="form-group">
 							<label for="" class="col-sm-3 control-label">Datasheet URL</label>
 							<div class="col-sm-7">
-								<textarea type="text" class="form-control input-sm pull-right" id="MTL_DS_URL" name ="MTL_DS_URL"></textarea>
+								<input type="text" class="form-control input-sm pull-right" id="MTL_DS_URL" name ="MTL_DS_URL" maxlength="60">
 							</div>
 						</div>
 					</div>
@@ -235,7 +231,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			</div>
 			<div class="modal-footer">
 				<div class="col-md-12 text-center">
-					<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAccount();">저장</button>
+					<button type="button" id="" class="btn btn-success btn-sm" onclick="saveMaterial();">저장</button>
 					<button type="button" id="" class="btn btn-default btn-sm" data-dismiss="modal">닫기</button>
 				</div>
 			</div>
@@ -336,14 +332,24 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				w2ui['grid_list'].refresh();
 				w2ui['grid_list'].unlock();
 			},complete: function () {
-				startValue_combo = ":)";
+
 			}
 		});
 	}
+
+	//등록/수정 모달 생성
+	function showIU_modal() {
+		var key = w2ui.grid_list.getSelection();
 		
+		if( key.length==0 ) {
+			insertMaterial();
+		} else  if( key.length==1 ) {	
+			updateMaterial();	
+		}
+	}	
 	// modal 띄우기 
-	function insertAccount() {
-		console.log('insertAccount()');
+	function insertMaterial() {
+		console.log('insertMaterial()');
 	
 		w2ui.grid_list.selectNone();
 		// insert
@@ -363,8 +369,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		$("#modal_info").modal('show');
 	}
 	
-	function updateAccount() {
-		console.log('updateAccount()');
+	function updateMaterial() {
+		console.log('updateMaterial()');
 			
 		var key = w2ui.grid_list.getSelection();
 		if( key.length==1 ) {
@@ -390,8 +396,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		}
 	}
 	
-	function saveAccount() {
-		console.log('saveAccount()');
+	function saveMaterial() {
+		console.log('saveMaterial()');
 		
 		var MTL_IDX = $("#MTL_IDX").val();
 		var MTL_CATE = $("#MTL_CATE").val();
@@ -430,8 +436,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				+ "&MTL_UNT=" + encodeURIComponent(MTL_UNT)
 				+ "&MTL_DS_URL=" + encodeURIComponent(MTL_DS_URL)
 				+ "&MTL_BG=" + encodeURIComponent(MTL_BG);
-				 
-		// escape(
+
 		var form = $("#frm_routingItnbr")[0];
 		
 		var data = new FormData(form);
@@ -464,8 +469,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		
 	}
 	
-	function deleteAccount() {
-		console.log('deleteAccount()');
+	function deleteMaterial() {
+		console.log('deleteMaterial()');
 	
 		var key = w2ui.grid_list.getSelection();
 		if( key.length==0 ) {
@@ -495,18 +500,19 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						 success:function(data, textStatus, jqXHR){
 						 	if(data.status == "200") {
 						 		console.log(data);
-						 		startValue_combo = "";
+						 		w2ui.grid_list.clear();
 						 		loadList();
-						    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다."); // Notification(MES)
+						    	
+						 		fnMessageModalAlert("결과", "정상적으로 처리되었습니다."); // Notification(MES)
 						 	}
 						 },
 						 error: function(jqXHR, textStatus, errorThrown){
 						    	fnMessageModalAlert("결과", "정보를 처리하는데 에러가 발생하였습니다.");	 // Notification(MES)
 						 },
 						 complete: function() {
+							 
 						 }
 					});
-					
 				}
 			});
 		} 

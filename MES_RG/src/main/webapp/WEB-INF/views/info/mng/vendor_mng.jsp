@@ -56,14 +56,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					<div class="box-header with-border" style=" background-color: #DB8EB5;">
 						<h3 class="box-title">조회조건</h3>
 						<div class="box-tools pull-right">
-						   	<button type="button" id="" class="btn btn-primary btn-sm" onclick="excelFileDownload('grid_list','거래처 관리');">엑셀다운로드</button>
-							<button type="button" id="btn_create" class="btn btn-primary btn-sm" onclick="insertAccount();">등록</button>
-					     	<button type="button" id="btn_update" class="btn btn-info btn-sm" onclick="updateAccount();">수정</button>
+						   	<button type="button"  class="btn btn-primary btn-sm" onclick="excelFileDownload('grid_list','거래처 관리');">엑셀다운로드</button>
+							<button type="button" id="btn_create" class="btn btn-primary btn-sm" onclick="showIU_modal();">등록/수정</button>
 					     	<button type="button" id="btn_delete" class="btn btn-danger btn-sm" onclick="deleteAccount();">삭제</button>
 							<button type="button" id="btn_search_csr" onclick="loadList();" class="btn btn-warning btn-sm" onclick="">조회</button>	 
 						</div>
 					</div>
-					<div id="" class="box-body">
+					<div  class="box-body">
 						<div class="row">
 
 							<div class="col-sm-2">
@@ -206,9 +205,9 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			</div>
 			<div class="modal-footer">
 				<div class="col-md-12 text-center">
-					<!-- <button type="button" id="" class="btn btn-success btn-sm" onclick="confirmSapSync();">동기화 작업 실행</button> -->
-					<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAccount();">저장</button>
-					<button type="button" id="" class="btn btn-default btn-sm" data-dismiss="modal">닫기</button>
+					<!-- <button type="button"  class="btn btn-success btn-sm" onclick="confirmSapSync();">동기화 작업 실행</button> -->
+					<button type="button"  class="btn btn-success btn-sm" onclick="saveAccount();">저장</button>
+					<button type="button"  class="btn btn-default btn-sm" data-dismiss="modal">닫기</button>
 				</div>
 			</div>
 		</div>
@@ -309,15 +308,26 @@ $(function($) {
 		});
 		
 	}
+	
+	//등록/수정 모달 생성
+	function showIU_modal() {
+		var key = w2ui.grid_list.getSelection();
 		
+		if( key.length==0 ) {
+			insertVendor();
+		} else  if( key.length==1 ) {	
+			updateVendor();	
+		}
+	}			
 	// modal 띄우기 
-	function insertAccount() {
-		console.log('insertAccount()');
+	function insertVendor() {
+		console.log('insertVendor()');
 	
 		w2ui.grid_list.selectNone();
 		// insert
 		$("#modal_code_title").text('등록');
  		
+		$("#VDR_IDX").val('');
  		$("#VDR_NM").val('');
 		$("#VDR_CEO_NM").val('');
 		$("#VDR_ADD").val('');
@@ -332,8 +342,8 @@ $(function($) {
 		$("#modal_info").modal('show');
 	}
 	
-	function updateAccount() {
-		console.log('updateAccount()');
+	function updateVendor() {
+		console.log('updateVendor()');
 			
 		var key = w2ui.grid_list.getSelection();
 		if( key.length==1 ) {
@@ -405,9 +415,7 @@ $(function($) {
 				+ "&VDR_ML3=" + encodeURIComponent(VDR_ML3)
 				+ "&VDR_HP=" + encodeURIComponent(VDR_HP)
 				+ "&VDR_NO=" + encodeURIComponent(VDR_NO);
-				 
-		// escape(
-		
+
 		$.ajax({
 		    url : strUrl,
 		    type : "POST", 
@@ -459,8 +467,9 @@ $(function($) {
 						 success:function(data, textStatus, jqXHR){
 						 	if(data.status == "200") {
 						 		console.log(data);
-						 		startValue_combo = "";
+						 		w2ui.grid_list.clear();
 						 		loadList();
+						 		
 						    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다."); // Notification(MES)
 						 	}
 						 },

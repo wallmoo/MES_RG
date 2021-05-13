@@ -426,9 +426,7 @@
 		VDR_IDX, VDR_NM, VDR_CEO_NM, VDR_PLC, VDR_NO, VDR_ADD, VDR_TEL, VDR_FAX, 
 		VDR_ML1, VDR_ML2, VDR_ML3, VDR_HP, VDR_STATE, VDR_REG_DT, VDR_REG_ID 
 		FROM T_VDR_MST  
-		
 		where VDR_DEL_YN = 'N'
-		
 		<if test="VDR_IDX!=null and !''.equals(VDR_IDX) and VDR_IDX!=0">
 			AND VDR_IDX = #{VDR_IDX}
 		</if>	
@@ -534,7 +532,7 @@
 			MTL_PRICE, MTL_UNT, MTL_QTY, MTL_DS_URL, MTL_BG, MTL_REG_DT, MTL_REG_ID
 		FROM T_MTL_MST
 		WHERE MTL_DEL_YN = 'N'
-		<if test="MTL_MKR_CD!=null and !''.equals(MTL_MKR_CD) ">
+		<if test="MTL_MKR_CD !=null and !''.equals( MTL_MKR_CD ) ">
 			AND MTL_MKR_CD LIKE CONCAT('%', #{MTL_MKR_CD}, '%')
 		</if>
 		<if test="MTL_CATE!=null and !''.equals(MTL_CATE) ">
@@ -545,7 +543,8 @@
 		</if>
 		<if test="MTL_MKR_NO!=null and !''.equals(MTL_MKR_NO) ">
 			AND MTL_MKR_NO LIKE CONCAT('%', #{MTL_MKR_NO}, '%')
-		</if>						
+		</if>		
+		ORDER BY MTL_IDX DESC				
 	</select>	
 	<insert id="insertMaterial" parameterType="SYTMaterialVo">
 		INSERT INTO T_MTL_MST
