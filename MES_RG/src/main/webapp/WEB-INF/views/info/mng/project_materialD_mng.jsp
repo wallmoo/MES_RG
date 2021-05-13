@@ -1,5 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-	pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="kr.co.passcombine.set.util.*"%>
 <%
 // jsp properties
@@ -65,31 +64,31 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 													<div class="box-body">
 														<div class="row">
 															<div class="form-group">																
-																<div class="col-sm-2">
+																<div class="col-sm-2" style="display:none;">
 																	<label>프로젝트 등급</label> 
 																	<input type="text" id="S_PJT_GRD" name="S_PJT_GRD" placeholder="ex) 프로젝트 등급"
 																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadLeftGridData(); return false;}"/>
 																</div>
 									
-																<div class="col-sm-2">
+																<div class="col-sm-3">
 																	<label>프로젝트명</label> 
 																	<input type="text" id="S_PJT_NM" name="S_PJT_NM" placeholder="ex) 프로젝트명"
 																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadLeftGridData(); return false;}"/>
 																</div>
 																
-																<div class="col-sm-2">
+																<div class="col-sm-3">
 																	<label>고객사</label> 
 																	<select id="S_CST_IDX" name="S_CST_IDX" class="form-control" style="height: 30px;"
 																	onchange="refreshLeftGrid(); return false;" ></select>
 																</div>	
 																							
-																<div class="col-sm-2">
-																	<label>품명</label> 
-																	<input type="text" id="S_PJT_PRD_NM" name="S_PJT_PRD_NM" placeholder="ex) 품명"
+																<div class="col-sm-3">
+																	<label>품목</label> 
+																	<input type="text" id="S_PJT_PRD_NM" name="S_PJT_PRD_NM" placeholder="ex) 품목"
 																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {loadLeftGridData(); return false;}"/>
 																</div>
 
-																<div class="col-sm-2">
+																<div class="col-sm-3">
 																	<label>납품 요청일</label>
 																	<div class="input-group">
 																		<input type="text" class="form-control pull-right input-sm" id="S_PJT_DLV_DT" placeholder="yyyymmdd~yyyymmdd"
@@ -100,7 +99,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																	</div>
 																</div>
 
-																<div class="col-sm-2">
+																<div class="col-sm-2" style="display:none;">
 																	<label>프로젝트 등록일</label>
 																	<div class="input-group">
 																		<input type="text" 
@@ -132,9 +131,9 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 													<div class="row">
 														<div class="form-group">
 															<div class="col-sm-6">
-																<label>자재검색</label> 
-																<input type="combo" id="r_mt_name" name="r_mt_name" class="form-control input-sm" placeholder="자재검색"
-																	onkeypress="if(event.keyCode==13) {requestRightGrid('grid_list2'); return false;}" style="padding: 5px 10px;">
+																<label>품목</label> 
+																<input type="text" id="S_MTL_NM" name="S_MTL_NM" class="form-control input-sm" placeholder="자재검색"
+																	onkeypress="if(event.keyCode==13) {loadRightGridData(); return false;}" style="padding: 5px 10px;">
 															</div>
 														</div>
 													</div>
@@ -171,6 +170,11 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadfootGridRefresh(); return false;}"/>
 																</div>	
 																<div class="col-sm-2">
+																	<label>품목</label> 
+																	<input type="text" id="S_PJT_PRD_NM" name="S_PJT_PRD_NM" placeholder="ex) 품목"
+																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {loadfootGridRefresh(); return false;}"/>
+																</div>																
+																<div class="col-sm-2">
 																	<label>품번</label> 
 																	<input type="text" id="S_MTL_MD_NO" name="S_MTL_MD_NO" placeholder="ex) 품번"
 																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadfootGridRefresh(); return false;}"/>
@@ -197,7 +201,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			<!-- /.content -->
 		</div>
 		<!-- /.content-wrapper -->
-
 
 		<!-- 모달 커팅 -->
 		<div class="modal fade" id="modal_bomReqForm" data-backdrop="static">
@@ -400,6 +403,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	var grid_lev2_data;
 	var startValue_combo = "";
 	
+	var pjtIDX = "";
+	
 	var minDate = getFormatDate(new Date());
 	
 	comboValue_nm = new Array;
@@ -417,7 +422,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		requestVendor('S_VDR_IDX');//거래처 정보를 검색폼 드랍다운 형태로 만듬
 		
 		fnLoadCommonOption('#PJT_DLV_DT, #MTL_REQ_REG_DT');//등록폼 달력
-		fnLoadDeliveryOption('#S_PJT_REG_DT, #S_PJT_DLV_DT, #S_MTL_REQ_REG_DT');//검색폼 달력
+		fnLoadDeliveryOption('#S_PJT_REG_DT, #S_PJT_DLV_DT');//검색폼 달력
+		fnLoadDeliveryOption('#S_MTL_REQ_REG_DT','right');//검색폼 달력
 		
 		fnLoadLeftGrid();
 		fnLoadRightGrid();
@@ -445,24 +451,27 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			multiSelect : false,
 			columns : [ 
 				{ field:'pjt_IDX', caption:'프로젝트 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
-				{ field:'pjt_REG_DT', caption:'프로젝트 등록일', size:'7%', style:'text-align:center', sortable: true},
-	        	{ field:'pjt_GRD', caption:'프로젝트 등급', size:'10%', style:'text-align:center', sortable: true},
+				{ field:'pjt_REG_DT', caption:'프로젝트 등록일', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+	        	{ field:'pjt_GRD', caption:'프로젝트 등급', size:'10%', style:'text-align:center', sortable: true, hidden: true},
+	        	
 	        	{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
-				{ field:'pjt_CD', caption:'프로젝트 코드', size:'17%', style:'text-align:center', sortable: true},
+				{ field:'pjt_CD', caption:'프로젝트코드', size:'7%', style:'text-align:center', sortable: true},
 				{ field:'cst_NM', caption:'고객사', size:'8%', style:'text-align:center', sortable: true}, 
-				{ field:'pjt_PRD_NM', caption:'제품명', size:'8%', style:'text-align:center', sortable: true}, 
-				{ field:'pjt_PRD_QTY', caption:'발주수량', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'pjt_PRD_UNT_NM', caption:'단위', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'pjt_DLV_DT', caption:'납품 요청일', size:'8%', style:'text-align:center', sortable: true}
+				{ field:'pjt_PRD_NM', caption:'품목', size:'8%', style:'text-align:center', sortable: true}, 
+				{ field:'pjt_PRD_QTY', caption:'발주수량', size:'6%', style:'text-align:center', sortable: true},
+				{ field:'pjt_PRD_UNT_NM', caption:'단위', size:'5%', style:'text-align:center', sortable: true},
+				{ field:'pjt_DLV_DT', caption:'납품요청일', size:'8%', style:'text-align:center', sortable: true}
 			],
 			sortData : [ {
-				field : 'PJT_IDX',
+				field : 'pjt_IDX',
 				direction : 'DESC'
 			} ],
 			records : [], // rowArr
 			onSelect : function(event) {
 				event.onComplete = function() {
 					w2ui['grid_list2'].refresh();
+					
+					$("#hiddenPjtIdx").val(this.get(event.recid).pjt_IDX);//프로젝트 번호 세팅
 					
 					// 오른쪽 그리드
 					loadRightGridData(this.get(event.recid).pjt_IDX);
@@ -475,7 +484,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				event.onComplete = function() {
 					w2ui['grid_list2'].clear();
 					w2ui['grid_list2'].refresh();
-					comboValue_cd = new Array;
 				}
 			},
 			onClick : function(event) {
@@ -551,13 +559,14 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field: 'bom_IDX', caption: 'Bom idx', size: '10%', style: 'text-align:center', hidden: true },
 				{ field: 'pjt_IDX', caption: 'Project idx', size: '10%', style: 'text-align:center', hidden: true },
 				{ field: 'mtl_IDX', caption: '자재번호 IDX ', size: '10%', style: 'text-align:center', hidden: true },
-				{ field: 'mtl_QTY', caption: '제조사명', style: 'text-align:center', sortable: true,},
-				{ field: 'mtl_NM', caption: '자재명', style: 'text-align:center', sortable: true },
-				{ field: 'mtl_MKR_NO', caption: '제조사 품번', style: 'text-align:center', sortable: true },
-				{ field: 'mtl_STD', caption: '규격/상세', style: 'text-align:center', sortable: true, hidden: true },
-				{ field: 'mtl_UNT', caption: '단위', style: 'text-align:center', sortable: true },			
-				{ field: 'bom_MTL_QTY', caption: '재고수량', style: 'text-align:center', sortable: true },
-				{ field: 'mtl_REQ_QTY', caption: '요청수량', style: 'text-align:center', sortable: true, hidden: true },				
+				{ field: 'mtl_REQ_QTY', caption: '요청수량', size: '10%', style: 'text-align:center', sortable: true, hidden: true },	
+				
+				{ field: 'mtl_QTY', caption: '제조사', size: '10%', style: 'text-align:center', sortable: true,},
+				{ field: 'mtl_NM', caption: '품목', size: '10%', style: 'text-align:center', sortable: true },
+				{ field: 'mtl_MKR_NO', caption: '제조사 품번', size: '10%', style: 'text-align:center', sortable: true },
+				{ field: 'mtl_STD', caption: '규격', size: '5%', style: 'text-align:center', sortable: true, hidden: true },
+				{ field: 'mtl_UNT', caption: '단위', size: '5%', style: 'text-align:center', sortable: true },			
+				{ field: 'bom_MTL_QTY', caption: '재고수량', size: '7%', style: 'text-align:center', sortable: true },
 			],
 			records : [],
 			total : 0,
@@ -586,10 +595,11 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	function loadRightGridData(pjtIDX) {
 		console.log(loadRightGridData);
 		
-		var page_url = "/info/info/selectBOMbyPRO";
-		var postData = "PJT_IDX=" + encodeURIComponent(pjtIDX);
+		if(pjtIDX == null) pjtIDX = $("#hiddenPjtIdx").val();
 		
-		$("#hiddenPjtIdx").val(pjtIDX);//프로젝트 번호 세팅
+		var page_url = "/info/info/selectBOMbyPRO";
+		var postData = "PJT_IDX=" + encodeURIComponent(pjtIDX) 
+					+ "&MTL_NM=" + encodeURIComponent($("#S_MTL_NM").val()) ;
 		
 		w2ui['grid_list2'].lock('loading...', true);
 		w2ui['grid_list2'].clear();
@@ -611,7 +621,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					w2ui['grid_list2'].records = rowArr;
 
 					if (startValue_combo == "") {
-						$('#r_mt_name').w2field('combo', {
+						$('#S_MTL_NM').w2field('combo', {
 							items : _.uniq(comboValue_cd, false),
 							match : 'contains'
 						});
@@ -631,7 +641,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	}
 	function requestRightGrid(gridname) {//기능을 모르겠음
 		$("#rightIDX").val(gridname);
-		var cnm = $('#r_mt_name').val();
+		var cnm = $('#S_MTL_NM').val();
 		if (cnm == '' || cnm == null) {
 			return;
 		}
@@ -660,20 +670,21 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			multiSelect : false,
 	        columns: [                
 				{ field:'pjt_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'pjt_CD', caption:'프로젝트코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true, hidden: true},
+				
 				{ field:'mtl_REQ_TYPE', caption:'요청 유형', size:'7%', style:'text-align:center', sortable: true},
 	        	{ field:'mtl_REQ_REG_DT', caption:'자재 요청일', size:'10%', style:'text-align:center', sortable: true},
 	        	{ field:'mtl_REQ_REG_ID', caption:'요청자', size:'10%', style:'text-align:center', sortable: true},
-				{ field:'pjt_CD', caption:'프로젝트코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_NM', caption:'품목', size:'10%', style:'text-align:center' , sortable: true},
 				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'17%', style:'text-align:center', sortable: true},
 				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true, hidden: true},
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_QTY', caption:'재고수량', size:'10%', style:'text-align:center', sortable: true},
+				{ field:'mtl_QTY', caption:'재고수량', size:'10%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_DLV_QTY', caption:'불출수량', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_DLV_QTY', caption:'불출수량', size:'8%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'mtl_REQ_STATE', caption:'견적요청여부', size:'8%', style:'text-align:center', sortable: true
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
@@ -687,25 +698,25 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						}
 						return html;
 	           		} 
-				},
+				, hidden: true},
 				{ field:'mtl_REQ_STATE', caption:'Status', size:'8%', style:'text-align:center', sortable: true
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
-						
-						if(html == '1') {
-							return '요청등록';
-						} else if(html == '2') {
+						//불출 완료(O)/대기(I), 견적요청(E)
+						if(html == 'E') {
 							return '견적진행';
-						} else if(html == '3') {
+						} else if(html == 'I') {
 							return '불출대기';
-						} else if(html == '4') {
+						} else if(html == 'O') {
 							return '불출완료';
+						} else {
+							return '요청등록';
 						}
 						return html;
 	           		} 					
 				}
 			], 
-			sortData: [{field: 'MTL_REQ_IDX', direction: 'DESC'}],			
+			sortData: [{field: 'mtl_REQ_IDX', direction: 'DESC'}],			
 			records : [],
 			total : 0,
 			recordHeight : 30,
@@ -738,6 +749,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	}
 	function loadFootGridData(pjtIDX) {
 		console.log("loadRequestGridData()");
+		
+		if(pjtIDX == null) pjtIDX = $("#hiddenPjtIdx").val();
 		
 		var page_url = "/info/info/selectMaterialRequest";
 		var postData = "PJT_IDX=" + encodeURIComponent(pjtIDX)
