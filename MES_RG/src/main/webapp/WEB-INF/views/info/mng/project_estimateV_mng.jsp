@@ -132,22 +132,39 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						<h4 class="modal-title" id="modal_add_title">엑셀 일괄업로드</h4>
 					</div>
 					<div class="modal-body" id="modal_code_body">
-							<div class="col-sm-9">
-								<div class="row">
-									<div class="form-group">
-										<label class="col-sm-3 control-label">파일명</label>
-										<div class="col-sm-7">
-											<form method="POST" enctype="multipart/form-data" id="excelUploadForm">
-												<input type="hidden" id="pjidxHidden" name="pjidxHidden">
-												<input type="text" class="form-control input-sm pull-right clear_val2" id="excelName" maxlength="100">
-												<input type="file"  class="fileupload file_info" id="excelFile" name="excelFile" onchange="$('#excelName').val(this.value)">
-											</form>
+							<div class="row">
+								<div class="form-group">
+									<label class="col-sm-3 control-label">파일명</label>
+									<form method="POST" enctype="multipart/form-data" id="excelUploadForm">
+										<div class="col-sm-7" style="padding-right: 0px;">
+											<input type="text" id="excelName" name="excelName" class="form-control input-sm clear_field" readonly>
 										</div>
-									</div>
+										<div class="col-sm-1" style="padding-left: 5px;">
+											<input type="hidden" id="pjidxHidden" name="pjidxHidden">
+											<span class="btn btn-danger btn-sm fileinput-button " style="width: 100%;" id="file_btn" > <i class="fa fa-plus"></i>
+												<input id="excelFile" type="file" class="fileupload file_info" name="excelFile" onchange="$('#excelName').val(this.value)">
+											</span>
+										</div>
+									</form>
 								</div>
-								<br/>* 수정가능한 컬럼은 MOQ, 단가,납기가능일,비고 입니다.
-								<br/>* 견적요청excel을 다운받은후 해당컬럼을 수정해주세요.
+<!-- 							<div class="row"> -->
+<!-- 								<label class="col-sm-3 control-label">하자증권 파일</label> -->
+<!-- 								<div class="col-sm-7" style="padding-right: 0px;"> -->
+<!-- 									<input type="text" id="MTL_ORD_FLE1_NAME" name="MTL_ORD_FLE1_NAME" class="form-control input-sm clear_field" readonly> -->
+<!-- 								</div>	 -->
+<!-- 								<div class="col-sm-1" style="padding-left: 7px;"> -->
+<!-- 									<span class="btn btn-danger btn-sm fileinput-button " style="width: 100%;" id="file_btn"> <i class="fa fa-plus"></i> -->
+<!-- 										<input id="file_group" type="file" class="fileupload file_info" name="MTL_ORD_FLE1" onchange="$('#MTL_ORD_FLE1_NAME').val(this.value)"> -->
+<!-- 									</span> -->
+<!-- 								</div> -->
+<!-- 							</div> -->
+								
+								
+						</div>
 					</div>
+					<br/>&nbsp;* 수정가능한 컬럼은 MOQ, 단가,납기가능일,비고 입니다.
+					<br/>&nbsp;* 견적요청excel을 다운받은후 해당컬럼을 수정해주세요.
+				
 					<div class="modal-footer" style="border-top-color: transparent !important;">
 						<div class="col-md-12 text-center" style="margin-top: 10px">
 							<button type="button" id="" class="btn btn-success btn-sm" onclick="UploadExcels()">등록</button>
@@ -341,6 +358,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 	function excelInsert(){
 		$("#modal_ExcelUpload").modal('show');
+		 $("#excelUploadForm")[0].reset();
 	}
 	function UploadExcels(){
 		console.log('saveAccount()');
@@ -369,15 +387,20 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				timeout: 600000,
 			    success:function(data){
 					if(data.sucess){
-				    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
+						w2ui.grid_list.clear();
+						fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
 				    	startValue_combo = "";
 						form.reset();
+
+						searchs();
 						$("#modal_ExcelUpload").modal('hide');
 				}else{
 						fnMessageModalAlert("결과", "일부컬럼에 에러가 발생하였습니다. <br/> 에러가 발생한 컬럼은 <br/>" + data.errors + "<br/>번컬럼입니다");// Notification(MES)
-					startValue_combo = "";
-					form.reset();
-					$("#modal_ExcelUpload").modal('hide');
+						w2ui.grid_list.clear();
+						startValue_combo = "";
+						form.reset();
+						searchs();
+						$("#modal_ExcelUpload").modal('hide');
 				}
 			    	
 			    },

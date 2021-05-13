@@ -241,10 +241,10 @@ public class MaterialsController {
 		}
 		
 		@ResponseBody
-		@RequestMapping(value = "/test", method = { RequestMethod.GET,
+		@RequestMapping(value = "/print", method = { RequestMethod.GET,
 				RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 		@SuppressWarnings("unchecked")
-		public ModelAndView test(@RequestParam Map<String,Object> vo,
+		public ModelAndView print(@RequestParam Map<String,Object> vo,
 				HttpServletRequest request,
 				HttpServletResponse response, HttpSession session) {
 			logger.debug("FrontendController.changeBOMQuantity is called.");

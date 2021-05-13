@@ -538,6 +538,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	}
 	
 	function saveEstimate() {
+		fnLoadCommonOption();
+		$("#S_PJT_IDX").val('ALL');
 		console.log(w2ui.grid_list.get("pjt_IDX"));
 		
 		var keys = w2ui.grid_list.getSelection();	
@@ -729,34 +731,50 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				reqDataList.push(Data);
 			}			
 			console.log(reqDataList);
+			var checkVali=false;
 			if (confirm("등록하시겠습니까?")) {
-				
-				var page_url = "/materials/info/insertEstimate";
-				var jsonData = JSON.stringify(reqDataList);
-				console.log(jsonData);
-
-				jQuery.ajaxSettings.traditional = true;
-				$.ajax({
-					url : page_url,
-					type : 'POST',
-					data : {
-						"jsonData" : jsonData
-					},
-					data_type : 'json',
-					success : function(data) {
-						if (data != 0) {
-							alert("추가되었습니다");
-							$("#modal_estimateForm").modal('hide');
-							loadLeftGrid();
-							$("#AddorUpdate")[0].reset();
-						} else {
-							alert("오류가 발생하였습니다");
+				if($("#flag").val()=="U"){
+					var a = w2ui.grid_list_popup.getSelection().length;
+					var b = w2ui.grid_list_popup.records.length;
+					if(b-a>0){
+						if(confirm("현재 선택하신 수는 "+a+"개이며, 전체수는 "+b+"개입니다. 정말 등록하시겠습니까?")){
+							checkVali=true;
 						}
-					},
-					complete : function() {
-
+					}else{
+						checkVali=true;
 					}
-				});
+				}else{
+					checkVali=true;
+				}
+				if(checkVali){
+					var page_url = "/materials/info/insertEstimate";
+					var jsonData = JSON.stringify(reqDataList);
+					console.log(jsonData);
+	
+					jQuery.ajaxSettings.traditional = true;
+					$.ajax({
+						url : page_url,
+						type : 'POST',
+						data : {
+							"jsonData" : jsonData
+						},
+						data_type : 'json',
+						success : function(data) {
+							if (data != 0) {
+								alert("추가되었습니다");
+								$("#modal_estimateForm").modal('hide');
+								w2ui['grid_list'].clear();
+								loadLeftGrid();
+								$("#AddorUpdate")[0].reset();
+							} else {
+								alert("오류가 발생하였습니다");
+							}
+						},
+						complete : function() {
+	
+						}
+					});
+				}
 			}				
 		}
 		

@@ -333,6 +333,7 @@ public interface SYInfoDAO {
 	// selectWarehouse Start	
 	public List<SYTWarehouseVo> selectWarehouse(SYTWarehouseVo vo);
 	public List<Map<String, Object>> checkBOMMAT(List<Map<String, Object>> vo);
+	public List<Map<String, Object>> DeadEstimate(List<Map<String, Object>> valueList);
 	
 	
 	
