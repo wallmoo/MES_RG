@@ -56,14 +56,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					<div class="box-header with-border" style=" background-color: #DB8EB5;">
 						<h3 class="box-title">조회조건</h3>
 						<div class="box-tools pull-right">
-						   	<button type="button" id="" class="btn btn-primary btn-sm" onclick="excelFileDownload('grid_list','고객사 관리');">엑셀다운로드</button>
-							<button type="button" id="btn_create" class="btn btn-primary btn-sm" onclick="insertAccount();">등록</button>
-					     	<button type="button" id="btn_update" class="btn btn-info btn-sm" onclick="updateAccount();">수정</button>
+						   	<button type="button"  class="btn btn-primary btn-sm" onclick="excelFileDownload('grid_list','고객사 관리');">엑셀다운로드</button>
+							<button type="button" id="btn_create" class="btn btn-primary btn-sm" onclick="showIU_modal();">등록/수정</button>
 					     	<button type="button" id="btn_delete" class="btn btn-danger btn-sm" onclick="deleteAccount();">삭제</button>
 							<button type="button" id="btn_search_csr" onclick="loadList();" class="btn btn-warning btn-sm" onclick="">조회</button>	 
 						</div>
 					</div>
-					<div id="" class="box-body">
+					<div  class="box-body">
 						<div class="row">
 							<div class="col-sm-2">
 								<div class="form-group">
@@ -204,8 +203,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			</div>
 			<div class="modal-footer">
 				<div class="col-md-12 text-center">
-					<button type="button" id="" class="btn btn-success btn-sm" onclick="saveAccount();">저장</button>
-					<button type="button" id="" class="btn btn-default btn-sm" data-dismiss="modal">닫기</button>
+					<button type="button"  class="btn btn-success btn-sm" onclick="saveAccount();">저장</button>
+					<button type="button"  class="btn btn-default btn-sm" data-dismiss="modal">닫기</button>
 				</div>
 			</div>
 		</div>
@@ -301,13 +300,23 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				w2ui['grid_list'].refresh();
 				w2ui['grid_list'].unlock();
 			},complete: function () {
-				startValue_combo = ":)";
+
 			}
 		});
 		
 	}
+	
+	//등록/수정 모달 생성
+	function showIU_modal() {
+		var key = w2ui.grid_list.getSelection();
 		
-	// modal 띄우기 
+		if( key.length==0 ) {
+			insertAccount();
+		} else  if( key.length==1 ) {	
+			updateAccount();	
+		}
+	}		
+	// 등록 modal 띄우기 
 	function insertAccount() {
 		console.log('insertAccount()');
 	
@@ -315,6 +324,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		// insert
 		$("#modal_code_title").text('등록');
  		
+		$("#CST_IDX").val('');
  		$("#CST_NM").val('');
 		$("#CST_PLC").val('');
 		$("#CST_ADD").val('');
@@ -328,7 +338,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 		$("#modal_info").modal('show');
 	}
-	
+	//수정 modal 띄우기
 	function updateAccount() {
 		console.log('updateAccount()');
 			
@@ -341,7 +351,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			
 			$("#CST_IDX").val(data.cst_IDX);
 			$("#CST_NM").val(data.cst_NM);
-			$("#CST_PLC").val(data.cst_CEO_NM);
+			$("#CST_PLC").val(data.cst_PLC);
 			$("#CST_ADD").val(data.cst_ADD);
 			$("#CST_TEL").val(data.cst_TEL);
 			$("#CST_FAX").val(data.cst_FAX);
@@ -402,9 +412,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				+ "&CST_ML3=" + encodeURIComponent(CST_ML3)
 				+ "&CST_HP=" + encodeURIComponent(CST_HP)
 				+ "&CST_NO=" + encodeURIComponent(CST_NO);
-				 
-		// escape(
-		
+
 		$.ajax({
 		    url : strUrl,
 		    type : "POST", 
@@ -438,7 +446,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		} else {
  
 			var data = w2ui.grid_list.get(key[0]);
-			var code = data.CST_IDX;
+			var code = data.cst_IDX;
 			
 			fnMessageModalConfirm("알림", "선택한 내용을 삭제하시겠습니까?", function(result) {
 				if(result) {
@@ -456,8 +464,9 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						 success:function(data, textStatus, jqXHR){
 						 	if(data.status == "200") {
 						 		console.log(data);
-						 		startValue_combo = "";
+						 		w2ui.grid_list.clear();
 						 		loadList();
+						 		
 						    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다."); // Notification(MES)
 						 	}
 						 },
