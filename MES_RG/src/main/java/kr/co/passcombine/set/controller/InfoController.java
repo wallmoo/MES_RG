@@ -4776,7 +4776,7 @@ public class InfoController {
 	@RequestMapping(value = "/info/insertBOMExcel", method = { RequestMethod.GET,
 			RequestMethod.POST }, produces = "application/json;charset=UTF-8")
 	@SuppressWarnings("unchecked")
-	public int insertBOMExcel(MultipartHttpServletRequest request, HttpServletResponse response,
+	public Map<String,Object> insertBOMExcel(MultipartHttpServletRequest request, HttpServletResponse response,
 			@RequestParam Map<String, Object> testData) {
 			//파일 업로드를 위한 준비
 					OutputStream out = null;
@@ -4796,7 +4796,9 @@ public class InfoController {
 						vo.get(i).put("REG_ID", REG_ID);
 					}//pjt_idx를 주입함
 					
-					int result = sYInfoService.InsertBOMExcel(vo);
+					Map<String,Object> result = sYInfoService.InsertBOMExcel(vo);
+					
+					
 			return result;
 		
 	}

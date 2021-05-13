@@ -301,7 +301,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="form-group">
 									<label for="" class="col-sm-3 control-label">제조사 품번</label>
 									<div class="col-sm-7">
-										<input type="text" class="form-control input-sm pull-right" id="MTL_MKR_NO" name ="MTL_MKR_CD" maxlength="10">
+										<input type="text" class="form-control input-sm pull-right" id="MTL_MKR_NO" name ="MTL_MKR_NO" maxlength="10">
 									</div>
 								</div>
 							</div>	
@@ -976,6 +976,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		if ($("#hiddenPjtIdx").val() == null || $("#hiddenPjtIdx").val() == "") {
 			alert("신규자재를 요청할 프로젝트를 선택하여주십시오");
 		} else {
+			$("#frm_routingItnbr")[0].reset();
 			$("#modal_materialAddForm").modal('show');
 			$("#PJT_IDX").val($("#hiddenPjtIdx").val());
 		}

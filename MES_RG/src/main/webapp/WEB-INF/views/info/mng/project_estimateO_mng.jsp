@@ -150,7 +150,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 									<div class="form-group">
 										<label class="col-sm-4 control-label">납품요청일자</label>
 										<div class="input-group col-sm-6" style="padding-left:15px;">
-											<input type="text" class="form-control pull-right input-sm" id="MTL_ORD_DLV_DT" placeholder="yyyymmdd~yyyymmdd">
+											<input type="text" class="form-control pull-right input-sm" id="MTL_ORD_DLV_DT" placeholder="yyyymmdd~yyyymmdd"
+											onkeypress="if(event.keyCode==13) {return false;}">
 											<div class="input-group-addon">
 												<i class="fa fa-calendar"></i>
 											</div>
@@ -237,7 +238,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="col-md-5 text-left" style="margin-top:5px;">
 									<label class="col-sm-3 control-label" style="padding-left: 0px">견적요청일자</label>
 									<div class="input-group">
-										<input type="text" class="form-control pull-right input-sm" id="MTL_EST_REG_DT" placeholder="yyyymmdd~yyyymmdd">
+										<input type="text" class="form-control pull-right input-sm" id="MTL_EST_REG_DT" placeholder="yyyymmdd~yyyymmdd"
+										o>
 										<div class="input-group-addon">
 											<i class="fa fa-calendar"></i>
 										</div>
