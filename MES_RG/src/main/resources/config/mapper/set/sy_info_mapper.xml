@@ -613,7 +613,7 @@
 		<if test="PJT_NM != null and !''.equals(PJT_NM) ">
 			AND PJT_NM LIKE CONCAT('%', #{PJT_NM}, '%')
 		</if>	  
-		<if test="PJT_PRD_NM != null and !''.equals(PJT_PRD_NM) and !'undefined'.equals(PJT_PRD_NM)">
+		<if test="PJT_PRD_NM != null and !''.equals(PJT_PRD_NM) and !'null'.equals(PJT_PRD_NM)">
 			AND PJT_PRD_NM LIKE CONCAT('%', #{PJT_PRD_NM}, '%')
 		</if>	  
 		<if test="PJT_GRD != null and !''.equals(PJT_GRD) ">
@@ -3156,10 +3156,10 @@
 		  <if test="MTL_MKR_CD!=null and MTL_MKR_CD!=''">
 		  	AND	MTL_MKR_CD LIKE CONCAT('%',#{MTL_MKR_CD},'%')
 		  </if>
-		  <if test="MTL_NM!=null and MTL_NM!='' and MTL_NM!='undefined'">
+		  <if test="MTL_NM!=null and MTL_NM!='' and MTL_NM!='null'">
 		  	AND	MTL_NM LIKE CONCAT('%',#{MTL_NM},'%')
 		  </if>
-		  <if test="MTL_MKR_NO!=null and MTL_MKR_NO!='' and MTL_MKR_NO!='undefined'">
+		  <if test="MTL_MKR_NO!=null and MTL_MKR_NO!='' and MTL_MKR_NO!='null'">
 		  	AND	MTL_MKR_NO LIKE CONCAT('%',#{MTL_MKR_NO},'%')
 		  </if>
 	</select>
@@ -3226,16 +3226,19 @@
 			AND CST_NM LIKE CONCAT('%', #{CST_NM}, '%')
 		</if>
 		-->	 
-		<if test="PJT_IDX != null and !''.equals(PJT_IDX) and !'undefined'.equals(PJT_IDX) and PJT_IDX > 0">
+		<if test="PJT_IDX != null and !''.equals(PJT_IDX) and !'null'.equals(PJT_IDX) and PJT_IDX > 0">
 			AND R.PJT_IDX = #{PJT_IDX}
-		</if>		  
-		<if test="MTL_MKR_NO != null and !''.equals(MTL_MKR_NO) and !'undefined'.equals(MTL_MKR_NO)">
+		</if>	
+		<if test="MTL_NM != null and !''.equals( MTL_NM ) and !'null'.equals( MTL_NM )">
+			AND M.MTL_NM LIKE CONCAT('%', #{MTL_NM}, '%')
+		</if>			  
+		<if test="MTL_MKR_NO != null and !''.equals(MTL_MKR_NO) and !'null'.equals(MTL_MKR_NO)">
 			AND M.MTL_MKR_NO LIKE CONCAT('%', #{MTL_MKR_NO}, '%')
 		</if>		
-		<if test="MTL_MKR_CD != null and !''.equals(MTL_MKR_CD) and !'undefined'.equals(MTL_MKR_CD)">
+		<if test="MTL_MKR_CD != null and !''.equals(MTL_MKR_CD) and !'null'.equals(MTL_MKR_CD)">
 			AND M.MTL_MKR_CD LIKE CONCAT('%', #{MTL_MKR_CD}, '%')
 		</if>		
-		<if test="MTL_REQ_TYPE != null and !''.equals(MTL_REQ_TYPE) and !'undefined'.equals(MTL_REQ_TYPE)">
+		<if test="MTL_REQ_TYPE != null and !''.equals(MTL_REQ_TYPE) and !'null'.equals(MTL_REQ_TYPE)">
 			AND R.MTL_REQ_TYPE LIKE CONCAT('%', #{MTL_REQ_TYPE}, '%')
 		</if>	
 		<if test="MTL_REQ_REG_DT != null and !''.equals(MTL_REQ_REG_DT) and !'null'.equals( MTL_REQ_REG_DT )">
@@ -3406,10 +3409,10 @@
 		LEFT JOIN T_MTL_REQ_MST R ON E.MTL_REQ_IDX = R.MTL_REQ_IDX
 		WHERE E.MTL_EST_DEL_YN = 'N'
 
-		<if test="PJT_IDX != null and !''.equals(PJT_IDX) and !'null'.equals(PJT_IDX) and !'null'.equals( PJT_IDX ) and PJT_IDX > 0">
+		<if test="PJT_IDX != null and !''.equals(PJT_IDX) and !'null'.equals(PJT_IDX) and PJT_IDX > 0">
 			AND P.PJT_IDX = #{PJT_IDX}
 		</if>	
-		<if test="PJT_NM != null and !''.equals(PJT_NM) and !'undefined'.equals(PJT_NM) and !'null'.equals(PJT_NM)">
+		<if test="PJT_NM != null and !''.equals(PJT_NM) and !'null'.equals(PJT_NM) and !'null'.equals(PJT_NM)">
 			AND P.PJT_NM LIKE CONCAT('%', #{PJT_NM}, '%')
 		</if>		
 		<if test="VDR_IDX != null and VDR_IDX !='' and VDR_IDX !='0'">
@@ -3418,13 +3421,13 @@
 		<if test="MTL_EST_REG_DT != null and !''.equals( MTL_EST_REG_DT ) and !'null'.equals( MTL_EST_REG_DT )">
 			AND date_format(E.MTL_EST_REG_DT, '%Y%m%d') BETWEEN left(#{MTL_EST_REG_DT}, 8) AND right(#{MTL_EST_REG_DT}, 8)
 		</if>	
-		<if test="MTL_NM != null and !''.equals( MTL_NM ) and !'undefined'.equals( MTL_NM ) and !'null'.equals( MTL_NM )">
+		<if test="MTL_NM != null and !''.equals( MTL_NM ) and !'null'.equals( MTL_NM ) and !'null'.equals( MTL_NM )">
 			AND M.MTL_NM LIKE CONCAT('%', #{MTL_NM}, '%')
 		</if>		
-		<if test="MTL_MKR_CD != null and !''.equals( MTL_MKR_CD ) and !'undefined'.equals( MTL_MKR_CD ) and !'null'.equals( MTL_MKR_CD )">
+		<if test="MTL_MKR_CD != null and !''.equals( MTL_MKR_CD ) and !'null'.equals( MTL_MKR_CD ) and !'null'.equals( MTL_MKR_CD )">
 			AND M.MTL_MKR_CD LIKE CONCAT('%', #{MTL_MKR_CD}, '%')
 		</if>	
-		<if test="MTL_MKR_NO != null and !''.equals( MTL_MKR_NO ) and !'undefined'.equals( MTL_MKR_NO ) and !'null'.equals( MTL_MKR_NO )">
+		<if test="MTL_MKR_NO != null and !''.equals( MTL_MKR_NO ) and !'null'.equals( MTL_MKR_NO ) and !'null'.equals( MTL_MKR_NO )">
 			AND M.MTL_MKR_NO LIKE CONCAT('%', #{MTL_MKR_NO}, '%')
 		</if>						
 		ORDER BY E.EST_IDX DESC
@@ -3461,16 +3464,16 @@
 	</update>
 	<update id="updateEstVendor" parameterType="SYTEstimateVo">
 		UPDATE T_EST_MST SET
-		<if test="MTL_EST_MOQ != null and !''.equals(MTL_EST_MOQ) and !'undefined'.equals(MTL_EST_MOQ) and !'null'.equals(MTL_EST_MOQ)">
+		<if test="MTL_EST_MOQ != null and !''.equals(MTL_EST_MOQ) and !'null'.equals(MTL_EST_MOQ) and !'null'.equals(MTL_EST_MOQ)">
 			MTL_EST_MOQ = #{MTL_EST_MOQ},	
 		</if>	
-		<if test="MTL_EST_PRICE != null and !''.equals(MTL_EST_PRICE) and !'undefined'.equals(MTL_EST_PRICE) and !'null'.equals(MTL_EST_PRICE)">	
+		<if test="MTL_EST_PRICE != null and !''.equals(MTL_EST_PRICE) and !'null'.equals(MTL_EST_PRICE) and !'null'.equals(MTL_EST_PRICE)">	
 			MTL_EST_PRICE = #{MTL_EST_PRICE},
 		</if>	
-		<if test="MTL_EST_DLV_DT != null and !''.equals(MTL_EST_DLV_DT) and !'undefined'.equals(MTL_EST_DLV_DT) and !'null'.equals(MTL_EST_DLV_DT)">	
+		<if test="MTL_EST_DLV_DT != null and !''.equals(MTL_EST_DLV_DT) and !'null'.equals(MTL_EST_DLV_DT) and !'null'.equals(MTL_EST_DLV_DT)">	
 			MTL_EST_DLV_DT = #{MTL_EST_DLV_DT},
 		</if>	
-		<if test="MTL_EST_BG != null and !''.equals(MTL_EST_BG) and !'undefined'.equals(MTL_EST_BG) and !'null'.equals(MTL_EST_BG)">	
+		<if test="MTL_EST_BG != null and !''.equals(MTL_EST_BG) and !'null'.equals(MTL_EST_BG) and !'null'.equals(MTL_EST_BG)">	
 			MTL_EST_BG = #{MTL_EST_BG},
 		</if>	 
 		MTL_EST_DEL_YN = 'N'
@@ -3523,7 +3526,7 @@
 		<if test="PJT_IDX != null and !''.equals(PJT_IDX) and !'null'.equals(PJT_IDX) and !'null'.equals( PJT_IDX ) and PJT_IDX > 0">
 			AND P.PJT_IDX = #{PJT_IDX}
 		</if>	
-		<if test="PJT_NM != null and !''.equals(PJT_NM) and !'undefined'.equals(PJT_NM) and !'null'.equals(PJT_NM)">
+		<if test="PJT_NM != null and !''.equals(PJT_NM) and !'null'.equals(PJT_NM) and !'null'.equals(PJT_NM)">
 			AND P.PJT_NM LIKE CONCAT('%', #{PJT_NM}, '%')
 		</if>		
 		<if test="VDR_IDX != null and VDR_IDX !='' and VDR_IDX !='0'">
@@ -3532,7 +3535,7 @@
 		<if test="MTL_ORD_DLV_DT != null and !''.equals( MTL_ORD_DLV_DT ) and !'null'.equals( MTL_ORD_DLV_DT )">
 			AND date_format(O.MTL_ORD_DLV_DT, '%Y%m%d') BETWEEN left(#{MTL_ORD_DLV_DT}, 8) AND right(#{MTL_ORD_DLV_DT}, 8)
 		</if>	
-		<if test="MTL_NM != null and !''.equals( MTL_NM ) and !'undefined'.equals( MTL_NM ) and !'null'.equals( MTL_NM )">
+		<if test="MTL_NM != null and !''.equals( MTL_NM ) and !'null'.equals( MTL_NM ) and !'null'.equals( MTL_NM )">
 			AND M.MTL_NM LIKE CONCAT('%', #{MTL_NM}, '%')
 		</if>							
 		ORDER BY O.ORD_IDX DESC
@@ -3816,7 +3819,7 @@
 		<if test="MTL_MKR_CD != null and !''.equals( MTL_MKR_CD ) and !'null'.equals( MTL_MKR_CD )">
 			AND M.MTL_MKR_CD LIKE CONCAT('%', #{MTL_MKR_CD}, '%')
 		</if>	
-		<if test="MTL_NM != null and !''.equals( MTL_NM ) and !'undefined'.equals( MTL_NM ) and !'null'.equals( MTL_NM )">
+		<if test="MTL_NM != null and !''.equals( MTL_NM ) and !'null'.equals( MTL_NM ) and !'null'.equals( MTL_NM )">
 			AND M.MTL_NM LIKE CONCAT('%', #{MTL_NM}, '%')
 		</if>							
 		<if test="MTL_MKR_NO != null and !''.equals( MTL_MKR_NO ) and !'null'.equals( MTL_MKR_NO )">

@@ -67,7 +67,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 													<div class="box-body">
 														<div class="row">
 															<div class="form-group">	
-																<div class="col-sm-3">
+																<div class="col-sm-2">
 																	<label>프로젝트명</label> 
 																	<select id="S_PJT_IDX" name="S_PJT_IDX" class="form-control" style="height: 30px;" onChange="reloadRequestGridData(); return false;"></select>
 																</div>
@@ -82,19 +82,21 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																		</div>
 																	</div>																	
 																</div>
-																
 																<div class="col-sm-2">
 																	<label>제조사</label> 
 																	<input type="text" id="S_MTL_MKR_CD" name="S_MTL_MKR_CD" placeholder="ex) 제조사"
 																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadRequestGridData(); return false;}"/>
 																</div>	
-																				
+																<div class="col-sm-2">
+																	<label>품목</label> 
+																	<input type="text" id="S_MTL_NM" name="S_MTL_NM" placeholder="ex) 품목"
+																	 class="form-control input-sm" maxlength="100" onkeypress="if(event.keyCode==13) {loadRequestGridData(); return false;}"/>
+																</div>																					
 																<div class="col-sm-2">
 																	<label>품번</label> 
 																	<input type="text" id="S_MTL_MKR_NO" name="S_MTL_MKR_NO" placeholder="ex) 품번"
 																	 class="form-control input-sm" onkeypress="if(event.keyCode==13) {loadRequestGridData(); return false;}"/>
 																</div>
-
 																<div class="col-sm-2">
 																	<label>요청 유형</label>
 																	<input type="text" id="S_MTL_REQ_TYPE" name="S_MTL_REQ_TYPE" placeholder="ex) 요청 유형"
@@ -195,8 +197,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 
 <script type="text/javascript">
-	var startValue_combo = "";
-	
 	var minDate = getFormatDate(new Date());
 	var loadingEnd = false;
 	
@@ -218,7 +218,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		fnLoadModalGrid();
 		loadingEnd=true;
 	})
-function reloadRequestGridData(){
+	function reloadRequestGridData(){
 		if(loadingEnd){
 		loadRequestGridData();
 		}
@@ -240,8 +240,15 @@ function reloadRequestGridData(){
 				{ field:'mtl_REQ_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'pjt_IDX', caption:'프로젝트 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'bom_IDX', caption:'BOM 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				
 				{ field:'mtl_REQ_TYPE', caption:'요청 유형', size:'7%', style:'text-align:center', sortable: true},
-	        	{ field:'mtl_REQ_REG_DT', caption:'자재 요청일', size:'10%', style:'text-align:center', sortable: true},
+	        	{ field:'mtl_REQ_REG_DT', caption:'자재 요청일', size:'10%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+
+						return html.substring(0,10);
+	           		} 	
+	        	},
 	        	{ field:'mtl_REQ_REG_ID', caption:'요청자', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'pjt_CD', caption:'프로젝트코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
@@ -258,10 +265,8 @@ function reloadRequestGridData(){
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
 						
-						if(html == '1') {
+						if(html == 'I') {
 							return 'X';
-						} else if(html == '2') {
-							return 'O';
 						} else {
 							return 'O';
 						}
@@ -272,20 +277,22 @@ function reloadRequestGridData(){
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
 						
-						if(html == '1') {
+						if(html == 'I') {//요청등록(I),견적요청(E),불출 대기(D),불출 완료(O)
 							return '요청등록';
-						} else if(html == '2') {
+						} else if(html == 'E') {
 							return '견적진행';
-						} else if(html == '3') {
+						} else if(html == 'D') {
 							return '불출대기';
-						} else if(html == '4') {
-							return '불출완료';
+						} else if(html == 'O') {
+							return '<span style=color:blue>불출완료</span>';
+						} else {
+							return '요청등록';
 						}
 						return html;
 	           		} 					
 				}
 			],
-			sortData: [{field: 'MTL_REQ_IDX', direction: 'DESC'}],		
+			sortData: [{field: 'mtl_REQ_IDX', direction: 'DESC'}],		
 			records : [], // rowArr
 			total : 0,
 			recordHeight : 30,			
@@ -339,17 +346,8 @@ function reloadRequestGridData(){
 						comboValue_nm.push(row.pjt_PRD_NM + "");
 						comboValue_cd.push(row.pjt_IDX + "");
 					});
+					
 					w2ui['grid_list'].records = rowArr;
-					if (startValue_combo == "") {
-						$('#Business').w2field('combo', {
-							items : comboValue_nm,
-							match : 'contains'
-						});
-						$('#Business').w2field('combo', {
-							items : comboValue_cd,
-							match : 'contains'
-						});
-					}
 				} else {
 					w2ui.grid_list.clear();
 				}
@@ -503,7 +501,7 @@ function reloadRequestGridData(){
 		});		
 
 		w2ui['grid_list2'].records = rowArr;
-		w2ui['grid_list2'].selectAll();
+		w2ui['grid_list2'].selectAll();//모든 체크박스 선택
 		w2ui['grid_list2'].unlock();
 	}	
 
