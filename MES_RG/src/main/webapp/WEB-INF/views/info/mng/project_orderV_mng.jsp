@@ -86,7 +86,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 																	</div>
 																</div>
 
-																<div class="col-sm-2">
+																<div class="col-sm-2" style="display:none;">
 																	<label>거래처</label> 
 																	<select id="S_VDR_IDX" name="S_VDR_IDX" class="form-control" style="height: 30px;" onChange="loadLeftGrid();return false;"></select>
 																</div>																	
@@ -258,7 +258,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'pjt_IDX', caption:'프로젝트 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'vdr_IDX', caption:'거래처 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'ord_IDX', caption:'구매발주 번호', size:'7%', style:'text-align:center', sortable: true},
-				{ field:'mtl_ORD_DLV_DT', caption:'납품요청일', size:'7%', style:'text-align:center', sortable: true},
+				{ field:'mtl_ORD_DLV_DT', caption:'납품요청일', size:'7%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+
+						return html.substring(0,10);
+	           		} 
+				},
 	        	{ field:'vdr_NM', caption:'거래처', size:'10%', style:'text-align:center', sortable: true},
 	        	{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'mtl_ORD_PLC', caption:'입고장소', size:'17%', style:'text-align:center', sortable: true},
@@ -329,9 +335,11 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 							return '승인';
 						} else if(html == 'N') {
 							return '거절';
-						} else {
-							return '승인';
-						}
+						} else if(html == 'O') {
+							return '입고완료';
+						} else if(html == 'I') {
+							return '진행중';
+						}						
 						return html;
 	           		} 					
 				}
@@ -444,13 +452,61 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true},
 				{ field:'mtl_STD', caption:'재고규격', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'ord_DTL_PRICE', caption:'단가', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'ord_DTL_QTY', caption:'발주수량', size:'10%', style:'text-align:center', sortable: true},
-				{ field:'calcul_QTY', caption:'입고수량', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'ord_DTL_PRICE', caption:'단가', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 
+				},
+				{ field:'ord_DTL_QTY', caption:'발주수량', size:'10%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 	
+				},
+				{ field:'calcul_QTY', caption:'입고수량', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 	
+				},
 				{ field:'calcul_cha_QTY', caption:'잔량', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'ord_CHK_STATUS', caption:'검수여부', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'calcul_DLV_DT', caption:'납품일자', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'ord_DTL_STATUS', caption:'Status', size:'8%', style:'text-align:center', sortable: true}
+				{ field:'calcul_DLV_DT', caption:'납품일자', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+
+						return html.substring(0,10);
+	           		} 	
+				},
+				{ field:'ord_DTL_STATUS', caption:'Status', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						if(html == 'I') {
+							return '진행중';
+						} else if(html == 'E') {
+							return '부분 입고';
+						} else if(html == 'A') {
+							return '입고';							
+						} else {
+							return '진행중';
+						}
+						return html;
+	           		} 
+				}
 			],
 			records : [],
 			total : 0,
@@ -513,7 +569,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			}
 		});
 	}
-	function requestRightGrid(gridname) {//기능을 모르겠음
+	function requestRightGrid(gridname) {
 		$("#rightIDX").val(gridname);
 		var cnm = $('#r_mt_name').val();
 		if (cnm == '' || cnm == null) {

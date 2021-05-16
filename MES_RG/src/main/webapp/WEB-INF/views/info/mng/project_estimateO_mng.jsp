@@ -278,9 +278,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 
 <script type="text/javascript">
-	var startValue_combo = "";
-	var reqDataList = [];
-	
 	var minDate = getFormatDate(new Date());
 	var loadingEnd = false;
 	comboValue_nm = new Array;
@@ -294,41 +291,18 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		requestProject('S_PJT_IDX');//프로젝트명 가져오기
 		requestProject('S_PJT_NM');//프로젝트명 가져오기
 		
-		fnLoadCommonOption('#MTL_ORD_DLV_DT');//등록폼 달력
-		fnLoadCommonOption('#MTL_ORD_DLV_DT');//등록폼 달력
+		fnLoadCommonOption('#MTL_ORD_DLV_DT, #MTL_EST_REG_DT');//등록폼 달력  
 		fnLoadDeliveryOption('#S_MTL_EST_REG_DT','right');//검색폼 달력
-		fnLoadPopupModalGrid();
+		
 		fnLoadLeftGrid();
-		fnLoadCommonOption();
+		fnLoadPopupModalGrid();
+		
 		loadingEnd=true;
 	});
 	function searchs(){
 		if(loadingEnd){
 			loadLeftGrid();
 		}
-	}
-
-	
-	function fnLoadCommonOption() {
-	 	console.log('fnLoadCommonOption()');
-	 	
-		$('#MTL_EST_REG_DT').daterangepicker({
-			opens: 'right',
-			singleDatePicker: true,
-			locale: {
-				format : 'YYYY-MM-DD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-				showMonthAfterYear : true,
-				yearSuffix : '년'
-		    },
-		    startDate : moment(minDate)
-		})
-		/*
-		.on("change", function() {
-		    loadRequestGridData();
-		}); 
-		*/
 	}
 
 	// fnLoadLeftGrid
@@ -367,8 +341,26 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						return html.substring(0,10);
 	           		} 
 				},
-				{ field:'mtl_EST_PRICE', caption:'단가', size:'7%', style:'text-align:center;', sortable: true},
-	        	{ field:'mtl_TOT_PRICE', caption:'금액', size:'10%', style:'text-align:center;', sortable: true},
+				{ field:'mtl_EST_PRICE', caption:'단가', size:'7%', style:'text-align:center;', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 					
+				},
+	        	{ field:'mtl_TOT_PRICE', caption:'금액', size:'10%', style:'text-align:center;background-color:#e2efda;', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 	        	
+	        	},
 				{ field:'mtl_EST_DLV_DT', caption:'납기가능일', size:'10%', style:'text-align:center;', sortable: true
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
@@ -380,7 +372,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			],			
 			
 			sortData : [ {
-				field : 'pjt_IDX',
+				field : 'est_IDX',
 				direction : 'DESC'
 			} 
 			],
@@ -442,17 +434,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						comboValue_nm.push(row.pjt_PRD_NM + "");
 						comboValue_cd.push(row.pjt_IDX + "");
 					});
+					
 					w2ui['grid_list'].records = rowArr;
-					if (startValue_combo == "") {
-						$('#Business').w2field('combo', {
-							items : comboValue_nm,
-							match : 'contains'
-						});
-						$('#Business').w2field('combo', {
-							items : comboValue_cd,
-							match : 'contains'
-						});
-					}
 				} else {
 					w2ui.grid_list.clear();
 				}
@@ -484,7 +467,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 	function makeOrder() {
 		var keys = w2ui.grid_list.getSelection();
-
+		var reqDataList = [];
+		
  		if(MTL_ORD_PLC == "") {
 			alert("입고요청 사업장 정보를 선택하여주십시오");
 			return;
@@ -557,7 +541,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	}
 	
 	function saveEstimate() {
-		fnLoadCommonOption();
 		$("#S_PJT_IDX").val('ALL');
 		console.log(w2ui.grid_list.get("pjt_IDX"));
 		
@@ -605,7 +588,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'pjt_CD', caption:'프로젝트코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true, hidden: true},
 				{ field:'mtl_REQ_TYPE', caption:'요청 유형', size:'7%', style:'text-align:center', sortable: true},
-	        	{ field:'mtl_REQ_REG_DT', caption:'자재 요청일', size:'10%', style:'text-align:center', sortable: true},
+	        	{ field:'mtl_REQ_REG_DT', caption:'자재 요청일', size:'10%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+	
+						return html.substring(0,10);
+	           		} 
+	        	},
 	        	{ field:'mtl_REQ_REG_ID', caption:'요청자', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true},
@@ -613,7 +602,16 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'17%', style:'text-align:center', sortable: true},
 				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center', sortable: true, editable:{type: 'int'} }
+				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center;background-color:#fff1ce;', sortable: true, editable:{type: 'int'} 
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 
+				}
 			],					
 			records : [],
 			total : 0,

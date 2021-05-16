@@ -136,8 +136,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 														<div class="form-group">
 															<div class="col-sm-6">
 																<label>자재검색</label> 
-																<input type="combo" id="r_mt_name" name="r_mt_name" class="form-control input-sm" placeholder="자재검색"
-																	onkeypress="if(event.keyCode==13) {requestRightGrid(); return false;}" style="padding: 5px 10px;">
+																<input type="text" id="S_MTL_NM" name="S_MTL_NM" class="form-control input-sm" placeholder="자재검색"
+																	onkeypress="if(event.keyCode==13) {loadRightGrid(); return false;}" style="padding: 5px 10px;">
 															</div>
 														</div>
 													</div>
@@ -278,13 +278,18 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 								<div class="row">
 									<div class="form-group">
 										<label class="col-sm-3 control-label">파일명</label>
-										<div class="col-sm-7">
-											<form method="POST" enctype="multipart/form-data" id="excelUploadForm">
-												<input type="hidden" id="pjidxHidden" name="pjidxHidden">
+										<form method="POST" enctype="multipart/form-data" id="excelUploadForm">
+											<input type="hidden" id="pjidxHidden" name="pjidxHidden">
+											<div class="col-sm-7" style="padding-right: 0px;">
 												<input type="text" class="form-control input-sm pull-right clear_val2" id="excelName" maxlength="100">
-												<input type="file"  class="fileupload file_info" id="excelFile" name="excelFile" onchange="$('#excelName').val(this.value)">
-											</form>
-										</div>
+											</div>	
+											<div class="col-sm-1" style="padding-left: 7px; padding-right: unset;">
+												<span class="btn btn-danger btn-sm fileinput-button " style="width: 100%;" id="file_btn"> 
+													<i class="fa fa-plus"></i>
+													<input type="file"  class="fileupload file_info" id="excelFile" name="excelFile" onchange="$('#excelName').val(this.value)">
+												</span>
+											</div>											
+										</form>										
 									</div>
 								</div>
 					</div>
@@ -482,7 +487,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field: 'mtl_NM', caption: '품목', style: 'text-align:center', sortable: true },
 				{ field: 'mtl_MKR_NO', caption: '제조사품번', style: 'text-align:center', sortable: true },
 				{ field: 'mtl_UNT', caption: '단위', style: 'text-align:center', sortable: true },
-				{ field: 'bom_MTL_QTY', caption: '수량', style: 'text-align:center', sortable: true, editable: { type: 'int' } },
+				{ field: 'bom_MTL_QTY', caption: '수량', style: 'text-align:center;background-color:#fff1ce;', sortable: true, editable: { type: 'int' } },
 			],
 			records : [],
 			total : 0,
@@ -534,10 +539,15 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		});
 	}	
 	function loadRightGrid(pjtIDX) {
+		var pjtIDX = pjtIDX;
+		if(pjtIDX == null) {
+			var pjtIDX = $("#hiddenIdx").val();
+		}
 		console.log(loadRightGrid);
 		
 		var page_url = "/info/info/selectBOMbyPRO";
-		var postData = "PJT_IDX=" + encodeURIComponent(pjtIDX);
+		var postData = "PJT_IDX=" + encodeURIComponent(pjtIDX)
+						+ "&MTL_NM=" + encodeURIComponent($("#S_MTL_NM").val());
 		
 		$("#hiddenIdx").val(pjtIDX);
 		w2ui['grid_list2'].lock('loading...', true);
@@ -557,29 +567,22 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						row.recid = idx + 1;
 						comboValue_cd.push(row.c_item_nm + "");
 					});
+					
 					w2ui['grid_list2'].records = rowArr;
-
-					if (startValue_combo == "") {
-						$('#r_mt_name').w2field('combo', {
-							items : _.uniq(comboValue_cd, false),
-							match : 'contains'
-						});
-					}
 				} else {
 					//w2ui.grid_list.clear();
 				}
 				w2ui['grid_list2'].refresh();
 				w2ui['grid_list2'].unlock();
 
-				requestRightGrid('grid_list2');
+				//requestRightGrid('grid_list2');
 			},
 			complete : function() {
-				startValue_combo = ":)";
-				document.getElementById("r_mt_name").style.removeProperty("height");
+
 			}
 		});
 	}
-	function requestRightGrid(gridname) {//기능을 모르겠음
+	function requestRightGrid(gridname) {
 		$("#rightIDX").val(gridname);
 		var cnm = $('#r_mt_name').val();
 		if (cnm == '' || cnm == null) {
@@ -805,7 +808,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field: 'mtl_NM', caption: '품목', style: 'text-align:center', sortable: true },
 				{ field: 'mtl_MKR_NO', caption: '제조사품번', style: 'text-align:center', sortable: true },
 				{ field: 'mtl_UNT', caption: '단위', style: 'text-align:center', sortable: true },
-				{ field: 'bom_MTL_QTY', caption: '수량', style: 'text-align:center', sortable: true, editable: { type: 'int' } },
+				{ field: 'bom_MTL_QTY', caption: '수량', style: 'text-align:center;background-color:#fff1ce;', sortable: true, editable: { type: 'int' } },
 			],
 			records : [],
 			total : 0,

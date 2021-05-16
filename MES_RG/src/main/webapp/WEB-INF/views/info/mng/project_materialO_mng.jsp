@@ -258,17 +258,46 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true, hidden: true},
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_QTY', caption:'재고수량', size:'10%', style:'text-align:center', sortable: true},
-				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_DLV_QTY', caption:'불출수량', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_QTY', caption:'재고수량', size:'10%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 
+				},
+				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 	
+				},
+				{ field:'mtl_DLV_QTY', caption:'불출수량', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 	
+				},
 				{ field:'mtl_REQ_STATE', caption:'견적요청여부', size:'8%', style:'text-align:center', sortable: true
 					,render: function (record, index, col_index) {
 						var html = this.getCellValue(index, col_index);
 						
 						if(html == 'I') {
 							return 'X';
-						} else {
+						} else if(html == 'E') {
 							return 'O';
+						} else {
+							return 'X';
 						}
 						return html;
 	           		} 
@@ -440,7 +469,16 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'17%', style:'text-align:center', sortable: true},
 				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center', sortable: true, editable:{type: 'int'} }
+				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center;background-color:#fff1ce;', sortable: true, editable:{type: 'int'} 
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 
+				}
 			],					
 			records : [],
 			total : 0,
@@ -523,7 +561,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					mtl_REQ_QTY_val = w2ui.grid_list2.records[keys[i]-1].mtl_REQ_QTY;
 				}
 				var Data = {
-					MTL_REQ_IDX : w2ui.grid_list.records[keys[i]-1].mtl_REQ_IDX,	
+					MTL_REQ_IDX : w2ui.grid_list2.records[keys[i]-1].mtl_REQ_IDX,	
 					PJT_IDX : w2ui.grid_list2.records[keys[i]-1].pjt_IDX,
                     BOM_IDX : w2ui.grid_list2.records[keys[i]-1].bom_IDX,
 					PJT_CD : w2ui.grid_list2.records[keys[i]-1].pjt_CD,

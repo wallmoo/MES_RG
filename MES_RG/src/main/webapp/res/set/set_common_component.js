@@ -237,6 +237,20 @@
 		//.append('<option value="All">-----</option>')
 	    .val();
 	}
+	//key 누를때 숫자만 가능하도록.
+	function onlyNumber(){
+		if ((event.keyCode < 48) || (event.keyCode > 57))
+			event.returnValue = false;
+	}
+	//숫자에 ,표기
+	function setComma(n) {
+	    var reg = /(^[+-]?\d+)(\d{3})/;   // 정규식
+	    n += '';                          // 숫자를 문자열로 변환         
+	    while (reg.test(n)) {
+	       n = n.replace(reg, '$1' + ',' + '$2');
+	    }         
+	    return n;
+	}	
 	// 개별 달력
 	function fnLoadCommonOption(val) {
 	 	console.log('fnLoadCommonOption()');
