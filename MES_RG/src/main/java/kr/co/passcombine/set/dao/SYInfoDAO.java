@@ -280,6 +280,7 @@ public interface SYInfoDAO {
 	public int deleteMaterialRequest(SYTMaterialRequestVo vo);
 	public int updateReqQuantity(SYTMaterialRequestVo vo);
 	public int updateEstVendor(SYTEstimateVo vo);
+	public int updateReqStatus(List<Map<String, Object>> vo);
 	// Material Request End	
 	
 	

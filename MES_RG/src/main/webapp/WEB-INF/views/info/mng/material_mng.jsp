@@ -217,7 +217,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 							<input type="text" id="mod_file_name" name="mod_file_name" class="form-control input-sm clear_field" readonly>
 						</div>	
 						<div class="col-sm-1" style="padding-left: 7px;">
-							<span class="btn btn-danger btn-sm fileinput-button " style="width: 100%;" id="file_btn"> <i class="fa fa-plus"></i>
+							<span class="btn btn-danger btn-sm fileinput-button " style="width: 100%;" id="file_btn"> 
+								<i class="fa fa-plus"></i>
 								<input id="file_group" type="file" class="fileupload file_info" name="file[]" onchange="$('#mod_file_name').val(this.value)">
 							</span>
 						</div>
@@ -256,10 +257,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	comboValue_cd = new Array;
 	
 	$(function($) {
-		fnLoadCompanyGrid();
+		fnLoadMaterialGrid();
 	})
 
-	function fnLoadCompanyGrid(){
+	function fnLoadMaterialGrid(){
 	// 	 console.log(page_url);
 		var rowArr = [];
 		
@@ -278,7 +279,16 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'17%', style:'text-align:center', sortable: true},
 				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true}, 
 				{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true}, 
-				{ field:'mtl_PRICE', caption:'단가', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'mtl_PRICE', caption:'단가', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 						
+				},
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'cmm_FLE_IDX', caption:'제품자료', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_DS_URL', caption:'참조링크', size:'7%', style:'text-align:center', sortable: true},
@@ -287,10 +297,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			sortData: [{field: 'mtl_IDX', direction: 'DESC'}],
 			records: [],	//
 			onReload: function(event) {
-				//loadList();
+				
 			},
-			onClick: function (event) {}
+			onClick: function (event) {
+				
+			}
 		});
+		
 		loadList();
 	}
 	
@@ -316,6 +329,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					rowArr = data.rows;
 					$.each(rowArr, function(idx, row){
 						row.recid = idx+1;
+						
 						if (startValue_combo == "") {
 							comboValue_nm.push(row.MTL_NM ? row.MTL_NM+'' : '');
 							comboValue_cd.push(row.MTL_IDX ? row.MTL_IDX+'' : '');

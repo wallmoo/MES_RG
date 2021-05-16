@@ -555,7 +555,16 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field: 'mtl_MKR_NO', caption: '제조사 품번', size: '10%', style: 'text-align:center', sortable: true },
 				{ field: 'mtl_STD', caption: '규격', size: '5%', style: 'text-align:center', sortable: true, hidden: true },
 				{ field: 'mtl_UNT', caption: '단위', size: '5%', style: 'text-align:center', sortable: true },			
-				{ field: 'bom_MTL_QTY', caption: '재고수량', size: '7%', style: 'text-align:center', sortable: true },
+				{ field: 'bom_MTL_QTY', caption: 'BOM 수량', size: '7%', style: 'text-align:center', sortable: true 
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 	
+				},
 			],
 			records : [],
 			total : 0,
@@ -622,7 +631,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			}
 		});
 	}
-	function requestRightGrid(gridname) {//기능을 모르겠음
+	function requestRightGrid(gridname) {
 		$("#rightIDX").val(gridname);
 		var cnm = $('#S_MTL_NM').val();
 		if (cnm == '' || cnm == null) {
@@ -671,7 +680,16 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'17%', style:'text-align:center', sortable: true},
 				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_QTY', caption:'재고수량', size:'10%', style:'text-align:center', sortable: true, hidden: true},
+				{ field:'mtl_QTY', caption:'재고수량', size:'10%', style:'text-align:center', sortable: true, hidden: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 
+				},
 				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_DLV_QTY', caption:'불출수량', size:'8%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'mtl_REQ_STATE', caption:'견적요청여부', size:'8%', style:'text-align:center', sortable: true
@@ -862,7 +880,16 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field: 'mtl_MKR_NO', caption: '제조사 품번', style: 'text-align:center', sortable: true },
 				{ field: 'mtl_STD', caption: '규격/상세', style: 'text-align:center', sortable: true },
 				{ field: 'mtl_UNT', caption: '단위', style: 'text-align:center', sortable: true },			
-				{ field: 'bom_MTL_QTY', caption: '재고수량', style: 'text-align:center', sortable: true },
+				{ field: 'bom_MTL_QTY', caption: '재고수량', style: 'text-align:center', sortable: true 
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 
+				},
 				{ field: 'mtl_REQ_QTY', caption: '요청수량', style: 'text-align:center;background-color:#fff1ce;', sortable: true, editable: { type: 'int' } },
 			],
 			records: [],

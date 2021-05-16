@@ -67,7 +67,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 													<div class="box-body">
 														<div class="row">
 															<div class="form-group">																
-																<div class="col-sm-2">
+																<div class="col-sm-2" style="display:none;">
 																	<label>거래처</label> 
 																	<select id="S_VDR_IDX" name="S_VDR_IDX" class="form-control" style="height: 30px;" 
 																	onchange="searchs();"></select>
@@ -229,25 +229,56 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			},
 			multiSelect : true,
 			columns : [ 
-				{ field:'est_IDX', caption:'구매견적 코드', size:'2%', style:'text-align:center', sortable: true},
 				{ field:'pjt_IDX', caption:'프로젝트 번호', size:'17%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'pjt_CD', caption:'프로젝트코드', size:'17%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'mtl_REQ_IDX', caption:'자재요청 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
 				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true, hidden: true},
 				{ field:'vdr_IDX', caption:'거래처 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+				
+				{ field:'est_IDX', caption:'견적번호', size:'5%', style:'text-align:center', sortable: true},
 				{ field:'vdr_NM', caption:'거래처', size:'8%', style:'text-align:center', sortable: true}, 
 				{ field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'mtl_NM', caption:'품목', size:'10%', style:'text-align:center' , sortable: true},
-				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'17%', style:'text-align:center', sortable: true},
+				{ field:'mtl_MKR_NO', caption:'제조사 품번', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_STD', caption:'규격', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_MKR_CD', caption:'제조사', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_REQ_QTY', caption:'요청수량', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_EST_MOQ', caption:'MOQ', size:'8%', style:'text-align:center;background-color:#fff1ce;', sortable: true, editable: {type: 'int'} },
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'mtl_EST_REG_DT', caption:'견적요청일', size:'10%', style:'text-align:center', sortable: true},
-				{ field:'mtl_EST_PRICE', caption:'단가', size:'7%', style:'text-align:center;background-color:#fff1ce;', sortable: true, editable:{type: 'int'} },
-	        	{ field:'mtl_TOT_PRICE', caption:'금액', size:'10%', style:'text-align:center;background-color:#e2efda;', sortable: true},
-				{ field:'mtl_EST_DLV_DT', caption:'납기가능일', size:'10%', style:'text-align:center;background-color:#fff1ce;', sortable: true, editable:{type: 'date'} },
+				{ field:'mtl_EST_REG_DT', caption:'견적요청일', size:'10%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+	
+						return html.substring(0,10);
+	           		} 					
+				},
+				{ field:'mtl_EST_PRICE', caption:'단가', size:'7%', style:'text-align:center;background-color:#fff1ce;', sortable: true, editable:{type: 'int'} 
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 				
+				},
+	        	{ field:'mtl_TOT_PRICE', caption:'금액', size:'10%', style:'text-align:center;background-color:#e2efda;', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} 
+	        	},
+				{ field:'mtl_EST_DLV_DT', caption:'납기가능일', size:'10%', style:'text-align:center;background-color:#fff1ce;', sortable: true, editable:{type: 'date'} 
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+	
+						return html.substring(0,10);
+	           		} 				
+				},
 				{ field:'mtl_EST_BG', caption:'비고', size:'8%', style:'text-align:center;background-color:#fff1ce;', sortable: true, editable:{type: 'text'} },
 			],			
 			
@@ -289,7 +320,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						cache : false,
 						success : function(response) {
 							alert('수정되었습니다.');
-							loadLeftGrid();
+
+							w2ui['grid_list'].refresh();
 						},
 						error : function() {
 							alert('Error while request...');

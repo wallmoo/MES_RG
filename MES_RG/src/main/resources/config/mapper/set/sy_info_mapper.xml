@@ -529,19 +529,19 @@
 	<select id="selectMaterial" parameterType="SYTMaterialVo" resultType="SYTMaterialVo">
 		SELECT
 			MTL_IDX, CMM_FLE_IDX, MTL_CATE, MTL_NM, MTL_MKR_CD, MTL_MKR_NO, MTL_STD,
-			MTL_PRICE, MTL_UNT, MTL_QTY, MTL_DS_URL, MTL_BG, MTL_REG_DT, MTL_REG_ID
+			NULLIF(MTL_PRICE, 0) AS MTL_PRICE, MTL_UNT, MTL_QTY, MTL_DS_URL, MTL_BG, MTL_REG_DT, MTL_REG_ID
 		FROM T_MTL_MST
 		WHERE MTL_DEL_YN = 'N'
-		<if test="MTL_MKR_CD !=null and !''.equals( MTL_MKR_CD ) ">
+		<if test="MTL_MKR_CD !=null and  !''.equals('null') and  !''.equals( MTL_MKR_CD ) ">
 			AND MTL_MKR_CD LIKE CONCAT('%', #{MTL_MKR_CD}, '%')
 		</if>
-		<if test="MTL_CATE!=null and !''.equals(MTL_CATE) ">
+		<if test="MTL_CATE!=null and  !''.equals('null') and !''.equals(MTL_CATE) ">
 			AND MTL_CATE LIKE CONCAT('%', #{MTL_CATE}, '%')
 		</if>
-		<if test="MTL_NM!=null and !''.equals(MTL_NM) ">
+		<if test="MTL_NM!=null and  !''.equals('null') and !''.equals(MTL_NM) ">
 			AND MTL_NM LIKE CONCAT('%', #{MTL_NM}, '%')
 		</if>
-		<if test="MTL_MKR_NO!=null and !''.equals(MTL_MKR_NO) ">
+		<if test="MTL_MKR_NO!=null and  !''.equals('null') and !''.equals(MTL_MKR_NO) ">
 			AND MTL_MKR_NO LIKE CONCAT('%', #{MTL_MKR_NO}, '%')
 		</if>		
 		ORDER BY MTL_IDX DESC				
@@ -659,9 +659,9 @@
 			PJT_CD = #{PJT_CD},
 			PJT_PRD_NM = #{PJT_PRD_NM},
 			PJT_PRD_QTY = #{PJT_PRD_QTY},
-			PJT_PRD_UNT = #{PJT_PRD_UNT},
-		<if test="PJT_DLV_DT != null and !''.equals( PJT_DLV_DT ) ">
-			PJT_DLV_DT = #{PJT_DLV_DT}
+			PJT_PRD_UNT = #{PJT_PRD_UNT}
+		<if test="PJT_DLV_DT != null and !''.equals( PJT_DLV_DT )  and !'null'.equals( PJT_DLV_DT )">
+			,PJT_DLV_DT = #{PJT_DLV_DT}
 		</if>			
 
 		WHERE PJT_IDX = #{PJT_IDX}
@@ -3322,6 +3322,12 @@
 	<update id="updateReqQuantity" parameterType="SYTMaterialRequestVo">
 		UPDATE T_MTL_REQ_MST SET MTL_REQ_QTY = #{MTL_REQ_QTY}
 		WHERE MTL_REQ_IDX = #{MTL_REQ_IDX}
+	</update>	
+	<update id="updateReqStatus" parameterType="java.util.List">
+		<foreach item="item" collection="list" open="" close="" separator=";">
+		UPDATE T_MTL_REQ_MST SET MTL_REQ_STATE = "E"
+		WHERE MTL_REQ_IDX = #{item.MTL_REQ_IDX}
+		</foreach>
 	</update>			
 	<!-- T_MTL_REQ_MST End -->		
 	
@@ -3398,15 +3404,18 @@
 	<!-- T_EST_MST 구매견적 Start -->
 	<select id="selectEstimate" parameterType="SYTEstimateVo" resultType="SYTEstimateVo">
 		SELECT 
-		E.EST_IDX,E.MTL_EST_MOQ,E.MTL_EST_PRICE,E.MTL_EST_DLV_DT,E.MTL_EST_BG,E.MTL_EST_REG_DT,E.MTL_EST_RE_DT,E.MTL_EST_REG_ID,E.MTL_EST_DEL_YN,
+		E.EST_IDX,E.MTL_EST_MOQ,
+		IFNULL(E.MTL_REQ_QTY,0) AS MTL_REQ_QTY,
+		IFNULL(E.MTL_EST_PRICE,0) AS MTL_EST_PRICE,
+		IFNULL((MTL_EST_PRICE * MTL_REQ_QTY),0) AS MTL_TOT_PRICE,
+		E.MTL_EST_DLV_DT,E.MTL_EST_BG,E.MTL_EST_REG_DT,E.MTL_EST_RE_DT,E.MTL_EST_REG_ID,E.MTL_EST_DEL_YN,
 		P.PJT_IDX,P.PJt_NM,P.PJt_CD,
 		M.MTL_IDX,M.MTL_NM,M.MTL_MKR_NO,M.MTL_STD,M.MTL_MKR_CD,M.MTL_UNT,
-		V.VDR_IDX,V.VDR_NM,R.MTL_REQ_QTY,R.MTL_REQ_IDX
+		V.VDR_IDX,V.VDR_NM
 		FROM T_EST_MST E
 		LEFT JOIN T_PJT_MST P ON E.PJT_IDX = P.PJT_IDX
 		LEFT JOIN T_MTL_MST M ON E.MTL_IDX = M.MTL_IDX
 		LEFT JOIN T_VDR_MST V ON E.VDR_IDX = V.VDR_IDX
-		LEFT JOIN T_MTL_REQ_MST R ON E.MTL_REQ_IDX = R.MTL_REQ_IDX
 		WHERE E.MTL_EST_DEL_YN = 'N'
 
 		<if test="PJT_IDX != null and !''.equals(PJT_IDX) and !'null'.equals(PJT_IDX) and PJT_IDX > 0">

@@ -1617,7 +1617,10 @@ public class SYInfoService {
 	}		
 	public int updateEstVendor(SYTEstimateVo vo) {
 		return infoDAO.updateEstVendor(vo);
-	}		
+	}	
+	public int updateReqStatus(List<Map<String, Object>> vo) {//자재 요청 수정
+		return infoDAO.updateReqStatus(vo);
+	}
 	// Material Request End	
 	public List<SYTMaterialVo> selectMaterialD(List<Map<String, Object>> vo) {
 		// TODO Auto-generated method stub
@@ -1665,6 +1668,8 @@ public class SYInfoService {
 		return infoDAO.selectEstimate(vo);
 	}	
 	public int insertEstimate(List<Map<String,Object>> vo) {//자재 요청
+		infoDAO.updateReqStatus(vo);//요청 데이타 상태 변경
+		
 		return infoDAO.insertEstimate(vo);
 	}	
 	public int updateEstimate(SYTEstimateVo vo) {//자재 요청 수정
@@ -1705,6 +1710,7 @@ public class SYInfoService {
 		return infoDAO.chkOrdStatus(vo);
 	}	
 	public int updateAllMTL(List<Map<String,Object>> vo) {//자재발주 일괄처리-List형
+		infoDAO.updateMaterialQTY(vo);//재고 수량 업데이트
 		return infoDAO.updateAllMTL(vo);
 	}
 	public int updateAllMTLVO(SYTMaterialOrderVo vo) {//자재발주 일괄처리-VO형

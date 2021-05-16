@@ -5514,7 +5514,10 @@ public class InfoController {
 					
 				// 3.T_MTL_ORD_MST 테이블 업데이트: 상태값 - MTL_ORD_STATUS	
 				sYInfoService.updateAllMTLMST(vo);	
-					
+				
+				// 4.T_MTL_MST 테이블 업데이트: 재고 수량 조정
+				
+				
 				if (cnt == 1) {	
 					resultData.put("status", HttpStatus.OK.value());	
 					resultData.put("msg", "success");	
@@ -5562,7 +5565,8 @@ public class InfoController {
 				int cnt = sYInfoService.updateAllMTLVO(vo);	
 				
 				// 2.T_MTL_ORD_DTL 테이블 업데이트: 상태값 - ORD_DTL_STATUS, ORD_CHK_STATUS	
-				// 3.T_MTL_ORD_MST 테이블 업데이트: 상태값 - MTL_ORD_STATUS	
+				// 3.T_MTL_ORD_MST 테이블 업데이트: 상태값 - MTL_ORD_STATUS
+				// 4.T_MTL_MST 테이블 업데이트: 재고 수량 조정
 				if (cnt == 1) {	
 					resultData.put("status", HttpStatus.OK.value());	
 					resultData.put("msg", "success");	
