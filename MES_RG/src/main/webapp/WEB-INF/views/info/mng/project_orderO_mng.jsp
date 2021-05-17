@@ -549,7 +549,15 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				{ field:'mtl_IDX', caption:'자재코드', size:'7%', style:'text-align:center' , sortable: true},
 				{ field:'mtl_STD', caption:'재고규격', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'mtl_UNT', caption:'재고단위', size:'8%', style:'text-align:center', sortable: true},
-				{ field:'ord_DTL_PRICE', caption:'단가', size:'8%', style:'text-align:center', sortable: true},
+				{ field:'ord_DTL_PRICE', caption:'단가', size:'8%', style:'text-align:center', sortable: true
+					,render: function (record, index, col_index) {
+						var html = this.getCellValue(index, col_index);
+						
+						html = w2utils.formatters['number'](html);
+						html = setComma(html);
+						
+						return html;
+	           		} },
 				{ field:'ord_DTL_QTY', caption:'발주수량', size:'10%', style:'text-align:center', sortable: true},
 				{ field:'mtl_QTY', caption:'입고수량', size:'8%', style:'text-align:center', sortable: true},
 				{ field:'calcul_cha_QTY', caption:'잔량', size:'8%', style:'text-align:center', sortable: true
@@ -675,11 +683,11 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					data : postData,
 					data_type : 'json',
 					success : function(data) {
-						if (data != 0) {
-							alert("추가되었습니다");
+						if (data.status == 200 && (data.rows).length > 0) {
+							fnMessageModalAlert("결과", "성공하였습니다");
 							loadRightGrid(ORD_IDX);
 						} else {
-							alert("오류가 발생하였습니다");
+							fnMessageModalAlert("오류", data.msg);
 						}
 					},
 					complete : function() {
@@ -734,7 +742,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					},
 					data_type : 'json',
 					success : function(data) {
-						if (data != 0) {
+						if (data.status == 200) {
 							rowArrDtl=[];
 							reqDataList=[];
 
@@ -742,10 +750,9 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 							loadLeftGrid();
 							
 							w2ui.grid_list2.clear();
-							
-							alert("추가되었습니다");
+							fnMessageModalAlert("결과", "성공하였습니다");
 						} else {
-							alert("오류가 발생하였습니다");
+							fnMessageModalAlert("오류", data.msg);
 						}
 					},
 					complete : function() {
@@ -763,8 +770,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		if (keys == null || keys == "") {
 			alert("개별 입고할 구매발주번호를 선택하여주십시오");
 		} else {
-/* 			$("#WHS_HIS_QTY").val() = "";
-			$("#WHS_HIS_CANCEL_QTY").val() = ""; */
+			$("#WHS_HIS_QTY").val('');
+			$("#WHS_HIS_CANCEL_QTY").val(''); 
 			
 			$("#modal_eachOrderForm").modal('show');
 		}
@@ -772,12 +779,13 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	//개별 자재 입고 처리
 	function updateEachMTL() {
 		var keys = w2ui.grid_list2.getSelection();
+		var keys2 = w2ui.grid_list.getSelection();
 		var ModalDataList = [];
-		
+		reqDataList.length=0;
 		if (keys == null || keys == "") {
 			alert("개별 입고할 구매발주번호를 선택하여주십시오");
 		} else {
-			var data = w2ui.grid_list.get(keys[0]);			
+			var data = w2ui.grid_list.get(keys2[0]);			
 			var ORD_IDX = data.ord_IDX;//구매발주번호	
 
 			if($('#WHS_HIS_QTY').val() == "") {
@@ -796,10 +804,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			
 			for (var i = 0; i < keys.length; i++) {
 				var DataList = {
-					ORD_IDX : w2ui.grid_list2.records[keys[i]-1].ord_IDX,
-					MTL_ORD_DTL_IDX : w2ui.grid_list2.records[keys[i]-1].mtl_ORD_DTL_IDX,
-					MTL_IDX : w2ui.grid_list2.records[keys[i]-1].mtl_IDX,
-					WHS_HIS_QTY : w2ui.grid_list2.records[keys[i]-1].ord_DTL_QTY,
+					ORD_IDX : w2ui.grid_list2.records[keys[i]].ord_IDX,
+					MTL_ORD_DTL_IDX : w2ui.grid_list2.records[keys[i]].mtl_ORD_DTL_IDX,
+					MTL_IDX : w2ui.grid_list2.records[keys[i]].mtl_IDX,
+					WHS_HIS_QTY : w2ui.grid_list2.records[keys[i]].ord_DTL_QTY,
 					WHS_HIS_QTY : WHS_HIS_QTY
 				};
 				reqDataList.push(DataList);
@@ -822,7 +830,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 					},
 					data_type : 'json',
 					success : function(data) {
-						if (data != 0) {
+						if (data.status == 200 ) {
 							rowArrDtl=[];
 							reqDataList=[];
 
@@ -830,12 +838,11 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 							loadLeftGrid();
 							
 							w2ui.grid_list2.clear();
-							
-							alert("추가되었습니다");
-							
+
+							fnMessageModalAlert("결과", "성공하였습니다");
 							$("#modal_eachOrderForm").modal('hide');
 						} else {
-							alert("오류가 발생하였습니다");
+							fnMessageModalAlert("오류", data.msg);
 						}
 					},
 					complete : function() {
