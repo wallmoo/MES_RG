@@ -437,8 +437,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			name : 'grid_list2',
 			show : {
 				lineNumbers : true,
-				footer : true,
-				selectColumn : true
+				footer : true
 			},
 			multiSelect : false,
 

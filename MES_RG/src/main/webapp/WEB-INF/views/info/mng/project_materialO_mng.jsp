@@ -294,7 +294,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						
 						if(html == 'I') {
 							return 'X';
-						} else if(html == 'E') {
+						} else if(html == 'E' || html=='O') {
 							return 'O';
 						} else {
 							return 'X';

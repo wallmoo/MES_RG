@@ -5496,14 +5496,15 @@ public class InfoController {
 			// 구매발주 상태 체크	
 			SYTMaterialOrderVo result = sYInfoService.chkOrdStatus(vo);// 발주내역 저장 return ORD_IDX	
 			String MTL_ORD_STATUS = result.getMTL_ORD_STATUS();	
-			if (!MTL_ORD_STATUS.equals("I") && !MTL_ORD_STATUS.equals("N") && !MTL_ORD_STATUS.equals("O")) {// 일괄업데이트, 상태-진행중(I), 발주 승인(Y), 거절(N), 입고완료(O)	
+			if (!MTL_ORD_STATUS.equals("I") && !MTL_ORD_STATUS.equals("N") && !MTL_ORD_STATUS.equals("O")) {
+				// 일괄업데이트, 상태-진행중(I), 발주 승인(Y), 거절(N), 입고완료(O)	
 				// 0. MTL LIST를 가져온다. ==> 맵 + json --> ok	
 				List<Map<String, Object>> list = (List<Map<String, Object>>) mapVO.get("reqDataList");	
 				for (Map<String, Object> map : list) {	
 					map.put("WHS_HIS_REG_ID", REG_ID);	
 					map.put("WHS_HIS_GB", "IN");	
 					map.put("WHS_HIS_TYPE", "O");	
-				}	
+				}
 				System.out.println(list);	
 				
 				// 1. T_WHS_HIS 테이블에 입고 이력을 입력 --> ok	
@@ -5614,8 +5615,14 @@ public class InfoController {
 			// map으로 값 받기	
 			Map<String, Object> mstMap = (Map<String, Object>) mapVO.get("mstData");	
 			int ord_IDX = (int) mstMap.get("ORD_IDX");	
-			int whs_HIS_QTY = Integer.valueOf((String) mstMap.get("WHS_HIS_QTY"));
-			int whs_HIS_CANCEL_QTY = Integer.valueOf((String) mstMap.get("WHS_HIS_CANCEL_QTY"));
+			int whs_HIS_QTY = 0;
+			if(!((String)mstMap.get("WHS_HIS_QTY")).equals("")) {
+				whs_HIS_QTY=Integer.valueOf((String) mstMap.get("WHS_HIS_QTY"));
+			}
+			int whs_HIS_CANCEL_QTY=0;
+			if(!((String) mstMap.get("WHS_HIS_CANCEL_QTY")).equals("")) {
+				whs_HIS_CANCEL_QTY = Integer.valueOf((String) mstMap.get("WHS_HIS_CANCEL_QTY"));
+			}
 			int WHS_HIS_QTY = whs_HIS_QTY - whs_HIS_CANCEL_QTY;
 			
 			String WHS_HIS_REG_DT = (String) mstMap.get("WHS_HIS_REG_DT");
