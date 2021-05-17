@@ -5615,7 +5615,10 @@ public class InfoController {
 			// map으로 값 받기	
 			Map<String, Object> mstMap = (Map<String, Object>) mapVO.get("mstData");	
 			int ord_IDX = (int) mstMap.get("ORD_IDX");	
-			int whs_HIS_QTY = Integer.valueOf((String) mstMap.get("WHS_HIS_QTY"));
+			int whs_HIS_QTY = 0;
+			if(!((String)mstMap.get("WHS_HIS_QTY")).equals("")) {
+				whs_HIS_QTY=Integer.valueOf((String) mstMap.get("WHS_HIS_QTY"));
+			}
 			int whs_HIS_CANCEL_QTY=0;
 			if(!((String) mstMap.get("WHS_HIS_CANCEL_QTY")).equals("")) {
 				whs_HIS_CANCEL_QTY = Integer.valueOf((String) mstMap.get("WHS_HIS_CANCEL_QTY"));
