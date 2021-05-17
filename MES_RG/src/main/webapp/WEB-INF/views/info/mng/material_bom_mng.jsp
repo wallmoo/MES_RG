@@ -210,8 +210,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		
 		fnLoadLeftGrid();
 		fnLoadRightGrid();
-		loadGrid3();
-		loadGrid4();
 		loadingEnd=true;
 	})
 	function searchs(){
