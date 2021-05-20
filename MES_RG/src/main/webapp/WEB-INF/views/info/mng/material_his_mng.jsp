@@ -10,19 +10,12 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> <%=pageTitle %> </title>
-  <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <title> <%=pageTitle %> </title>
   
 	<jsp:include page="/common/header_inc" flush="true"> 
 		<jsp:param name="page_title" value="0" />
 	</jsp:include>
-	
-	<style type="text/css">
-		.ichk_label {
-			font-weight: unset;
-    		font-size: 12px; }
-	</style>
 </head>
 
 <body class="hold-transition skin-<%=thema%> sidebar-mini">
@@ -40,9 +33,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 		<div class="content-wrapper">
 			<section class="content-header">
-				<h1>
-					자재재고관리 <small>재고관리</small>
-				</h1>
+				<h1>자재재고관리 <small>재고관리</small></h1>
 				<ol class="breadcrumb">
 					<li><a href="#"><i class="fa fa-dashboard"></i> 재고관리</a></li>
 					<li class="active">자재재고관리</li>

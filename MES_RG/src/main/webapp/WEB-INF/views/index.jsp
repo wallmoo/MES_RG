@@ -1,10 +1,16 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="kr.co.passcombine.set.util.*"%>
+<%
+// jsp properties
+String thema = SessionUtil.getProperties("mes.thema");
+String pageTitle = SessionUtil.getProperties("mes.company");
+%>
 <!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title>Set | set</title>
+  <title>RealGain | MES Main</title>
   <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
   
@@ -13,7 +19,7 @@
 	</jsp:include>
 </head>
 
-<body class="hold-transition skin-green-light sidebar-mini">
+<body class="hold-transition skin-<%=thema%> sidebar-mini">
 <div class="wrapper">
 	<jsp:include page="/common/top_menu_inc" flush="true">
 		<jsp:param name="fb_div" value="F" />

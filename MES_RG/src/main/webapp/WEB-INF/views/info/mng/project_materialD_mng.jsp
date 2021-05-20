@@ -8,15 +8,14 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 <!DOCTYPE html>
 <html>
 <head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge">
-<title><%=pageTitle%></title>
-<!-- Tell the browser to be responsive to screen width -->
-<meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
-
-<jsp:include page="/common/header_inc" flush="true">
-	<jsp:param name="page_title" value="0" />
-</jsp:include>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <title> <%=pageTitle %> </title>
+  
+	<jsp:include page="/common/header_inc" flush="true"> 
+		<jsp:param name="page_title" value="0" />
+	</jsp:include>
 </head>
 
 
@@ -36,9 +35,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 		<div class="content-wrapper">
 			<section class="content-header">
-				<h1>
-					자재  요청 관리(연구원용)<small>구매/자재 관리</small>
-				</h1>
+				<h1>자재  요청 관리(연구원용) <small>구매/자재 관리</small></h1>
 				<ol class="breadcrumb">
 					<li><a href="#"><i class="fa fa-dashboard"></i>구매/자재 관리 </a></li>
 					<li class="active">자재  요청 관리(연구원용)</li>
