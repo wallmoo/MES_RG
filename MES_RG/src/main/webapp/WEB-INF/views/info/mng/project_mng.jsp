@@ -10,19 +10,12 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> <%=pageTitle %> </title>
-  <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <title> <%=pageTitle %> </title>
   
 	<jsp:include page="/common/header_inc" flush="true"> 
 		<jsp:param name="page_title" value="0" />
 	</jsp:include>
-	
-	<style type="text/css">
-		.ichk_label {
-			font-weight: unset;
-    		font-size: 12px; }
-	</style>
 </head>
 
 
@@ -41,10 +34,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
  <div class="content-wrapper">
     <section class="content-header">
-      <h1>
-      	프로젝트 관리
-        <small>프로젝트</small>
-      </h1>
+      <h1>프로젝트 관리 <small>프로젝트</small></h1>
       <ol class="breadcrumb">
         <li><a href="#"><i class="fa fa-dashboard"></i>프로젝트관리</a></li><li class="active">프로젝트 등록/수정</li>
       </ol>
@@ -262,21 +252,25 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	
 	comboValue_nm = new Array;
 	comboValue_cd = new Array;
-		var loadingEnd= false;
+	
+	var loadingEnd= false;
+	
 	$(function($) {
 		fnCdD('PJT_PRD_UNT', 'MC1027');//공통코드를 호출-재고 단위
 		
 		requestClient('CST_IDX');//고객사 정보를 드랍다운 형태로 만듬
 		requestClient('S_CST_IDX');
 	
+		fnLoadCommonOption('#PJT_DLV_DT');//등록폼 달력
+		fnLoadDeliveryOption('#S_PJT_REG_DT, #S_PJT_DLV_DT', 'left');//검색폼 달력		
+		
 		fnLoadProjectGrid(); 
-		fnLoadCommonOption();//등록폼 달력
-		fnLoadDeliveryOption();//검색폼 달력			
+
 		loadingEnd=true;
 	})
 	function loadLists(){
 		if(loadingEnd){
-		loadList();
+			loadList();
 		}
 	}
 	
@@ -305,9 +299,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				], 
 			sortData: [{field: 'pjt_IDX', direction: 'DESC'}],
 			records: [],	//
-			onReload: function(event) {
-
-			},
+			onReload: function(event) {},
 			onClick: function (event) {}
 		});
 		loadList();
@@ -543,130 +535,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			});
 		} 
 	}
-	
-	// ############################
-	// init component
-	function fnLoadCommonOption() {
-	 	console.log('fnLoadCommonOption()');
-	 	
-		$('#PJT_DLV_DT').daterangepicker({
-			opens: 'right',
-			singleDatePicker: true,
-			locale: {
-				format : 'YYYY-MM-DD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-				showMonthAfterYear : true,
-				yearSuffix : '년'
-		    },
-		    startDate : moment(minDate)
-		})
-		.on("change", function() {
-		    loadList();
-		}); 
-	}
-	function fnLoadDeliveryOption() {
-	 	console.log('fnLoadCommonOption()');
-	 	
-		$('#S_PJT_REG_DT, #S_PJT_DLV_DT').daterangepicker({
-			opens: 'left',
-			locale: {
-				format : 'YYYYMMDD'	,
-				monthNames : [ '1월', '2월', '3월', '4월', '5월', '6월', '7월', '8월', '9월', '10월', '11월', '12월' ],
-				daysOfWeek: [ "일","월", "화", "수", "목", "금", "토" ],
-				showMonthAfterYear : true,
-				yearSuffix : '년'
-		    },
- 			startDate: moment().subtract(30, 'days').format('YYYY-MM-DD'),
-			endDate: moment().format('YYYY-MM-DD'),
-		}); 
-		
-		$('#S_PJT_REG_DT').val("");
-		$('#S_PJT_DLV_DT').val("");
-		
-	}	
-	//엑셀 1024
-	function excelFileDownload() {
-		console.log("excelFileDownload()");
-		var gridCols = w2ui['grid_list'].columns;
-		var gridData = w2ui['grid_list'].records;
 
-		var fileName = '자재 관리.xlsx';
-		var sheetTitle = '자재 관리';
-		var sheetName = '자재 관리';
-		
-		var param_col_name = "", param_col_id="", param_col_align="", param_col_width="";
-		var is_rownum = true;
-		
-		if(gridCols != null && gridCols.length > 0){
-			for(var i=0; i<gridCols.length; i++){
-	 			if(!gridCols[i].hidden){
-					param_col_name += gridCols[i].caption + ",";
-					param_col_id += gridCols[i].field + ",";
-					param_col_align += "center" + ",";
-					param_col_width += (gridCols[i].width==undefined?"10":(gridCols[i].width).replace('px','')) + ",";
-	 			}
-			}
-			param_col_name = param_col_name.substr(0, param_col_name.length -1);
-			param_col_id = param_col_id.substr(0, param_col_id.length -1);
-			param_col_align = param_col_align.substr(0, param_col_align.length -1);
-			param_col_width = param_col_width.substr(0, param_col_width.length -1);
-		}
-
-
-		var export_url = "/export/export_client_jqgrid";
-		var export_data = "file_name="+encodeURIComponent(fileName);
-			export_data += "&sheet_title="+encodeURIComponent(sheetTitle);
-			export_data += "&sheet_name="+encodeURIComponent(sheetName);
-			export_data += "&header_col_names="+encodeURIComponent(param_col_name);
-			export_data += "&header_col_ids="+encodeURIComponent(param_col_id);
-			export_data += "&header_col_aligns="+encodeURIComponent(param_col_align);
-			export_data += "&header_col_widths="+encodeURIComponent(param_col_width);
-			export_data += "&cmd="+encodeURIComponent("grid_goods_detail");
-			export_data += "&body_data="+encodeURIComponent(JSON.stringify(gridData));
-		
-		$.ajax({
-		  url:export_url,
-		  data:export_data,
-		  type:'POST',
-		  dataType: 'json',
-		  success: function( data ) {
-		  	if(data.status == 200) {
-		  		var file_path = data.file_path;
-		  		var file_name = data.file_name;
-		  		var protocol = jQuery(location).attr('protocol');
-	  			var host = jQuery(location).attr('host');
-	  			var link_url = "/file/attach_download";
-	  			link_url += "?file_path="+encodeURIComponent(file_path);
-	  			link_url += "&file_name="+encodeURIComponent(file_name);
-	  			
-	  			$(location).attr('href', link_url);
-		  	}
-		  },
-			complete: function () {}
-		});
-	}
-	
-	// 미 입력시
-	function chkSubmit(item, msg){
-		if(item.val().replace(/\s/g,"")==""){
-			fnMessageModalAlert("알림", msg+ " 입력해 주세요.");
-			item.val("");
-			item.focus();
-			return false;
-		} else {
-			return true;
-		}
-	}
-	
-	function initOptions(obj) {
-	    $(obj)
-	    .find('option')
-	    .remove()
-	    .end()
-//		.append('<option value="All">-----</option>')
-	    .val();
-	}
 </script>
 
 </body>

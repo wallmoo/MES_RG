@@ -1,0 +1,103 @@
+# 선택된 컬럼을 찾는 방법
+var key = w2ui.grid_list.getSelection();
+if( key.length==0 ) {
+    fnMessageModalAlert("알림", "삭제하고자 하는 항목을 1개 선택하여야 합니다."); // Notification
+    return;
+} else if (key.length == 1) {
+    flag = "U";
+}
+
+# 선택된 컬럼에서 
+var data = w2ui.grid_list.get(key[0]);
+var code = data.cst_IDX;
+
+# 모달 confirm, ajax 처리
+fnMessageModalConfirm("알림", "선택한 내용을 삭제하시겠습니까?", function(result) {
+    if(result) {
+        console.log("code = " + code);
+        
+        var strUrl = "/info/account/deleteClient";
+        var postData = "CST_IDX=" + code
+                    + "&CST_NM=" + encodeURIComponent(CST_NM);
+        
+        $.ajax({
+                url: strUrl,
+                type: "POST",
+                dataType : 'json', 
+                data : postData, 
+                async : false,
+                success:function(data, textStatus, jqXHR){
+                    if(data.status == "200") {
+                        console.log(data);
+                        //w2ui.grid_list.clear();
+                        loadList();
+                        
+                        fnMessageModalAlert("결과", "정상적으로 처리되었습니다."); // Notification(MES)
+                    }
+                },
+                error: function(jqXHR, textStatus, errorThrown){
+                    fnMessageModalAlert("결과", "정보를 처리하는데 에러가 발생하였습니다.");	 // Notification(MES)
+                },
+                complete: function() {
+                
+                }
+        });
+    }
+});
+
+# 리스트 그리스 호출
+function loadList() {
+    console.log("loadList()");
+    
+    var rowArr = [];
+    var page_url = "/info/account/selectClient";
+    var postData = "CST_NM=" + encodeURIComponent($("#S_CST_NM").val());
+
+    w2ui['grid_list'].lock('loading...', true);
+    $.ajax({
+        url : page_url,
+        type : 'POST',
+        data : postData, 
+        dataType : 'json',
+        success : function( data ) {
+            comboValue_cd = new Array;
+            comboValue_nm = new Array;
+            if(data.status == 200 && (data.rows).length>0 ) {
+                rowArr = data.rows;
+                
+                $.each(rowArr, function(idx, row){
+                    row.recid = idx+1;
+                });
+                
+                w2ui['grid_list'].records = rowArr;
+            } else {
+                w2ui.grid_list.clear();
+            }
+            w2ui['grid_list'].refresh();
+            w2ui['grid_list'].unlock();
+        },complete: function () {
+
+        }
+    });
+}
+
+# 초기 화면 로딩이 끝난 후에 그리드 호출
+var loadingEnd = false;
+$(function($) {
+    fnCdD('S_PJT_PRD_UNT', 'MC1027');//공통코드를 호출-재고 단위
+    requestClient('S_CST_IDX');//고객사 정보를 검색폼 드랍다운 형태로 만듬
+
+    fnLoadCommonOption('#PJT_DLV_DT');//등록폼 달력
+    fnLoadDeliveryOption('#S_PJT_REG_DT, #S_PJT_DLV_DT','left');//검색폼 달력
+    
+    fnLoadLeftGrid();
+    fnLoadRightGrid();
+    loadGrid3();
+    loadGrid4();
+    loadingEnd=true;
+})
+function loadGrids(){
+    if(loadingEnd){
+        loadLeftGrid();
+    }
+}

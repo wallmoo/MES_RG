@@ -10,19 +10,12 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 <head>
   <meta charset="utf-8">
   <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <title> <%=pageTitle %> </title>
-  <!-- Tell the browser to be responsive to screen width -->
   <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+  <title> <%=pageTitle %> </title>
   
 	<jsp:include page="/common/header_inc" flush="true"> 
 		<jsp:param name="page_title" value="0" />
 	</jsp:include>
-	
-	<style type="text/css">
-		.ichk_label {
-			font-weight: unset;
-    		font-size: 12px; }
-	</style>
 </head>
 
 <body class="hold-transition skin-<%=thema%> sidebar-mini">
@@ -40,12 +33,10 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
  <div class="content-wrapper">
     <section class="content-header">
-      <h1>
-        고객사 관리
-        <small>기준정보관리</small>
-      </h1>
+      <h1>고객사 관리 <small>기준정보관리</small></h1>
       <ol class="breadcrumb">
-        <li><a href="#"><i class="fa fa-dashboard"></i> 기준정보관리</a></li><li class="active">고객사 관리</li>
+		<li><a href="#"><i class="fa fa-dashboard"></i> 기준정보관리</a></li>
+		<li class="active">고객사 관리</li>
       </ol>
     </section>
 
@@ -222,19 +213,11 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 <!-- ./wrapper -->
 
 <script type="text/javascript">
-	var startValue_combo = "";
-	
-	comboValue_nm = new Array;
-	comboValue_cd = new Array;
-	
 	$(function($) {
 		fnLoadCompanyGrid();
 	})
-
 	function fnLoadCompanyGrid(){
-	// 	 console.log(page_url);
-		var rowArr = [];
-		
+		console.log("fnLoadCompanyGrid()");
 		$('#grid_list').w2grid({ 
 	        name: 'grid_list',
 	        show: {
@@ -257,9 +240,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				], 
 			sortData: [{field: 'cst_IDX', direction: 'DESC'}],
 			records: [],	//
-			onReload: function(event) {
-				//loadList();
-			},
+			onReload: function(event) {},
 			onClick: function (event) {}
 		});
 		loadList();
@@ -268,6 +249,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 	function loadList() {
 		console.log("loadList()");
 		
+		var rowArr = [];
 		var page_url = "/info/account/selectClient";
 		var postData = "CST_NM=" + encodeURIComponent($("#S_CST_NM").val());
 
@@ -282,18 +264,12 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 				comboValue_nm = new Array;
 				if(data.status == 200 && (data.rows).length>0 ) {
 					rowArr = data.rows;
+					
 					$.each(rowArr, function(idx, row){
 						row.recid = idx+1;
-						if (startValue_combo == "") {
-							comboValue_nm.push(row.cst_NM ? row.cst_NM+'' : '');
-							comboValue_cd.push(row.cst_IDX ? row.cst_IDX+'' : '');
-						}
 					});
+					
 					w2ui['grid_list'].records = rowArr;
-					if (startValue_combo == "") {
-						$('#CST_NM').w2field('combo', { items: comboValue_nm, match : 'contains' });
-						$('#CST_IDX').w2field('combo', { items: comboValue_cd, match : 'contains' });
-					}
 				} else {
 					w2ui.grid_list.clear();
 				}
@@ -303,7 +279,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 
 			}
 		});
-		
 	}
 	
 	//등록/수정 모달 생성
@@ -365,9 +340,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		} else {
 			fnMessageModalAlert("알림", "수정하고자 하는 항목을 1개 선택하여야 합니다."); // Notification
 		}
-		
 	}
-	
+	//계정 저장
 	function saveAccount() {
 		console.log('saveAccount()');
 		
@@ -421,7 +395,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		    success:function(data, textStatus, jqXHR){
 		    	if(data.status == "200") {
 			    	fnMessageModalAlert("결과", "정상적으로 처리되었습니다.");// Notification(MES)
-			    	startValue_combo = "";
+
 			    	loadList();
 		    	}
 		    },
@@ -432,7 +406,7 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		    }
 		});
 	}
-	
+	//계정 삭제
 	function deleteAccount() {
 		console.log('deleteAccount()');
 	
@@ -444,7 +418,6 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			fnMessageModalAlert("알림", "삭제하고자 하는 항목을 1개 선택하여야 합니다."); // Notification
 			return;
 		} else {
- 
 			var data = w2ui.grid_list.get(key[0]);
 			var code = data.cst_IDX;
 			
@@ -474,9 +447,9 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 						    	fnMessageModalAlert("결과", "정보를 처리하는데 에러가 발생하였습니다.");	 // Notification(MES)
 						 },
 						 complete: function() {
+						 
 						 }
 					});
-					
 				}
 			});
 		} 

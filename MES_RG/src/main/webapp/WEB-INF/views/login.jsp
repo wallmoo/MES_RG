@@ -5,13 +5,17 @@
   
  String logout_check = (String) request.getAttribute("logout");
  String member_emp_no = SessionUtil.getMemberEmpNo(request);
- 
- 
+%>
+
+<%
+// jsp properties
+String thema = SessionUtil.getProperties("mes.thema");
+String pageTitle = SessionUtil.getProperties("mes.company");
 %>
 <html>
 <head>
 <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1">
-<title>[SET,INC] MES-SC</title>
+<title>RealGain</title>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta http-equiv="Content-type" content="text/html; charset=utf-8">
 
@@ -20,12 +24,9 @@
 <link href="/res/bootstrap/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
 <link rel="stylesheet" href="/res/set/css/login.css" type="text/css">
 
-<script type="text/javascript">
-</script>
-
 </head>
 
-<body>
+<body class="hold-transition skin-<%=thema%> sidebar-mini">
 	<div class="container">
 		<div class="col-md-10 col-sm-offset-2 main">
 			
@@ -78,7 +79,7 @@
 			</div><!--col-sm-6-->
         </div><!--col-sm-8-->
 	</div><!--container-->
-	<p>Copyrightⓒ 2020 SET,Inc All right reserved.</p>
+	<p>Copyrightⓒ 2021 RealGain All right reserved.</p>
     <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
     <!-- Include all compiled plugins (below), or include individual files as needed -->
 	
