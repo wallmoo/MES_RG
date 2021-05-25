@@ -5519,7 +5519,7 @@ public class InfoController {
 				// 4.T_MTL_MST 테이블 업데이트: 재고 수량 조정
 				
 				
-				if (cnt == 1) {	
+				if (cnt > 0) {	
 					resultData.put("status", HttpStatus.OK.value());	
 					resultData.put("msg", "success");	
 				} else {	
