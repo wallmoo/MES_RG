@@ -5653,12 +5653,20 @@ public class InfoController {
 				int cnt = sYInfoService.updateEachMTL(list);	
 				
 				// 2.T_MTL_ORD_DTL 테이블 업데이트: 상태값 - ORD_DTL_STATUS, ORD_CHK_STATUS	
-				sYInfoService.updateEachMTLDTL(vo);	
+				sYInfoService.updateEachMTLDTL(list);
 					
-				// 3.T_MTL_ORD_MST 테이블 업데이트: 상태값 - MTL_ORD_STATUS	
+				// 3.T_MTL_ORD_MST 테이블 업데이트: 상태값 - MTL_ORD_STATUS
+				int chkMTLStatus = sYInfoService.checkEachMTLStatus(vo);	
+				if(chkMTLStatus > 0) {
+					vo.setMTL_ORD_STATUS("E");//부분 입고
+				} else {
+					vo.setMTL_ORD_STATUS("O");//입고 완료
+				}
+				System.out.println("chkMTLStatus: "+chkMTLStatus);	
+				
 				sYInfoService.updateEachMTLMST(vo);	
 					
-				if (cnt == 1) {	
+				if (cnt > 0) {	
 					resultData.put("status", HttpStatus.OK.value());	
 					resultData.put("msg", "success");	
 				} else {	

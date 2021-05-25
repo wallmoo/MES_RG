@@ -434,6 +434,8 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 							return '거절';
 						} else if(html == 'O') {
 							return '입고완료';
+						} else if(html == 'E') {
+							return '부분입고';							
 						} else if(html == 'I') {
 							return '진행중';
 						}						
@@ -764,8 +766,14 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 		if (keys == null || keys == "") {
 			alert("개별 입고할 구매발주번호를 선택하여주십시오");
 		} else {
-			$("#WHS_HIS_QTY").val('');
-			$("#WHS_HIS_CANCEL_QTY").val(''); 
+			var data = w2ui.grid_list2.get(keys[0]);			
+			var WHS_HIS_QTY = data.ord_DTL_QTY;
+			if(WHS_HIS_QTY == "") {
+				var WHS_HIS_QTY = "0";
+			}
+			
+			$("#WHS_HIS_QTY").val(WHS_HIS_QTY);
+			$("#WHS_HIS_CANCEL_QTY").val('0'); 
 			
 			$("#modal_eachOrderForm").modal('show');
 		}
@@ -798,11 +806,11 @@ String pageTitle = SessionUtil.getProperties("mes.company");
 			
 			for (var i = 0; i < keys.length; i++) {
 				var DataList = {
-					ORD_IDX : w2ui.grid_list2.records[keys[i]].ord_IDX,
-					MTL_ORD_DTL_IDX : w2ui.grid_list2.records[keys[i]].mtl_ORD_DTL_IDX,
-					MTL_IDX : w2ui.grid_list2.records[keys[i]].mtl_IDX,
-					WHS_HIS_QTY : w2ui.grid_list2.records[keys[i]].ord_DTL_QTY,
-					WHS_HIS_QTY : WHS_HIS_QTY
+					ORD_IDX : w2ui.grid_list2.records[keys[i]-1].ord_IDX,
+					MTL_ORD_DTL_IDX : w2ui.grid_list2.records[keys[i]-1].mtl_ORD_DTL_IDX,
+					MTL_IDX : w2ui.grid_list2.records[keys[i]-1].mtl_IDX,
+					WHS_HIS_QTY : w2ui.grid_list2.records[keys[i]-1].ord_DTL_QTY,
+					MTL_ORD_DTL_IDX : w2ui.grid_list2.records[keys[i]-1].mtl_ORD_DTL_IDX
 				};
 				reqDataList.push(DataList);
 			}			
