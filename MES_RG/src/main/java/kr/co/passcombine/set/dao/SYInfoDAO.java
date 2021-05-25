@@ -315,13 +315,13 @@ public interface SYInfoDAO {
 	
 	public int updateEachMTL(List<Map<String,Object>> vo);
 	public int updateEachMTLMST(SYTMaterialOrderVo vo);
-	public int updateEachMTLDTL(SYTMaterialOrderVo vo);	
-	
+	public int updateEachMTLDTL(List<Map<String,Object>> vo);	
+	public int checkEachMTLStatus(SYTMaterialOrderVo vo);
 	public int deleteMaterialOrder(SYTMaterialOrderVo vo);
 	// MaterialOrder End		
+	
 	public Map<String, Object> selectFilesbyOrder(Map<String, Object> vo);
 	public int updateT_MTL_ORD_MST(Map<String, Object> queryMap);
-	
 	
 	public int updateReqDelivery(List<Map<String,Object>> vo);
 	public int deliveryMaterial(List<Map<String,Object>> vo);

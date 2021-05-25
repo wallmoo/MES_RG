@@ -1726,21 +1726,24 @@ public class SYInfoService {
 	public int updateEachMTL(List<Map<String,Object>> vo) {//자재 요청 수정
 		return infoDAO.updateEachMTL(vo);
 	}	
-	public int updateEachMTLDTL(SYTMaterialOrderVo vo) {//자재발주 일괄처리-VO형
-		return infoDAO.updateAllMTLDTL(vo);
+	public int updateEachMTLDTL(List<Map<String,Object>> vo) {//자재발주 일괄처리-VO형
+		return infoDAO.updateEachMTLDTL(vo);
 	}	
 	public int updateEachMTLMST(SYTMaterialOrderVo vo) {//자재발주 일괄처리-VO형
-		return infoDAO.updateAllMTLMST(vo);
+		return infoDAO.updateEachMTLMST(vo);
 	}	
+	public int checkEachMTLStatus(SYTMaterialOrderVo vo) {//개별 자재 입고 현황 체크(전체가 입고면 입고, 아니면 부분입고)
+		return infoDAO.checkEachMTLStatus(vo);
+	}		
 	public int deleteMaterialOrder(SYTMaterialOrderVo vo) {//자재 요청 삭제
 		return infoDAO.deleteMaterialOrder(vo);
 	}	
 	// Material End			
+	
 	public Map<String, Object> selectFilesbyOrder(Map<String, Object> vo) {
 		return infoDAO.selectFilesbyOrder(vo);
 	}
 	public int updateT_MTL_ORD_MST(Map<String, Object> queryMap) {
-		// TODO Auto-generated method stub
 		return infoDAO.updateT_MTL_ORD_MST(queryMap);
 	}
 	

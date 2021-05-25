@@ -3699,18 +3699,25 @@
 			#{item.WHS_HIS_REG_ID}
 		)
 		</foreach>
-	</insert>	
-	<update id="updateEachMTLDTL" parameterType="SYTMaterialOrderVo">
+	</insert>		
+	<insert id="updateEachMTLDTL" parameterType="java.util.List">
+		<foreach  collection="list" item="item"  separator=" ; ">
 		UPDATE T_MTL_ORD_DTL SET
 				ORD_DTL_STATUS = 'A',
-				ORD_CHK_STATUS = #{ORD_CHK_STATUS}
-		WHERE ORD_IDX = #{ORD_IDX}
-	</update>	
+				ORD_CHK_STATUS = #{item.ORD_CHK_STATUS}
+		WHERE MTL_ORD_DTL_IDX = #{item.MTL_ORD_DTL_IDX}
+		</foreach>	
+	</insert>	
 	<update id="updateEachMTLMST" parameterType="SYTMaterialOrderVo">
 		UPDATE T_MTL_ORD_MST SET
-				MTL_ORD_STATUS = 'O'
+				MTL_ORD_STATUS = #{MTL_ORD_STATUS}
 		WHERE ORD_IDX = #{ORD_IDX}
-	</update>		
+	</update>
+	<select id="checkEachMTLStatus" parameterType="SYTMaterialOrderVo" resultType="int">
+		SELECT COUNT(*) AS MTL_ORD_STATUS
+		FROM T_MTL_ORD_DTL
+		WHERE ORD_IDX = #{ORD_IDX} AND ORD_DTL_STATUS !='A'
+	</select>	
 	<update id="acceptOrder" parameterType="SYTMaterialOrderVo">
 		UPDATE T_MTL_ORD_MST SET
 				MTL_ORD_STATUS = #{MTL_ORD_STATUS}

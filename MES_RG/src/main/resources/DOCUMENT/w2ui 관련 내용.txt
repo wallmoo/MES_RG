@@ -101,3 +101,54 @@ function loadGrids(){
         loadLeftGrid();
     }
 }
+
+# 우측 그리드에 값 넘길때
+function fnLoadLeftGrid() {
+    $('#grid_list').w2grid({
+        name : 'grid_list',
+        show : {
+            selectColumn: true,
+            lineNumbers : true,
+            footer : true
+        },
+        multiSelect : false,
+        columns : [ 
+            { field:'pjt_IDX', caption:'프로젝트 번호', size:'7%', style:'text-align:center', sortable: true, hidden: true},
+            { field:'pjt_REG_DT', caption:'프로젝트 등록일', size:'7%', style:'text-align:center', sortable: true},
+            { field:'pjt_GRD', caption:'프로젝트 등급', size:'10%', style:'text-align:center', sortable: true},
+            { field:'pjt_NM', caption:'프로젝트명', size:'10%', style:'text-align:center', sortable: true},
+            { field:'pjt_CD', caption:'프로젝트 코드', size:'17%', style:'text-align:center', sortable: true},
+            { field:'cst_NM', caption:'고객사', size:'8%', style:'text-align:center', sortable: true}, 
+            { field:'pjt_PRD_NM', caption:'제품명', size:'8%', style:'text-align:center', sortable: true}, 
+            { field:'pjt_PRD_QTY', caption:'발주수량', size:'8%', style:'text-align:center', sortable: true},
+            { field:'pjt_PRD_UNT_NM', caption:'단위', size:'8%', style:'text-align:center', sortable: true},
+            { field:'pjt_DLV_DT', caption:'납품 요청일', size:'8%', style:'text-align:center', sortable: true}
+        ],
+        sortData : [ {
+            field : 'PJT_IDX',
+            direction : 'DESC'
+        } 
+        ],
+        records : [], // rowArr
+        onSelect : function(event) {
+            event.onComplete = function() {
+                w2ui['grid_list2'].refresh();
+                
+                // 오른쪽 그리드
+                loadRightGrid(this.get(event.recid).pjt_IDX);
+            }
+        },
+        onUnselect : function(event) {
+            event.onComplete = function() {
+                w2ui['grid_list2'].clear();
+                w2ui['grid_list2'].refresh();
+                comboValue_cd = new Array;
+            }
+        },
+        onClick : function(event) {
+            //grid_list2(); // 클릭 이벤트
+        }
+    });
+
+    loadLeftGrid();
+}
